@@ -130,6 +130,12 @@
         </dependency>
 
         <dependency>
+            <groupId>no.nav.syfo.tjenester</groupId>
+            <artifactId>behandleSak-v1</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
