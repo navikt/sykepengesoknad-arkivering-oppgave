@@ -10,11 +10,11 @@ import org.springframework.context.annotation.Configuration;
 import java.util.Collections;
 
 @Configuration
-public class AktørConfig {
+public class AktoerConfig {
 
     @Bean
     @SuppressWarnings("unchecked")
-    public AktoerV2 aktørV2(@Value("${virksomhet.aktor.v2.endpointurl}") String serviceUrl) {
+    public AktoerV2 aktørV2(@Value("${aktoer.v2.endpointurl}") String serviceUrl) {
         return new WsClient<AktoerV2>().createPort(serviceUrl, AktoerV2.class, Collections.singletonList(new LogErrorHandler()));
     }
 
