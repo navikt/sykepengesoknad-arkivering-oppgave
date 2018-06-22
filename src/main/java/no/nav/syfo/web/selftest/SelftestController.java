@@ -3,6 +3,7 @@ package no.nav.syfo.web.selftest;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.domain.Soknad;
 import no.nav.syfo.service.SaksbehandlingsService;
+import no.nav.syfo.util.Toggle;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,7 +41,7 @@ public class SelftestController {
     @ResponseBody
     @RequestMapping(value = "behandle-soknad", produces = MediaType.TEXT_PLAIN_VALUE)
     public String test(@RequestParam(name = "aktoer") String aktoerId) {
-        if("true".equals(System.getProperty("toggle.endepunkt-for-innkommende-soknad", "false"))) {
+        if (Toggle.endepunkter) {
             log.info("Fikk aktoer: {}", aktoerId);
             saksbehandlingsService.behandleSoknad(Soknad.builder().aktørId(aktoerId).build());
         }
