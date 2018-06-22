@@ -31,7 +31,7 @@ fasitResources:
   used:
   - alias: virksomhet:BehandleSak_v1
     resourceType: webserviceendpoint
-  - alias: journal_v2
+  - alias: Journal_v2
     resourceType: webserviceendpoint
   - alias: virksomhet:Arbeidsfordeling_v1
     resourceType: webserviceendpoint
@@ -43,7 +43,8 @@ fasitResources:
     resourceType: webserviceendpoint
   - alias: Aktoer_v2
     resourceType: webserviceendpoint
-  - alias: virksomhet:BehandleJournal_v2
+    resourceType: webserviceendpoint
+  - alias: BehandleJournal_v2
     resourceType: webserviceendpoint
   - alias: servicegateway
     resourceType: webservicegateway

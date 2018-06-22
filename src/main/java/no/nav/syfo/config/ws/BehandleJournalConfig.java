@@ -13,7 +13,7 @@ import java.util.Collections;
 public class BehandleJournalConfig {
     @Bean
     @SuppressWarnings("unchecked")
-    public BehandleJournalV2 behandleJournalV2(@Value("${virksomhet.behandleJournal.v2.endpointurl}") String serviceUrl) {
+    public BehandleJournalV2 behandleJournalV2(@Value("${behandleJournal.v2.endpointurl}") String serviceUrl) {
         return new WsClient<BehandleJournalV2>().createPort(serviceUrl, BehandleJournalV2.class, Collections.singletonList(new LogErrorHandler()));
     }
 }
