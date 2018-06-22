@@ -9,4 +9,5 @@ import lombok.Getter;
 @Getter
 public class Soknad {
     public String aktørId;
+    public String soknadsId;
 }

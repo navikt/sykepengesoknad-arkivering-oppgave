@@ -42,7 +42,7 @@ public class SelftestController {
     @RequestMapping(value = "behandle-soknad", produces = MediaType.TEXT_PLAIN_VALUE)
     public String test(@RequestParam(name = "aktoer") String aktoerId) {
         if (Toggle.endepunkter) {
-            log.info("Fikk aktoer: {}", aktoerId);
+            log.info("Behandler søknad for aktør: {}", aktoerId);
             saksbehandlingsService.behandleSoknad(Soknad.builder().aktørId(aktoerId).build());
         }
         return "Ok";
