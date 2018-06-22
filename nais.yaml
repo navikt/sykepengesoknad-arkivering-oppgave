@@ -55,6 +55,8 @@ fasitResources:
     resourceType: baseurl
   - alias: syfogsakDB
     resourceType: datasource
+  - alias: syfogsak.properties
+      resourceType: applicationproperties
     propertyMap:
       url: SPRING_DATASOURCE_URL
       username: SPRING_DATASOURCE_USERNAME
