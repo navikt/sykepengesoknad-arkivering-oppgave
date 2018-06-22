@@ -29,3 +29,33 @@ resources:
 fasitResources:
   exposed:
   used:
+  - alias: virksomhet:BehandleSak_v1
+    resourceType: webserviceendpoint
+  - alias: journal_v2
+    resourceType: webserviceendpoint
+  - alias: virksomhet:Arbeidsfordeling_v1
+    resourceType: webserviceendpoint
+  - alias: virksomhet:Person_v3
+    resourceType: webserviceendpoint
+  - alias: virksomhet:Oppgave_v3
+    resourceType: webserviceendpoint
+  - alias: virksomhet:Oppgavebehandling_v3
+    resourceType: webserviceendpoint
+  - alias: Aktoer_v2
+    resourceType: webserviceendpoint
+  - alias: virksomhet:BehandleJournal_v2
+    resourceType: webserviceendpoint
+  - alias: servicegateway
+    resourceType: webservicegateway
+    propertyMap:
+      url: SERVICEGATEWAY_URL
+  - alias: srvSyfogsak
+    resourceType: credential
+  - alias: securityTokenService
+    resourceType: baseurl
+  - alias: syfogsakDB
+    resourceType: datasource
+    propertyMap:
+      url: SPRING_DATASOURCE_URL
+      username: SPRING_DATASOURCE_USERNAME
+      password: SPRING_DATASOURCE_PASSWORD
