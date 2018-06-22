@@ -27,7 +27,10 @@ public class AktørConsumer {
         }
 
         try {
-            return aktoerV2.hentIdentForAktoerId(new WSHentIdentForAktoerIdRequest().withAktoerId(aktoerId)).getIdent();
+            String fnr = aktoerV2.hentIdentForAktoerId(new WSHentIdentForAktoerIdRequest().withAktoerId(aktoerId)).getIdent();
+            log.info("fant fnr for aktørid");
+
+            return fnr;
         } catch (HentIdentForAktoerIdPersonIkkeFunnet e) {
             log.error("Fnr ikke funnet", e);
             throw new RuntimeException("Fant ikke fnr for aktørId: " + aktoerId);
