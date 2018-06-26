@@ -68,7 +68,7 @@ public class BehandleJournalConsumer {
                                                                     new WSStrukturertInnhold()
                                                                             .withFilnavn(format("filnavn")) //TODO: Utled perioder i tittel
                                                                             .withFiltype(new WSArkivfiltyper().withValue("PDF"))
-                                                                            .withInnhold(new byte[]{12,22}) //TODO: Generer PDF
+                                                                            .withInnhold(pdf) //TODO: Generer PDF
                                                                             .withVariantformat(new WSVariantformater().withValue("ARKIV"))
                                                             ))
 
