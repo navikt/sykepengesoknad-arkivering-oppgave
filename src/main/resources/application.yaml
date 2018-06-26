@@ -8,7 +8,7 @@ management:
   endpoint.prometheus.enabled: true
 
 spring:
-  main.banner-mode: off
+  main.banner-mode: 'off'
   jta.atomikos.datasource:
     max-pool-size: 32
     min-pool-size: 8
