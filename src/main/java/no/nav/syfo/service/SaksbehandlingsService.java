@@ -34,7 +34,7 @@ public class SaksbehandlingsService {
         String fnr = aktørConsumer.finnFnr(soknad.aktørId);
 
         String saksId = behandleSakConsumer.opprettSak(fnr);
-        String journalPostId = behandleJournalConsumer.opprettOppgave(fnr, saksId, soknad);
+        String journalPostId = behandleJournalConsumer.opprettJournalpost(fnr, saksId, soknad);
         String behandlendeEnhet = behandlendeEnhetConsumer.hentBehandlendeEnhet(fnr);
         String oppgaveId = oppgavebehandlingConsumer.opprettOppgave(fnr, behandlendeEnhet, saksId, journalPostId);
 

@@ -34,13 +34,13 @@ public class BehandleJournalConsumer {
         this.personConsumer = personConsumer;
     }
 
-    public String opprettOppgave(String fnr, String saksId, Soknad soknad) {
+    public String opprettJournalpost(String fnr, String saksId, Soknad soknad) {
 
         try {
             byte[] pdf = Files.readAllBytes(Paths.get(ClassLoader.getSystemResource("eksempelsoknad.pdf").toURI()));
             String journalpostId = behandleJournalV2.journalfoerInngaaendeHenvendelse(
                     new WSJournalfoerInngaaendeHenvendelseRequest()
-                            .withApplikasjonsID("SYFOSOKNAD")
+                            .withApplikasjonsID("SYFOGSAK")
                             .withJournalpost(new WSJournalpost()
                                     .withDokumentDato(LocalDateTime.now())
                                     .withJournalfoerendeEnhetREF(GOSYS)
@@ -48,7 +48,7 @@ public class BehandleJournalConsumer {
                                     .withSignatur(new WSSignatur().withSignert(true))
                                     .withArkivtema(new WSArkivtemaer().withValue("SYK"))
                                     .withForBruker(new no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal.WSPerson().withIdent(new WSNorskIdent().withIdent(fnr)))
-                                    .withOpprettetAvNavn("Syfosoknad")
+                                    .withOpprettetAvNavn("Syfogsak")
                                     .withInnhold("Søknad om sykepenger")
                                     .withEksternPart(new WSEksternPart()
                                             .withNavn(personConsumer.finnBrukerPersonnavnByFnr(fnr))
@@ -68,7 +68,7 @@ public class BehandleJournalConsumer {
                                                                     new WSStrukturertInnhold()
                                                                             .withFilnavn(format("filnavn")) //TODO: Utled perioder i tittel
                                                                             .withFiltype(new WSArkivfiltyper().withValue("PDF"))
-                                                                            .withInnhold(pdf) //TODO: Generer PDF
+                                                                            .withInnhold(new byte[]{12,22}) //TODO: Generer PDF
                                                                             .withVariantformat(new WSVariantformater().withValue("ARKIV"))
                                                             ))
 

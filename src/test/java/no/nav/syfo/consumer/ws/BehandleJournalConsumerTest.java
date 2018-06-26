@@ -28,7 +28,7 @@ public class BehandleJournalConsumerTest {
     @Test
     public void opprettJournalpost() {
         when(behandleJournalV2.journalfoerInngaaendeHenvendelse(any())).thenReturn(new WSJournalfoerInngaaendeHenvendelseResponse().withJournalpostId("id"));
-        String id = behandleJournalConsumer.opprettOppgave("fnr", "saksId", Soknad.builder().build());
+        String id = behandleJournalConsumer.opprettJournalpost("fnr", "saksId", Soknad.builder().build());
 
         assertThat(id).isEqualTo("id");
     }
