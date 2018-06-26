@@ -8,7 +8,7 @@ public class Toggle {
 
     public static boolean endepunkter;
 
-    public Toggle(@Value("${toggle.endepunkt-for-innkommende-soknad:false}") boolean endepunkter) {
+    public Toggle(@Value("${TOGGLE_ENDEPUNKT_FOR_INNKOMMENDE_SOKNAD:false}") boolean endepunkter) {
         Toggle.endepunkter = endepunkter;
     }
 }
