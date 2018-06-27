@@ -28,4 +28,5 @@ virksomhet:
   oppgave.v3.endpointurl: "oppgave.url"
   person.v3.endpointurl: "person.url"
 
+servicegateway.url: "servicegateway.url"
 toggle.endepunkt-for-innkommende-soknad: 'true'
