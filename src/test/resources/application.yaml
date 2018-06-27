@@ -29,4 +29,4 @@ virksomhet:
   person.v3.endpointurl: "person.url"
 
 servicegateway.url: "servicegateway.url"
-toggle.endepunkt-for-innkommende-soknad: 'true'
+TOGGLE_ENDEPUNKT_FOR_INNKOMMENDE_SOKNAD: "true"

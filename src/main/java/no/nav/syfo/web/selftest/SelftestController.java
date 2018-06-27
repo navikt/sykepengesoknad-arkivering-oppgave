@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
+import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -43,7 +44,7 @@ public class SelftestController {
     public String test(@RequestParam(name = "aktoer") String aktoerId) {
         if (Toggle.endepunkter) {
             log.info("Behandler søknad for aktør: {}", aktoerId);
-            saksbehandlingsService.behandleSoknad(Soknad.builder().aktørId(aktoerId).build());
+            saksbehandlingsService.behandleSoknad(Soknad.builder().aktørId(aktoerId).soknadsId("testuuid" + UUID.randomUUID().toString().substring(8)).build());
         }
         return "Ok";
     }
