@@ -11,10 +11,6 @@ import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.WSJournalfoerInng
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 
 import static java.lang.String.format;
@@ -35,50 +31,43 @@ public class BehandleJournalConsumer {
     }
 
     public String opprettJournalpost(String fnr, String saksId, Soknad soknad) {
+        String journalpostId = behandleJournalV2.journalfoerInngaaendeHenvendelse(
+                new WSJournalfoerInngaaendeHenvendelseRequest()
+                        .withApplikasjonsID("SYFOGSAK")
+                        .withJournalpost(new WSJournalpost()
+                                .withDokumentDato(LocalDateTime.now())
+                                .withJournalfoerendeEnhetREF(GOSYS)
+                                .withKanal(new WSKommunikasjonskanaler().withValue("NAV_NO"))
+                                .withSignatur(new WSSignatur().withSignert(true))
+                                .withArkivtema(new WSArkivtemaer().withValue("SYK"))
+                                .withForBruker(new WSPerson().withIdent(new WSNorskIdent().withIdent(fnr)))
+                                .withOpprettetAvNavn("Syfogsak")
+                                .withInnhold("Søknad om sykepenger")
+                                .withEksternPart(new WSEksternPart()
+                                        .withNavn(personConsumer.finnBrukerPersonnavnByFnr(fnr))
+                                        .withEksternAktoer(new WSPerson().withIdent(new WSNorskIdent().withIdent(fnr))))
+                                .withGjelderSak(new WSSak().withSaksId(saksId).withFagsystemkode(GOSYS))
+                                .withMottattDato(LocalDateTime.now())
+                                .withDokumentinfoRelasjon(
+                                        new WSDokumentinfoRelasjon()
+                                                .withTillknyttetJournalpostSomKode("HOVEDDOKUMENT")
+                                                .withJournalfoertDokument(new WSJournalfoertDokumentInfo()
+                                                        .withBegrensetPartsInnsyn(false)
+                                                        .withDokumentType(new WSDokumenttyper().withValue("ES"))
+                                                        .withSensitivitet(true)
+                                                        .withTittel(format("Søknad om sykepenger fra Selvstendig / Frilanser")) //TODO: Utled perioder i tittel
+                                                        .withKategorikode("ES")
+                                                        .withBeskriverInnhold(
+                                                                new WSStrukturertInnhold()
+                                                                        .withFilnavn(format("filnavn")) //TODO: Utled perioder i tittel
+                                                                        .withFiltype(new WSArkivfiltyper().withValue("PDF"))
+                                                                        .withInnhold(new byte[]{12, 46}) //TODO: Generer PDF
+                                                                        .withVariantformat(new WSVariantformater().withValue("ARKIV"))
+                                                        ))
 
-        try {
-            byte[] pdf = Files.readAllBytes(Paths.get(BehandleJournalConsumer.class.getClassLoader().getResource("eksempelsoknad.pdf").toURI()));
-            String journalpostId = behandleJournalV2.journalfoerInngaaendeHenvendelse(
-                    new WSJournalfoerInngaaendeHenvendelseRequest()
-                            .withApplikasjonsID("SYFOGSAK")
-                            .withJournalpost(new WSJournalpost()
-                                    .withDokumentDato(LocalDateTime.now())
-                                    .withJournalfoerendeEnhetREF(GOSYS)
-                                    .withKanal(new WSKommunikasjonskanaler().withValue("NAV_NO"))
-                                    .withSignatur(new WSSignatur().withSignert(true))
-                                    .withArkivtema(new WSArkivtemaer().withValue("SYK"))
-                                    .withForBruker(new WSPerson().withIdent(new WSNorskIdent().withIdent(fnr)))
-                                    .withOpprettetAvNavn("Syfogsak")
-                                    .withInnhold("Søknad om sykepenger")
-                                    .withEksternPart(new WSEksternPart()
-                                            .withNavn(personConsumer.finnBrukerPersonnavnByFnr(fnr))
-                                            .withEksternAktoer(new WSPerson().withIdent(new WSNorskIdent().withIdent(fnr))))
-                                    .withGjelderSak(new WSSak().withSaksId(saksId).withFagsystemkode(GOSYS))
-                                    .withMottattDato(LocalDateTime.now())
-                                    .withDokumentinfoRelasjon(
-                                            new WSDokumentinfoRelasjon()
-                                                    .withTillknyttetJournalpostSomKode("HOVEDDOKUMENT")
-                                                    .withJournalfoertDokument(new WSJournalfoertDokumentInfo()
-                                                            .withBegrensetPartsInnsyn(false)
-                                                            .withDokumentType(new WSDokumenttyper().withValue("ES"))
-                                                            .withSensitivitet(true)
-                                                            .withTittel(format("Søknad om sykepenger fra Selvstendig / Frilanser")) //TODO: Utled perioder i tittel
-                                                            .withKategorikode("ES")
-                                                            .withBeskriverInnhold(
-                                                                    new WSStrukturertInnhold()
-                                                                            .withFilnavn(format("filnavn")) //TODO: Utled perioder i tittel
-                                                                            .withFiltype(new WSArkivfiltyper().withValue("PDF"))
-                                                                            .withInnhold(pdf) //TODO: Generer PDF
-                                                                            .withVariantformat(new WSVariantformater().withValue("ARKIV"))
-                                                            ))
-
-                                    ))
-            ).getJournalpostId();
-            log.info("Opprettet journalpost: {} på sak: {}", journalpostId, saksId);
-            return journalpostId;
-        } catch (IOException | URISyntaxException e) {
-            log.error("Klarte ikke lese pdf fra disk");
-            throw new RuntimeException("Feil ved oppretting av journalpost", e);
-        }
+                                ))
+        ).getJournalpostId();
+        log.info("Opprettet journalpost: {} på sak: {}", journalpostId, saksId);
+        return journalpostId;
     }
 }
