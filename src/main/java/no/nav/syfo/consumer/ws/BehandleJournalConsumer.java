@@ -37,7 +37,7 @@ public class BehandleJournalConsumer {
     public String opprettJournalpost(String fnr, String saksId, Soknad soknad) {
 
         try {
-            byte[] pdf = Files.readAllBytes(Paths.get(ClassLoader.getSystemResource("eksempelsoknad.pdf").toURI()));
+            byte[] pdf = Files.readAllBytes(Paths.get(BehandleJournalConsumer.class.getClassLoader().getResource("eksempelsoknad.pdf").toURI()));
             String journalpostId = behandleJournalV2.journalfoerInngaaendeHenvendelse(
                     new WSJournalfoerInngaaendeHenvendelseRequest()
                             .withApplikasjonsID("SYFOGSAK")
@@ -47,7 +47,7 @@ public class BehandleJournalConsumer {
                                     .withKanal(new WSKommunikasjonskanaler().withValue("NAV_NO"))
                                     .withSignatur(new WSSignatur().withSignert(true))
                                     .withArkivtema(new WSArkivtemaer().withValue("SYK"))
-                                    .withForBruker(new no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal.WSPerson().withIdent(new WSNorskIdent().withIdent(fnr)))
+                                    .withForBruker(new WSPerson().withIdent(new WSNorskIdent().withIdent(fnr)))
                                     .withOpprettetAvNavn("Syfogsak")
                                     .withInnhold("Søknad om sykepenger")
                                     .withEksternPart(new WSEksternPart()
