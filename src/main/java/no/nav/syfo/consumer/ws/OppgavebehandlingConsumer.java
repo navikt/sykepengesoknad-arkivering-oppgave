@@ -31,7 +31,7 @@ public class OppgavebehandlingConsumer {
                             .withFagomradeKode("SYK")
                             .withUnderkategoriKode("SYK_SYK")
                             .withPrioritetKode("NORM_SYK")
-                            .withBeskrivelse("") //TODO: Beskrivelse
+                            .withBeskrivelse("Oppgaven må ha en beskrivelse...") //TODO: Beskrivelse
                             .withAktivFra(now())
                             .withAktivTil(now().plusDays(7))
                             .withAnsvarligEnhetId(behandlendeEnhet)
