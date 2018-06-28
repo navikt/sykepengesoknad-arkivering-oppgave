@@ -1,0 +1,28 @@
+securitytokenservice.url: sts.url
+srvsyfogsak:
+  username: srvsyfogsak
+  password: 9gdrK96Fw8df6tP
+
+APP_NAME: syfogsak
+FASIT_ENVIRONMENT_NAME: local
+
+spring.kafka:
+  client-id: ${APP_NAME}-${FASIT_ENVIRONMENT_NAME}
+  bootstrap-servers: b27apvl00045.preprod.local:8443,b27apvl00046.preprod.local:8443,b27apvl00047.preprod.local:8443
+  properties:
+#    schema.registry.url: http://kafka-schema-registry.tpa:8081
+#    specific.avro.reader: true
+#    partitioner.class: no.nav.person.kafka.ModuloPartitioner
+    security.protocol: SASL_SSL
+    sasl.mechanism: PLAIN
+    sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="${srvsyfogsak.username}" password="${srvsyfogsak.password}";
+    value.subject.name.strategy: io.confluent.kafka.serializers.subject.TopicRecordNameStrategy
+    ssl.truststore.location: ${javax.net.ssl.trustStore}
+    ssl.truststore.password: ${javax.net.ssl.trustStorePassword}
+  consumer:
+    key-deserializer: org.apache.kafka.common.serialization.IntegerDeserializer
+    value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    group-id: ${APP_NAME}-${FASIT_ENVIRONMENT_NAME}
+    max-poll-records: 1
+    auto-offset-reset: earliest
+    enable-auto-commit: false
