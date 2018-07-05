@@ -2,6 +2,7 @@
 syfogsak.iml
 .idea
 target
+application-local.yaml
 
 # Compiled class file
 *.class
