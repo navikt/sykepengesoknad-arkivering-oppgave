@@ -11,7 +11,7 @@ import org.springframework.kafka.test.utils.KafkaTestUtils;
 
 @Configuration
 @EnableKafka
-public class KafkaConfigTest {
+public class KafkaTestConfig {
 
     @ClassRule
     public static KafkaEmbedded embeddedKafka = new KafkaEmbedded(1, true, "aapen-syfo-soeknadSendt-v1");

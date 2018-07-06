@@ -7,8 +7,6 @@ management:
     exposure.include: prometheus
     path-mapping.prometheus: /prometheus
 
-server.port: 8080
-
 spring:
   main.banner-mode: 'off'
   jta.atomikos.datasource:
@@ -18,9 +16,6 @@ spring:
     client-id: ${app.name}-${fasit.environment.name}
     bootstrap-servers: b27apvl00045.preprod.local:8443,b27apvl00046.preprod.local:8443,b27apvl00047.preprod.local:8443
     properties:
-      #    schema.registry.url: http://kafka-schema-registry.tpa:8081
-      #    specific.avro.reader: true
-      #    partitioner.class: no.nav.person.kafka.ModuloPartitioner
       security.protocol: SASL_SSL
       value.subject.name.strategy: io.confluent.kafka.serializers.subject.TopicRecordNameStrategy
       sasl:
