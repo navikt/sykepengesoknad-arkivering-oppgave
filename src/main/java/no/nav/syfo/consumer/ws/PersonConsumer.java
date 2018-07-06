@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
-import static java.lang.String.format;
+import static java.text.MessageFormat.format;
 import static net.logstash.logback.encoder.org.apache.commons.lang.WordUtils.capitalizeFully;
 import static org.springframework.util.StringUtils.isEmpty;
 

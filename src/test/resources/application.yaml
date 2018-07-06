@@ -1,4 +1,31 @@
-#test
+app.name: syfogsak
+fasit.environment.name: local
+server.port: 8081
+
+srvsyfogsak:
+  username: username
+  password: password
+
+javax.net.ssl:
+  trustStore: truststore
+  trustStorePassword: truststorepassword
+
+servicegateway.url: servicegateway.url
+securitytokenservice.url: sts.url
+
+behandleJournal.v2.endpointurl: "behandleJournalv2.url"
+Journal.v2.endpointurl: "behandleJournalv2.url"
+aktoer.v2.endpointurl: "aktør.url"
+virksomhet:
+  behandlesak.v1.endpointurl: "behandlesakv1.url"
+  arbeidsfordeling.v1.endpointurl: "arbeidsfordeling.url"
+  oppgavebehandling.v3.endpointurl: "oppgavebehandling.url"
+  oppgave.v3.endpointurl: "oppgave.url"
+  person.v3.endpointurl: "person.url"
+
+toggle:
+  endepunkt.innkommende.soknad: true
+
 spring:
   h2.console:
     enabled: true
@@ -11,22 +38,22 @@ spring:
   jta.atomikos.datasource:
     max-pool-size: 32
     min-pool-size: 8
-
-securitytokenservice.url: "sts.url"
-
-srvsyfogsak:
-  username: "kek"
-  password: "bur"
-
-behandleJournal.v2.endpointurl: "behandleJournalv2.url"
-Journal.v2.endpointurl: "behandleJournalv2.url"
-aktoer.v2.endpointurl: "aktør.url"
-virksomhet:
-  behandlesak.v1.endpointurl: "behandlesakv1.url"
-  arbeidsfordeling.v1.endpointurl: "arbeidsfordeling.url"
-  oppgavebehandling.v3.endpointurl: "oppgavebehandling.url"
-  oppgave.v3.endpointurl: "oppgave.url"
-  person.v3.endpointurl: "person.url"
-
-servicegateway.url: "servicegateway.url"
-TOGGLE_ENDEPUNKT_FOR_INNKOMMENDE_SOKNAD: "true"
+  kafka:
+    client-id: ${app.name}-${fasit.environment.name}
+    bootstrap-servers: b27apvl00045.preprod.local:8443,b27apvl00046.preprod.local:8443,b27apvl00047.preprod.local:8443
+    properties:
+      security.protocol: SASL_SSL
+      value.subject.name.strategy: io.confluent.kafka.serializers.subject.TopicRecordNameStrategy
+      sasl:
+        mechanism: PLAIN
+        jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="${srvsyfogsak.username}" password="${srvsyfogsak.password}";
+      ssl.truststore:
+        location: ${javax.net.ssl.trustStore}
+        password: ${javax.net.ssl.trustStorePassword}
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      group-id: ${app.name}-${fasit.environment.name}
+      max-poll-records: 1
+      auto-offset-reset: earliest
+      enable-auto-commit: false
