@@ -120,6 +120,35 @@
         </dependency>
 
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <version>${spring-boot.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jta-atomikos</artifactId>
+            <version>${spring-boot.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc8</artifactId>
+            <version>${ojdbc8.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>${flyway-core.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
@@ -137,6 +166,60 @@
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
             <version>${logstash-logback-encoder.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>no.nav.syfo.tjenester</groupId>
+            <artifactId>behandleSak-v1</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>no.nav.syfo.tjenester</groupId>
+            <artifactId>behandleJournal-v2</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>no.nav.syfo.tjenester</groupId>
+            <artifactId>oppgavebehandling-v3-tjenestespesifikasjon</artifactId>
+            <version>3.1.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>no.nav.syfo.tjenester</groupId>
+            <artifactId>journal-v2</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>no.nav.tjenester</groupId>
+            <artifactId>nav-person-v3-tjenestespesifikasjon</artifactId>
+            <version>3.2.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>no.nav.syfo.tjenester</groupId>
+            <artifactId>oppgave-v3-tjenestespesifikasjon</artifactId>
+            <version>3.0.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>no.nav.syfo.tjenester</groupId>
+            <artifactId>arbeidsfordeling-v1-tjenestespesifikasjon</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>no.nav.syfo.tjenester</groupId>
+            <artifactId>aktoer-v2</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>no.nav.syfo.tjenester</groupId>
+            <artifactId>arbeidsfordeling-v1-tjenestespesifikasjon</artifactId>
+            <version>1.0.0</version>
         </dependency>
 
         <dependency>

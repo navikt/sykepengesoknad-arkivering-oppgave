@@ -1,10 +1,17 @@
 package no.nav.syfo.web.selftest;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.syfo.domain.Soknad;
+import no.nav.syfo.service.SaksbehandlingsService;
+import no.nav.syfo.util.Toggle;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.inject.Inject;
+import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -12,6 +19,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class SelftestController {
     private static final String APPLICATION_LIVENESS = "Application is alive!";
     private static final String APPLICATION_READY = "Application is ready!";
+
+    private final SaksbehandlingsService saksbehandlingsService;
+
+    @Inject
+    public SelftestController(SaksbehandlingsService saksbehandlingsService) {
+        this.saksbehandlingsService = saksbehandlingsService;
+    }
 
     @ResponseBody
     @RequestMapping(value = "/isAlive", produces = MediaType.TEXT_PLAIN_VALUE)
@@ -23,5 +37,15 @@ public class SelftestController {
     @RequestMapping(value = "/isReady", produces = MediaType.TEXT_PLAIN_VALUE)
     public String isReady() {
         return APPLICATION_READY;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "behandle-soknad", produces = MediaType.TEXT_PLAIN_VALUE)
+    public String test(@RequestParam(name = "aktoer") String aktoerId) {
+        if (Toggle.endepunkter) {
+            log.info("Behandler søknad for aktør: {}", aktoerId);
+            saksbehandlingsService.behandleSoknad(Soknad.builder().aktørId(aktoerId).soknadsId("testuuid" + UUID.randomUUID().toString().substring(8)).build());
+        }
+        return "Ok";
     }
 }
