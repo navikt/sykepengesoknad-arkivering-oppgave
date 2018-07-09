@@ -1,7 +1,6 @@
 package no.nav.syfo.consumer.ws;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.syfo.domain.Soknad;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.BehandleJournalV2;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal.*;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.journalfoerinngaaendehenvendelse.WSDokumentinfoRelasjon;
@@ -11,7 +10,9 @@ import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.WSJournalfoerInng
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static java.lang.String.format;
 
@@ -30,7 +31,10 @@ public class BehandleJournalConsumer {
         this.personConsumer = personConsumer;
     }
 
-    public String opprettJournalpost(String fnr, String saksId, Soknad soknad) {
+    public String opprettJournalpost(String fnr, String saksId, LocalDate fom, LocalDate tom) {
+        String norskFom = fom.format(DateTimeFormatter.ofPattern("DD.MM.yyyy"));
+        String norskTom = tom.format(DateTimeFormatter.ofPattern("DD.MM.yyyy"));
+
         String journalpostId = behandleJournalV2.journalfoerInngaaendeHenvendelse(
                 new WSJournalfoerInngaaendeHenvendelseRequest()
                         .withApplikasjonsID("SYFOGSAK")
@@ -55,11 +59,11 @@ public class BehandleJournalConsumer {
                                                         .withBegrensetPartsInnsyn(false)
                                                         .withDokumentType(new WSDokumenttyper().withValue("ES"))
                                                         .withSensitivitet(true)
-                                                        .withTittel(format("Søknad om sykepenger fra Selvstendig / Frilanser")) //TODO: Utled perioder i tittel
+                                                        .withTittel(format("Søknad om sykepenger fra Selvstendig/Frilanser for periode: " + norskFom + " til " + norskTom))
                                                         .withKategorikode("ES")
                                                         .withBeskriverInnhold(
                                                                 new WSStrukturertInnhold()
-                                                                        .withFilnavn(format("filnavn")) //TODO: Utled perioder i tittel
+                                                                        .withFilnavn(format("soknad-" + norskFom + "-" + norskTom))
                                                                         .withFiltype(new WSArkivfiltyper().withValue("PDF"))
                                                                         .withInnhold(new byte[]{12, 46}) //TODO: Generer PDF
                                                                         .withVariantformat(new WSVariantformater().withValue("ARKIV"))

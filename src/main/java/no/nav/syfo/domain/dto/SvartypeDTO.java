@@ -1,6 +1,6 @@
-package no.nav.syfo.domain;
+package no.nav.syfo.domain.dto;
 
-public enum Svartype {
+public enum SvartypeDTO {
     JA_NEI,
     CHECKBOX,
     CHECKBOX_GRUPPE,

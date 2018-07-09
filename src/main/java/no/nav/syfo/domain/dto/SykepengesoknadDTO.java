@@ -1,19 +1,20 @@
-package no.nav.syfo.domain;
+package no.nav.syfo.domain.dto;
 
 import lombok.Getter;
 
 import java.util.List;
 
 @Getter
-public class Sykepengesoknad {
+public class SykepengesoknadDTO {
 
     String id;
     String sykmeldingId;
-    Soknadstype soknadstype;
+    String aktorId;
+    SoknadstypeDTO soknadstypeDTO;
     String status;
     String fom;
     String tom;
     String opprettetDato;
-    List<Sporsmal> sporsmal;
+    List<SporsmalDTO> sporsmalDTO;
 
 }
