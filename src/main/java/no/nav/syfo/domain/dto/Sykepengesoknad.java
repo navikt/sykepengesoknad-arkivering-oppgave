@@ -5,16 +5,16 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class SykepengesoknadDTO {
+public class Sykepengesoknad {
 
     String id;
     String sykmeldingId;
     String aktorId;
-    SoknadstypeDTO soknadstypeDTO;
+    Soknadstype soknadstype;
     String status;
     String fom;
     String tom;
     String opprettetDato;
-    List<SporsmalDTO> sporsmalDTO;
+    List<Sporsmal> sporsmal;
 
 }

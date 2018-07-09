@@ -5,16 +5,16 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class SporsmalDTO {
+public class Sporsmal {
 
     String id;
     String tag;
     String sporsmalstekst;
     String undertekst;
-    SvartypeDTO svartypeDTO;
+    Svartype svartype;
     String min;
     String max;
-    VisningskriterieDTO kriterieForVisningAvUndersporsmal;
-    List<SvarDTO> svarDTO;
-    List<SporsmalDTO> undersporsmal;
+    Visningskriterie kriterieForVisningAvUndersporsmal;
+    List<Svar> svar;
+    List<Sporsmal> undersporsmal;
 }

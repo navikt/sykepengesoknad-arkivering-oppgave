@@ -1,6 +1,6 @@
 package no.nav.syfo.domain.dto;
 
-public enum SvarverdiTypeDTO {
+public enum SvarverdiType {
     FOM,
     TOM
 }

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.domain.Soknad;
-import no.nav.syfo.domain.dto.SykepengesoknadDTO;
+import no.nav.syfo.domain.dto.Sykepengesoknad;
 import no.nav.syfo.service.SaksbehandlingsService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -37,7 +37,7 @@ public class SoknadSendtListener {
                 cr.value());
 
         try {
-            SykepengesoknadDTO deserialisertSoknad = new ObjectMapper().readValue(cr.value(), SykepengesoknadDTO.class);
+            Sykepengesoknad deserialisertSoknad = new ObjectMapper().readValue(cr.value(), Sykepengesoknad.class);
             log.info("Deserialiserte sykepengesøknad: {}", deserialisertSoknad.toString());
 
             Soknad soknad = Soknad.lagSoknad(deserialisertSoknad);

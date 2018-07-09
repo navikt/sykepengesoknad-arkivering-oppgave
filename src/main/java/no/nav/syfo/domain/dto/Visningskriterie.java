@@ -1,6 +1,6 @@
 package no.nav.syfo.domain.dto;
 
-public enum VisningskriterieDTO {
+public enum Visningskriterie {
     JA,
     CHECKED
 }

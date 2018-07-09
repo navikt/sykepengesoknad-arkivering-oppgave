@@ -3,9 +3,9 @@ package no.nav.syfo.domain.dto;
 import lombok.Getter;
 
 @Getter
-public class SvarDTO {
+public class Svar {
 
-    SvarverdiTypeDTO svarverdiTypeDTO;
+    SvarverdiType svarverdiType;
     String verdi;
 
 }
