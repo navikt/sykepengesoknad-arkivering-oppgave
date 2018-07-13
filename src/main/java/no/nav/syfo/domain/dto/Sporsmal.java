@@ -8,6 +8,7 @@ import java.util.List;
 public class Sporsmal {
 
     String id;
+    String uuid;
     String tag;
     String sporsmalstekst;
     String undertekst;
