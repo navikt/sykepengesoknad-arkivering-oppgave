@@ -23,7 +23,13 @@ public class SaksbehandlingsService {
     private final InnsendingDAO innsendingDAO;
 
     @Inject
-    public SaksbehandlingsService(BehandleSakConsumer behandleSakConsumer, OppgavebehandlingConsumer oppgavebehandlingConsumer, BehandleJournalConsumer behandleJournalConsumer, AktørConsumer aktørConsumer, BehandlendeEnhetConsumer behandlendeEnhetConsumer, InnsendingDAO innsendingDAO) {
+    public SaksbehandlingsService(
+            BehandleSakConsumer behandleSakConsumer,
+            OppgavebehandlingConsumer oppgavebehandlingConsumer,
+            BehandleJournalConsumer behandleJournalConsumer,
+            AktørConsumer aktørConsumer,
+            BehandlendeEnhetConsumer behandlendeEnhetConsumer,
+            InnsendingDAO innsendingDAO) {
         this.behandleSakConsumer = behandleSakConsumer;
         this.oppgavebehandlingConsumer = oppgavebehandlingConsumer;
         this.behandleJournalConsumer = behandleJournalConsumer;
