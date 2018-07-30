@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.domain.Soknad;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
 import no.nav.syfo.service.SaksbehandlingsService;
+import no.nav.syfo.util.Toggle;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
@@ -35,6 +36,11 @@ public class SoknadSendtListener {
                 cr.offset(),
                 cr.key(),
                 cr.value());
+
+        if (Toggle.skipSaksbehandling) {
+            log.info("Togglet av: Skipper saksbehandling");
+            return;
+        }
 
         try {
             Sykepengesoknad deserialisertSoknad = new ObjectMapper().readValue(cr.value(), Sykepengesoknad.class);
