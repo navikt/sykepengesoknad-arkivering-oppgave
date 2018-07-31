@@ -2,7 +2,7 @@
 syfogsak.iml
 .idea
 target
-application-local.yaml
+**/application-local.yaml
 transaction-logs
 
 # Compiled class file

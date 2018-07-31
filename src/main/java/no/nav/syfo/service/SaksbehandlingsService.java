@@ -1,5 +1,6 @@
 package no.nav.syfo.service;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.consumer.repository.InnsendingDAO;
 import no.nav.syfo.consumer.ws.*;
 import no.nav.syfo.domain.Innsending;
@@ -10,6 +11,7 @@ import javax.inject.Inject;
 import java.time.LocalDate;
 import java.util.UUID;
 
+@Slf4j
 @Component
 public class SaksbehandlingsService {
 
@@ -21,7 +23,13 @@ public class SaksbehandlingsService {
     private final InnsendingDAO innsendingDAO;
 
     @Inject
-    public SaksbehandlingsService(BehandleSakConsumer behandleSakConsumer, OppgavebehandlingConsumer oppgavebehandlingConsumer, BehandleJournalConsumer behandleJournalConsumer, AktørConsumer aktørConsumer, BehandlendeEnhetConsumer behandlendeEnhetConsumer, InnsendingDAO innsendingDAO) {
+    public SaksbehandlingsService(
+            BehandleSakConsumer behandleSakConsumer,
+            OppgavebehandlingConsumer oppgavebehandlingConsumer,
+            BehandleJournalConsumer behandleJournalConsumer,
+            AktørConsumer aktørConsumer,
+            BehandlendeEnhetConsumer behandlendeEnhetConsumer,
+            InnsendingDAO innsendingDAO) {
         this.behandleSakConsumer = behandleSakConsumer;
         this.oppgavebehandlingConsumer = oppgavebehandlingConsumer;
         this.behandleJournalConsumer = behandleJournalConsumer;
@@ -31,12 +39,12 @@ public class SaksbehandlingsService {
     }
 
     public void behandleSoknad(Soknad soknad) {
+        log.info("Behandler søknad med id: {}", soknad.soknadsId);
         String fnr = aktørConsumer.finnFnr(soknad.aktørId);
-
         String saksId = behandleSakConsumer.opprettSak(fnr);
-        String journalPostId = behandleJournalConsumer.opprettJournalpost(fnr, saksId, soknad);
+        String journalPostId = behandleJournalConsumer.opprettJournalpost(fnr, saksId, soknad.fom, soknad.tom);
         String behandlendeEnhet = behandlendeEnhetConsumer.hentBehandlendeEnhet(fnr);
-        String oppgaveId = oppgavebehandlingConsumer.opprettOppgave(fnr, behandlendeEnhet, saksId, journalPostId);
+        String oppgaveId = oppgavebehandlingConsumer.opprettOppgave(fnr, behandlendeEnhet, saksId, journalPostId, soknad.lagBeskrivelse());
 
         innsendingDAO.lagreInnsending(Innsending.builder()
                 .innsendingsId(UUID.randomUUID().toString())

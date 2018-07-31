@@ -30,8 +30,8 @@ public class InnsendingDAO {
                 "INSERT INTO INNSENDING VALUES(:uuid, :ressursId, :aktorId, :saksId, :journalpostId, :oppgaveId, :behandlet)",
                 new MapSqlParameterSource()
                         .addValue("uuid", uuid)
-                        .addValue("aktorId", innsending.getAktørId())
                         .addValue("ressursId", innsending.getRessursId())
+                        .addValue("aktorId", innsending.getAktørId())
                         .addValue("saksId", innsending.getSaksId())
                         .addValue("journalpostId", innsending.getJournalpostId())
                         .addValue("oppgaveId", innsending.getOppgaveId())

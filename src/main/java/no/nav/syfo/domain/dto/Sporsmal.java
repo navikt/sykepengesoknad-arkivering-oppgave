@@ -1,4 +1,4 @@
-package no.nav.syfo.domain;
+package no.nav.syfo.domain.dto;
 
 import lombok.Getter;
 
@@ -8,6 +8,7 @@ import java.util.List;
 public class Sporsmal {
 
     String id;
+    String uuid;
     String tag;
     String sporsmalstekst;
     String undertekst;

@@ -1,4 +1,4 @@
-package no.nav.syfo.domain;
+package no.nav.syfo.domain.dto;
 
 public enum Svartype {
     JA_NEI,

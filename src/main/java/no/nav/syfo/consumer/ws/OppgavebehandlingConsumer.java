@@ -20,7 +20,7 @@ public class OppgavebehandlingConsumer {
         this.oppgavebehandlingV3 = oppgavebehandlingV3;
     }
 
-    public String opprettOppgave(String fnr, String behandlendeEnhet, String saksId, String journalpostId) {
+    public String opprettOppgave(String fnr, String behandlendeEnhet, String saksId, String journalpostId, String beskrivelse) {
         try {
             String oppgaveId = oppgavebehandlingV3.opprettOppgave(new WSOpprettOppgaveRequest()
                     .withOpprettetAvEnhetId(9999)
@@ -31,7 +31,7 @@ public class OppgavebehandlingConsumer {
                             .withFagomradeKode("SYK")
                             .withUnderkategoriKode("SYK_SYK")
                             .withPrioritetKode("NORM_SYK")
-                            .withBeskrivelse("Oppgaven må ha en beskrivelse...") //TODO: Beskrivelse
+                            .withBeskrivelse(beskrivelse)
                             .withAktivFra(now())
                             .withAktivTil(now().plusDays(7))
                             .withAnsvarligEnhetId(behandlendeEnhet)

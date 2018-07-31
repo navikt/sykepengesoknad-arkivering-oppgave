@@ -1,4 +1,4 @@
-package no.nav.syfo.domain;
+package no.nav.syfo.domain.dto;
 
 import lombok.Getter;
 
@@ -9,6 +9,7 @@ public class Sykepengesoknad {
 
     String id;
     String sykmeldingId;
+    String aktorId;
     Soknadstype soknadstype;
     String status;
     String fom;
