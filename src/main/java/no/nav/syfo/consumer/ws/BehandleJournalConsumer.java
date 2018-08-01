@@ -74,4 +74,46 @@ public class BehandleJournalConsumer {
         log.info("Opprettet journalpost: {} på sak: {}", journalpostId, saksId);
         return journalpostId;
     }
+
+    public String opprettJournalpostUtland(String fnr, String saksId, byte[] pdf) {
+
+        String journalpostId = behandleJournalV2.journalfoerInngaaendeHenvendelse(
+                new WSJournalfoerInngaaendeHenvendelseRequest()
+                        .withApplikasjonsID("SYFOGSAK")
+                        .withJournalpost(new WSJournalpost()
+                                .withDokumentDato(LocalDateTime.now())
+                                .withJournalfoerendeEnhetREF(GOSYS)
+                                .withKanal(new WSKommunikasjonskanaler().withValue("NAV_NO"))
+                                .withSignatur(new WSSignatur().withSignert(true))
+                                .withArkivtema(new WSArkivtemaer().withValue("SYK"))
+                                .withForBruker(new WSPerson().withIdent(new WSNorskIdent().withIdent(fnr)))
+                                .withOpprettetAvNavn("Syfogsak")
+                                .withInnhold("Det er sendt inn en ny søknad")
+                                .withEksternPart(new WSEksternPart()
+                                        .withNavn(personConsumer.finnBrukerPersonnavnByFnr(fnr))
+                                        .withEksternAktoer(new WSPerson().withIdent(new WSNorskIdent().withIdent(fnr))))
+                                .withGjelderSak(new WSSak().withSaksId(saksId).withFagsystemkode(GOSYS))
+                                .withMottattDato(LocalDateTime.now())
+                                .withDokumentinfoRelasjon(
+                                        new WSDokumentinfoRelasjon()
+                                                .withTillknyttetJournalpostSomKode("HOVEDDOKUMENT")
+                                                .withJournalfoertDokument(new WSJournalfoertDokumentInfo()
+                                                        .withBegrensetPartsInnsyn(false)
+                                                        .withDokumentType(new WSDokumenttyper().withValue("ES"))
+                                                        .withSensitivitet(true)
+                                                        .withTittel("Søknad om å beholde sykepenger under opphold utenfor Norge")
+                                                        .withKategorikode("ES")
+                                                        .withBeskriverInnhold(
+                                                                new WSStrukturertInnhold()
+                                                                        .withFilnavn("soknad-utenlandsopphold")
+                                                                        .withFiltype(new WSArkivfiltyper().withValue("PDF"))
+                                                                        .withInnhold(pdf) //TODO: Generer PDF
+                                                                        .withVariantformat(new WSVariantformater().withValue("ARKIV"))
+                                                        ))
+
+                                ))
+        ).getJournalpostId();
+        log.info("Opprettet journalpost utenlandsopphold: {} på sak: {}", journalpostId, saksId);
+        return journalpostId;
+    }
 }

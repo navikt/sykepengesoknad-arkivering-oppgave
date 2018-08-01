@@ -5,7 +5,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
-@TestPropertySource(locations = "classpath:application-test.yaml")
+//@TestPropertySource(locations = "classpath:application-local.yaml")
 @EnableTransactionManagement
 public class TestApplicationConfig {
 
