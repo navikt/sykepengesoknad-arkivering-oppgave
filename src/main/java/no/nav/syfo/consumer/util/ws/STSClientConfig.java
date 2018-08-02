@@ -15,21 +15,28 @@ import org.apache.cxf.ws.policy.attachment.reference.RemoteReferenceResolver;
 import org.apache.cxf.ws.security.trust.STSClient;
 import org.apache.neethi.Policy;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 
 import java.util.HashMap;
 
+@Configuration
 class STSClientConfig {
-    @Value("${securitytokenservice.url}")
-    static String location;
-    @Value("${srvsyfogsak.username}")
-    static String username;
-    @Value("${srvsyfogsak.password}")
-    static String password;
+    private static String location;
+    private static String username;
+    private static String password;
 
     // Only use no transportbinding on localhost, should use the requestSamlPolicy.xml with transport binding https
     // when in production.
     private static final String STS_REQUEST_SAML_POLICY = "classpath:policy/requestSamlPolicyNoTransportBinding.xml";
     private static final String STS_CLIENT_AUTHENTICATION_POLICY = "classpath:policy/untPolicy.xml";
+
+    STSClientConfig(@Value("${securitytokenservice.url}") String location,
+                    @Value("${srvsyfogsak.username}") String username,
+                    @Value("${srvsyfogsak.password}") String password) {
+        STSClientConfig.location = location;
+        STSClientConfig.username = username;
+        STSClientConfig.password = password;
+    }
 
     public static <T> T configureRequestSamlToken(T port) {
         Client client = ClientProxy.getClient(port);
