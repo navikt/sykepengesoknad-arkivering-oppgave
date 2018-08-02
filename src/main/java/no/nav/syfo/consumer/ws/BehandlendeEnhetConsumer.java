@@ -1,12 +1,10 @@
 package no.nav.syfo.consumer.ws;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.syfo.domain.dto.Soknadstype;
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.ArbeidsfordelingV1;
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.FinnBehandlendeEnhetListeUgyldigInput;
-import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.WSArbeidsfordelingKriterier;
-import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.WSGeografi;
-import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.WSOrganisasjonsenhet;
-import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.WSTema;
+import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.*;
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.meldinger.WSFinnBehandlendeEnhetListeRequest;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentGeografiskTilknytningPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentGeografiskTilknytningSikkerhetsbegrensing;
@@ -21,6 +19,7 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 import static java.util.Optional.of;
+import static no.nav.syfo.domain.dto.Soknadstype.OPPHOLD_UTLAND;
 import static no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.WSEnhetsstatus.AKTIV;
 
 @Component
@@ -36,14 +35,15 @@ public class BehandlendeEnhetConsumer {
         this.arbeidsfordelingV1 = arbeidsfordelingV1;
     }
 
-    public String hentBehandlendeEnhet(String fnr) {
+    public String hentBehandlendeEnhet(String fnr, Soknadstype soknadstype) {
         String geografiskTilknytning = hentGeografiskTilknytning(fnr);
 
         try {
             String behandlendeEnhet = arbeidsfordelingV1.finnBehandlendeEnhetListe(new WSFinnBehandlendeEnhetListeRequest()
                     .withArbeidsfordelingKriterier(new WSArbeidsfordelingKriterier()
                             .withGeografiskTilknytning(new WSGeografi().withValue(geografiskTilknytning))
-                            .withTema(new WSTema().withValue("SYK"))))
+                            .withTema(new WSTema().withValue("SYK"))
+                            .withBehandlingstema(new WSBehandlingstema().withValue(hentRiktigTemaBehandlingstemaForSoknadstype(soknadstype)))))
                     .getBehandlendeEnhetListe()
                     .stream()
                     .filter(wsOrganisasjonsenhet -> AKTIV.equals(wsOrganisasjonsenhet.getStatus()))
@@ -75,6 +75,13 @@ public class BehandlendeEnhetConsumer {
             log.error("Feil ved henting av geografisk tilknytning", e);
             throw new RuntimeException("Feil ved henting av geografisk tilknytning", e);
         }
+    }
+
+    public String hentRiktigTemaBehandlingstemaForSoknadstype(Soknadstype soknadstype){
+        if(soknadstype == OPPHOLD_UTLAND){
+            return "ab0314";
+        }
+        return null;
     }
 
 }

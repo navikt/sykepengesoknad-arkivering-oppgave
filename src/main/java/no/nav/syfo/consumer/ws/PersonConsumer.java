@@ -28,6 +28,7 @@ public class PersonConsumer {
 
 
     public String finnBrukerPersonnavnByFnr(String fnr) {
+        log.info(fnr);
         return personV3.hentPersonnavnBolk(new HentPersonnavnBolkRequest()
                 .withAktoerListe(new PersonIdent().withIdent(new NorskIdent().withIdent(fnr))))
                 .getAktoerHarNavnListe()
@@ -43,9 +44,9 @@ public class PersonConsumer {
         if (isEmpty(personnavn.getFornavn())) {
             navn = personnavn.getEtternavn();
         } else if (isEmpty(personnavn.getMellomnavn())) {
-            navn = format("%s %s", personnavn.getFornavn(), personnavn.getEtternavn());
+            navn = (personnavn.getFornavn() + " " + personnavn.getEtternavn());
         } else {
-            navn = format("%s %s %s", personnavn.getFornavn(), personnavn.getMellomnavn(), personnavn.getEtternavn());
+            navn = (personnavn.getFornavn() + " " + personnavn.getMellomnavn() + " " + personnavn.getEtternavn());
         }
 
         char[] delimiters = {' ', '-'};
