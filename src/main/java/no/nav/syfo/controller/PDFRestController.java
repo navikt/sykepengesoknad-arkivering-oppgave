@@ -24,7 +24,7 @@ public class PDFRestController {
 
     public static byte[] getPDF(Soknad soknad, String template) {
 
-        final String url = pdfPath + "/syfosoknader/" + template;
+        final String url = pdfPath + "/v1/genpdf/syfosoknader/" + template;
 
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
