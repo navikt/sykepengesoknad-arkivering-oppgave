@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.syfo.domain.dto.Soknadstype;
 import no.nav.syfo.domain.dto.Sporsmal;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
 
@@ -19,6 +20,7 @@ import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 public class Soknad {
     public String aktørId;
     public String soknadsId;
+    public Soknadstype soknadstype;
     public LocalDate fom;
     public LocalDate tom;
     public String fnr;
@@ -36,6 +38,7 @@ public class Soknad {
         return Soknad.builder()
                 .aktørId(sykepengesoknad.getAktorId())
                 .soknadsId(sykepengesoknad.getId())
+                .soknadstype(sykepengesoknad.getSoknadstype())
                 .fom(LocalDate.parse(sykepengesoknad.getFom(), ISO_DATE_TIME))
                 .tom(LocalDate.parse(sykepengesoknad.getTom(), ISO_DATE_TIME))
                 .sporsmal(sykepengesoknad.getSporsmal())

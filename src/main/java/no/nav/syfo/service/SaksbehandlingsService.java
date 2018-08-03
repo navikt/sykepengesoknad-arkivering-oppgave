@@ -42,6 +42,7 @@ public class SaksbehandlingsService {
         log.info("Behandler søknad med id: {}", soknad.soknadsId);
         String fnr = aktørConsumer.finnFnr(soknad.aktørId);
         String saksId = behandleSakConsumer.opprettSak(fnr);
+        // byte[] pdf = PDFRestController.getPDF(soknad, template) // `template` blir f.eks. "sykepengerutland"/"selvstendignaeringsdrivende"
         String journalPostId = behandleJournalConsumer.opprettJournalpost(fnr, saksId, soknad.fom, soknad.tom);
         String behandlendeEnhet = behandlendeEnhetConsumer.hentBehandlendeEnhet(fnr);
         String oppgaveId = oppgavebehandlingConsumer.opprettOppgave(fnr, behandlendeEnhet, saksId, journalPostId, soknad.lagBeskrivelse());
