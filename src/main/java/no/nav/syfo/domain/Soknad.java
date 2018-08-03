@@ -32,6 +32,7 @@ public class Soknad {
 
     public static Soknad lagSoknad(Sykepengesoknad sykepengesoknad) {
         log.info("Lager Soknad med id: {}", sykepengesoknad.getId());
+        // TODO: Legg til fnr, navn og sendt i builderen
         return Soknad.builder()
                 .aktørId(sykepengesoknad.getAktorId())
                 .soknadsId(sykepengesoknad.getId())
