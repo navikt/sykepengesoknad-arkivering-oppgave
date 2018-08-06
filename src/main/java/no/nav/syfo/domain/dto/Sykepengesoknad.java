@@ -15,6 +15,6 @@ public class Sykepengesoknad {
     String fom;
     String tom;
     String opprettetDato;
+    String innsendtDato;
     List<Sporsmal> sporsmal;
-
 }

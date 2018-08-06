@@ -26,6 +26,8 @@ virksomhet:
 toggle:
   endepunkt.innkommende.soknad: true
 
+mockWS: true
+
 spring:
   h2.console:
     enabled: true

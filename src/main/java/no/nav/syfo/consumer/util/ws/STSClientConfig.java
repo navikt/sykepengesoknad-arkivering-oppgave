@@ -14,29 +14,19 @@ import org.apache.cxf.ws.policy.attachment.reference.ReferenceResolver;
 import org.apache.cxf.ws.policy.attachment.reference.RemoteReferenceResolver;
 import org.apache.cxf.ws.security.trust.STSClient;
 import org.apache.neethi.Policy;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
 
 import java.util.HashMap;
 
-@Configuration
 class STSClientConfig {
-    private static String location;
-    private static String username;
-    private static String password;
+    public static final String STS_URL_KEY = "SECURITYTOKENSERVICE_URL";
+    public static final String SERVICEUSER_USERNAME = "SRVSYFOGSAK_USERNAME";
+    public static final String SERVICEUSER_PASSWORD = "SRVSYFOGSAK_PASSWORD";
 
     // Only use no transportbinding on localhost, should use the requestSamlPolicy.xml with transport binding https
     // when in production.
     private static final String STS_REQUEST_SAML_POLICY = "classpath:policy/requestSamlPolicyNoTransportBinding.xml";
     private static final String STS_CLIENT_AUTHENTICATION_POLICY = "classpath:policy/untPolicy.xml";
 
-    STSClientConfig(@Value("${securitytokenservice.url}") String location,
-                    @Value("${srvsyfogsak.username}") String username,
-                    @Value("${srvsyfogsak.password}") String password) {
-        STSClientConfig.location = location;
-        STSClientConfig.username = username;
-        STSClientConfig.password = password;
-    }
 
     public static <T> T configureRequestSamlToken(T port) {
         Client client = ClientProxy.getClient(port);
@@ -65,6 +55,10 @@ class STSClientConfig {
 
     protected static void configureStsWithPolicyForClient(STSClient stsClient, Client client, String policyReference,
                                                           boolean cacheTokenInEndpoint) {
+        String location = requireProperty(STS_URL_KEY);
+        String username = requireProperty(SERVICEUSER_USERNAME);
+        String password = requireProperty(SERVICEUSER_PASSWORD);
+
         configureSTSClient(stsClient, location, username, password);
 
         client.getRequestContext().put(org.apache.cxf.rt.security.SecurityConstants.STS_CLIENT, stsClient);
