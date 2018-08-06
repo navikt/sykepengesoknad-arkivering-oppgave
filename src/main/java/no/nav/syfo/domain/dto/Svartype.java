@@ -7,6 +7,8 @@ public enum Svartype {
     DATO,
     PERIODE,
     PERIODER,
+    FRITEKST,
+    IKKE_RELEVANT,
     TIMER,
     PROSENT
 }

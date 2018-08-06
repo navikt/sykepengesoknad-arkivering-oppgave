@@ -24,5 +24,4 @@ public class SelftestController {
     public String isReady() {
         return APPLICATION_READY;
     }
-
 }
