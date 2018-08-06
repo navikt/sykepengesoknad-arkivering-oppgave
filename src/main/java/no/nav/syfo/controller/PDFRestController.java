@@ -1,5 +1,6 @@
 package no.nav.syfo.controller;
 
+import no.nav.syfo.domain.dto.PDFTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import no.nav.syfo.domain.Soknad;
@@ -15,16 +16,16 @@ import static org.springframework.http.HttpStatus.OK;
 public class PDFRestController {
 
 
-    private static String pdfPath;
+    private String pdfPath;
     private static final Logger LOG = LoggerFactory.getLogger(PDFRestController.class);
 
     public PDFRestController(@Value("${pdfgen.url}") String pdfPath) {
-        PDFRestController.pdfPath = pdfPath;
+        this.pdfPath = pdfPath;
     }
 
-    public static byte[] getPDF(Soknad soknad, String template) {
+    public byte[] getPDF(Soknad soknad, PDFTemplate template) {
 
-        final String url = pdfPath + "/v1/genpdf/syfosoknader/" + template;
+        final String url = this.pdfPath + "/v1/genpdf/syfosoknader/" + template;
 
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
