@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.syfo.domain.Soknad;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
 import no.nav.syfo.service.SaksbehandlingsService;
 import no.nav.syfo.util.Toggle;
@@ -47,8 +46,7 @@ public class SoknadSendtListener {
             Sykepengesoknad deserialisertSoknad = new ObjectMapper().registerModule(new JavaTimeModule()).readValue(cr.value(), Sykepengesoknad.class);
             log.info("Deserialiserte sykepengesøknad: {}", deserialisertSoknad.toString());
 
-            Soknad soknad = Soknad.lagSoknad(deserialisertSoknad);
-            saksbehandlingsService.behandleSoknad(soknad);
+            saksbehandlingsService.behandleSoknad(deserialisertSoknad);
         } catch (JsonProcessingException e) {
             log.error("Kunne ikke deserialisere sykepengesøknad", e);
         }

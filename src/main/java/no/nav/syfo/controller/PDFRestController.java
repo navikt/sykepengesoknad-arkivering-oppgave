@@ -1,6 +1,5 @@
 package no.nav.syfo.controller;
 
-import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.domain.Soknad;
 import no.nav.syfo.domain.dto.PDFTemplate;
@@ -8,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
 
@@ -35,7 +33,6 @@ public class PDFRestController {
 
         final HttpEntity<Soknad> entity = new HttpEntity<>(soknad, headers);
 
-        log.info(entity.toString());
         final ResponseEntity<byte[]> result = restTemplate.exchange(url, HttpMethod.POST, entity, byte[].class);
 
         if (result.getStatusCode() != OK) {

@@ -5,6 +5,7 @@ import no.nav.syfo.consumer.repository.InnsendingDAO;
 import no.nav.syfo.consumer.ws.*;
 import no.nav.syfo.domain.Innsending;
 import no.nav.syfo.domain.Soknad;
+import no.nav.syfo.domain.dto.Sykepengesoknad;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -41,16 +42,14 @@ public class SaksbehandlingsService {
         this.personConsumer = personConsumer;
     }
 
-    public void behandleSoknad(Soknad soknad) {
+    public void behandleSoknad(Sykepengesoknad sykepengesoknad) {
+        String fnr = aktørConsumer.finnFnr(sykepengesoknad.getAktorId());
+
+        Soknad soknad = Soknad.lagSoknad(sykepengesoknad, fnr, personConsumer.finnBrukerPersonnavnByFnr(fnr));
+
         log.info("Behandler søknad med id: {}", soknad.soknadsId);
 
-        String fnr = aktørConsumer.finnFnr(soknad.aktørId);
-        log.info("fant fnr " + fnr + " for aktorid " + soknad.getAktørId());
         String saksId = behandleSakConsumer.opprettSak(fnr);
-
-        soknad.setFnr(fnr);
-        soknad.setNavn(personConsumer.finnBrukerPersonnavnByFnr(fnr));
-
         String journalPostId = behandleJournalConsumer.opprettJournalpost(soknad, saksId);
         String behandlendeEnhet = behandlendeEnhetConsumer.hentBehandlendeEnhet(fnr, soknad.soknadstype);
         String oppgaveId = oppgavebehandlingConsumer.opprettOppgave(fnr, behandlendeEnhet, saksId, journalPostId, soknad.lagBeskrivelse(), soknad.soknadstype);

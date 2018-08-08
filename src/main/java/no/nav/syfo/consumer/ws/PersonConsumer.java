@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
-import static java.text.MessageFormat.format;
 import static net.logstash.logback.encoder.org.apache.commons.lang.WordUtils.capitalizeFully;
 import static org.springframework.util.StringUtils.isEmpty;
 
@@ -28,7 +27,6 @@ public class PersonConsumer {
 
 
     public String finnBrukerPersonnavnByFnr(String fnr) {
-        log.info(fnr);
         return personV3.hentPersonnavnBolk(new HentPersonnavnBolkRequest()
                 .withAktoerListe(new PersonIdent().withIdent(new NorskIdent().withIdent(fnr))))
                 .getAktoerHarNavnListe()

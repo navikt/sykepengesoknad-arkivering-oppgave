@@ -28,6 +28,7 @@ public class BehandlendeEnhetConsumer {
 
     private final PersonV3 personV3;
     private final ArbeidsfordelingV1 arbeidsfordelingV1;
+    private static final String BEHANDLINGSTEMA_OPPHOLD_UTLAND = "ab0314";
 
     @Inject
     public BehandlendeEnhetConsumer(PersonV3 personV3, ArbeidsfordelingV1 arbeidsfordelingV1) {
@@ -79,7 +80,7 @@ public class BehandlendeEnhetConsumer {
 
     public String hentRiktigTemaBehandlingstemaForSoknadstype(Soknadstype soknadstype){
         if(soknadstype == OPPHOLD_UTLAND){
-            return "ab0314";
+            return BEHANDLINGSTEMA_OPPHOLD_UTLAND;
         }
         return null;
     }
