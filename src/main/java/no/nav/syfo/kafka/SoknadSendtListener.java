@@ -2,6 +2,7 @@ package no.nav.syfo.kafka;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.domain.Soknad;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
@@ -43,7 +44,7 @@ public class SoknadSendtListener {
         }
 
         try {
-            Sykepengesoknad deserialisertSoknad = new ObjectMapper().readValue(cr.value(), Sykepengesoknad.class);
+            Sykepengesoknad deserialisertSoknad = new ObjectMapper().registerModule(new JavaTimeModule()).readValue(cr.value(), Sykepengesoknad.class);
             log.info("Deserialiserte sykepengesøknad: {}", deserialisertSoknad.toString());
 
             Soknad soknad = Soknad.lagSoknad(deserialisertSoknad);
