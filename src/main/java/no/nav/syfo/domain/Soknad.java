@@ -25,7 +25,7 @@ public class Soknad {
     public LocalDate tom;
     public String fnr;
     public String navn;
-    public LocalDate sendt;
+    public LocalDate innsendtDato;
     public List<Sporsmal> sporsmal;
 
     private AktørConsumer aktørConsumer;
@@ -43,7 +43,7 @@ public class Soknad {
                 .soknadstype(sykepengesoknad.getSoknadstype())
                 .fom(sykepengesoknad.getFom())
                 .tom(sykepengesoknad.getTom())
-                .sendt(sykepengesoknad.getInnsendtDato())
+                .innsendtDato(sykepengesoknad.getInnsendtDato())
                 .sporsmal(sykepengesoknad.getSporsmal())
                 .fnr(fnr)
                 .navn(navn)

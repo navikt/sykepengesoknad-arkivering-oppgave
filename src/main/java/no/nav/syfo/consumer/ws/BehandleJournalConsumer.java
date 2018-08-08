@@ -14,13 +14,11 @@ import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.WSJournalfoerInng
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 import static no.nav.syfo.domain.dto.PDFTemplate.SELVSTENDIGNAERINGSDRIVENDE;
 import static no.nav.syfo.domain.dto.PDFTemplate.SYKEPENGERUTLAND;
-import static no.nav.syfo.domain.dto.Soknadstype.*;
+import static no.nav.syfo.domain.dto.Soknadstype.OPPHOLD_UTLAND;
 import static no.nav.syfo.util.DatoUtil.norskDato;
 
 @Component
@@ -47,7 +45,7 @@ public class BehandleJournalConsumer {
 
         String norskFom = soknad.fom.format(norskDato);
         String norskTom = soknad.tom.format(norskDato);
-        String norskInnsendtDato = soknad.sendt.format(norskDato);
+        String norskInnsendtDato = soknad.innsendtDato.format(norskDato);
 
         String journalpostId = behandleJournalV2.journalfoerInngaaendeHenvendelse(
                 new WSJournalfoerInngaaendeHenvendelseRequest()
