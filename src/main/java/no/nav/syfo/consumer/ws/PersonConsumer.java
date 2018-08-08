@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
-import static java.text.MessageFormat.format;
 import static net.logstash.logback.encoder.org.apache.commons.lang.WordUtils.capitalizeFully;
 import static org.springframework.util.StringUtils.isEmpty;
 
@@ -43,9 +42,9 @@ public class PersonConsumer {
         if (isEmpty(personnavn.getFornavn())) {
             navn = personnavn.getEtternavn();
         } else if (isEmpty(personnavn.getMellomnavn())) {
-            navn = format("%s %s", personnavn.getFornavn(), personnavn.getEtternavn());
+            navn = (personnavn.getFornavn() + " " + personnavn.getEtternavn());
         } else {
-            navn = format("%s %s %s", personnavn.getFornavn(), personnavn.getMellomnavn(), personnavn.getEtternavn());
+            navn = (personnavn.getFornavn() + " " + personnavn.getMellomnavn() + " " + personnavn.getEtternavn());
         }
 
         char[] delimiters = {' ', '-'};

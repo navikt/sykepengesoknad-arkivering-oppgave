@@ -1,6 +1,8 @@
 package no.nav.syfo.consumer.ws;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.syfo.domain.Soknad;
+import no.nav.syfo.domain.dto.Soknadstype;
 import no.nav.tjeneste.virksomhet.oppgavebehandling.v3.OppgavebehandlingV3;
 import no.nav.tjeneste.virksomhet.oppgavebehandling.v3.meldinger.WSOpprettOppgave;
 import no.nav.tjeneste.virksomhet.oppgavebehandling.v3.meldinger.WSOpprettOppgaveRequest;
@@ -20,16 +22,16 @@ public class OppgavebehandlingConsumer {
         this.oppgavebehandlingV3 = oppgavebehandlingV3;
     }
 
-    public String opprettOppgave(String fnr, String behandlendeEnhet, String saksId, String journalpostId, String beskrivelse) {
+    public String opprettOppgave(String fnr, String behandlendeEnhet, String saksId, String journalpostId, String beskrivelse, Soknadstype soknadstype) {
         try {
             String oppgaveId = oppgavebehandlingV3.opprettOppgave(new WSOpprettOppgaveRequest()
                     .withOpprettetAvEnhetId(9999)
                     .withOpprettOppgave(new WSOpprettOppgave()
                             .withBrukerId(fnr)
                             .withBrukertypeKode("PERSON")
-                            .withOppgavetypeKode("INNT_SYK")
+                            .withOppgavetypeKode("SOK_SYK")
                             .withFagomradeKode("SYK")
-                            .withUnderkategoriKode("SYK_SYK")
+                            .withUnderkategoriKode(getUnderkategoriKodeForSoknadstype(soknadstype))
                             .withPrioritetKode("NORM_SYK")
                             .withBeskrivelse(beskrivelse)
                             .withAktivFra(now())
@@ -47,5 +49,12 @@ public class OppgavebehandlingConsumer {
             log.error("Klarte ikke å opprette oppgave. ", e);
             throw new RuntimeException(e);
         }
+    }
+
+    public String getUnderkategoriKodeForSoknadstype(Soknadstype soknadstype){
+        if(soknadstype == Soknadstype.OPPHOLD_UTLAND){
+            return "UTENLANDSOPP_SYK";
+        }
+        return "SYK_SYK";
     }
 }

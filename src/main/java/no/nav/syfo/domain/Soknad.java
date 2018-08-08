@@ -4,6 +4,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.syfo.consumer.ws.AktørConsumer;
+import no.nav.syfo.consumer.ws.PersonConsumer;
 import no.nav.syfo.domain.dto.Soknadstype;
 import no.nav.syfo.domain.dto.Sporsmal;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
@@ -23,24 +25,28 @@ public class Soknad {
     public LocalDate tom;
     public String fnr;
     public String navn;
-    public LocalDate sendt;
+    public LocalDate innsendtDato;
     public List<Sporsmal> sporsmal;
+
+    private AktørConsumer aktørConsumer;
+    private PersonConsumer personConsumer;
 
     public String lagBeskrivelse() {
         return "Beskivelse er ikke implementert enda, se PDF";
     }
 
-    public static Soknad lagSoknad(Sykepengesoknad sykepengesoknad) {
+    public static Soknad lagSoknad(Sykepengesoknad sykepengesoknad, String fnr, String navn) {
         log.info("Lager Soknad med id: {}", sykepengesoknad.getId());
-        // TODO: Legg til fnr, navn og sendt i builderen
         return Soknad.builder()
                 .aktørId(sykepengesoknad.getAktorId())
                 .soknadsId(sykepengesoknad.getId())
                 .soknadstype(sykepengesoknad.getSoknadstype())
                 .fom(sykepengesoknad.getFom())
                 .tom(sykepengesoknad.getTom())
-                .sendt(sykepengesoknad.getInnsendtDato())
+                .innsendtDato(sykepengesoknad.getInnsendtDato())
                 .sporsmal(sykepengesoknad.getSporsmal())
+                .fnr(fnr)
+                .navn(navn)
                 .build();
     }
 }
