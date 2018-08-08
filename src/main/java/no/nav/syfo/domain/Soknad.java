@@ -11,8 +11,6 @@ import no.nav.syfo.domain.dto.Sykepengesoknad;
 import java.time.LocalDate;
 import java.util.List;
 
-import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
-
 @Data
 @Builder
 @Getter
@@ -25,7 +23,7 @@ public class Soknad {
     public LocalDate tom;
     public String fnr;
     public String navn;
-    public String sendt;
+    public LocalDate sendt;
     public List<Sporsmal> sporsmal;
 
     public String lagBeskrivelse() {
@@ -39,8 +37,9 @@ public class Soknad {
                 .aktørId(sykepengesoknad.getAktorId())
                 .soknadsId(sykepengesoknad.getId())
                 .soknadstype(sykepengesoknad.getSoknadstype())
-                .fom(LocalDate.parse(sykepengesoknad.getFom(), ISO_DATE_TIME))
-                .tom(LocalDate.parse(sykepengesoknad.getTom(), ISO_DATE_TIME))
+                .fom(sykepengesoknad.getFom())
+                .tom(sykepengesoknad.getTom())
+                .sendt(sykepengesoknad.getInnsendtDato())
                 .sporsmal(sykepengesoknad.getSporsmal())
                 .build();
     }
