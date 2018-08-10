@@ -63,3 +63,17 @@ spring:
       max-poll-records: 1
       auto-offset-reset: earliest
       enable-auto-commit: false
+
+unleash-api:
+  url: http://unleash-api/api/
+
+toggle:
+  config:
+    TOGGLE_FOR_PROD:
+      enabled: true
+      byEnvironment:
+      - local
+    TOGGLE_IKKE_FOR_PROD:
+      enabled: true
+      byEnvironment:
+      - local
