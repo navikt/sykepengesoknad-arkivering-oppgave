@@ -63,3 +63,13 @@ spring:
       max-poll-records: 1
       auto-offset-reset: earliest
       enable-auto-commit: false
+
+unleash-api:
+  url: http://unleash-api/api/
+
+toggle:
+  config:
+    SKAL_LESE_SOKNADER_FRA_KOE:
+      enabled: true
+      byEnvironment:
+      - local
