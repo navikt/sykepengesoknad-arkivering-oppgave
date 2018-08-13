@@ -1,8 +1,7 @@
 package no.nav.syfo.config.unleash;
 
 public enum FeatureToggle {
-    TOGGLE_FOR_PROD("syfo.syfosoknad.toggleForProd", true),
-    TOGGLE_IKKE_FOR_PROD("syfo.syfosoknad.toggleIkkeForProd", false);
+    SKAL_LESE_SOKNADER_FRA_KOE("syfo.syfogsak.skalLeseSoknaderFraKoe", true);
 
     private final String toggleName;
     private final boolean availableInProd;

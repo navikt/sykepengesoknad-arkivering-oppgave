@@ -69,11 +69,7 @@ unleash-api:
 
 toggle:
   config:
-    TOGGLE_FOR_PROD:
-      enabled: true
-      byEnvironment:
-      - local
-    TOGGLE_IKKE_FOR_PROD:
+    SKAL_LESE_SOKNADER_FRA_KOE:
       enabled: true
       byEnvironment:
       - local
