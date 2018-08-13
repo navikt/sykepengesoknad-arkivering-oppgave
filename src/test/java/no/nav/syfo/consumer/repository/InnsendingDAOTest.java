@@ -40,16 +40,11 @@ public class InnsendingDAOTest {
 
     @Test
     public void lagreInnsending() {
-        String uuid = innsendingDAO.lagreInnsending(Innsending
-                .builder()
-                .aktørId("aktor")
-                .ressursId("soknad-uuid")
-                .saksId("saksId")
-                .journalpostId("journalpostId")
-                .oppgaveId("oppgaveId")
-                .behandlet(LocalDate.now())
-                .build()
-        );
+        String uuid = innsendingDAO.opprettInnsending("soknad-uuid", "aktor");
+        innsendingDAO.oppdaterSaksId(uuid, "saksId");
+        innsendingDAO.oppdaterJournalpostId(uuid, "journalpostId");
+        innsendingDAO.oppdaterOppgaveId(uuid, "oppgaveId");
+        innsendingDAO.settBehandlet(uuid);
 
         List<Innsending> innsendinger = jdbcTemplate.query("SELECT * FROM INNSENDING", InnsendingDAO.getInnsendingRowMapper());
 

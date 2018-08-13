@@ -23,22 +23,61 @@ public class InnsendingDAO {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
-    public String lagreInnsending(final Innsending innsending) {
+    public String opprettInnsending(String ressursId, String aktørId) {
         String uuid = UUID.randomUUID().toString();
 
         namedParameterJdbcTemplate.update(
-                "INSERT INTO INNSENDING VALUES(:uuid, :ressursId, :aktorId, :saksId, :journalpostId, :oppgaveId, :behandlet)",
+                "INSERT INTO INNSENDING (INNSENDING_UUID, RESSURS_ID, AKTOR_ID) VALUES (:uuid, :ressursId, :aktorId)",
                 new MapSqlParameterSource()
                         .addValue("uuid", uuid)
-                        .addValue("ressursId", innsending.getRessursId())
-                        .addValue("aktorId", innsending.getAktørId())
-                        .addValue("saksId", innsending.getSaksId())
-                        .addValue("journalpostId", innsending.getJournalpostId())
-                        .addValue("oppgaveId", innsending.getOppgaveId())
-                        .addValue("behandlet", innsending.getBehandlet())
+                        .addValue("ressursId", ressursId)
+                        .addValue("aktorId", aktørId)
         );
 
         return uuid;
+    }
+
+    public void oppdaterSaksId(String uuid, String saksId) {
+        namedParameterJdbcTemplate.update(
+                "UPDATE INNSENDING SET SAKS_ID = :saksId WHERE INNSENDING_UUID = :uuid",
+                new MapSqlParameterSource()
+                    .addValue("saksId", saksId)
+                    .addValue("uuid", uuid)
+        );
+    }
+
+    public void oppdaterJournalpostId(String uuid, String journalpostId) {
+        namedParameterJdbcTemplate.update(
+                "UPDATE INNSENDING SET JOURNALPOST_ID = :journalpostId WHERE INNSENDING_UUID = :uuid",
+                new MapSqlParameterSource()
+                        .addValue("journalpostId", journalpostId)
+                        .addValue("uuid", uuid)
+        );
+    }
+
+    public void oppdaterOppgaveId(String uuid, String oppgaveId) {
+        namedParameterJdbcTemplate.update(
+                "UPDATE INNSENDING SET OPPGAVE_ID = :oppgaveId WHERE INNSENDING_UUID = :uuid",
+                new MapSqlParameterSource()
+                        .addValue("oppgaveId", oppgaveId)
+                        .addValue("uuid", uuid)
+        );
+    }
+
+    public void settBehandlet(String uuid) {
+        namedParameterJdbcTemplate.update(
+                "UPDATE INNSENDING SET BEHANDLET = now() WHERE INNSENDING_UUID = :uuid",
+                new MapSqlParameterSource()
+                        .addValue("uuid", uuid)
+        );
+    }
+
+    public void leggTilFeiletInnsending(String uuid) {
+        namedParameterJdbcTemplate.update(
+                "INSERT INTO FEILET_INNSENDING VALUES(:uuid)",
+                new MapSqlParameterSource()
+                        .addValue("uuid", uuid)
+        );
     }
 
     public static RowMapper<Innsending> getInnsendingRowMapper() {
