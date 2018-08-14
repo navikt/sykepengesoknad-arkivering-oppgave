@@ -55,8 +55,8 @@ fasitResources:
     resourceType: credential
   - alias: securityTokenService
     resourceType: baseurl
-  - alias: syfogsak.properties
-    resourceType: applicationproperties
+  - alias: kafka-brokers
+    resourceType: baseurl
   - alias: syfogsakDB
     resourceType: datasource
     propertyMap:
