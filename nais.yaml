@@ -57,6 +57,8 @@ fasitResources:
     resourceType: baseurl
   - alias: kafka-brokers
     resourceType: baseurl
+    propertyMap:
+      url: SPRING_KAFKA_BOOTSTRAP-SERVERS
   - alias: syfogsakDB
     resourceType: datasource
     propertyMap:

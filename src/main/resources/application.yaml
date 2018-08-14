@@ -14,7 +14,6 @@ spring:
     min-pool-size: 8
   kafka:
     client-id: ${app.name}-${fasit.environment.name}
-    bootstrap-servers: ${kafka-brokers}
     properties:
       security.protocol: SASL_SSL
       value.subject.name.strategy: io.confluent.kafka.serializers.subject.TopicRecordNameStrategy

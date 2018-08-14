@@ -1,7 +1,6 @@
 app.name: syfogsak
 fasit.environment.name: local
 server.port: 8081
-kafka-brokers: b27apvl00045.preprod.local:8443,b27apvl00046.preprod.local:8443,b27apvl00047.preprod.local:8443
 
 srvsyfogsak:
   username: username
@@ -45,6 +44,8 @@ spring:
   jta.atomikos.datasource:
     max-pool-size: 32
     min-pool-size: 8
+  kafka:
+    bootstrap-servers: b27apvl00045.preprod.local:8443,b27apvl00046.preprod.local:8443,b27apvl00047.preprod.local:8443
 
 unleash-api:
   url: http://unleash-api/api/
