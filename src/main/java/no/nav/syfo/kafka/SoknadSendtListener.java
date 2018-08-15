@@ -21,6 +21,7 @@ import java.time.format.DateTimeFormatter;
 public class SoknadSendtListener {
 
     private final SaksbehandlingsService saksbehandlingsService;
+    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     @Inject
     public SoknadSendtListener(SaksbehandlingsService saksbehandlingsService) {
@@ -37,7 +38,7 @@ public class SoknadSendtListener {
                 cr.value());
 
         try {
-            Sykepengesoknad deserialisertSoknad = new ObjectMapper().registerModule(new JavaTimeModule()).readValue(cr.value(), Sykepengesoknad.class);
+            Sykepengesoknad deserialisertSoknad = objectMapper.readValue(cr.value(), Sykepengesoknad.class);
             log.info("Deserialiserte sykepengesøknad: {}", deserialisertSoknad.toString());
 
             saksbehandlingsService.behandleSoknad(deserialisertSoknad);
