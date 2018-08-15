@@ -3,6 +3,8 @@ package no.nav.syfo.consumer.ws;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.syfo.config.unleash.FeatureToggle;
+import no.nav.syfo.config.unleash.Toggle;
 import no.nav.syfo.controller.PDFRestController;
 import no.nav.syfo.domain.Soknad;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
@@ -33,6 +35,9 @@ public class BehandleJournalConsumerTest {
     @Mock
     private PDFRestController pdfRestController;
 
+    @Mock
+    private Toggle toggle;
+
     @InjectMocks
     private BehandleJournalConsumer behandleJournalConsumer;
 
@@ -40,6 +45,7 @@ public class BehandleJournalConsumerTest {
     public void opprettJournalpost() throws IOException {
 
         when(behandleJournalV2.journalfoerInngaaendeHenvendelse(any())).thenReturn(new WSJournalfoerInngaaendeHenvendelseResponse().withJournalpostId("id"));
+        when(toggle.isEnabled(FeatureToggle.SKAL_FEILE_KALL_MOT_JOARK)).thenReturn(false);
 
         String serialisertSoknad = "{\"id\":\"test-kafka-sykepengesoknad\",\"aktorId\":\"aktorId\",\"sykmeldingId\":\"sykmelding-id\",\"soknadstype\":\"SELVSTENDIGE_OG_FRILANSERE\",\"status\":\"TIL_SENDING\",\"fom\":\"2018-06-06\",\"tom\":\"2018-07-07\",\"opprettetDato\":\"2018-06-06\",\"sporsmal\":[{\"id\":\"1\",\"tag\":null,\"uuid\":null,\"sporsmalstekst\":\"Dette er et testspørsmål\",\"undertekst\":null,\"svartype\":\"PROSENT\",\"min\":null,\"max\":null,\"kriterieForVisningAvUndersporsmal\":null,\"svar\":[{\"svarverdiType\":null,\"verdi\":\"69\"}],\"undersporsmal\":null}],\"innsendtDato\":\"2018-06-20\"}";
 

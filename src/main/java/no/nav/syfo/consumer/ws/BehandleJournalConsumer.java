@@ -1,6 +1,7 @@
 package no.nav.syfo.consumer.ws;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.syfo.config.unleash.Toggle;
 import no.nav.syfo.controller.PDFRestController;
 import no.nav.syfo.domain.Soknad;
 import no.nav.syfo.domain.dto.PDFTemplate;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.time.LocalDateTime;
 
+import static no.nav.syfo.config.unleash.FeatureToggle.SKAL_FEILE_KALL_MOT_JOARK;
 import static no.nav.syfo.domain.dto.PDFTemplate.SELVSTENDIGNAERINGSDRIVENDE;
 import static no.nav.syfo.domain.dto.PDFTemplate.SYKEPENGERUTLAND;
 import static no.nav.syfo.domain.dto.Soknadstype.OPPHOLD_UTLAND;
@@ -28,18 +30,25 @@ public class BehandleJournalConsumer {
     private BehandleJournalV2 behandleJournalV2;
     private PersonConsumer personConsumer;
     private PDFRestController pdfRestController;
+    private Toggle toggle;
 
     private static final String GOSYS = "FS22";
 
     @Inject
     public BehandleJournalConsumer(BehandleJournalV2 behandleJournalV2, PersonConsumer personConsumer,
-                                   PDFRestController pdfRestController) {
+                                   PDFRestController pdfRestController, Toggle toggle) {
         this.behandleJournalV2 = behandleJournalV2;
         this.personConsumer = personConsumer;
         this.pdfRestController = pdfRestController;
+        this.toggle = toggle;
     }
 
     public String opprettJournalpost(Soknad soknad, String saksId) {
+
+        if(toggle.isEnabled(SKAL_FEILE_KALL_MOT_JOARK)) {
+            log.info("Simulerer feil mot joark");
+            throw new RuntimeException("Simuilert feil mot joark");
+        }
 
         byte[] pdf = pdfRestController.getPDF(soknad, hentPDFTemplateEtterSoknadstype(soknad.soknadstype));
 
