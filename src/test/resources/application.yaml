@@ -26,10 +26,6 @@ virksomhet:
   oppgave.v3.endpointurl: "oppgave.url"
   person.v3.endpointurl: "person.url"
 
-toggle:
-  endepunkt.innkommende.soknad: true
-  skip.saksbehandling: false
-
 mockWS: true
 
 spring:
@@ -54,6 +50,6 @@ unleash-api:
 toggle:
   config:
     SKAL_LESE_SOKNADER_FRA_KOE:
-      enabled: true
+      enabled: false
       byEnvironment:
       - local
