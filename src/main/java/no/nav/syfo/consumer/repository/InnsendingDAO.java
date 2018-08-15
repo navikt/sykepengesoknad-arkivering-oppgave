@@ -66,7 +66,7 @@ public class InnsendingDAO {
 
     public void settBehandlet(String uuid) {
         namedParameterJdbcTemplate.update(
-                "UPDATE INNSENDING SET BEHANDLET = now() WHERE INNSENDING_UUID = :uuid",
+                "UPDATE INNSENDING SET BEHANDLET = CURRENT_TIMESTAMP WHERE INNSENDING_UUID = :uuid",
                 new MapSqlParameterSource()
                         .addValue("uuid", uuid)
         );
@@ -74,7 +74,7 @@ public class InnsendingDAO {
 
     public void leggTilFeiletInnsending(String uuid) {
         namedParameterJdbcTemplate.update(
-                "INSERT INTO FEILET_INNSENDING VALUES(:uuid)",
+                "INSERT INTO FEILET_INNSENDING (INNSENDING_UUID, TIDSPUNKT) VALUES(:uuid, CURRENT_TIMESTAMP)",
                 new MapSqlParameterSource()
                         .addValue("uuid", uuid)
         );
