@@ -224,12 +224,6 @@
         </dependency>
 
         <dependency>
-            <groupId>no.nav.syfo.tjenester</groupId>
-            <artifactId>arbeidsfordeling-v1-tjenestespesifikasjon</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
