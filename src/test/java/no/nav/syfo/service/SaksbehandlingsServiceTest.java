@@ -39,7 +39,7 @@ public class SaksbehandlingsServiceTest {
     public void handtereBehandleSoknad() {
         when(aktørConsumer.finnFnr(any())).thenReturn("12345678901");
         when(personConsumer.finnBrukerPersonnavnByFnr(any())).thenReturn("Personnavn");
-        when(innsendingDAO.opprettInnsending(any(), any())).thenReturn("uuid");
+        when(innsendingDAO.opprettInnsending()).thenReturn("uuid");
         when(behandleSakConsumer.opprettSak(any())).thenReturn("saksId");
         when(behandleJournalConsumer.opprettJournalpost(any(), any())).thenThrow(new RuntimeException("Opprett journal feilet"));
 

@@ -40,15 +40,15 @@ public class SaksbehandlingsService {
     }
 
     public void behandleSoknad(Sykepengesoknad sykepengesoknad) {
-        String fnr = aktørConsumer.finnFnr(sykepengesoknad.getAktorId());
-
-        Soknad soknad = Soknad.lagSoknad(sykepengesoknad, fnr, personConsumer.finnBrukerPersonnavnByFnr(fnr));
-
-        log.info("Behandler søknad med id: {}", soknad.soknadsId);
-
-        String uuid = innsendingDAO.opprettInnsending(soknad.soknadsId, soknad.aktørId);
+        String uuid = innsendingDAO.opprettInnsending();
 
         try {
+            String fnr = aktørConsumer.finnFnr(sykepengesoknad.getAktorId());
+
+            Soknad soknad = Soknad.lagSoknad(sykepengesoknad, fnr, personConsumer.finnBrukerPersonnavnByFnr(fnr));
+            log.info("Behandler søknad med id: {}", soknad.soknadsId);
+            innsendingDAO.oppdaterRessursIdOgAktorId(uuid, soknad.soknadsId, soknad.aktørId);
+
             String saksId = behandleSakConsumer.opprettSak(fnr);
             innsendingDAO.oppdaterSaksId(uuid, saksId);
 
