@@ -31,4 +31,4 @@ spring:
       auto-offset-reset: latest
       enable-auto-commit: false
     listener:
-      ack-mode: record
+      ack-mode: manual_immediate

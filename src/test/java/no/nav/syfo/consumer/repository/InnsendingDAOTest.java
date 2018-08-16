@@ -40,8 +40,8 @@ public class InnsendingDAOTest {
 
     @Test
     public void lagreInnsending() {
-        String uuid = innsendingDAO.opprettInnsending();
-        innsendingDAO.oppdaterRessursIdOgAktorId(uuid, "soknad-uuid", "aktor");
+        String uuid = innsendingDAO.opprettInnsending("soknad-uuid");
+        innsendingDAO.oppdaterAktorId(uuid, "aktor");
         innsendingDAO.oppdaterSaksId(uuid, "saksId");
         innsendingDAO.oppdaterJournalpostId(uuid, "journalpostId");
         innsendingDAO.oppdaterOppgaveId(uuid, "oppgaveId");

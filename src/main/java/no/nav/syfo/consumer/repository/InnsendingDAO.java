@@ -23,23 +23,23 @@ public class InnsendingDAO {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
-    public String opprettInnsending() {
+    public String opprettInnsending(String sykepengesoknadId) {
         String uuid = UUID.randomUUID().toString();
 
         namedParameterJdbcTemplate.update(
-                "INSERT INTO INNSENDING (INNSENDING_UUID) VALUES (:uuid)",
+                "INSERT INTO INNSENDING (INNSENDING_UUID, RESSURS_ID) VALUES (:uuid, :ressursId)",
                 new MapSqlParameterSource()
                         .addValue("uuid", uuid)
+                        .addValue("ressursId", sykepengesoknadId)
         );
 
         return uuid;
     }
 
-    public void oppdaterRessursIdOgAktorId(String uuid, String ressursId, String aktorId) {
+    public void oppdaterAktorId(String uuid, String aktorId) {
         namedParameterJdbcTemplate.update(
-                "UPDATE INNSENDING SET RESSURS_ID = :ressursId, AKTOR_ID = :aktorId WHERE INNSENDING_UUID = :uuid",
+                "UPDATE INNSENDING SET AKTOR_ID = :aktorId WHERE INNSENDING_UUID = :uuid",
                 new MapSqlParameterSource()
-                        .addValue("ressursId", ressursId)
                         .addValue("aktorId", aktorId)
                         .addValue("uuid", uuid)
         );
