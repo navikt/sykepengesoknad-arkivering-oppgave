@@ -16,7 +16,7 @@ public class SaksbehandlingsService {
     private final BehandleSakConsumer behandleSakConsumer;
     private final OppgavebehandlingConsumer oppgavebehandlingConsumer;
     private final BehandleJournalConsumer behandleJournalConsumer;
-    private final AktørConsumer aktørConsumer;
+    private final AktorConsumer aktorConsumer;
     private final PersonConsumer personConsumer;
     private final BehandlendeEnhetConsumer behandlendeEnhetConsumer;
     private final InnsendingDAO innsendingDAO;
@@ -26,14 +26,14 @@ public class SaksbehandlingsService {
             BehandleSakConsumer behandleSakConsumer,
             OppgavebehandlingConsumer oppgavebehandlingConsumer,
             BehandleJournalConsumer behandleJournalConsumer,
-            AktørConsumer aktørConsumer,
+            AktorConsumer aktorConsumer,
             BehandlendeEnhetConsumer behandlendeEnhetConsumer,
             InnsendingDAO innsendingDAO,
             PersonConsumer personConsumer) {
         this.behandleSakConsumer = behandleSakConsumer;
         this.oppgavebehandlingConsumer = oppgavebehandlingConsumer;
         this.behandleJournalConsumer = behandleJournalConsumer;
-        this.aktørConsumer = aktørConsumer;
+        this.aktorConsumer = aktorConsumer;
         this.behandlendeEnhetConsumer = behandlendeEnhetConsumer;
         this.innsendingDAO = innsendingDAO;
         this.personConsumer = personConsumer;
@@ -43,11 +43,10 @@ public class SaksbehandlingsService {
         String uuid = innsendingDAO.opprettInnsending();
 
         try {
-            String fnr = aktørConsumer.finnFnr(sykepengesoknad.getAktorId());
+            String fnr = aktorConsumer.finnFnr(sykepengesoknad.getAktorId());
 
             Soknad soknad = Soknad.lagSoknad(sykepengesoknad, fnr, personConsumer.finnBrukerPersonnavnByFnr(fnr));
-            log.info("Behandler søknad med id: {}", soknad.soknadsId);
-            innsendingDAO.oppdaterRessursIdOgAktorId(uuid, soknad.soknadsId, soknad.aktørId);
+            innsendingDAO.oppdaterRessursIdOgAktorId(uuid, soknad.soknadsId, soknad.aktorId);
 
             String saksId = behandleSakConsumer.opprettSak(fnr);
             innsendingDAO.oppdaterSaksId(uuid, saksId);

@@ -42,7 +42,7 @@ public class ToggleMock implements Toggle {
 
     private Boolean checkEnvironment(ToggleMockConfig.Config config) {
         if (config.getByEnvironment() != null) {
-            return byEnvironmentStrategy.isEnabled(singletonMap("miljø", join(",", config.getByEnvironment())));
+            return byEnvironmentStrategy.isEnabled(singletonMap("miljo", join(",", config.getByEnvironment())));
         }
         return null;
     }

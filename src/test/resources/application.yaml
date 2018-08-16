@@ -17,7 +17,7 @@ pdfgen.url: "pdfgen.url"
 
 behandleJournal.v2.endpointurl: "behandleJournalv2.url"
 Journal.v2.endpointurl: "behandleJournalv2.url"
-aktoer.v2.endpointurl: "aktør.url"
+aktoer.v2.endpointurl: "aktor.url"
 
 virksomhet:
   behandlesak.v1.endpointurl: "behandlesakv1.url"

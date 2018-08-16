@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.syfo.consumer.ws.AktørConsumer;
+import no.nav.syfo.consumer.ws.AktorConsumer;
 import no.nav.syfo.consumer.ws.PersonConsumer;
 import no.nav.syfo.domain.dto.Soknadstype;
 import no.nav.syfo.domain.dto.Sporsmal;
@@ -18,7 +18,7 @@ import java.util.List;
 @Getter
 @Slf4j
 public class Soknad {
-    public String aktørId;
+    public String aktorId;
     public String soknadsId;
     public Soknadstype soknadstype;
     public LocalDate fom;
@@ -28,7 +28,7 @@ public class Soknad {
     public LocalDate innsendtDato;
     public List<Sporsmal> sporsmal;
 
-    private AktørConsumer aktørConsumer;
+    private AktorConsumer aktorConsumer;
     private PersonConsumer personConsumer;
 
     public String lagBeskrivelse() {
@@ -36,9 +36,8 @@ public class Soknad {
     }
 
     public static Soknad lagSoknad(Sykepengesoknad sykepengesoknad, String fnr, String navn) {
-        log.info("Lager Soknad med id: {}", sykepengesoknad.getId());
         return Soknad.builder()
-                .aktørId(sykepengesoknad.getAktorId())
+                .aktorId(sykepengesoknad.getAktorId())
                 .soknadsId(sykepengesoknad.getId())
                 .soknadstype(sykepengesoknad.getSoknadstype())
                 .fom(sykepengesoknad.getFom())

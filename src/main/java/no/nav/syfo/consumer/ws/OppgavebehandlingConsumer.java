@@ -1,7 +1,6 @@
 package no.nav.syfo.consumer.ws;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.syfo.domain.Soknad;
 import no.nav.syfo.domain.dto.Soknadstype;
 import no.nav.tjeneste.virksomhet.oppgavebehandling.v3.OppgavebehandlingV3;
 import no.nav.tjeneste.virksomhet.oppgavebehandling.v3.meldinger.WSOpprettOppgave;
@@ -43,7 +42,6 @@ public class OppgavebehandlingConsumer {
                             .withOppfolging("\nDu kan gi oss tilbakemelding på søknaden om sykepenger.\n" +
                                     "Gå til internettadresse: nav.no/digitalsykmelding/tilbakemelding")
                     )).getOppgaveId();
-            log.info("Opprettet oppgave: {} på sak: {}", oppgaveId, saksId);
             return oppgaveId;
         } catch (RuntimeException e) {
             log.error("Klarte ikke å opprette oppgave. ", e);

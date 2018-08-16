@@ -51,7 +51,7 @@ public class InnsendingDAOTest {
 
         assertThat(innsendinger.size()).isEqualTo(1);
         assertThat(innsendinger.get(0).getInnsendingsId()).isEqualTo(uuid);
-        assertThat(innsendinger.get(0).getAktørId()).isEqualTo("aktor");
+        assertThat(innsendinger.get(0).getAktorId()).isEqualTo("aktor");
         assertThat(innsendinger.get(0).getRessursId()).isEqualTo("soknad-uuid");
         assertThat(innsendinger.get(0).getSaksId()).isEqualTo("saksId");
         assertThat(innsendinger.get(0).getJournalpostId()).isEqualTo("journalpostId");

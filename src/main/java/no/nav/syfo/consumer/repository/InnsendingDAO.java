@@ -35,12 +35,12 @@ public class InnsendingDAO {
         return uuid;
     }
 
-    public void oppdaterRessursIdOgAktorId(String uuid, String ressursId, String aktørId) {
+    public void oppdaterRessursIdOgAktorId(String uuid, String ressursId, String aktorId) {
         namedParameterJdbcTemplate.update(
-                "UPDATE INNSENDING SET RESSURS_ID = :ressursId, AKTOR_ID = :aktørId WHERE INNSENDING_UUID = :uuid",
+                "UPDATE INNSENDING SET RESSURS_ID = :ressursId, AKTOR_ID = :aktorId WHERE INNSENDING_UUID = :uuid",
                 new MapSqlParameterSource()
                         .addValue("ressursId", ressursId)
-                        .addValue("aktørId", aktørId)
+                        .addValue("aktorId", aktorId)
                         .addValue("uuid", uuid)
         );
     }
@@ -92,7 +92,7 @@ public class InnsendingDAO {
         return (resultSet, i) -> Innsending.builder()
                 .innsendingsId(resultSet.getString("INNSENDING_UUID"))
                 .ressursId(resultSet.getString("RESSURS_ID"))
-                .aktørId(resultSet.getString("AKTOR_ID"))
+                .aktorId(resultSet.getString("AKTOR_ID"))
                 .saksId(resultSet.getString("SAKS_ID"))
                 .journalpostId(resultSet.getString("JOURNALPOST_ID"))
                 .oppgaveId(resultSet.getString("OPPGAVE_ID"))

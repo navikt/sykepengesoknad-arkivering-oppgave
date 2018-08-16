@@ -12,12 +12,12 @@ import static org.springframework.util.StringUtils.isEmpty;
 
 @Component
 @Slf4j
-public class AktørConsumer {
+public class AktorConsumer {
 
     private AktoerV2 aktoerV2;
 
     @Inject
-    public AktørConsumer(AktoerV2 aktoerV2) {
+    public AktorConsumer(AktoerV2 aktoerV2) {
         this.aktoerV2 = aktoerV2;
     }
 
@@ -27,10 +27,7 @@ public class AktørConsumer {
         }
 
         try {
-            String fnr = aktoerV2.hentIdentForAktoerId(new WSHentIdentForAktoerIdRequest().withAktoerId(aktoerId)).getIdent();
-            log.info("fant fnr for aktørid");
-
-            return fnr;
+            return aktoerV2.hentIdentForAktoerId(new WSHentIdentForAktoerIdRequest().withAktoerId(aktoerId)).getIdent();
         } catch (HentIdentForAktoerIdPersonIkkeFunnet e) {
             log.error("Fnr ikke funnet", e);
             throw new RuntimeException("Fant ikke fnr for aktørId: " + aktoerId);

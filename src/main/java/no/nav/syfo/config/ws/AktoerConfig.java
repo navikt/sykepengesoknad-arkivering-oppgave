@@ -18,7 +18,7 @@ public class AktoerConfig {
     @Bean
     @ConditionalOnProperty(value = "mockWS", havingValue = "false", matchIfMissing = true)
     @Primary
-    public AktoerV2 aktørV2(@Value("${aktoer.v2.endpointurl}") String serviceUrl) {
+    public AktoerV2 aktorV2(@Value("${aktoer.v2.endpointurl}") String serviceUrl) {
         return new WsClient<AktoerV2>().createPort(serviceUrl, AktoerV2.class, Collections.singletonList(new LogErrorHandler()));
     }
 

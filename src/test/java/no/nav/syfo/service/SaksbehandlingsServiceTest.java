@@ -1,7 +1,7 @@
 package no.nav.syfo.service;
 
 import no.nav.syfo.consumer.repository.InnsendingDAO;
-import no.nav.syfo.consumer.ws.AktørConsumer;
+import no.nav.syfo.consumer.ws.AktorConsumer;
 import no.nav.syfo.consumer.ws.BehandleJournalConsumer;
 import no.nav.syfo.consumer.ws.BehandleSakConsumer;
 import no.nav.syfo.consumer.ws.PersonConsumer;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
 public class SaksbehandlingsServiceTest {
 
     @Mock
-    private AktørConsumer aktørConsumer;
+    private AktorConsumer aktorConsumer;
     @Mock
     private PersonConsumer personConsumer;
     @Mock
@@ -37,7 +37,7 @@ public class SaksbehandlingsServiceTest {
 
     @Test
     public void handtereBehandleSoknad() {
-        when(aktørConsumer.finnFnr(any())).thenReturn("12345678901");
+        when(aktorConsumer.finnFnr(any())).thenReturn("12345678901");
         when(personConsumer.finnBrukerPersonnavnByFnr(any())).thenReturn("Personnavn");
         when(innsendingDAO.opprettInnsending()).thenReturn("uuid");
         when(behandleSakConsumer.opprettSak(any())).thenReturn("saksId");
