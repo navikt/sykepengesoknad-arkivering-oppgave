@@ -39,7 +39,7 @@ public class SaksbehandlingsService {
         this.personConsumer = personConsumer;
     }
 
-    public void behandleSoknad(Sykepengesoknad sykepengesoknad) {
+    public String behandleSoknad(Sykepengesoknad sykepengesoknad) {
         String uuid = innsendingDAO.opprettInnsending();
 
         try {
@@ -65,5 +65,7 @@ public class SaksbehandlingsService {
             log.error("Kunne ikke fullføre innsending av søknad med uuid: {}.", uuid, e);
             innsendingDAO.leggTilFeiletInnsending(uuid);
         }
+
+        return uuid;
     }
 }

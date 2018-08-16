@@ -11,9 +11,6 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 @Component
 @Slf4j
@@ -31,13 +28,11 @@ public class SoknadSendtListener {
     public void listen(ConsumerRecord<String, String> cr) throws Exception {
         try {
             Sykepengesoknad deserialisertSoknad = objectMapper.readValue(cr.value(), Sykepengesoknad.class);
-            saksbehandlingsService.behandleSoknad(deserialisertSoknad);
+            String soknadId = saksbehandlingsService.behandleSoknad(deserialisertSoknad);
+
+            log.info("Søknad med id {} og offset {} er behandlet", soknadId, cr.offset());
         } catch (JsonProcessingException e) {
             log.error("Kunne ikke deserialisere sykepengesøknad", e);
         }
-    }
-
-    private LocalDateTime toLocalDateTime(long timestamp) {
-        return Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 }
