@@ -52,7 +52,7 @@ public class ByEnvironmentStrategyTest {
         Strategy strategy = new ByEnvironmentStrategy("local");
         assertThat(strategy.isEnabled(
                 new HashMap<String, String>() {{
-                    put("miljo", null);
+                    put("miljø", null);
                 }})).isFalse();
     }
 
@@ -61,7 +61,7 @@ public class ByEnvironmentStrategyTest {
         Strategy strategy = new ByEnvironmentStrategy("local");
         assertThat(strategy.isEnabled(
                 new HashMap<String, String>() {{
-                    put("miljo", "lacol");
+                    put("miljø", "lacol");
                 }})).isFalse();
     }
 
@@ -70,7 +70,7 @@ public class ByEnvironmentStrategyTest {
         Strategy strategy = new ByEnvironmentStrategy("local");
         assertThat(strategy.isEnabled(
                 new HashMap<String, String>() {{
-                    put("miljo", "local");
+                    put("miljø", "local");
                 }})).isTrue();
     }
 
@@ -79,7 +79,7 @@ public class ByEnvironmentStrategyTest {
         Strategy strategy = new ByEnvironmentStrategy("local");
         assertThat(strategy.isEnabled(
                 new HashMap<String, String>() {{
-                    put("miljo", "lacol,local,callo");
+                    put("miljø", "lacol,local,callo");
                 }})).isTrue();
     }
 
@@ -88,7 +88,7 @@ public class ByEnvironmentStrategyTest {
         Strategy strategy = new ByEnvironmentStrategy("local");
         assertThat(strategy.isEnabled(
                 new HashMap<String, String>() {{
-                    put("miljo", "lacol ,  , local , callo");
+                    put("miljø", "lacol ,  , local , callo");
                 }})).isTrue();
     }
 }

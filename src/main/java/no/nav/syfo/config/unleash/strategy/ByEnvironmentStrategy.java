@@ -24,7 +24,7 @@ public class ByEnvironmentStrategy implements Strategy {
 
     @Override
     public boolean isEnabled(Map<String, String> parameters) {
-        String envKey = "miljo";
+        String envKey = "miljø";
         return ofNullable(parameters)
                 .filter(map -> map.containsKey(envKey))
                 .map(map -> map.get(envKey))
