@@ -30,5 +30,3 @@ spring:
       max-poll-records: 1
       auto-offset-reset: latest
       enable-auto-commit: false
-    listener:
-      ack-mode: manual_immediate
