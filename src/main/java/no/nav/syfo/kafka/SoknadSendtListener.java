@@ -8,6 +8,7 @@ import no.nav.syfo.domain.dto.Sykepengesoknad;
 import no.nav.syfo.service.SaksbehandlingsService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -25,15 +26,20 @@ public class SoknadSendtListener {
     }
 
     @KafkaListener(topics = "aapen-syfo-soeknadSendt-v1", id = "soknadSendt", idIsGroup = false)
-    public void listen(ConsumerRecord<String, String> cr) throws Exception {
+    public void listen(ConsumerRecord<String, String> cr, Acknowledgment acknowledgment) throws Exception {
         log.info("Melding mottatt på topic: {} med offsett: {}", cr.topic(), cr.offset());
         try {
             Sykepengesoknad deserialisertSoknad = objectMapper.readValue(cr.value(), Sykepengesoknad.class);
             String soknadId = saksbehandlingsService.behandleSoknad(deserialisertSoknad);
 
             log.info("Søknad med id {} og offset {} er behandlet", soknadId, cr.offset());
+            acknowledgment.acknowledge();
         } catch (JsonProcessingException e) {
             log.error("Kunne ikke deserialisere sykepengesøknad", e);
+            throw new RuntimeException("Kunne ikke deserialisere sykepengesøknad");
+        } catch (Exception e) {
+            log.error("Uventet feil ved behandling av søknad", e);
+            throw new RuntimeException("Uventet feil ved behandling av søknad");
         }
     }
 }
