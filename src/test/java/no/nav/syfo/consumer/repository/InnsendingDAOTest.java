@@ -40,22 +40,18 @@ public class InnsendingDAOTest {
 
     @Test
     public void lagreInnsending() {
-        String uuid = innsendingDAO.lagreInnsending(Innsending
-                .builder()
-                .aktørId("aktor")
-                .ressursId("soknad-uuid")
-                .saksId("saksId")
-                .journalpostId("journalpostId")
-                .oppgaveId("oppgaveId")
-                .behandlet(LocalDate.now())
-                .build()
-        );
+        String uuid = innsendingDAO.opprettInnsending("soknad-uuid");
+        innsendingDAO.oppdaterAktorId(uuid, "aktor");
+        innsendingDAO.oppdaterSaksId(uuid, "saksId");
+        innsendingDAO.oppdaterJournalpostId(uuid, "journalpostId");
+        innsendingDAO.oppdaterOppgaveId(uuid, "oppgaveId");
+        innsendingDAO.settBehandlet(uuid);
 
         List<Innsending> innsendinger = jdbcTemplate.query("SELECT * FROM INNSENDING", InnsendingDAO.getInnsendingRowMapper());
 
         assertThat(innsendinger.size()).isEqualTo(1);
         assertThat(innsendinger.get(0).getInnsendingsId()).isEqualTo(uuid);
-        assertThat(innsendinger.get(0).getAktørId()).isEqualTo("aktor");
+        assertThat(innsendinger.get(0).getAktorId()).isEqualTo("aktor");
         assertThat(innsendinger.get(0).getRessursId()).isEqualTo("soknad-uuid");
         assertThat(innsendinger.get(0).getSaksId()).isEqualTo("saksId");
         assertThat(innsendinger.get(0).getJournalpostId()).isEqualTo("journalpostId");

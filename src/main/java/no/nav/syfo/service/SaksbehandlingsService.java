@@ -3,14 +3,11 @@ package no.nav.syfo.service;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.consumer.repository.InnsendingDAO;
 import no.nav.syfo.consumer.ws.*;
-import no.nav.syfo.domain.Innsending;
 import no.nav.syfo.domain.Soknad;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.time.LocalDate;
-import java.util.UUID;
 
 @Slf4j
 @Component
@@ -19,7 +16,7 @@ public class SaksbehandlingsService {
     private final BehandleSakConsumer behandleSakConsumer;
     private final OppgavebehandlingConsumer oppgavebehandlingConsumer;
     private final BehandleJournalConsumer behandleJournalConsumer;
-    private final AktørConsumer aktørConsumer;
+    private final AktorConsumer aktorConsumer;
     private final PersonConsumer personConsumer;
     private final BehandlendeEnhetConsumer behandlendeEnhetConsumer;
     private final InnsendingDAO innsendingDAO;
@@ -29,39 +26,46 @@ public class SaksbehandlingsService {
             BehandleSakConsumer behandleSakConsumer,
             OppgavebehandlingConsumer oppgavebehandlingConsumer,
             BehandleJournalConsumer behandleJournalConsumer,
-            AktørConsumer aktørConsumer,
+            AktorConsumer aktorConsumer,
             BehandlendeEnhetConsumer behandlendeEnhetConsumer,
             InnsendingDAO innsendingDAO,
-            PersonConsumer personConsumer){
+            PersonConsumer personConsumer) {
         this.behandleSakConsumer = behandleSakConsumer;
         this.oppgavebehandlingConsumer = oppgavebehandlingConsumer;
         this.behandleJournalConsumer = behandleJournalConsumer;
-        this.aktørConsumer = aktørConsumer;
+        this.aktorConsumer = aktorConsumer;
         this.behandlendeEnhetConsumer = behandlendeEnhetConsumer;
         this.innsendingDAO = innsendingDAO;
         this.personConsumer = personConsumer;
     }
 
-    public void behandleSoknad(Sykepengesoknad sykepengesoknad) {
-        String fnr = aktørConsumer.finnFnr(sykepengesoknad.getAktorId());
+    public String behandleSoknad(Sykepengesoknad sykepengesoknad) {
+        String uuid = innsendingDAO.opprettInnsending(sykepengesoknad.getId());
 
-        Soknad soknad = Soknad.lagSoknad(sykepengesoknad, fnr, personConsumer.finnBrukerPersonnavnByFnr(fnr));
+        try {
+            String fnr = aktorConsumer.finnFnr(sykepengesoknad.getAktorId());
 
-        log.info("Behandler søknad med id: {}", soknad.soknadsId);
+            Soknad soknad = Soknad.lagSoknad(sykepengesoknad, fnr, personConsumer.finnBrukerPersonnavnByFnr(fnr));
+            innsendingDAO.oppdaterAktorId(uuid, soknad.aktorId);
 
-        String saksId = behandleSakConsumer.opprettSak(fnr);
-        String journalPostId = behandleJournalConsumer.opprettJournalpost(soknad, saksId);
-        String behandlendeEnhet = behandlendeEnhetConsumer.hentBehandlendeEnhet(fnr, soknad.soknadstype);
-        String oppgaveId = oppgavebehandlingConsumer.opprettOppgave(fnr, behandlendeEnhet, saksId, journalPostId, soknad.lagBeskrivelse(), soknad.soknadstype);
+            String saksId = behandleSakConsumer.opprettSak(fnr);
+            innsendingDAO.oppdaterSaksId(uuid, saksId);
 
-        innsendingDAO.lagreInnsending(Innsending.builder()
-                .innsendingsId(UUID.randomUUID().toString())
-                .aktørId(soknad.aktørId)
-                .ressursId(soknad.soknadsId)
-                .saksId(saksId)
-                .journalpostId(journalPostId)
-                .oppgaveId(oppgaveId)
-                .behandlet(LocalDate.now())
-                .build());
+            String journalpostId = behandleJournalConsumer.opprettJournalpost(soknad, saksId);
+            innsendingDAO.oppdaterJournalpostId(uuid, journalpostId);
+
+            String behandlendeEnhet = behandlendeEnhetConsumer.hentBehandlendeEnhet(fnr, soknad.soknadstype);
+            String oppgaveId = oppgavebehandlingConsumer
+                    .opprettOppgave(fnr, behandlendeEnhet, saksId, journalpostId, soknad.lagBeskrivelse(), soknad.soknadstype);
+            innsendingDAO.oppdaterOppgaveId(uuid, oppgaveId);
+
+            innsendingDAO.settBehandlet(uuid);
+
+        } catch (Exception e) {
+            log.error("Kunne ikke fullføre innsending av søknad med uuid: {}.", uuid, e);
+            innsendingDAO.leggTilFeiletInnsending(uuid);
+        }
+
+        return uuid;
     }
 }

@@ -31,7 +31,6 @@ public class BehandleSakConsumer {
                             .withGjelderBrukerListe(new WSPerson().withIdent(fnr))
                     )
             ).getSakId();
-            log.info("Opprettet sak i GSAK: {}", sakId);
             return sakId;
         } catch (OpprettSakSakEksistererAllerede e) {
             log.error("Sak finnes allerede", e);

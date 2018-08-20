@@ -12,7 +12,7 @@ import java.time.LocalDate;
 public class Innsending {
     String innsendingsId;
     String ressursId;
-    String aktørId;
+    String aktorId;
     String saksId;
     String journalpostId;
     String oppgaveId;

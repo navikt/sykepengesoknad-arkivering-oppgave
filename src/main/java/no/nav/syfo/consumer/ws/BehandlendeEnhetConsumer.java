@@ -51,7 +51,6 @@ public class BehandlendeEnhetConsumer {
                     .map(WSOrganisasjonsenhet::getEnhetId)
                     .findFirst()
                     .orElseThrow(() -> new RuntimeException("Fant ingen aktiv enhet for " + geografiskTilknytning));
-            log.info("Fant behandlende enhet: {} for geografisk tilknytning: {}", behandlendeEnhet, geografiskTilknytning);
             return behandlendeEnhet;
         } catch (FinnBehandlendeEnhetListeUgyldigInput e) {
             log.error("Feil ved henting av brukers forvaltningsenhet", e);
@@ -70,7 +69,6 @@ public class BehandlendeEnhetConsumer {
                     .map(HentGeografiskTilknytningResponse::getGeografiskTilknytning)
                     .map(GeografiskTilknytning::getGeografiskTilknytning)
                     .orElseThrow(() -> new RuntimeException("Kunne ikke hente geografisk tilknytning"));
-            log.info("Hentet geografisk tilknytning: {}", geografiskTilknytning);
             return geografiskTilknytning;
         } catch (HentGeografiskTilknytningSikkerhetsbegrensing | HentGeografiskTilknytningPersonIkkeFunnet e) {
             log.error("Feil ved henting av geografisk tilknytning", e);

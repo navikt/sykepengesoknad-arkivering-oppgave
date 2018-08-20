@@ -207,12 +207,6 @@
 
         <dependency>
             <groupId>no.nav.syfo.tjenester</groupId>
-            <artifactId>oppgave-v3-tjenestespesifikasjon</artifactId>
-            <version>3.0.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>no.nav.syfo.tjenester</groupId>
             <artifactId>arbeidsfordeling-v1-tjenestespesifikasjon</artifactId>
             <version>1.0.0</version>
         </dependency>
@@ -221,12 +215,6 @@
             <groupId>no.nav.syfo.tjenester</groupId>
             <artifactId>aktoer-v2</artifactId>
             <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>no.nav.syfo.tjenester</groupId>
-            <artifactId>arbeidsfordeling-v1-tjenestespesifikasjon</artifactId>
-            <version>1.0.0</version>
         </dependency>
 
         <dependency>

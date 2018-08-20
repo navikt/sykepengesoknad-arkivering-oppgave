@@ -83,7 +83,6 @@ public class BehandleJournalConsumer {
 
                                 ))
         ).getJournalpostId();
-        log.info("Opprettet journalpost: {} på sak: {}", journalpostId, saksId);
         return journalpostId;
     }
 
