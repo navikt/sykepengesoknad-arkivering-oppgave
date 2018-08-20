@@ -91,7 +91,7 @@ public class InnsendingDAO {
         );
     }
 
-    public Innsending finnInnsendingForSykepengesøknad(String sykepengesoknadId) {
+    public Innsending finnInnsendingForSykepengesoknad(String sykepengesoknadId) {
         return namedParameterJdbcTemplate.query(
                 "SELECT * FROM INNSENDING WHERE RESSURS_ID = :ressursId",
                 new MapSqlParameterSource()

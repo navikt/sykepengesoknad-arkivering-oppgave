@@ -41,10 +41,10 @@ public class SaksbehandlingsService {
     }
 
     public String behandleSoknad(Sykepengesoknad sykepengesoknad) {
-        Innsending innsending = innsendingDAO.finnInnsendingForSykepengesøknad(sykepengesoknad.getId());
+        Innsending innsending = innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknad.getId());
 
         if (innsending != null) {
-            log.info("Innsending for sykepengesøknad {} alerede opprettet med id {}.",
+            log.info("Innsending for sykepengesøknad {} allerede opprettet med id {}.",
                     sykepengesoknad.getId(),
                     innsending.getInnsendingsId()
             );

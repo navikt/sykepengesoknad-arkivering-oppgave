@@ -59,13 +59,13 @@ public class InnsendingDAOTest {
     }
 
     @Test
-    public void sjekkOmInnsendingForSoknadAleredeErLaget() {
+    public void sjekkOmInnsendingForSoknadAlleredeErLaget() {
         innsendingDAO.opprettInnsending("soknad_123");
 
-        Innsending innsending = innsendingDAO.finnInnsendingForSykepengesøknad("soknad_123");
+        Innsending innsending = innsendingDAO.finnInnsendingForSykepengesoknad("soknad_123");
         assertThat(innsending).isNotNull();
 
-        Innsending innsending2 = innsendingDAO.finnInnsendingForSykepengesøknad("soknad_1234");
+        Innsending innsending2 = innsendingDAO.finnInnsendingForSykepengesoknad("soknad_1234");
         assertThat(innsending2).isNull();
     }
 }
