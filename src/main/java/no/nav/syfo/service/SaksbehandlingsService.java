@@ -6,6 +6,7 @@ import no.nav.syfo.consumer.ws.*;
 import no.nav.syfo.domain.Soknad;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
 import org.springframework.stereotype.Component;
+import io.prometheus.client.Counter;
 
 import javax.inject.Inject;
 
@@ -39,6 +40,11 @@ public class SaksbehandlingsService {
         this.personConsumer = personConsumer;
     }
 
+    static final Counter feiledeInnsendinger = Counter.build()
+            .name("feilede_innsendinger").help("Totalt antall feilede innsendinger.").register();
+    static final Counter ferdigbehandledeInnsendinger = Counter.build()
+            .name("ferdigbehandlede_innsendinger").help("Totalt antall ferdigbehandlede innsendinger.").register();
+
     public String behandleSoknad(Sykepengesoknad sykepengesoknad) {
         String uuid = innsendingDAO.opprettInnsending(sykepengesoknad.getId());
 
@@ -60,10 +66,11 @@ public class SaksbehandlingsService {
             innsendingDAO.oppdaterOppgaveId(uuid, oppgaveId);
 
             innsendingDAO.settBehandlet(uuid);
-
+            ferdigbehandledeInnsendinger.inc();
         } catch (Exception e) {
             log.error("Kunne ikke fullføre innsending av søknad med uuid: {}.", uuid, e);
             innsendingDAO.leggTilFeiletInnsending(uuid);
+            feiledeInnsendinger.inc();
         }
 
         return uuid;
