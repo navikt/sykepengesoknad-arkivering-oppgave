@@ -3,6 +3,7 @@ package no.nav.syfo.service;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.consumer.repository.InnsendingDAO;
 import no.nav.syfo.consumer.ws.*;
+import no.nav.syfo.domain.Innsending;
 import no.nav.syfo.domain.Soknad;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
 import org.springframework.stereotype.Component;
@@ -40,6 +41,16 @@ public class SaksbehandlingsService {
     }
 
     public String behandleSoknad(Sykepengesoknad sykepengesoknad) {
+        Innsending innsending = innsendingDAO.finnInnsendingForSykepengesøknad(sykepengesoknad.getId());
+
+        if (innsending != null) {
+            log.info("Innsending for sykepengesøknad {} alerede opprettet med id {}.",
+                    sykepengesoknad.getId(),
+                    innsending.getInnsendingsId()
+            );
+            return innsending.getInnsendingsId();
+        }
+
         String uuid = innsendingDAO.opprettInnsending(sykepengesoknad.getId());
 
         try {

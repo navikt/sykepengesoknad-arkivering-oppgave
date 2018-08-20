@@ -24,7 +24,6 @@ public class InnsendingDAOTest {
 
     @Inject
     private InnsendingDAO innsendingDAO;
-
     @Inject
     private JdbcTemplate jdbcTemplate;
 
@@ -57,5 +56,16 @@ public class InnsendingDAOTest {
         assertThat(innsendinger.get(0).getJournalpostId()).isEqualTo("journalpostId");
         assertThat(innsendinger.get(0).getOppgaveId()).isEqualTo("oppgaveId");
         assertThat(innsendinger.get(0).getBehandlet()).isEqualTo(LocalDate.now());
+    }
+
+    @Test
+    public void sjekkOmInnsendingForSoknadAleredeErLaget() {
+        innsendingDAO.opprettInnsending("soknad_123");
+
+        Innsending innsending = innsendingDAO.finnInnsendingForSykepengesøknad("soknad_123");
+        assertThat(innsending).isNotNull();
+
+        Innsending innsending2 = innsendingDAO.finnInnsendingForSykepengesøknad("soknad_1234");
+        assertThat(innsending2).isNull();
     }
 }
