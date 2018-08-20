@@ -18,10 +18,10 @@ public class KafkaErrorHandler implements ContainerAwareErrorHandler {
 
     @Override
     public void handle(Exception thrownException, List<ConsumerRecord<?, ?>> records, Consumer<?, ?> consumer, MessageListenerContainer container) {
+        log.error("Feil i listener:", thrownException);
+
         records
-                .forEach(record -> {
-                    log.error("Det har skjedd en feil i prossesseringen av record med offset:{} og innhold:{}", record.offset(), record.value());
-                });
+                .forEach(record -> log.error("Feil i prossesseringen av record med offset:{} og innhold:{}", record.offset(), record.value()));
 
         STOPPING_ERROR_HANDLER.handle(thrownException, records, consumer, container);
     }
