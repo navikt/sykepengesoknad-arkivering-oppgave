@@ -1,5 +1,7 @@
 package no.nav.syfo.service;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import no.nav.syfo.consumer.repository.InnsendingDAO;
 import no.nav.syfo.consumer.ws.AktorConsumer;
 import no.nav.syfo.consumer.ws.BehandleJournalConsumer;
@@ -31,6 +33,8 @@ public class SaksbehandlingsServiceTest {
     private BehandleSakConsumer behandleSakConsumer;
     @Mock
     private BehandleJournalConsumer behandleJournalConsumer;
+    @Mock
+    private MeterRegistry registry;
 
     @InjectMocks
     SaksbehandlingsService saksbehandlingsService;
@@ -41,7 +45,9 @@ public class SaksbehandlingsServiceTest {
         when(personConsumer.finnBrukerPersonnavnByFnr(any())).thenReturn("Personnavn");
         when(innsendingDAO.opprettInnsending("ressursId")).thenReturn("uuid");
         when(behandleSakConsumer.opprettSak(any())).thenReturn("saksId");
-        when(behandleJournalConsumer.opprettJournalpost(any(), any())).thenThrow(new RuntimeException("Opprett journal feilet"));
+        when(behandleJournalConsumer.opprettJournalpost(any(), any()))
+                .thenThrow(new RuntimeException("Opprett journal feilet"));
+        when(registry.counter(any(), anyIterable())).thenReturn(mock(Counter.class));
 
         Sykepengesoknad sykepengesoknad = new Sykepengesoknad();
         sykepengesoknad.setId("ressursId");

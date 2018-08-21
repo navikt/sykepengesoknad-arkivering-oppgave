@@ -1,5 +1,7 @@
 package no.nav.syfo.service;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.consumer.repository.InnsendingDAO;
 import no.nav.syfo.consumer.ws.*;
@@ -20,6 +22,7 @@ public class SaksbehandlingsService {
     private final PersonConsumer personConsumer;
     private final BehandlendeEnhetConsumer behandlendeEnhetConsumer;
     private final InnsendingDAO innsendingDAO;
+    private final MeterRegistry registry;
 
     @Inject
     public SaksbehandlingsService(
@@ -29,7 +32,8 @@ public class SaksbehandlingsService {
             AktorConsumer aktorConsumer,
             BehandlendeEnhetConsumer behandlendeEnhetConsumer,
             InnsendingDAO innsendingDAO,
-            PersonConsumer personConsumer) {
+            PersonConsumer personConsumer,
+            MeterRegistry registry) {
         this.behandleSakConsumer = behandleSakConsumer;
         this.oppgavebehandlingConsumer = oppgavebehandlingConsumer;
         this.behandleJournalConsumer = behandleJournalConsumer;
@@ -37,6 +41,7 @@ public class SaksbehandlingsService {
         this.behandlendeEnhetConsumer = behandlendeEnhetConsumer;
         this.innsendingDAO = innsendingDAO;
         this.personConsumer = personConsumer;
+        this.registry = registry;
     }
 
     public String behandleSoknad(Sykepengesoknad sykepengesoknad) {
@@ -60,10 +65,21 @@ public class SaksbehandlingsService {
             innsendingDAO.oppdaterOppgaveId(uuid, oppgaveId);
 
             innsendingDAO.settBehandlet(uuid);
-
+            registry.counter(
+                    "syfogsak.innsending.behandlet",
+                    Tags.of("type", "info", "help", "Antall ferdigbehandlede innsendinger."))
+                    .increment();
         } catch (Exception e) {
             log.error("Kunne ikke fullføre innsending av søknad med uuid: {}.", uuid, e);
             innsendingDAO.leggTilFeiletInnsending(uuid);
+            registry.counter(
+                    "syfogsak.innsending.feilet",
+                    Tags.of(
+                            "type", "info",
+                            "help", "Antall innsendinger hvor feil mot baksystemer gjorde at behandling ikke kunne fullføres."
+                    ))
+                    .increment();
+
         }
 
         return uuid;
