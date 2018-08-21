@@ -1,12 +1,13 @@
 package no.nav.syfo.service;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.consumer.repository.InnsendingDAO;
 import no.nav.syfo.consumer.ws.*;
 import no.nav.syfo.domain.Soknad;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
 import org.springframework.stereotype.Component;
-import io.prometheus.client.Counter;
 
 import javax.inject.Inject;
 
@@ -21,6 +22,7 @@ public class SaksbehandlingsService {
     private final PersonConsumer personConsumer;
     private final BehandlendeEnhetConsumer behandlendeEnhetConsumer;
     private final InnsendingDAO innsendingDAO;
+    private final MeterRegistry registry;
 
     @Inject
     public SaksbehandlingsService(
@@ -30,7 +32,8 @@ public class SaksbehandlingsService {
             AktorConsumer aktorConsumer,
             BehandlendeEnhetConsumer behandlendeEnhetConsumer,
             InnsendingDAO innsendingDAO,
-            PersonConsumer personConsumer) {
+            PersonConsumer personConsumer,
+            MeterRegistry registry) {
         this.behandleSakConsumer = behandleSakConsumer;
         this.oppgavebehandlingConsumer = oppgavebehandlingConsumer;
         this.behandleJournalConsumer = behandleJournalConsumer;
@@ -38,12 +41,8 @@ public class SaksbehandlingsService {
         this.behandlendeEnhetConsumer = behandlendeEnhetConsumer;
         this.innsendingDAO = innsendingDAO;
         this.personConsumer = personConsumer;
+        this.registry = registry;
     }
-
-    static final Counter feiledeInnsendinger = Counter.build()
-            .name("feilede_innsendinger").help("Totalt antall feilede innsendinger.").register();
-    static final Counter ferdigbehandledeInnsendinger = Counter.build()
-            .name("ferdigbehandlede_innsendinger").help("Totalt antall ferdigbehandlede innsendinger.").register();
 
     public String behandleSoknad(Sykepengesoknad sykepengesoknad) {
         String uuid = innsendingDAO.opprettInnsending(sykepengesoknad.getId());
@@ -66,11 +65,21 @@ public class SaksbehandlingsService {
             innsendingDAO.oppdaterOppgaveId(uuid, oppgaveId);
 
             innsendingDAO.settBehandlet(uuid);
-            ferdigbehandledeInnsendinger.inc();
+            registry.counter(
+                    "syfogsak.innsending.behandlet",
+                    Tags.of("type", "info", "help", "Antall ferdigbehandlede innsendinger."))
+                    .increment();
         } catch (Exception e) {
             log.error("Kunne ikke fullføre innsending av søknad med uuid: {}.", uuid, e);
             innsendingDAO.leggTilFeiletInnsending(uuid);
-            feiledeInnsendinger.inc();
+            registry.counter(
+                    "syfogsak.innsending.feilet",
+                    Tags.of(
+                            "type", "info",
+                            "help", "Antall innsendinger hvor feil mot baksystemer gjorde at behandling ikke kunne fullføres."
+                    ))
+                    .increment();
+
         }
 
         return uuid;
