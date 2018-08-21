@@ -9,6 +9,7 @@ import no.nav.syfo.domain.dto.Sykepengesoknad;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.util.Optional;
 
 @Slf4j
 @Component
@@ -41,14 +42,15 @@ public class SaksbehandlingsService {
     }
 
     public String behandleSoknad(Sykepengesoknad sykepengesoknad) {
-        Innsending innsending = innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknad.getId());
+        Optional<Innsending> innsending = innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknad.getId());
 
-        if (innsending != null) {
+        if (innsending.isPresent()) {
+            String innsendingsId = innsending.get().getInnsendingsId();
             log.info("Innsending for sykepengesøknad {} allerede opprettet med id {}.",
                     sykepengesoknad.getId(),
-                    innsending.getInnsendingsId()
+                    innsendingsId
             );
-            return innsending.getInnsendingsId();
+            return innsendingsId;
         }
 
         String uuid = innsendingDAO.opprettInnsending(sykepengesoknad.getId());

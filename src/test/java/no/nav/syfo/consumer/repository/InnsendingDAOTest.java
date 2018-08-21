@@ -14,6 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.inject.Inject;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -62,10 +63,10 @@ public class InnsendingDAOTest {
     public void sjekkOmInnsendingForSoknadAlleredeErLaget() {
         innsendingDAO.opprettInnsending("soknad_123");
 
-        Innsending innsending = innsendingDAO.finnInnsendingForSykepengesoknad("soknad_123");
-        assertThat(innsending).isNotNull();
+        Optional<Innsending> innsending = innsendingDAO.finnInnsendingForSykepengesoknad("soknad_123");
+        assertThat(innsending.isPresent()).isTrue();
 
-        Innsending innsending2 = innsendingDAO.finnInnsendingForSykepengesoknad("soknad_1234");
-        assertThat(innsending2).isNull();
+        Optional<Innsending> innsending2 = innsendingDAO.finnInnsendingForSykepengesoknad("soknad_1234");
+        assertThat(innsending2.isPresent()).isFalse();
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 import static java.util.Optional.ofNullable;
@@ -91,15 +92,13 @@ public class InnsendingDAO {
         );
     }
 
-    public Innsending finnInnsendingForSykepengesoknad(String sykepengesoknadId) {
+    public Optional<Innsending> finnInnsendingForSykepengesoknad(String sykepengesoknadId) {
         return namedParameterJdbcTemplate.query(
                 "SELECT * FROM INNSENDING WHERE RESSURS_ID = :ressursId",
                 new MapSqlParameterSource()
                         .addValue("ressursId", sykepengesoknadId),
                 getInnsendingRowMapper()
-        ).stream()
-                .findFirst()
-                .orElse(null);
+        ).stream().findFirst();
     }
 
     public static RowMapper<Innsending> getInnsendingRowMapper() {
