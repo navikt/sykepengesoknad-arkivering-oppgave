@@ -14,6 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.inject.Inject;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,7 +25,6 @@ public class InnsendingDAOTest {
 
     @Inject
     private InnsendingDAO innsendingDAO;
-
     @Inject
     private JdbcTemplate jdbcTemplate;
 
@@ -57,5 +57,16 @@ public class InnsendingDAOTest {
         assertThat(innsendinger.get(0).getJournalpostId()).isEqualTo("journalpostId");
         assertThat(innsendinger.get(0).getOppgaveId()).isEqualTo("oppgaveId");
         assertThat(innsendinger.get(0).getBehandlet()).isEqualTo(LocalDate.now());
+    }
+
+    @Test
+    public void sjekkOmInnsendingForSoknadAlleredeErLaget() {
+        innsendingDAO.opprettInnsending("soknad_123");
+
+        Optional<Innsending> innsending = innsendingDAO.finnInnsendingForSykepengesoknad("soknad_123");
+        assertThat(innsending.isPresent()).isTrue();
+
+        Optional<Innsending> innsending2 = innsendingDAO.finnInnsendingForSykepengesoknad("soknad_1234");
+        assertThat(innsending2.isPresent()).isFalse();
     }
 }

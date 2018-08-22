@@ -5,11 +5,13 @@ import io.micrometer.core.instrument.Tags;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.consumer.repository.InnsendingDAO;
 import no.nav.syfo.consumer.ws.*;
+import no.nav.syfo.domain.Innsending;
 import no.nav.syfo.domain.Soknad;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.util.Optional;
 
 @Slf4j
 @Component
@@ -45,6 +47,17 @@ public class SaksbehandlingsService {
     }
 
     public String behandleSoknad(Sykepengesoknad sykepengesoknad) {
+        Optional<Innsending> innsending = innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknad.getId());
+
+        if (innsending.isPresent()) {
+            String innsendingsId = innsending.get().getInnsendingsId();
+            log.warn("Innsending for sykepengesøknad {} allerede opprettet med id {}.",
+                    sykepengesoknad.getId(),
+                    innsendingsId
+            );
+            return innsendingsId;
+        }
+
         String uuid = innsendingDAO.opprettInnsending(sykepengesoknad.getId());
 
         try {

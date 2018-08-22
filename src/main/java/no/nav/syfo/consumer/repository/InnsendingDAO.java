@@ -9,7 +9,11 @@ import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Date;
+import java.util.Optional;
 import java.util.UUID;
+
+import static java.util.Optional.ofNullable;
 
 @Service
 @Slf4j
@@ -88,6 +92,15 @@ public class InnsendingDAO {
         );
     }
 
+    public Optional<Innsending> finnInnsendingForSykepengesoknad(String sykepengesoknadId) {
+        return namedParameterJdbcTemplate.query(
+                "SELECT * FROM INNSENDING WHERE RESSURS_ID = :ressursId",
+                new MapSqlParameterSource()
+                        .addValue("ressursId", sykepengesoknadId),
+                getInnsendingRowMapper()
+        ).stream().findFirst();
+    }
+
     public static RowMapper<Innsending> getInnsendingRowMapper() {
         return (resultSet, i) -> Innsending.builder()
                 .innsendingsId(resultSet.getString("INNSENDING_UUID"))
@@ -96,7 +109,10 @@ public class InnsendingDAO {
                 .saksId(resultSet.getString("SAKS_ID"))
                 .journalpostId(resultSet.getString("JOURNALPOST_ID"))
                 .oppgaveId(resultSet.getString("OPPGAVE_ID"))
-                .behandlet(resultSet.getDate("BEHANDLET").toLocalDate())
+                .behandlet(ofNullable(resultSet.getDate("BEHANDLET"))
+                        .map(Date::toLocalDate)
+                        .orElse(null)
+                )
                 .build();
     }
 }

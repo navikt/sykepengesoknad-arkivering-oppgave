@@ -31,9 +31,13 @@ public class SoknadSendtListener {
 
         try {
             Sykepengesoknad deserialisertSoknad = objectMapper.readValue(cr.value(), Sykepengesoknad.class);
-            String soknadId = saksbehandlingsService.behandleSoknad(deserialisertSoknad);
+            String innsendingId = saksbehandlingsService.behandleSoknad(deserialisertSoknad);
 
-            log.info("Søknad med id {} og offset {} er behandlet", soknadId, cr.offset());
+            log.info("Søknad med id {} og offset {} er behandlet i innsending med id {}",
+                    deserialisertSoknad.getId(),
+                    cr.offset(),
+                    innsendingId
+            );
             acknowledgment.acknowledge();
         } catch (JsonProcessingException e) {
             log.error("Kunne ikke deserialisere sykepengesøknad", e);
