@@ -46,7 +46,7 @@ public class SaksbehandlingsService {
 
         if (innsending.isPresent()) {
             String innsendingsId = innsending.get().getInnsendingsId();
-            log.info("Innsending for sykepengesøknad {} allerede opprettet med id {}.",
+            log.warn("Innsending for sykepengesøknad {} allerede opprettet med id {}.",
                     sykepengesoknad.getId(),
                     innsendingsId
             );
