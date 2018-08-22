@@ -25,7 +25,7 @@ public class SoknadSendtListener {
         this.saksbehandlingsService = saksbehandlingsService;
     }
 
-    @KafkaListener(topics = "aapen-syfo-soeknadSendt-v1", id = "soknadSendt", idIsGroup = false)
+    @KafkaListener(topics = "aapen-syfo-soeknadSendt-v1", id = "soknadSendt", idIsGroup = true)
     public void listen(ConsumerRecord<String, String> cr, Acknowledgment acknowledgment) throws Exception {
         log.info("Melding mottatt på topic: {} med offsett: {}", cr.topic(), cr.offset());
         try {
