@@ -47,54 +47,81 @@ public class SaksbehandlingsService {
     }
 
     public String behandleSoknad(Sykepengesoknad sykepengesoknad) {
-        Optional<Innsending> innsending = innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknad.getId());
+        String sykepengesoknadId = sykepengesoknad.getId();
+        Optional<Innsending> innsending = innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknadId);
 
         if (innsending.isPresent()) {
-            String innsendingsId = innsending.get().getInnsendingsId();
+            String innsendingId = innsending.get().getInnsendingsId();
             log.warn("Innsending for sykepengesøknad {} allerede opprettet med id {}.",
-                    sykepengesoknad.getId(),
-                    innsendingsId
+                    sykepengesoknadId,
+                    innsendingId
             );
-            return innsendingsId;
+            return innsendingId;
         }
 
-        String uuid = innsendingDAO.opprettInnsending(sykepengesoknad.getId());
+        String innsendingId = innsendingDAO.opprettInnsending(sykepengesoknadId);
 
         try {
             String fnr = aktorConsumer.finnFnr(sykepengesoknad.getAktorId());
+            Soknad soknad = opprettSoknad(sykepengesoknad, innsendingId, fnr);
+            String saksId = opprettSak(innsendingId, fnr);
+            String journalpostId = opprettJournalpost(innsendingId, soknad, saksId);
 
-            Soknad soknad = Soknad.lagSoknad(sykepengesoknad, fnr, personConsumer.finnBrukerPersonnavnByFnr(fnr));
-            innsendingDAO.oppdaterAktorId(uuid, soknad.aktorId);
+            opprettOppgave(innsendingId, fnr, soknad, saksId, journalpostId);
 
-            String saksId = behandleSakConsumer.opprettSak(fnr);
-            innsendingDAO.oppdaterSaksId(uuid, saksId);
-
-            String journalpostId = behandleJournalConsumer.opprettJournalpost(soknad, saksId);
-            innsendingDAO.oppdaterJournalpostId(uuid, journalpostId);
-
-            String behandlendeEnhet = behandlendeEnhetConsumer.hentBehandlendeEnhet(fnr, soknad.soknadstype);
-            String oppgaveId = oppgavebehandlingConsumer
-                    .opprettOppgave(fnr, behandlendeEnhet, saksId, journalpostId, soknad.lagBeskrivelse(), soknad.soknadstype);
-            innsendingDAO.oppdaterOppgaveId(uuid, oppgaveId);
-
-            innsendingDAO.settBehandlet(uuid);
-            registry.counter(
-                    "syfogsak.innsending.behandlet",
-                    Tags.of("type", "info", "help", "Antall ferdigbehandlede innsendinger."))
-                    .increment();
+            innsendingDAO.settBehandlet(innsendingId);
+            tellInnsendingBehandlet();
         } catch (Exception e) {
-            log.error("Kunne ikke fullføre innsending av søknad med uuid: {}.", uuid, e);
-            innsendingDAO.leggTilFeiletInnsending(uuid);
-            registry.counter(
-                    "syfogsak.innsending.feilet",
-                    Tags.of(
-                            "type", "info",
-                            "help", "Antall innsendinger hvor feil mot baksystemer gjorde at behandling ikke kunne fullføres."
-                    ))
-                    .increment();
-
+            log.error("Kunne ikke fullføre innsending av søknad med innsending id: {} og sykepengesøknad id: {}",
+                    innsendingId,
+                    sykepengesoknadId,
+                    e);
+            innsendingDAO.leggTilFeiletInnsending(innsendingId);
+            tellInnsendingFeilet();
         }
 
-        return uuid;
+        return innsendingId;
+    }
+
+    private void opprettOppgave(String innsendingId, String fnr, Soknad soknad, String saksId, String journalpostId) {
+        String behandlendeEnhet = behandlendeEnhetConsumer.hentBehandlendeEnhet(fnr, soknad.soknadstype);
+        String oppgaveId = oppgavebehandlingConsumer
+                .opprettOppgave(fnr, behandlendeEnhet, saksId, journalpostId, soknad.lagBeskrivelse(), soknad.soknadstype);
+        innsendingDAO.oppdaterOppgaveId(innsendingId, oppgaveId);
+    }
+
+    private String opprettJournalpost(String innsendingId, Soknad soknad, String saksId) {
+        String journalpostId = behandleJournalConsumer.opprettJournalpost(soknad, saksId);
+        innsendingDAO.oppdaterJournalpostId(innsendingId, journalpostId);
+        return journalpostId;
+    }
+
+    private String opprettSak(String innsendingId, String fnr) {
+        String saksId = behandleSakConsumer.opprettSak(fnr);
+        innsendingDAO.oppdaterSaksId(innsendingId, saksId);
+        return saksId;
+    }
+
+    private Soknad opprettSoknad(Sykepengesoknad sykepengesoknad, String innsendingId, String fnr) {
+        Soknad soknad = Soknad.lagSoknad(sykepengesoknad, fnr, personConsumer.finnBrukerPersonnavnByFnr(fnr));
+        innsendingDAO.oppdaterAktorId(innsendingId, soknad.aktorId);
+        return soknad;
+    }
+
+    private void tellInnsendingBehandlet() {
+        registry.counter(
+                "syfogsak.innsending.behandlet",
+                Tags.of("type", "info", "help", "Antall ferdigbehandlede innsendinger."))
+                .increment();
+    }
+
+    private void tellInnsendingFeilet() {
+        registry.counter(
+                "syfogsak.innsending.feilet",
+                Tags.of(
+                        "type", "info",
+                        "help", "Antall innsendinger hvor feil mot baksystemer gjorde at behandling ikke kunne fullføres."
+                ))
+                .increment();
     }
 }
