@@ -45,9 +45,13 @@ spring:
     driver-class-name: org.h2.Driver
     username: 'sa'
     password:
-  jta.atomikos.datasource:
-    max-pool-size: 32
-    min-pool-size: 8
+  jta.atomikos:
+    datasource:
+      max-pool-size: 32
+      min-pool-size: 8
+    properties:
+      log-base-dir: transaction-logs/test
+
   kafka:
     consumer:
         key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
