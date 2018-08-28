@@ -42,14 +42,17 @@ public class BehandleJournalConsumer {
     }
 
     public String opprettJournalpost(Soknad soknad, String saksId) {
+        byte[] pdf;
+
         try {
-            byte[] pdf = pdfRestController.getPDF(soknad, hentPDFTemplateEtterSoknadstype(soknad.soknadstype));
-            return journalforSoknad(soknad, saksId, pdf);
+            pdf = pdfRestController.getPDF(soknad, hentPDFTemplateEtterSoknadstype(soknad.soknadstype));
         } catch (RuntimeException e) {
             String feilmelding = "Kunne ikke generere PDF for søknad med id: " + soknad.getSoknadsId() + " og saks id: " + saksId;
             log.error(feilmelding, e);
             throw new RuntimeException(feilmelding, e);
         }
+
+        return journalforSoknad(soknad, saksId, pdf);
     }
 
     private String journalforSoknad(Soknad soknad, String saksId, byte[] pdf) {
