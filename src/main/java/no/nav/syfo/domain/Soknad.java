@@ -18,15 +18,15 @@ import java.util.List;
 @Getter
 @Slf4j
 public class Soknad {
-    public String aktorId;
-    public String soknadsId;
-    public Soknadstype soknadstype;
-    public LocalDate fom;
-    public LocalDate tom;
-    public String fnr;
-    public String navn;
-    public LocalDate innsendtDato;
-    public List<Sporsmal> sporsmal;
+    String aktorId;
+    String soknadsId;
+    Soknadstype soknadstype;
+    LocalDate fom;
+    LocalDate tom;
+    String fnr;
+    String navn;
+    LocalDate innsendtDato;
+    List<Sporsmal> sporsmal;
 
     private AktorConsumer aktorConsumer;
     private PersonConsumer personConsumer;
