@@ -84,9 +84,9 @@ public class SaksbehandlingsService {
     }
 
     private void opprettOppgave(String innsendingId, String fnr, Soknad soknad, String saksId, String journalpostId) {
-        String behandlendeEnhet = behandlendeEnhetConsumer.hentBehandlendeEnhet(fnr, soknad.soknadstype);
+        String behandlendeEnhet = behandlendeEnhetConsumer.hentBehandlendeEnhet(fnr, soknad.getSoknadstype());
         String oppgaveId = oppgavebehandlingConsumer
-                .opprettOppgave(fnr, behandlendeEnhet, saksId, journalpostId, soknad.lagBeskrivelse(), soknad.soknadstype);
+                .opprettOppgave(fnr, behandlendeEnhet, saksId, journalpostId, soknad.lagBeskrivelse(), soknad.getSoknadstype());
         innsendingDAO.oppdaterOppgaveId(innsendingId, oppgaveId);
     }
 
@@ -104,7 +104,7 @@ public class SaksbehandlingsService {
 
     private Soknad opprettSoknad(Sykepengesoknad sykepengesoknad, String innsendingId, String fnr) {
         Soknad soknad = Soknad.lagSoknad(sykepengesoknad, fnr, personConsumer.finnBrukerPersonnavnByFnr(fnr));
-        innsendingDAO.oppdaterAktorId(innsendingId, soknad.aktorId);
+        innsendingDAO.oppdaterAktorId(innsendingId, soknad.getAktorId());
         return soknad;
     }
 
