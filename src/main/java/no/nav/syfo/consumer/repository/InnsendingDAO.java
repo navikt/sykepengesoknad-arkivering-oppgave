@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -99,6 +100,30 @@ public class InnsendingDAO {
                         .addValue("ressursId", sykepengesoknadId),
                 getInnsendingRowMapper()
         ).stream().findFirst();
+    }
+
+    public Optional<List<Innsending>> hentFeiledeInnsendinger() {
+        return Optional.ofNullable(
+                namedParameterJdbcTemplate.query(
+                "SELECT * FROM INNSENDING WHERE INNSENDING_UUID IN (SELECT INNSENDING_UUID FROM FEILET_INNSENDING)",
+                getInnsendingRowMapper()
+        ));
+    }
+
+    public Optional<Innsending> hentFeiletInnsendingForSoknad(String ressursId) {
+        return Optional.ofNullable(
+                namedParameterJdbcTemplate.queryForObject(
+                    "SELECT *" +
+                            "FROM INNSENDING" +
+                            "WHERE RESSURS_ID = :ressursId" +
+                            "  AND INNSENDING_UUID IN (select INNSENDING_UUID from FEILET_INNSENDING)",
+
+                        new MapSqlParameterSource()
+                                .addValue("ressursId", ressursId),
+
+                        getInnsendingRowMapper()
+                )
+        );
     }
 
     public static RowMapper<Innsending> getInnsendingRowMapper() {
