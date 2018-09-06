@@ -7,6 +7,7 @@ import no.nav.syfo.consumer.repository.InnsendingDAO;
 import no.nav.syfo.consumer.ws.*;
 import no.nav.syfo.domain.Innsending;
 import no.nav.syfo.domain.Soknad;
+import no.nav.syfo.domain.dto.Soknadstype;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
 import org.springframework.stereotype.Component;
 
@@ -70,14 +71,14 @@ public class SaksbehandlingsService {
             opprettOppgave(innsendingId, fnr, soknad, saksId, journalpostId);
 
             innsendingDAO.settBehandlet(innsendingId);
-            tellInnsendingBehandlet();
+            tellInnsendingBehandlet(sykepengesoknad.getSoknadstype());
         } catch (Exception e) {
             log.error("Kunne ikke fullføre innsending av søknad med innsending id: {} og sykepengesøknad id: {}",
                     innsendingId,
                     sykepengesoknadId,
                     e);
             innsendingDAO.leggTilFeiletInnsending(innsendingId);
-            tellInnsendingFeilet();
+            tellInnsendingFeilet(sykepengesoknad.getSoknadstype());
         }
 
         return innsendingId;
@@ -108,18 +109,23 @@ public class SaksbehandlingsService {
         return soknad;
     }
 
-    private void tellInnsendingBehandlet() {
+    private void tellInnsendingBehandlet(Soknadstype soknadstype) {
         registry.counter(
                 "syfogsak.innsending.behandlet",
-                Tags.of("type", "info", "help", "Antall ferdigbehandlede innsendinger."))
+                Tags.of(
+                        "type", "info",
+                        "soknadstype", soknadstype.name(),
+                        "help", "Antall ferdigbehandlede innsendinger."
+                ))
                 .increment();
     }
 
-    private void tellInnsendingFeilet() {
+    private void tellInnsendingFeilet(Soknadstype soknadstype) {
         registry.counter(
                 "syfogsak.innsending.feilet",
                 Tags.of(
                         "type", "info",
+                        "soknadstype", soknadstype.name(),
                         "help", "Antall innsendinger hvor feil mot baksystemer gjorde at behandling ikke kunne fullføres."
                 ))
                 .increment();
