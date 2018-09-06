@@ -3,12 +3,10 @@ package no.nav.syfo.service;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.consumer.repository.InnsendingDAO;
 import no.nav.syfo.consumer.ws.AktorConsumer;
-import no.nav.syfo.consumer.ws.PersonConsumer;
 import no.nav.syfo.domain.Innsending;
 import no.nav.syfo.domain.Soknad;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
 import org.springframework.stereotype.Component;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.inject.Inject;
 
@@ -18,113 +16,111 @@ public class BehandleFeiledeSoknaderService {
 
     private final InnsendingDAO innsendingDAO;
     private final AktorConsumer aktorConsumer;
-    private final PersonConsumer personConsumer;
+    private final SaksbehandlingsService saksbehandlingsService;
 
     @Inject
-    public BehandleFeiledeSoknaderService(InnsendingDAO innsendingDAO, AktorConsumer aktorConsumer, PersonConsumer personConsumer) {
+    public BehandleFeiledeSoknaderService(
+            InnsendingDAO innsendingDAO,
+            AktorConsumer aktorConsumer,
+            SaksbehandlingsService saksbehandlingsService) {
         this.innsendingDAO = innsendingDAO;
         this.aktorConsumer = aktorConsumer;
-        this.personConsumer = personConsumer;
+        this.saksbehandlingsService = saksbehandlingsService;
     }
 
-    public String behandleFeiletSoknad(Sykepengesoknad sykepengesoknad, Innsending innsending) {
-        Innsending innsending1 = fullforBehandling(innsending, sykepengesoknad);
-        return null;
-    }
-
-    private Innsending fullforBehandling(Innsending innsending, Sykepengesoknad soknad) {
-        try {
-            if (innsending.getAktorId() == null) {
-                return fortsettBehandlingFraAktor(innsending, soknad);
-            } else if (innsending.getSaksId() == null) {
-                return fortsettBehandlingFraSaks(innsending, soknad);
-            } else if (innsending.getJournalpostId() == null) {
-                return fortsettBehandlingFraJournalpost(innsending, soknad);
-            } else if (innsending.getOppgaveId() == null) {
-                return fortsetterBehandlingFraOppgave(innsending, soknad);
+    public void behandleFeiletSoknad(Innsending innsending, Sykepengesoknad sykepengesoknad) {
+        if (innsendingDAO.hentFeiletInnsendingForSoknad(sykepengesoknad.getId()).isPresent()) {
+            try {
+                if (innsending.getAktorId() == null) {
+                    fortsettBehandlingFraAktor(innsending, sykepengesoknad);
+                } else if (innsending.getSaksId() == null) {
+                    fortsettBehandlingFraSaksId(innsending, sykepengesoknad);
+                } else if (innsending.getJournalpostId() == null) {
+                    fortsettBehandlingFraJournalpost(innsending, sykepengesoknad);
+                } else if (innsending.getOppgaveId() == null) {
+                    fortsetterBehandlingFraOppgave(innsending, sykepengesoknad);
+                }
+            } catch (RuntimeException e) {
+                log.error("Feilet ved rebehandling av innsending med id: {}", innsending.getInnsendingsId());
             }
-        } catch (RuntimeException e) {
-            log.error("Feilet ved rebehandling av innsending med id: {}", innsending.getInnsendingsId());
         }
-
-        return innsending;
     }
 
-    private Innsending fortsetterBehandlingFraOppgave(Innsending innsending, Sykepengesoknad soknad) {
+    private void fortsetterBehandlingFraOppgave(Innsending innsending, Sykepengesoknad sykepengesoknad) {
+        String fnr = aktorConsumer.finnFnr(innsending.getAktorId());
+        String innsendingId = innsending.getInnsendingsId();
+
         Innsending fullfortInnsending = Innsending.builder()
-                .innsendingsId(innsending.getInnsendingsId())
+                .innsendingsId(innsendingId)
                 .ressursId(innsending.getRessursId())
                 .aktorId(innsending.getAktorId())
                 .saksId(innsending.getSaksId())
                 .journalpostId(innsending.getJournalpostId())
                 .build();
 
-        fullfortInnsending.setOppgaveId(opprettOppgave(fullfortInnsending));
 
-        return fullfortInnsending;
+        saksbehandlingsService.opprettOppgave(
+                innsendingId,
+                fnr,
+                saksbehandlingsService.opprettSoknad(sykepengesoknad, innsendingId, fnr),
+                fullfortInnsending.getSaksId(),
+                fullfortInnsending.getJournalpostId()
+        );
+
+        innsendingDAO.settBehandlet(fullfortInnsending.getInnsendingsId());
     }
 
-    private Innsending fortsettBehandlingFraJournalpost(Innsending innsending, Sykepengesoknad soknad) {
+    private void fortsettBehandlingFraJournalpost(Innsending innsending, Sykepengesoknad sykepengesoknad) {
+        String innsendingsId = innsending.getInnsendingsId();
         Innsending fullfortInnsending = Innsending.builder()
-                .innsendingsId(innsending.getInnsendingsId())
+                .innsendingsId(innsendingsId)
                 .ressursId(innsending.getRessursId())
                 .aktorId(innsending.getAktorId())
                 .saksId(innsending.getSaksId())
                 .build();
 
-        fullfortInnsending.setJournalpostId(opprettJournalpost(fullfortInnsending));
-        fullfortInnsending.setOppgaveId(opprettOppgave(fullfortInnsending));
+        Soknad soknad = saksbehandlingsService
+                .opprettSoknad(
+                        sykepengesoknad,
+                        innsendingsId,
+                        aktorConsumer.finnFnr(innsending.getAktorId())
+                );
 
-        return fullfortInnsending;
+        fullfortInnsending.setJournalpostId(saksbehandlingsService
+                .opprettJournalpost(
+                        innsendingsId,
+                        soknad,
+                        innsending.getSaksId()));
+
+        fortsetterBehandlingFraOppgave(fullfortInnsending, sykepengesoknad);
     }
 
-    private Innsending fortsettBehandlingFraSaks(Innsending innsending, Sykepengesoknad soknad) {
+    private void fortsettBehandlingFraSaksId(Innsending innsending, Sykepengesoknad sykepengesoknad) {
         Innsending fullfortInnsending = Innsending.builder()
                 .innsendingsId(innsending.getInnsendingsId())
                 .ressursId(innsending.getRessursId())
                 .aktorId(innsending.getAktorId())
                 .build();
 
-        fullfortInnsending.setSaksId(opprettSak(fullfortInnsending));
-        fullfortInnsending.setJournalpostId(opprettJournalpost(fullfortInnsending));
-        fullfortInnsending.setOppgaveId(opprettOppgave(fullfortInnsending));
+        fullfortInnsending
+                .setSaksId(saksbehandlingsService
+                        .opprettSak(
+                                innsending.getInnsendingsId(),
+                                aktorConsumer.finnFnr(innsending.getAktorId())
+                        )
+                );
 
-        return fullfortInnsending;
+        fortsettBehandlingFraJournalpost(fullfortInnsending, sykepengesoknad);
     }
 
-    private Innsending fortsettBehandlingFraAktor(Innsending innsending, Sykepengesoknad soknad) {
+    private void fortsettBehandlingFraAktor(Innsending innsending, Sykepengesoknad sykepengesoknad) {
         Innsending fullfortInnsending = Innsending.builder()
                 .innsendingsId(innsending.getInnsendingsId())
                 .ressursId(innsending.getRessursId())
                 .build();
 
-        fullfortInnsending.setAktorId(finnAktorId(soknad.getAktorId()));
-        fullfortInnsending.setSaksId(opprettSak(fullfortInnsending));
-        fullfortInnsending.setJournalpostId(opprettJournalpost(fullfortInnsending));
-        fullfortInnsending.setOppgaveId(opprettOppgave(fullfortInnsending));
-
-        return fullfortInnsending;
+        fullfortInnsending.setAktorId(aktorConsumer.finnFnr(sykepengesoknad.getAktorId()));
+        fortsettBehandlingFraSaksId(fullfortInnsending, sykepengesoknad);
     }
 
-    private String finnAktorId(String aktorId) {
-        return aktorConsumer.finnFnr(aktorId);
-    }
-
-    private Soknad opprettSoknad(Sykepengesoknad sykepengesoknad, String innsendingId, String fnr) {
-        Soknad soknad = Soknad.lagSoknad(sykepengesoknad, fnr, personConsumer.finnBrukerPersonnavnByFnr(fnr));
-        innsendingDAO.oppdaterAktorId(innsendingId, soknad.getAktorId());
-        return soknad;
-    }
-
-    private String opprettSak(Innsending innsending) {
-        throw new NotImplementedException();
-    }
-
-    private String opprettJournalpost(Innsending innsending) {
-        throw new NotImplementedException();
-    }
-
-    private String opprettOppgave(Innsending innsending) {
-        throw new NotImplementedException();
-    }
 }

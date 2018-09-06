@@ -41,11 +41,11 @@ public class RebehandleSoknadListener {
             innsendingDAO
                     .hentFeiletInnsendingForSoknad(deserialisertSoknad.getId())
                     .ifPresent(innsending -> {
-                        String innsendingId = behandleFeiledeSoknaderService.behandleFeiletSoknad(deserialisertSoknad, innsending);
+                        behandleFeiledeSoknaderService.behandleFeiletSoknad(innsending, deserialisertSoknad);
                         log.info("Søknad med id {} og offset {} er rebehandlet i innsending med id {}",
                                 deserialisertSoknad.getId(),
                                 cr.offset(),
-                                innsendingId
+                                innsending.getInnsendingsId()
                         );
                     });
 
