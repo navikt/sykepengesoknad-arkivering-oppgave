@@ -7,12 +7,17 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.consumer.repository.InnsendingDAO;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
 import no.nav.syfo.service.BehandleFeiledeSoknaderService;
+import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.support.Acknowledgment;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.common.errors.WakeupException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.ConsumerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.util.Collections;
 
 @Slf4j
 @Component
@@ -20,42 +25,57 @@ public class RebehandleSoknadListener {
     private final BehandleFeiledeSoknaderService behandleFeiledeSoknaderService;
     private final InnsendingDAO innsendingDAO;
     private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+    private String groupId;
+    private Consumer<String, String> consumer;
 
     @Inject
     public RebehandleSoknadListener(
             BehandleFeiledeSoknaderService behandleFeiledeSoknaderService,
-            InnsendingDAO innsendingDAO
-    ) {
+            InnsendingDAO innsendingDAO,
+            @Value("${fasit.environment.name}") String miljonavn,
+            ConsumerFactory<String, String> consumerFactory) {
         this.behandleFeiledeSoknaderService = behandleFeiledeSoknaderService;
         this.innsendingDAO = innsendingDAO;
+        groupId = "syfogsak-" + miljonavn + "-rebehandleSoknadsss";
+        consumer = consumerFactory.createConsumer(groupId, "pre", "post");
+        consumer.subscribe(Collections.singletonList("aapen-syfo-soeknadSendt-v1"));
     }
 
-
-    @KafkaListener(topics = "aapen-syfo-soeknadSendt-v1", id = "rebehandleSoknad")
-    public void listen(ConsumerRecord<String, String> cr, Acknowledgment acknowledgment) {
-        log.info("Melding mottatt på topic: {}, partisjon: {} med offsett: {}", cr.topic(), cr.partition(), cr.offset());
-
+    @Scheduled(cron = "*/10 * * * * *")
+    public void listen() {
+        log.info("Leter etter feilede søknader");
+        consumer.poll(100L);
+        consumer.seekToBeginning(consumer.assignment());
+        ConsumerRecords<String, String> records;
         try {
-            Sykepengesoknad deserialisertSoknad = objectMapper.readValue(cr.value(), Sykepengesoknad.class);
+            while (!(records=consumer.poll(1000L)).isEmpty()) {
+                for (ConsumerRecord<String, String> record : records) {
+                    log.info("Melding mottatt på groupid: {}, topic: {}, partisjon: {} med offsett: {}",
+                            groupId, record.topic(), record.partition(), record.offset());
+                    try {
+                        Sykepengesoknad deserialisertSoknad = objectMapper.readValue(record.value(), Sykepengesoknad.class);
 
-            innsendingDAO
-                    .hentFeiletInnsendingForSoknad(deserialisertSoknad.getId())
-                    .ifPresent(innsending -> {
-                        behandleFeiledeSoknaderService.behandleFeiletSoknad(innsending, deserialisertSoknad);
-                        log.info("Søknad med id {} og offset {} er rebehandlet i innsending med id {}",
-                                deserialisertSoknad.getId(),
-                                cr.offset(),
-                                innsending.getInnsendingsId()
-                        );
-                    });
-
-            acknowledgment.acknowledge();
-        } catch (JsonProcessingException e) {
-            log.error("Kunne ikke deserialisere sykepengesøknad", e);
-            throw new RuntimeException("Kunne ikke deserialisere sykepengesøknad");
-        } catch (Exception e) {
-            log.error("Uventet feil ved behandling av søknad", e);
-            throw new RuntimeException("Uventet feil ved behandling av søknad");
+                        innsendingDAO
+                                .hentFeiletInnsendingForSoknad(deserialisertSoknad.getId())
+                                .ifPresent(innsending -> {
+                                    behandleFeiledeSoknaderService.behandleFeiletSoknad(innsending, deserialisertSoknad);
+                                    log.info("Søknad med id {} og offset {} er rebehandlet i innsending med id {}",
+                                            deserialisertSoknad.getId(),
+                                            record.offset(),
+                                            innsending.getInnsendingsId()
+                                    );
+                                });
+                    } catch (JsonProcessingException e) {
+                        log.error("Kunne ikke deserialisere sykepengesøknad", e);
+                        throw new RuntimeException("Kunne ikke deserialisere sykepengesøknad");
+                    } catch (Exception e) {
+                        log.error("Uventet feil ved behandling av søknad", e);
+                        throw new RuntimeException("Uventet feil ved behandling av søknad");
+                    }
+                }
+            }
+        } catch (WakeupException e) {
+            // ignore for shutdown
         }
     }
 }

@@ -54,8 +54,8 @@ public class InnsendingDAO {
         namedParameterJdbcTemplate.update(
                 "UPDATE INNSENDING SET SAKS_ID = :saksId WHERE INNSENDING_UUID = :uuid",
                 new MapSqlParameterSource()
-                    .addValue("saksId", saksId)
-                    .addValue("uuid", uuid)
+                        .addValue("saksId", saksId)
+                        .addValue("uuid", uuid)
         );
     }
 
@@ -105,25 +105,23 @@ public class InnsendingDAO {
     public Optional<List<Innsending>> hentFeiledeInnsendinger() {
         return Optional.ofNullable(
                 namedParameterJdbcTemplate.query(
-                "SELECT * FROM INNSENDING WHERE INNSENDING_UUID IN (SELECT INNSENDING_UUID FROM FEILET_INNSENDING)",
-                getInnsendingRowMapper()
-        ));
+                        "SELECT * FROM INNSENDING WHERE INNSENDING_UUID IN (SELECT INNSENDING_UUID FROM FEILET_INNSENDING)",
+                        getInnsendingRowMapper()
+                ));
     }
 
     public Optional<Innsending> hentFeiletInnsendingForSoknad(String ressursId) {
-        return Optional.ofNullable(
-                namedParameterJdbcTemplate.queryForObject(
-                    "SELECT *" +
-                            "FROM INNSENDING" +
-                            "WHERE RESSURS_ID = :ressursId" +
-                            "  AND INNSENDING_UUID IN (select INNSENDING_UUID from FEILET_INNSENDING)",
+        return namedParameterJdbcTemplate.query(
+                "SELECT * " +
+                        "FROM INNSENDING " +
+                        "WHERE RESSURS_ID = :ressursId " +
+                        "  AND INNSENDING_UUID IN (select INNSENDING_UUID from FEILET_INNSENDING)",
 
-                        new MapSqlParameterSource()
-                                .addValue("ressursId", ressursId),
+                new MapSqlParameterSource()
+                        .addValue("ressursId", ressursId),
 
-                        getInnsendingRowMapper()
-                )
-        );
+                getInnsendingRowMapper()).stream()
+                .findFirst();
     }
 
     public static RowMapper<Innsending> getInnsendingRowMapper() {
