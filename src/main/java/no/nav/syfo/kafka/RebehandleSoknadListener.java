@@ -36,7 +36,7 @@ public class RebehandleSoknadListener {
             ConsumerFactory<String, String> consumerFactory) {
         this.behandleFeiledeSoknaderService = behandleFeiledeSoknaderService;
         this.innsendingDAO = innsendingDAO;
-        groupId = "syfogsak-" + miljonavn + "-rebehandleSoknadsss";
+        groupId = "syfogsak-" + miljonavn + "-rebehandleSoknads";
         consumer = consumerFactory.createConsumer(groupId, "pre", "post");
         consumer.subscribe(Collections.singletonList("aapen-syfo-soeknadSendt-v1"));
     }
@@ -50,8 +50,6 @@ public class RebehandleSoknadListener {
         try {
             while (!(records=consumer.poll(1000L)).isEmpty()) {
                 for (ConsumerRecord<String, String> record : records) {
-                    log.info("Melding mottatt på groupid: {}, topic: {}, partisjon: {} med offsett: {}",
-                            groupId, record.topic(), record.partition(), record.offset());
                     try {
                         Sykepengesoknad deserialisertSoknad = objectMapper.readValue(record.value(), Sykepengesoknad.class);
 
@@ -59,11 +57,6 @@ public class RebehandleSoknadListener {
                                 .hentFeiletInnsendingForSoknad(deserialisertSoknad.getId())
                                 .ifPresent(innsending -> {
                                     behandleFeiledeSoknaderService.behandleFeiletSoknad(innsending, deserialisertSoknad);
-                                    log.info("Søknad med id {} og offset {} er rebehandlet i innsending med id {}",
-                                            deserialisertSoknad.getId(),
-                                            record.offset(),
-                                            innsending.getInnsendingsId()
-                                    );
                                 });
                     } catch (JsonProcessingException e) {
                         log.error("Kunne ikke deserialisere sykepengesøknad", e);

@@ -29,6 +29,7 @@ public class BehandleFeiledeSoknaderService {
     }
 
     public void behandleFeiletSoknad(Innsending innsending, Sykepengesoknad sykepengesoknad) {
+        String innsendingsId = innsending.getInnsendingsId();
         if (innsendingDAO.hentFeiletInnsendingForSoknad(sykepengesoknad.getId()).isPresent()) {
             try {
                 if (innsending.getAktorId() == null) {
@@ -40,8 +41,12 @@ public class BehandleFeiledeSoknaderService {
                 } else if (innsending.getOppgaveId() == null) {
                     fortsetterBehandlingFraOppgave(innsending, sykepengesoknad);
                 }
+                innsendingDAO.settBehandlet(innsendingsId);
+                innsendingDAO.fjernFeiletInnsending(innsendingsId);
+                log.info("Fullført rebehandling av innsending med id: {} av soknad med id: {}",
+                        innsendingsId, sykepengesoknad.getId());
             } catch (RuntimeException e) {
-                log.error("Feilet ved rebehandling av innsending med id: {}", innsending.getInnsendingsId());
+                log.error("Feilet ved rebehandling av innsending med id: {}", innsendingsId);
             }
         }
     }
@@ -66,9 +71,6 @@ public class BehandleFeiledeSoknaderService {
                 fullfortInnsending.getSaksId(),
                 fullfortInnsending.getJournalpostId()
         );
-
-        innsendingDAO.settBehandlet(fullfortInnsending.getInnsendingsId());
-        innsendingDAO.fjernFeiletInnsending(fullfortInnsending.getInnsendingsId());
     }
 
     private void fortsettBehandlingFraJournalpost(Innsending innsending, Sykepengesoknad sykepengesoknad) {
