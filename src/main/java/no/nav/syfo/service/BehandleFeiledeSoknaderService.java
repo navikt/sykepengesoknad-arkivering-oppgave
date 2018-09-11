@@ -62,7 +62,7 @@ public class BehandleFeiledeSoknaderService {
         saksbehandlingsService.opprettOppgave(
                 innsendingId,
                 fnr,
-                saksbehandlingsService.opprettSoknad(sykepengesoknad, innsendingId, fnr),
+                saksbehandlingsService.opprettSoknad(sykepengesoknad, fnr),
                 fullfortInnsending.getSaksId(),
                 fullfortInnsending.getJournalpostId()
         );
@@ -82,7 +82,6 @@ public class BehandleFeiledeSoknaderService {
         Soknad soknad = saksbehandlingsService
                 .opprettSoknad(
                         sykepengesoknad,
-                        innsendingsId,
                         aktorConsumer.finnFnr(innsending.getAktorId())
                 );
 

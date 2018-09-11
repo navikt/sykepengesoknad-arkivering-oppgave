@@ -1,5 +1,6 @@
 package no.nav.syfo.consumer.ws;
 
+import no.nav.syfo.config.unleash.Toggle;
 import no.nav.tjeneste.virksomhet.behandlesak.v1.BehandleSakV1;
 import no.nav.tjeneste.virksomhet.behandlesak.v1.informasjon.WSPerson;
 import no.nav.tjeneste.virksomhet.behandlesak.v1.informasjon.WSSak;
@@ -21,6 +22,8 @@ import static org.mockito.Mockito.when;
 public class BehandleSakConsumerTest {
     @Mock
     private BehandleSakV1 behandleSakV1;
+    @Mock
+    private Toggle toggle;
 
     @InjectMocks
     private BehandleSakConsumer behandleSakConsumer;

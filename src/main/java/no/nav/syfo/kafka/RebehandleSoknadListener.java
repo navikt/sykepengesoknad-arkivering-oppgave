@@ -41,7 +41,7 @@ public class RebehandleSoknadListener {
         consumer.subscribe(Collections.singletonList("aapen-syfo-soeknadSendt-v1"));
     }
 
-    @Scheduled(cron = "* */30 * * * *")
+    @Scheduled(cron = "*/30 * * * * *")
     public void listen() {
         log.info("Leter etter feilede søknader");
         consumer.poll(100L);

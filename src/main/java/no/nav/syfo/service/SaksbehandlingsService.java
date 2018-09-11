@@ -64,7 +64,7 @@ public class SaksbehandlingsService {
         try {
             String fnr = aktorConsumer.finnFnr(sykepengesoknad.getAktorId());
             innsendingDAO.oppdaterAktorId(innsendingId, sykepengesoknad.getAktorId());
-            Soknad soknad = opprettSoknad(sykepengesoknad, innsendingId, fnr);
+            Soknad soknad = opprettSoknad(sykepengesoknad, fnr);
             String saksId = opprettSak(innsendingId, fnr);
             String journalpostId = opprettJournalpost(innsendingId, soknad, saksId);
 
@@ -103,7 +103,7 @@ public class SaksbehandlingsService {
         return saksId;
     }
 
-    public Soknad opprettSoknad(Sykepengesoknad sykepengesoknad, String innsendingId, String fnr) {
+    public Soknad opprettSoknad(Sykepengesoknad sykepengesoknad, String fnr) {
         return Soknad.lagSoknad(sykepengesoknad, fnr, personConsumer.finnBrukerPersonnavnByFnr(fnr));
     }
 

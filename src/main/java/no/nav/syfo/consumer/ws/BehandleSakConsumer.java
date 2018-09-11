@@ -1,6 +1,8 @@
 package no.nav.syfo.consumer.ws;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.syfo.config.unleash.FeatureToggle;
+import no.nav.syfo.config.unleash.Toggle;
 import no.nav.tjeneste.virksomhet.behandlesak.v1.BehandleSakV1;
 import no.nav.tjeneste.virksomhet.behandlesak.v1.OpprettSakSakEksistererAllerede;
 import no.nav.tjeneste.virksomhet.behandlesak.v1.OpprettSakUgyldigInput;
@@ -15,14 +17,20 @@ import javax.inject.Inject;
 public class BehandleSakConsumer {
 
     private final BehandleSakV1 behandleSakV1;
+    private final Toggle toggle;
 
     @Inject
-    public BehandleSakConsumer(BehandleSakV1 behandleSakV1) {
+    public BehandleSakConsumer(BehandleSakV1 behandleSakV1,
+                               Toggle toggle) {
         this.behandleSakV1 = behandleSakV1;
+        this.toggle = toggle;
     }
 
     public String opprettSak(String fnr) {
         try {
+            if (toggle.isEnabled(FeatureToggle.OPPRETT_SAK_GIR_FEIL)) {
+                throw new RuntimeException("Opprett sak gir feil er togglet på");
+            }
             String sakId = behandleSakV1.opprettSak(new WSOpprettSakRequest()
                     .withSak(new WSSak()
                             .withSakstype(new WSSakstyper().withValue("GEN"))
