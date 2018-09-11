@@ -43,7 +43,6 @@ public class RebehandleSoknadListener {
 
     @Scheduled(cron = "*/30 * * * * *")
     public void listen() {
-        log.info("Leter etter feilede søknader");
         consumer.poll(100L);
         consumer.seekToBeginning(consumer.assignment());
         ConsumerRecords<String, String> records;
