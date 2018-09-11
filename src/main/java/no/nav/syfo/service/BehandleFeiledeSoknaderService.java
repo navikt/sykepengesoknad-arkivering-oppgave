@@ -68,6 +68,7 @@ public class BehandleFeiledeSoknaderService {
         );
 
         innsendingDAO.settBehandlet(fullfortInnsending.getInnsendingsId());
+        innsendingDAO.fjernFeiletInnsending(fullfortInnsending.getInnsendingsId());
     }
 
     private void fortsettBehandlingFraJournalpost(Innsending innsending, Sykepengesoknad sykepengesoknad) {
@@ -119,6 +120,7 @@ public class BehandleFeiledeSoknaderService {
                 .build();
 
         fullfortInnsending.setAktorId(aktorConsumer.finnFnr(sykepengesoknad.getAktorId()));
+        innsendingDAO.oppdaterAktorId(fullfortInnsending.getInnsendingsId(), sykepengesoknad.getAktorId());
         fortsettBehandlingFraSaksId(fullfortInnsending, sykepengesoknad);
     }
 
