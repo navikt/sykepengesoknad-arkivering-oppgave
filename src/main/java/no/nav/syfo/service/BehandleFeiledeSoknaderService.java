@@ -30,24 +30,23 @@ public class BehandleFeiledeSoknaderService {
 
     public void behandleFeiletSoknad(Innsending innsending, Sykepengesoknad sykepengesoknad) {
         String innsendingsId = innsending.getInnsendingsId();
-        if (innsendingDAO.hentFeiletInnsendingForSoknad(sykepengesoknad.getId()).isPresent()) {
-            try {
-                if (innsending.getAktorId() == null) {
-                    fortsettBehandlingFraAktor(innsending, sykepengesoknad);
-                } else if (innsending.getSaksId() == null) {
-                    fortsettBehandlingFraSaksId(innsending, sykepengesoknad);
-                } else if (innsending.getJournalpostId() == null) {
-                    fortsettBehandlingFraJournalpost(innsending, sykepengesoknad);
-                } else if (innsending.getOppgaveId() == null) {
-                    fortsetterBehandlingFraOppgave(innsending, sykepengesoknad);
-                }
-                innsendingDAO.settBehandlet(innsendingsId);
-                innsendingDAO.fjernFeiletInnsending(innsendingsId);
-                log.info("Fullført rebehandling av innsending med id: {} av soknad med id: {}",
-                        innsendingsId, sykepengesoknad.getId());
-            } catch (RuntimeException e) {
-                log.error("Feilet ved rebehandling av innsending med id: {}", innsendingsId);
+
+        try {
+            if (innsending.getAktorId() == null) {
+                fortsettBehandlingFraAktor(innsending, sykepengesoknad);
+            } else if (innsending.getSaksId() == null) {
+                fortsettBehandlingFraSaksId(innsending, sykepengesoknad);
+            } else if (innsending.getJournalpostId() == null) {
+                fortsettBehandlingFraJournalpost(innsending, sykepengesoknad);
+            } else if (innsending.getOppgaveId() == null) {
+                fortsetterBehandlingFraOppgave(innsending, sykepengesoknad);
             }
+            innsendingDAO.settBehandlet(innsendingsId);
+            innsendingDAO.fjernFeiletInnsending(innsendingsId);
+            log.info("Fullført rebehandling av innsending med id: {} av soknad med id: {}",
+                    innsendingsId, sykepengesoknad.getId());
+        } catch (RuntimeException e) {
+            log.error("Feilet ved rebehandling av innsending med id: {}", innsendingsId);
         }
     }
 

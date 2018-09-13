@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.consumer.repository.InnsendingDAO;
+import no.nav.syfo.domain.Innsending;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
 import no.nav.syfo.service.BehandleFeiledeSoknaderService;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.Collections;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -43,6 +45,8 @@ public class RebehandleSoknadListener {
 
     @Scheduled(cron = "*/30 * * * * *")
     public void listen() {
+        List<Innsending> feilendeInnsendinger = innsendingDAO.hentFeilendeInnsendinger();
+
         consumer.poll(100L);
         consumer.seekToBeginning(consumer.assignment());
         ConsumerRecords<String, String> records;
@@ -52,8 +56,9 @@ public class RebehandleSoknadListener {
                     try {
                         Sykepengesoknad deserialisertSoknad = objectMapper.readValue(record.value(), Sykepengesoknad.class);
 
-                        innsendingDAO
-                                .hentFeiletInnsendingForSoknad(deserialisertSoknad.getId())
+                        feilendeInnsendinger.stream()
+                                .filter(innsending -> innsending.getRessursId().equals(deserialisertSoknad.getId()))
+                                .findAny()
                                 .ifPresent(innsending -> {
                                     behandleFeiledeSoknaderService.behandleFeiletSoknad(innsending, deserialisertSoknad);
                                 });

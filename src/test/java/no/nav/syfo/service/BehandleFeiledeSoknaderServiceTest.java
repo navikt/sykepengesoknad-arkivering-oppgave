@@ -14,7 +14,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDate;
 import java.util.Collections;
-import java.util.Optional;
 
 import static no.nav.syfo.domain.dto.Soknadstype.SELVSTENDIGE_OG_FRILANSERE;
 import static org.mockito.ArgumentMatchers.any;
@@ -58,7 +57,6 @@ public class BehandleFeiledeSoknaderServiceTest {
                 .ressursId("soknadsId")
                 .build();
 
-        when(innsendingDAO.hentFeiletInnsendingForSoknad("soknadsId")).thenReturn(Optional.of(innsending));
         when(saksbehandlingsService.opprettSak("innsendingsId", "fnr")).thenReturn("saksId");
         when(saksbehandlingsService.opprettJournalpost(anyString(),any(Soknad.class),anyString())).thenReturn("journalpostId");
         when(aktorConsumer.finnFnr("aktorId")).thenReturn("fnr");
