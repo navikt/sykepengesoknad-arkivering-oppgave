@@ -37,7 +37,7 @@ public class SaksbehandlingsServiceTest {
     private MeterRegistry registry;
 
     @InjectMocks
-    SaksbehandlingsService saksbehandlingsService;
+    private SaksbehandlingsService saksbehandlingsService;
 
     @Test
     public void handtereBehandleSoknad() {

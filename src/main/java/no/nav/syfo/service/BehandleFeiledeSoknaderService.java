@@ -121,7 +121,7 @@ public class BehandleFeiledeSoknaderService {
                 .ressursId(innsending.getRessursId())
                 .build();
 
-        fullfortInnsending.setAktorId(aktorConsumer.finnFnr(sykepengesoknad.getAktorId()));
+        fullfortInnsending.setAktorId(sykepengesoknad.getAktorId());
         innsendingDAO.oppdaterAktorId(fullfortInnsending.getInnsendingsId(), sykepengesoknad.getAktorId());
         fortsettBehandlingFraSaksId(fullfortInnsending, sykepengesoknad);
     }

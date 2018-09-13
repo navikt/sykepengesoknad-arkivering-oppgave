@@ -25,7 +25,6 @@ public class RebehandleSoknadListener {
     private final BehandleFeiledeSoknaderService behandleFeiledeSoknaderService;
     private final InnsendingDAO innsendingDAO;
     private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
-    private String groupId;
     private Consumer<String, String> consumer;
 
     @Inject
@@ -36,7 +35,8 @@ public class RebehandleSoknadListener {
             ConsumerFactory<String, String> consumerFactory) {
         this.behandleFeiledeSoknaderService = behandleFeiledeSoknaderService;
         this.innsendingDAO = innsendingDAO;
-        groupId = "syfogsak-" + miljonavn + "-rebehandleSoknads";
+
+        String groupId = "syfogsak-" + miljonavn + "-rebehandleSoknads";
         consumer = consumerFactory.createConsumer(groupId, "pre", "post");
         consumer.subscribe(Collections.singletonList("aapen-syfo-soeknadSendt-v1"));
     }
