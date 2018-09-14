@@ -1,17 +1,18 @@
 package no.nav.syfo.domain;
 
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.Value;
 
 import java.time.LocalDate;
 
-@Data
+@Value
 @Builder(toBuilder = true)
 @Getter
 public class Innsending {
-    String innsendingsId;
-    String ressursId;
+    @NonNull String innsendingsId;
+    @NonNull String ressursId;
     String aktorId;
     String saksId;
     String journalpostId;

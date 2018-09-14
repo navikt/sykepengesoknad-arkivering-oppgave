@@ -48,6 +48,7 @@ public class SaksbehandlingsService {
 
     public String behandleSoknad(Sykepengesoknad sykepengesoknad) {
         String sykepengesoknadId = sykepengesoknad.getId();
+        String aktorId = sykepengesoknad.getAktorId();
         Optional<Innsending> innsending = innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknadId);
 
         if (innsending.isPresent()) {
@@ -59,11 +60,10 @@ public class SaksbehandlingsService {
             return innsendingId;
         }
 
-        String innsendingId = innsendingDAO.opprettInnsending(sykepengesoknadId);
+        String innsendingId = innsendingDAO.opprettInnsending(sykepengesoknadId, aktorId);
 
         try {
-            String fnr = aktorConsumer.finnFnr(sykepengesoknad.getAktorId());
-            innsendingDAO.oppdaterAktorId(innsendingId, sykepengesoknad.getAktorId());
+            String fnr = aktorConsumer.finnFnr(aktorId);
             Soknad soknad = opprettSoknad(sykepengesoknad, fnr);
             String saksId = opprettSak(innsendingId, fnr);
             String journalpostId = opprettJournalpost(innsendingId, soknad, saksId);

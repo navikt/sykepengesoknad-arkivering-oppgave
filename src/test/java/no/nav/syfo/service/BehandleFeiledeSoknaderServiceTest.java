@@ -36,7 +36,7 @@ public class BehandleFeiledeSoknaderServiceTest {
     private BehandleFeiledeSoknaderService behandleFeiledeSoknaderService;
 
     private Sykepengesoknad sykepengesoknad;
-    private Innsending innsending;
+    private Innsending globalInnsending;
 
     @Before
     public void setup() {
@@ -52,20 +52,20 @@ public class BehandleFeiledeSoknaderServiceTest {
         sykepengesoknad.setInnsendtDato(LocalDate.of(2018, 9, 13));
         sykepengesoknad.setOpprettetDato(LocalDate.of(2018, 9, 7));
 
-        innsending = Innsending.builder()
+        globalInnsending = Innsending.builder()
                 .innsendingsId("innsendingsId")
                 .ressursId("soknadsId")
                 .build();
 
         when(saksbehandlingsService.opprettSak("innsendingsId", "fnr")).thenReturn("saksId");
-        when(saksbehandlingsService.opprettJournalpost(anyString(),any(Soknad.class),anyString())).thenReturn("journalpostId");
+        when(saksbehandlingsService.opprettJournalpost(anyString(), any(Soknad.class), anyString())).thenReturn("journalpostId");
         when(aktorConsumer.finnFnr("aktorId")).thenReturn("fnr");
         when(saksbehandlingsService.opprettSoknad(any(), anyString())).thenReturn(Soknad.lagSoknad(sykepengesoknad, "fnr", "Ola Nordmann"));
     }
 
     @Test
     public void rebehandlerInnsendingSomHarFeiletIAktor() {
-        behandleFeiledeSoknaderService.behandleFeiletSoknad(innsending, sykepengesoknad);
+        behandleFeiledeSoknaderService.behandleFeiletSoknad(globalInnsending, sykepengesoknad);
 
         verify(innsendingDAO).oppdaterAktorId("innsendingsId", "aktorId");
 
@@ -79,7 +79,9 @@ public class BehandleFeiledeSoknaderServiceTest {
 
     @Test
     public void rebehandlerInnsendingSomHarFeiletISak() {
-        innsending.setAktorId("aktorId");
+        Innsending innsending = globalInnsending.toBuilder()
+                .aktorId("aktorId")
+                .build();
 
         behandleFeiledeSoknaderService.behandleFeiletSoknad(innsending, sykepengesoknad);
 
@@ -95,12 +97,12 @@ public class BehandleFeiledeSoknaderServiceTest {
 
     @Test
     public void rebehandlerInnsendingSomHarFeiletIJournalPost() {
-        innsending.setAktorId("aktorId");
-        innsending.setSaksId("saksId");
+        Innsending innsending = globalInnsending.toBuilder()
+                .aktorId("aktorId")
+                .saksId("saksId")
+                .build();
 
         behandleFeiledeSoknaderService.behandleFeiletSoknad(innsending, sykepengesoknad);
-
-        verify(innsendingDAO, never()).oppdaterAktorId("innsendingsId", "aktorId");
 
         verify(saksbehandlingsService, never()).opprettSak(anyString(), anyString());
         verify(saksbehandlingsService).opprettJournalpost(anyString(), any(Soknad.class), anyString());
@@ -112,12 +114,13 @@ public class BehandleFeiledeSoknaderServiceTest {
 
     @Test
     public void rebehandlerInnsendingSomHarFeiletIOppgave() {
-        innsending.setAktorId("aktorId");
-        innsending.setSaksId("saksId");
-        innsending.setJournalpostId("journalpostId");
-        behandleFeiledeSoknaderService.behandleFeiletSoknad(innsending, sykepengesoknad);
+        Innsending innsending = globalInnsending.toBuilder()
+                .aktorId("aktorId")
+                .saksId("saksId")
+                .journalpostId("journalpostId")
+                .build();
 
-        verify(innsendingDAO, never()).oppdaterAktorId("innsendingsId", "aktorId");
+        behandleFeiledeSoknaderService.behandleFeiletSoknad(innsending, sykepengesoknad);
 
         verify(saksbehandlingsService, never()).opprettSak(anyString(), anyString());
         verify(saksbehandlingsService, never()).opprettJournalpost(anyString(), any(Soknad.class), anyString());
