@@ -1,8 +1,7 @@
 package no.nav.syfo.config.unleash;
 
 public enum FeatureToggle {
-    SKAL_LESE_SOKNADER_FRA_KOE("syfo.syfogsak.skalLeseSoknaderFraKoe", true),
-    OPPRETT_SAK_GIR_FEIL("syfo.syfogsak.opprettSakGirFeil", false);
+    SKAL_LESE_SOKNADER_FRA_KOE("syfo.syfogsak.skalLeseSoknaderFraKoe", true);
 
     private final String toggleName;
     private final boolean availableInProd;
