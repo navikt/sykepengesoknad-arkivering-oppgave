@@ -49,6 +49,7 @@ public class SaksbehandlingsService {
 
     public String behandleSoknad(Sykepengesoknad sykepengesoknad) {
         String sykepengesoknadId = sykepengesoknad.getId();
+        String aktorId = sykepengesoknad.getAktorId();
         Optional<Innsending> innsending = innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknadId);
 
         if (innsending.isPresent()) {
@@ -60,11 +61,11 @@ public class SaksbehandlingsService {
             return innsendingId;
         }
 
-        String innsendingId = innsendingDAO.opprettInnsending(sykepengesoknadId);
+        String innsendingId = innsendingDAO.opprettInnsending(sykepengesoknadId, aktorId);
 
         try {
-            String fnr = aktorConsumer.finnFnr(sykepengesoknad.getAktorId());
-            Soknad soknad = opprettSoknad(sykepengesoknad, innsendingId, fnr);
+            String fnr = aktorConsumer.finnFnr(aktorId);
+            Soknad soknad = opprettSoknad(sykepengesoknad, fnr);
             String saksId = opprettSak(innsendingId, fnr);
             String journalpostId = opprettJournalpost(innsendingId, soknad, saksId);
 
@@ -84,29 +85,27 @@ public class SaksbehandlingsService {
         return innsendingId;
     }
 
-    private void opprettOppgave(String innsendingId, String fnr, Soknad soknad, String saksId, String journalpostId) {
+    public void opprettOppgave(String innsendingId, String fnr, Soknad soknad, String saksId, String journalpostId) {
         String behandlendeEnhet = behandlendeEnhetConsumer.hentBehandlendeEnhet(fnr, soknad.getSoknadstype());
         String oppgaveId = oppgavebehandlingConsumer
                 .opprettOppgave(fnr, behandlendeEnhet, saksId, journalpostId, soknad.lagBeskrivelse(), soknad.getSoknadstype());
         innsendingDAO.oppdaterOppgaveId(innsendingId, oppgaveId);
     }
 
-    private String opprettJournalpost(String innsendingId, Soknad soknad, String saksId) {
+    public String opprettJournalpost(String innsendingId, Soknad soknad, String saksId) {
         String journalpostId = behandleJournalConsumer.opprettJournalpost(soknad, saksId);
         innsendingDAO.oppdaterJournalpostId(innsendingId, journalpostId);
         return journalpostId;
     }
 
-    private String opprettSak(String innsendingId, String fnr) {
+    public String opprettSak(String innsendingId, String fnr) {
         String saksId = behandleSakConsumer.opprettSak(fnr);
         innsendingDAO.oppdaterSaksId(innsendingId, saksId);
         return saksId;
     }
 
-    private Soknad opprettSoknad(Sykepengesoknad sykepengesoknad, String innsendingId, String fnr) {
-        Soknad soknad = Soknad.lagSoknad(sykepengesoknad, fnr, personConsumer.finnBrukerPersonnavnByFnr(fnr));
-        innsendingDAO.oppdaterAktorId(innsendingId, soknad.getAktorId());
-        return soknad;
+    public Soknad opprettSoknad(Sykepengesoknad sykepengesoknad, String fnr) {
+        return Soknad.lagSoknad(sykepengesoknad, fnr, personConsumer.finnBrukerPersonnavnByFnr(fnr));
     }
 
     private void tellInnsendingBehandlet(Soknadstype soknadstype) {

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,14 +28,15 @@ public class InnsendingDAO {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
-    public String opprettInnsending(String sykepengesoknadId) {
+    public String opprettInnsending(String sykepengesoknadId, String aktorId) {
         String uuid = UUID.randomUUID().toString();
 
         namedParameterJdbcTemplate.update(
-                "INSERT INTO INNSENDING (INNSENDING_UUID, RESSURS_ID) VALUES (:uuid, :ressursId)",
+                "INSERT INTO INNSENDING (INNSENDING_UUID, RESSURS_ID, AKTOR_ID) VALUES (:uuid, :ressursId, :aktorId)",
                 new MapSqlParameterSource()
                         .addValue("uuid", uuid)
                         .addValue("ressursId", sykepengesoknadId)
+                        .addValue("aktorId", aktorId)
         );
 
         return uuid;
@@ -53,8 +55,8 @@ public class InnsendingDAO {
         namedParameterJdbcTemplate.update(
                 "UPDATE INNSENDING SET SAKS_ID = :saksId WHERE INNSENDING_UUID = :uuid",
                 new MapSqlParameterSource()
-                    .addValue("saksId", saksId)
-                    .addValue("uuid", uuid)
+                        .addValue("saksId", saksId)
+                        .addValue("uuid", uuid)
         );
     }
 
@@ -99,6 +101,24 @@ public class InnsendingDAO {
                         .addValue("ressursId", sykepengesoknadId),
                 getInnsendingRowMapper()
         ).stream().findFirst();
+    }
+
+    public List<Innsending> hentFeilendeInnsendinger() {
+        return namedParameterJdbcTemplate.query(
+                "SELECT * " +
+                        "FROM INNSENDING " +
+                        "WHERE INNSENDING_UUID IN (SELECT INNSENDING_UUID FROM FEILET_INNSENDING)",
+
+                getInnsendingRowMapper()
+        );
+    }
+
+    public void fjernFeiletInnsending(String innsendingsId) {
+        namedParameterJdbcTemplate.update(
+                "DELETE FROM FEILET_INNSENDING WHERE INNSENDING_UUID = :innsendingsId",
+
+                new MapSqlParameterSource().addValue("innsendingsId", innsendingsId)
+        );
     }
 
     public static RowMapper<Innsending> getInnsendingRowMapper() {

@@ -27,7 +27,7 @@ public class SoknadSendtListener {
 
     @KafkaListener(topics = "aapen-syfo-soeknadSendt-v1", id = "soknadSendt", idIsGroup = false)
     public void listen(ConsumerRecord<String, String> cr, Acknowledgment acknowledgment) {
-        log.info("Melding mottatt på topic: {}, partisjon: {} med offsett: {}", cr.topic(), cr.partition(), cr.offset());
+        log.debug("Melding mottatt på topic: {}, partisjon: {} med offsett: {}", cr.topic(), cr.partition(), cr.offset());
 
         try {
             Sykepengesoknad deserialisertSoknad = objectMapper.readValue(cr.value(), Sykepengesoknad.class);
