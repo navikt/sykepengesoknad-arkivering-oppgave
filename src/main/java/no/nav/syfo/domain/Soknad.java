@@ -3,9 +3,6 @@ package no.nav.syfo.domain;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import no.nav.syfo.consumer.ws.AktorConsumer;
-import no.nav.syfo.consumer.ws.PersonConsumer;
 import no.nav.syfo.domain.dto.Soknadstype;
 import no.nav.syfo.domain.dto.Sporsmal;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
@@ -16,7 +13,6 @@ import java.util.List;
 @Data
 @Builder
 @Getter
-@Slf4j
 public class Soknad {
     String aktorId;
     String soknadsId;
@@ -27,9 +23,6 @@ public class Soknad {
     String navn;
     LocalDate innsendtDato;
     List<Sporsmal> sporsmal;
-
-    private AktorConsumer aktorConsumer;
-    private PersonConsumer personConsumer;
 
     public String lagBeskrivelse() {
         return "Beskivelse er ikke implementert enda, se PDF";

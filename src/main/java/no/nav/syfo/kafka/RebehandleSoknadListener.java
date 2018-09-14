@@ -39,11 +39,11 @@ public class RebehandleSoknadListener {
         this.innsendingDAO = innsendingDAO;
 
         String groupId = "syfogsak-" + miljonavn + "-rebehandleSoknads";
-        consumer = consumerFactory.createConsumer(groupId, "pre", "post");
+        consumer = consumerFactory.createConsumer(groupId, "", "");
         consumer.subscribe(Collections.singletonList("aapen-syfo-soeknadSendt-v1"));
     }
 
-    @Scheduled(cron = "*/30 * * * * *")
+    @Scheduled(cron = "0 0 * * * *")
     public void listen() {
         List<Innsending> feilendeInnsendinger = innsendingDAO.hentFeilendeInnsendinger();
 
@@ -63,11 +63,9 @@ public class RebehandleSoknadListener {
                                     behandleFeiledeSoknaderService.behandleFeiletSoknad(innsending, deserialisertSoknad);
                                 });
                     } catch (JsonProcessingException e) {
-                        log.error("Kunne ikke deserialisere sykepengesøknad", e);
-                        throw new RuntimeException("Kunne ikke deserialisere sykepengesøknad");
+                        log.warn("Kunne ikke deserialisere sykepengesøknad", e);
                     } catch (Exception e) {
-                        log.error("Uventet feil ved behandling av søknad", e);
-                        throw new RuntimeException("Uventet feil ved behandling av søknad");
+                        log.warn("Uventet feil ved behandling av søknad", e);
                     }
                 }
             }

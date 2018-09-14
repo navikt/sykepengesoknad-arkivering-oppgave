@@ -7,7 +7,7 @@ import lombok.Getter;
 import java.time.LocalDate;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @Getter
 public class Innsending {
     String innsendingsId;

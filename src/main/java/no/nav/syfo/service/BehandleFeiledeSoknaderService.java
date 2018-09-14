@@ -52,77 +52,47 @@ public class BehandleFeiledeSoknaderService {
 
     private void fortsetterBehandlingFraOppgave(Innsending innsending, Sykepengesoknad sykepengesoknad) {
         String fnr = aktorConsumer.finnFnr(innsending.getAktorId());
-        String innsendingId = innsending.getInnsendingsId();
-
-        Innsending fullfortInnsending = Innsending.builder()
-                .innsendingsId(innsendingId)
-                .ressursId(innsending.getRessursId())
-                .aktorId(innsending.getAktorId())
-                .saksId(innsending.getSaksId())
-                .journalpostId(innsending.getJournalpostId())
-                .build();
-
 
         saksbehandlingsService.opprettOppgave(
-                innsendingId,
+                innsending.getInnsendingsId(),
                 fnr,
                 saksbehandlingsService.opprettSoknad(sykepengesoknad, fnr),
-                fullfortInnsending.getSaksId(),
-                fullfortInnsending.getJournalpostId()
+                innsending.getSaksId(),
+                innsending.getJournalpostId()
         );
     }
 
     private void fortsettBehandlingFraJournalpost(Innsending innsending, Sykepengesoknad sykepengesoknad) {
-        String innsendingsId = innsending.getInnsendingsId();
-        Innsending fullfortInnsending = Innsending.builder()
-                .innsendingsId(innsendingsId)
-                .ressursId(innsending.getRessursId())
-                .aktorId(innsending.getAktorId())
-                .saksId(innsending.getSaksId())
-                .build();
-
         Soknad soknad = saksbehandlingsService
                 .opprettSoknad(
                         sykepengesoknad,
                         aktorConsumer.finnFnr(innsending.getAktorId())
                 );
 
-        fullfortInnsending.setJournalpostId(saksbehandlingsService
+        String journalpostId = saksbehandlingsService
                 .opprettJournalpost(
-                        innsendingsId,
+                        innsending.getInnsendingsId(),
                         soknad,
-                        innsending.getSaksId()));
+                        innsending.getSaksId());
 
-        fortsetterBehandlingFraOppgave(fullfortInnsending, sykepengesoknad);
+        fortsetterBehandlingFraOppgave(innsending.toBuilder().journalpostId(journalpostId).build(), sykepengesoknad);
     }
 
     private void fortsettBehandlingFraSaksId(Innsending innsending, Sykepengesoknad sykepengesoknad) {
-        Innsending fullfortInnsending = Innsending.builder()
-                .innsendingsId(innsending.getInnsendingsId())
-                .ressursId(innsending.getRessursId())
-                .aktorId(innsending.getAktorId())
-                .build();
-
-        fullfortInnsending
-                .setSaksId(saksbehandlingsService
-                        .opprettSak(
-                                innsending.getInnsendingsId(),
-                                aktorConsumer.finnFnr(innsending.getAktorId())
-                        )
+        String saksId = saksbehandlingsService
+                .opprettSak(
+                        innsending.getInnsendingsId(),
+                        aktorConsumer.finnFnr(innsending.getAktorId())
                 );
 
-        fortsettBehandlingFraJournalpost(fullfortInnsending, sykepengesoknad);
+        fortsettBehandlingFraJournalpost(innsending.toBuilder().saksId(saksId).build(), sykepengesoknad);
     }
 
     private void fortsettBehandlingFraAktor(Innsending innsending, Sykepengesoknad sykepengesoknad) {
-        Innsending fullfortInnsending = Innsending.builder()
-                .innsendingsId(innsending.getInnsendingsId())
-                .ressursId(innsending.getRessursId())
-                .build();
+        String aktorId = sykepengesoknad.getAktorId();
+        innsendingDAO.oppdaterAktorId(innsending.getInnsendingsId(), sykepengesoknad.getAktorId());
 
-        fullfortInnsending.setAktorId(sykepengesoknad.getAktorId());
-        innsendingDAO.oppdaterAktorId(fullfortInnsending.getInnsendingsId(), sykepengesoknad.getAktorId());
-        fortsettBehandlingFraSaksId(fullfortInnsending, sykepengesoknad);
+        fortsettBehandlingFraSaksId(innsending.toBuilder().aktorId(aktorId).build(), sykepengesoknad);
     }
 
 }
