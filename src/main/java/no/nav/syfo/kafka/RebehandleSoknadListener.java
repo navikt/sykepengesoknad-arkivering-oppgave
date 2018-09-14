@@ -43,7 +43,7 @@ public class RebehandleSoknadListener {
         consumer.subscribe(Collections.singletonList("aapen-syfo-soeknadSendt-v1"));
     }
 
-    @Scheduled(cron = "*/30 * * * * *")
+    @Scheduled(cron = "0 0 * * * *")
     public void listen() {
         List<Innsending> feilendeInnsendinger = innsendingDAO.hentFeilendeInnsendinger();
 
@@ -53,6 +53,8 @@ public class RebehandleSoknadListener {
         try {
             while (!(records=consumer.poll(1000L)).isEmpty()) {
                 for (ConsumerRecord<String, String> record : records) {
+                    log.debug("Melding mottatt på topic: {}, partisjon: {} med offsett: {}",
+                            record.topic(), record.partition(), record.offset());
                     try {
                         Sykepengesoknad deserialisertSoknad = objectMapper.readValue(record.value(), Sykepengesoknad.class);
 
