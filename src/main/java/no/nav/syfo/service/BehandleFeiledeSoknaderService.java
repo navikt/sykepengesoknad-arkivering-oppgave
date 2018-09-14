@@ -50,11 +50,15 @@ public class BehandleFeiledeSoknaderService {
                 behandleFraOppgave(innsendingsId, saksId, journalpostId, sykepengesoknad);
             }
 
-            innsendingDAO.settBehandlet(innsendingsId);
-            innsendingDAO.fjernFeiletInnsending(innsendingsId);
-
-            log.info("Fullført rebehandling av innsending med id: {} av soknad med id: {}",
-                    innsendingsId, sykepengesoknad.getId());
+            if (innsending.getBehandlet() == null) {
+                innsendingDAO.settBehandlet(innsendingsId);
+                innsendingDAO.fjernFeiletInnsending(innsendingsId);
+                log.info("Fullført rebehandling av innsending med id: {} av soknad med id: {}",
+                        innsendingsId, sykepengesoknad.getId());
+            } else {
+                log.warn("Forsøkte å rebehandle ferdigbehandlet søknad med innsendingid: {} og søknadsid: {}",
+                        innsendingsId, sykepengesoknad.getId());
+            }
         } catch (RuntimeException e) {
             log.error("Feilet ved rebehandling av innsending med id: {}", innsendingsId);
         }
