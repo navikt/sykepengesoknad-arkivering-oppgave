@@ -38,7 +38,7 @@ public class RebehandleSoknadListener {
         this.behandleFeiledeSoknaderService = behandleFeiledeSoknaderService;
         this.innsendingDAO = innsendingDAO;
 
-        String groupId = "syfogsak-" + miljonavn + "-rebehandleSoknads";
+        String groupId = "syfogsak-" + miljonavn + "-rebehandleSoknad";
         consumer = consumerFactory.createConsumer(groupId, "", "");
         consumer.subscribe(Collections.singletonList("aapen-syfo-soeknadSendt-v1"));
     }
