@@ -31,27 +31,28 @@ public class BehandleFeiledeSoknaderService {
     public void behandleFeiletSoknad(Innsending innsending, Sykepengesoknad sykepengesoknad) {
         String innsendingsId = innsending.getInnsendingsId();
         String aktorId = innsending.getAktorId();
+        String saksId = innsending.getSaksId();
+        String journalpostId = innsending.getJournalpostId();
 
         try {
-            String saksId = innsending.getSaksId();
-            String journalpostId = innsending.getJournalpostId();
-
             if (aktorId == null) {
                 aktorId = sykepengesoknad.getAktorId();
                 innsendingDAO.oppdaterAktorId(innsendingsId, aktorId);
             }
 
-            if (innsending.getSaksId() == null) {
+            if (saksId == null) {
                 saksId = behandleFraSaksId(innsendingsId, aktorId);
             }
-            if (innsending.getJournalpostId() == null) {
+            if (journalpostId == null) {
                 journalpostId = behandleFraJournalpost(innsendingsId, saksId, sykepengesoknad);
             }
             if (innsending.getOppgaveId() == null) {
                 behandleFraOppgave(innsendingsId, saksId, journalpostId, sykepengesoknad);
             }
+
             innsendingDAO.settBehandlet(innsendingsId);
             innsendingDAO.fjernFeiletInnsending(innsendingsId);
+
             log.info("Fullført rebehandling av innsending med id: {} av soknad med id: {}",
                     innsendingsId, sykepengesoknad.getId());
         } catch (RuntimeException e) {
