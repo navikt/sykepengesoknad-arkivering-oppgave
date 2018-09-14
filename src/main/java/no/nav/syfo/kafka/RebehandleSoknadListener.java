@@ -43,7 +43,7 @@ public class RebehandleSoknadListener {
         consumer.subscribe(Collections.singletonList("aapen-syfo-soeknadSendt-v1"));
     }
 
-    @Scheduled(cron = "0 0 * * * *")
+    @Scheduled(cron = "*/30 * * * * *")
     public void listen() {
         List<Innsending> feilendeInnsendinger = innsendingDAO.hentFeilendeInnsendinger();
 
