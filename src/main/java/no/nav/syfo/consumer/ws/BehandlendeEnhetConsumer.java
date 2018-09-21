@@ -40,7 +40,7 @@ public class BehandlendeEnhetConsumer {
         String geografiskTilknytning = hentGeografiskTilknytning(fnr);
 
         try {
-            String behandlendeEnhet = arbeidsfordelingV1.finnBehandlendeEnhetListe(new WSFinnBehandlendeEnhetListeRequest()
+            return arbeidsfordelingV1.finnBehandlendeEnhetListe(new WSFinnBehandlendeEnhetListeRequest()
                     .withArbeidsfordelingKriterier(new WSArbeidsfordelingKriterier()
                             .withGeografiskTilknytning(new WSGeografi().withValue(geografiskTilknytning))
                             .withTema(new WSTema().withValue("SYK"))
@@ -51,7 +51,6 @@ public class BehandlendeEnhetConsumer {
                     .map(WSOrganisasjonsenhet::getEnhetId)
                     .findFirst()
                     .orElseThrow(() -> new RuntimeException("Fant ingen aktiv enhet for " + geografiskTilknytning));
-            return behandlendeEnhet;
         } catch (FinnBehandlendeEnhetListeUgyldigInput e) {
             log.error("Feil ved henting av brukers forvaltningsenhet", e);
             throw new RuntimeException("Feil ved henting av brukers forvaltningsenhet", e);
@@ -61,23 +60,22 @@ public class BehandlendeEnhetConsumer {
         }
     }
 
-    public String hentGeografiskTilknytning(String fnr) {
+    private String hentGeografiskTilknytning(String fnr) {
         try {
-            String geografiskTilknytning = of(personV3.hentGeografiskTilknytning(
+            return of(personV3.hentGeografiskTilknytning(
                     new HentGeografiskTilknytningRequest()
                             .withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(fnr)))))
                     .map(HentGeografiskTilknytningResponse::getGeografiskTilknytning)
                     .map(GeografiskTilknytning::getGeografiskTilknytning)
-                    .orElseThrow(() -> new RuntimeException("Kunne ikke hente geografisk tilknytning"));
-            return geografiskTilknytning;
+                    .orElse(null);
         } catch (HentGeografiskTilknytningSikkerhetsbegrensing | HentGeografiskTilknytningPersonIkkeFunnet e) {
             log.error("Feil ved henting av geografisk tilknytning", e);
             throw new RuntimeException("Feil ved henting av geografisk tilknytning", e);
         }
     }
 
-    public String hentRiktigTemaBehandlingstemaForSoknadstype(Soknadstype soknadstype){
-        if(soknadstype == OPPHOLD_UTLAND){
+    private String hentRiktigTemaBehandlingstemaForSoknadstype(Soknadstype soknadstype) {
+        if (soknadstype == OPPHOLD_UTLAND) {
             return BEHANDLINGSTEMA_OPPHOLD_UTLAND;
         }
         return null;
