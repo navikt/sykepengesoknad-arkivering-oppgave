@@ -47,7 +47,7 @@ public class SaksbehandlingsService {
         this.registry = registry;
     }
 
-    public String behandleSoknad(Sykepengesoknad sykepengesoknad) {
+    public void behandleSoknad(Sykepengesoknad sykepengesoknad) {
         String sykepengesoknadId = sykepengesoknad.getId();
         String aktorId = sykepengesoknad.getAktorId();
         Optional<Innsending> innsending = innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknadId);
@@ -58,7 +58,7 @@ public class SaksbehandlingsService {
                     sykepengesoknadId,
                     innsendingId
             );
-            return innsendingId;
+            return;
         }
 
         String innsendingId = innsendingDAO.opprettInnsending(sykepengesoknadId, aktorId);
@@ -72,39 +72,44 @@ public class SaksbehandlingsService {
             opprettOppgave(innsendingId, fnr, soknad, saksId, journalpostId);
 
             innsendingDAO.settBehandlet(innsendingId);
+
             tellInnsendingBehandlet(sykepengesoknad.getSoknadstype());
+            log.info("Søknad med id {} er behandlet i innsending med id {}",
+                    soknad.getSoknadsId(),
+                    innsendingId
+            );
         } catch (Exception e) {
+            innsendingDAO.leggTilFeiletInnsending(innsendingId);
+
+            tellInnsendingFeilet(sykepengesoknad.getSoknadstype());
             log.error("Kunne ikke fullføre innsending av søknad med innsending id: {} og sykepengesøknad id: {}",
                     innsendingId,
                     sykepengesoknadId,
                     e);
-            innsendingDAO.leggTilFeiletInnsending(innsendingId);
-            tellInnsendingFeilet(sykepengesoknad.getSoknadstype());
         }
 
-        return innsendingId;
     }
 
-    public void opprettOppgave(String innsendingId, String fnr, Soknad soknad, String saksId, String journalpostId) {
+    void opprettOppgave(String innsendingId, String fnr, Soknad soknad, String saksId, String journalpostId) {
         String behandlendeEnhet = behandlendeEnhetConsumer.hentBehandlendeEnhet(fnr, soknad.getSoknadstype());
         String oppgaveId = oppgavebehandlingConsumer
                 .opprettOppgave(fnr, behandlendeEnhet, saksId, journalpostId, soknad.lagBeskrivelse(), soknad.getSoknadstype());
         innsendingDAO.oppdaterOppgaveId(innsendingId, oppgaveId);
     }
 
-    public String opprettJournalpost(String innsendingId, Soknad soknad, String saksId) {
+    String opprettJournalpost(String innsendingId, Soknad soknad, String saksId) {
         String journalpostId = behandleJournalConsumer.opprettJournalpost(soknad, saksId);
         innsendingDAO.oppdaterJournalpostId(innsendingId, journalpostId);
         return journalpostId;
     }
 
-    public String opprettSak(String innsendingId, String fnr) {
+    String opprettSak(String innsendingId, String fnr) {
         String saksId = behandleSakConsumer.opprettSak(fnr);
         innsendingDAO.oppdaterSaksId(innsendingId, saksId);
         return saksId;
     }
 
-    public Soknad opprettSoknad(Sykepengesoknad sykepengesoknad, String fnr) {
+    Soknad opprettSoknad(Sykepengesoknad sykepengesoknad, String fnr) {
         return Soknad.lagSoknad(sykepengesoknad, fnr, personConsumer.finnBrukerPersonnavnByFnr(fnr));
     }
 
