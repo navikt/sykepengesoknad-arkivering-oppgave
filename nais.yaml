@@ -31,8 +31,6 @@ fasitResources:
   used:
   - alias: virksomhet:BehandleSak_v1
     resourceType: webserviceendpoint
-  - alias: pdfgen
-    resourceType: RestService
   - alias: Journal_v2
     resourceType: webserviceendpoint
   - alias: virksomhet:Arbeidsfordeling_v1

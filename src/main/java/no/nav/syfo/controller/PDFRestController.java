@@ -3,7 +3,6 @@ package no.nav.syfo.controller;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.domain.Soknad;
 import no.nav.syfo.domain.dto.PDFTemplate;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
@@ -13,17 +12,14 @@ import static org.springframework.http.HttpStatus.OK;
 @Slf4j
 @Controller
 public class PDFRestController {
-    private String pdfPath;
     private RestTemplate restTemplate;
 
-    public PDFRestController(@Value("${pdfgen.url}") String pdfPath,
-                             RestTemplate restTemplate) {
-        this.pdfPath = pdfPath;
+    public PDFRestController(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
     public byte[] getPDF(Soknad soknad, PDFTemplate template) {
-        final String url = this.pdfPath + "/v1/genpdf/syfosoknader/" + template;
+        final String url = "http://pdf-gen.default/api/v1/genpdf/syfosoknader/" + template;
 
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
