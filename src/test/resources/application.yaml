@@ -20,8 +20,6 @@ javax.net.ssl:
 servicegateway.url: servicegateway.url
 securitytokenservice.url: sts.url
 
-pdfgen.url: "pdfgen.url"
-
 behandleJournal.v2.endpointurl: "behandleJournalv2.url"
 Journal.v2.endpointurl: "behandleJournalv2.url"
 aktoer.v2.endpointurl: "aktor.url"
