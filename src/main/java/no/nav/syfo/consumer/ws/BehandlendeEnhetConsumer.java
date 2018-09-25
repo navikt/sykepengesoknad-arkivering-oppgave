@@ -38,13 +38,6 @@ public class BehandlendeEnhetConsumer {
 
     public String hentBehandlendeEnhet(String fnr, Soknadstype soknadstype) {
         String geografiskTilknytning = hentGeografiskTilknytning(fnr);
-
-        //spesialhåndtering av feilende innsending
-        if ("1201".equals(geografiskTilknytning)) {
-            log.info("Spesialhåndtering: setter behandlende enhet til 4411 for geografisk tilknytning 1201");
-            return "4411";
-        }
-
         try {
             return arbeidsfordelingV1.finnBehandlendeEnhetListe(new WSFinnBehandlendeEnhetListeRequest()
                     .withArbeidsfordelingKriterier(new WSArbeidsfordelingKriterier()
