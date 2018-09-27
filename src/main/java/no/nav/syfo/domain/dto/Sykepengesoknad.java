@@ -20,4 +20,6 @@ public class Sykepengesoknad {
     LocalDate opprettetDato;
     LocalDate innsendtDato;
     List<Sporsmal> sporsmal;
+    String korrigertAv;
+    String korrigerer;
 }
