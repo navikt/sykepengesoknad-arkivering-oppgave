@@ -78,7 +78,7 @@ public class RebehandleSoknadListener {
             // ignore for shutdown
         }
         final int antallFeilende = innsendingDAO.hentFeilendeInnsendinger().size();
-        log.debug("registrerer metrikker, {} rebehandlinger feiler.");
+        log.info("registrerer metrikker, {} rebehandlinger feiler.");
         registry.gauge("syfogsak.rebehandling.feilet",
                 Tags.of(
                         "type", "info",
