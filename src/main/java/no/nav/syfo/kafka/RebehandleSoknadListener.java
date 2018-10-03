@@ -77,11 +77,13 @@ public class RebehandleSoknadListener {
         } catch (WakeupException e) {
             // ignore for shutdown
         }
+        final int antallFeilende = innsendingDAO.hentFeilendeInnsendinger().size();
+        log.debug("registrerer metrikker, {} rebehandlinger feiler.");
         registry.gauge("syfogsak.rebehandling.feilet",
                 Tags.of(
                         "type", "info",
                         "help", "Antall innsendinger som fortsatt feiler etter rebehandling."
                 ),
-                innsendingDAO.hentFeilendeInnsendinger().size());
+                antallFeilende);
     }
 }
