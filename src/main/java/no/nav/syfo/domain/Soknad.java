@@ -23,6 +23,8 @@ public class Soknad {
     String navn;
     LocalDate innsendtDato;
     List<Sporsmal> sporsmal;
+    String korrigerer;
+    String korrigertAv;
 
     public String lagBeskrivelse() {
         return "Beskivelse er ikke implementert enda, se PDF";
@@ -39,6 +41,8 @@ public class Soknad {
                 .sporsmal(sykepengesoknad.getSporsmal())
                 .fnr(fnr)
                 .navn(navn)
+                .korrigerer(sykepengesoknad.getKorrigerer())
+                .korrigertAv(sykepengesoknad.getKorrigertAv())
                 .build();
     }
 }
