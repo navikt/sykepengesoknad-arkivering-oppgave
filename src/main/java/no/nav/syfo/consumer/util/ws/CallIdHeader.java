@@ -15,6 +15,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 
 import static java.util.Optional.ofNullable;
+import static java.util.UUID.randomUUID;
 import static no.nav.syfo.config.ApplicationConfig.CALL_ID;
 
 public class CallIdHeader extends AbstractPhaseInterceptor<Message> {
@@ -38,6 +39,6 @@ public class CallIdHeader extends AbstractPhaseInterceptor<Message> {
 
     private String callId() {
         return ofNullable(MDC.get(CALL_ID))
-                .orElseGet(() -> "syfomottoakoppslag-" + (int) (Math.random() * 10000));
+                .orElseGet(() -> randomUUID().toString());
     }
 }

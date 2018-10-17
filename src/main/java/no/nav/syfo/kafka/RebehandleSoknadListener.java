@@ -26,6 +26,7 @@ import java.util.List;
 import static java.util.UUID.randomUUID;
 import static no.nav.syfo.config.ApplicationConfig.CALL_ID;
 import static no.nav.syfo.kafka.KafkaHeaderConstants.getLastHeaderByKeyAsString;
+import static no.nav.syfo.kafka.mapper.DtoToSykepengesoknadMapper.konverter;
 
 @Slf4j
 @Component
@@ -66,7 +67,7 @@ public class RebehandleSoknadListener {
                     try {
                         MDC.put(CALL_ID, getLastHeaderByKeyAsString(record.headers(), CALL_ID, randomUUID().toString()));
 
-                        Sykepengesoknad sykepengesoknad = DtoToSykepengesoknadMapper.konverter(record.value());
+                        Sykepengesoknad sykepengesoknad = konverter(record.value());
 
                         log.info("Rebehandler søknad med id {}", sykepengesoknad.getId());
 
