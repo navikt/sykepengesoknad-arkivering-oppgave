@@ -24,7 +24,6 @@ public final class DtoToSykepengesoknadMapper {
     private static Sporsmal konverter(SporsmalDTO sporsmal) {
         return Sporsmal.builder()
                 .id(sporsmal.getId())
-                .uuid("uuid")
                 .tag(sporsmal.getTag())
                 .sporsmalstekst(sporsmal.getSporsmalstekst())
                 .undertekst(sporsmal.getUndertekst())
@@ -55,8 +54,8 @@ public final class DtoToSykepengesoknadMapper {
                 .sporsmal(sykepengesoknad.getSporsmal().stream()
                         .map(DtoToSykepengesoknadMapper::konverter)
                         .collect(Collectors.toList()))
-                .korrigertAv("empty")
-                .korrigerer("empty")
+                .korrigertAv(sykepengesoknad.getKorrigertAv())
+                .korrigerer(sykepengesoknad.getKorrigerer())
                 .build();
     }
 }
