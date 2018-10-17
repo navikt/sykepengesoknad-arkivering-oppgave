@@ -1,10 +1,12 @@
 package no.nav.syfo.domain.dto;
 
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Value;
 
 import java.util.List;
 
-@Getter
+@Value
+@Builder
 public class Sporsmal {
 
     String id;

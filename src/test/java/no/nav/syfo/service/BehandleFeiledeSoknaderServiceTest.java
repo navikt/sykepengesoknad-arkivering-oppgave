@@ -40,17 +40,18 @@ public class BehandleFeiledeSoknaderServiceTest {
 
     @Before
     public void setup() {
-        sykepengesoknad = new Sykepengesoknad();
-        sykepengesoknad.setId("soknadsId");
-        sykepengesoknad.setAktorId("aktorId");
-        sykepengesoknad.setSoknadstype(SELVSTENDIGE_OG_FRILANSERE);
-        sykepengesoknad.setSporsmal(Collections.emptyList());
-        sykepengesoknad.setSykmeldingId("sykmeldingsId");
-        sykepengesoknad.setFom(LocalDate.of(2018, 9, 7));
-        sykepengesoknad.setTom(LocalDate.of(2018, 9, 13));
-        sykepengesoknad.setStatus("SENDT");
-        sykepengesoknad.setInnsendtDato(LocalDate.of(2018, 9, 13));
-        sykepengesoknad.setOpprettetDato(LocalDate.of(2018, 9, 7));
+        sykepengesoknad = Sykepengesoknad.builder()
+                .id("soknadsId")
+                .aktorId("aktorId")
+                .soknadstype(SELVSTENDIGE_OG_FRILANSERE)
+                .sporsmal(Collections.emptyList())
+                .sykmeldingId("sykmeldingsId")
+                .fom(LocalDate.of(2018, 9, 7))
+                .tom(LocalDate.of(2018, 9, 13))
+                .status("SENDT")
+                .innsendtDato(LocalDate.of(2018, 9, 13))
+                .opprettetDato(LocalDate.of(2018, 9, 7))
+                .build();
 
         globalInnsending = Innsending.builder()
                 .innsendingsId("innsendingsId")

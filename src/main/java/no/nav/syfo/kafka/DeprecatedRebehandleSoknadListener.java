@@ -1,19 +1,19 @@
 package no.nav.syfo.kafka;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.consumer.repository.InnsendingDAO;
 import no.nav.syfo.domain.Innsending;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
-import no.nav.syfo.kafka.mapper.DtoToSykepengesoknadMapper;
-import no.nav.syfo.kafka.sykepengesoknad.dto.SykepengesoknadDTO;
 import no.nav.syfo.service.BehandleFeiledeSoknaderService;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.errors.WakeupException;
-import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -23,32 +23,30 @@ import javax.inject.Inject;
 import java.util.Collections;
 import java.util.List;
 
-import static java.util.UUID.randomUUID;
-import static no.nav.syfo.config.ApplicationConfig.CALL_ID;
-import static no.nav.syfo.kafka.KafkaHeaderConstants.getLastHeaderByKeyAsString;
-
+@Deprecated
 @Slf4j
 @Component
-public class RebehandleSoknadListener {
+public class DeprecatedRebehandleSoknadListener {
     private final BehandleFeiledeSoknaderService behandleFeiledeSoknaderService;
     private final InnsendingDAO innsendingDAO;
     private final MeterRegistry registry;
-    private Consumer<String, SykepengesoknadDTO> consumer;
+    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+    private Consumer<String, String> consumer;
 
     @Inject
-    public RebehandleSoknadListener(
+    public DeprecatedRebehandleSoknadListener(
             BehandleFeiledeSoknaderService behandleFeiledeSoknaderService,
             InnsendingDAO innsendingDAO,
             MeterRegistry registry,
             @Value("${fasit.environment.name}") String miljonavn,
-            ConsumerFactory<String, SykepengesoknadDTO> consumerFactory) {
+            ConsumerFactory<String, String> deprecatedConsumerFactory) {
         this.behandleFeiledeSoknaderService = behandleFeiledeSoknaderService;
         this.innsendingDAO = innsendingDAO;
         this.registry = registry;
 
         String groupId = "syfogsak-" + miljonavn + "-rebehandleSoknad";
-        consumer = consumerFactory.createConsumer(groupId, "", "");
-        consumer.subscribe(Collections.singletonList("privat-syfo-soknadSendt-v1"));
+        consumer = deprecatedConsumerFactory.createConsumer(groupId, "", "");
+        consumer.subscribe(Collections.singletonList("aapen-syfo-soeknadSendt-v1"));
     }
 
     @Scheduled(cron = "0 0 * * * *")
@@ -57,27 +55,23 @@ public class RebehandleSoknadListener {
 
         consumer.poll(100L);
         consumer.seekToBeginning(consumer.assignment());
-        ConsumerRecords<String, SykepengesoknadDTO> records;
+        ConsumerRecords<String, String> records;
         try {
             while (!(records = consumer.poll(1000L)).isEmpty()) {
-                for (ConsumerRecord<String, SykepengesoknadDTO> record : records) {
+                for (ConsumerRecord<String, String> record : records) {
                     log.debug("Melding mottatt på topic: {}, partisjon: {} med offsett: {}",
                             record.topic(), record.partition(), record.offset());
                     try {
-                        MDC.put(CALL_ID, getLastHeaderByKeyAsString(record.headers(), CALL_ID, randomUUID().toString()));
-
-                        Sykepengesoknad sykepengesoknad = DtoToSykepengesoknadMapper.konverter(record.value());
-
-                        log.info("Rebehandler søknad med id {}", sykepengesoknad.getId());
+                        Sykepengesoknad deserialisertSoknad = objectMapper.readValue(record.value(), Sykepengesoknad.class);
 
                         feilendeInnsendinger.stream()
-                                .filter(innsending -> innsending.getRessursId().equals(sykepengesoknad.getId()))
+                                .filter(innsending -> innsending.getRessursId().equals(deserialisertSoknad.getId()))
                                 .findAny()
-                                .ifPresent(innsending -> behandleFeiledeSoknaderService.behandleFeiletSoknad(innsending, sykepengesoknad));
+                                .ifPresent(innsending -> behandleFeiledeSoknaderService.behandleFeiletSoknad(innsending, deserialisertSoknad));
+                    } catch (JsonProcessingException e) {
+                        log.warn("Kunne ikke deserialisere sykepengesøknad", e);
                     } catch (Exception e) {
                         log.warn("Uventet feil ved behandling av søknad", e);
-                    } finally {
-                        MDC.remove(CALL_ID);
                     }
                 }
             }

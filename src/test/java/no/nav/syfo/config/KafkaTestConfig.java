@@ -1,39 +1,38 @@
 package no.nav.syfo.config;
 
-import org.junit.ClassRule;
+import no.nav.syfo.kafka.sykepengesoknad.deserializer.SykepengesoknadDeserializer;
+import no.nav.syfo.kafka.sykepengesoknad.dto.SykepengesoknadDTO;
+import no.nav.syfo.kafka.sykepengesoknad.serializer.SykepengesoknadSerializer;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.core.*;
-import org.springframework.kafka.test.rule.KafkaEmbedded;
-import org.springframework.kafka.test.utils.KafkaTestUtils;
 
 @Configuration
 @EnableKafka
 public class KafkaTestConfig {
 
+    @Bean
+    public ConsumerFactory<String, SykepengesoknadDTO> consumerFactory(KafkaProperties kafkaProperties) {
+        return new DefaultKafkaConsumerFactory<>(kafkaProperties.buildConsumerProperties(), new StringDeserializer(), new SykepengesoknadDeserializer());
+    }
+
+    @Deprecated
+    @Bean
+    public ConsumerFactory<String, String> deprecatedConsumerFactory(KafkaProperties kafkaProperties) {
+        return new DefaultKafkaConsumerFactory<>(kafkaProperties.buildConsumerProperties(), new StringDeserializer(), new StringDeserializer());
+    }
 
     @Bean
-    public KafkaTemplate<String, String> kafkaTemplate(ProducerFactory<String, String> producerFactory) {
+    public ProducerFactory<String, SykepengesoknadDTO> producerFactory(KafkaProperties kafkaProperties) {
+        return new DefaultKafkaProducerFactory<>(kafkaProperties.buildProducerProperties(), new StringSerializer(), new SykepengesoknadSerializer());
+    }
+
+    @Bean
+    public KafkaTemplate<String, SykepengesoknadDTO> kafkaTemplate(ProducerFactory<String, SykepengesoknadDTO> producerFactory) {
         return new KafkaTemplate<>(producerFactory);
     }
-
-    @ClassRule
-    public static KafkaEmbedded embeddedKafka = new KafkaEmbedded(1, true, "aapen-syfo-soeknadSendt-v1");
-
-    @Bean
-    public ConsumerFactory<String, String> consumerFactory() {
-        return new DefaultKafkaConsumerFactory<>(KafkaTestUtils.consumerProps("test", "false", embeddedKafka));
-    }
-
-    @Profile("remote")
-    @Primary
-    @Bean
-    public ProducerFactory<String, String> producerFactory(KafkaProperties properties) {
-        return new DefaultKafkaProducerFactory<>(properties.buildProducerProperties());
-    }
-
 }
