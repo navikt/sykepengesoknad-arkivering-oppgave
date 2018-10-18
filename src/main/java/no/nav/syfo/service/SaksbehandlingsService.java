@@ -93,7 +93,7 @@ public class SaksbehandlingsService {
     void opprettOppgave(String innsendingId, String fnr, Soknad soknad, String saksId, String journalpostId) {
         String behandlendeEnhet = behandlendeEnhetConsumer.hentBehandlendeEnhet(fnr, soknad.getSoknadstype());
         String oppgaveId = oppgavebehandlingConsumer
-                .opprettOppgave(fnr, behandlendeEnhet, saksId, journalpostId, soknad.lagBeskrivelse(), soknad.getSoknadstype());
+                .opprettOppgave(fnr, behandlendeEnhet, saksId, journalpostId, soknad);
         innsendingDAO.oppdaterOppgaveId(innsendingId, oppgaveId);
     }
 

@@ -9,6 +9,10 @@ import no.nav.syfo.domain.dto.Sykepengesoknad;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Stream.concat;
 
 @Data
 @Builder
@@ -26,10 +30,6 @@ public class Soknad {
     String korrigerer;
     String korrigertAv;
 
-    public String lagBeskrivelse() {
-        return "Beskivelse er ikke implementert enda, se PDF";
-    }
-
     public static Soknad lagSoknad(Sykepengesoknad sykepengesoknad, String fnr, String navn) {
         return Soknad.builder()
                 .aktorId(sykepengesoknad.getAktorId())
@@ -44,5 +44,22 @@ public class Soknad {
                 .korrigerer(sykepengesoknad.getKorrigerer())
                 .korrigertAv(sykepengesoknad.getKorrigertAv())
                 .build();
+    }
+
+    private List<Sporsmal> alleSporsmalOgUndersporsmal() {
+        return flatten(sporsmal)
+                .collect(toList());
+    }
+
+    public Sporsmal getSporsmalMedTag(final String tag) {
+        return alleSporsmalOgUndersporsmal().stream()
+                .filter(s -> s.getTag().equals(tag))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Søknaden inneholder ikke spørsmål med tag: " + tag));
+    }
+
+    private Stream<Sporsmal> flatten(final List<Sporsmal> nonFlatList) {
+        return nonFlatList.stream()
+                .flatMap(sporsmal -> concat(Stream.of(sporsmal), flatten(sporsmal.getUndersporsmal())));
     }
 }
