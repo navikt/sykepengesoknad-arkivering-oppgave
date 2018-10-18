@@ -9,6 +9,7 @@ import no.nav.tjeneste.virksomhet.oppgavebehandling.v3.meldinger.WSOpprettOppgav
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.time.LocalDate;
 
 import static java.time.LocalDate.now;
 import static no.nav.syfo.service.BeskrivelseService.lagBeskrivelse;
@@ -36,7 +37,7 @@ public class OppgavebehandlingConsumer {
                             .withPrioritetKode("NORM_SYK")
                             .withBeskrivelse(lagBeskrivelse(soknad))
                             .withAktivFra(now())
-                            .withAktivTil(now().plusDays(7))
+                            .withAktivTil(omTreUkedager(now()))
                             .withAnsvarligEnhetId(behandlendeEnhet)
                             .withDokumentId(journalpostId)
                             .withMottattDato(now())
@@ -47,6 +48,18 @@ public class OppgavebehandlingConsumer {
         } catch (RuntimeException e) {
             log.error("Klarte ikke å opprette oppgave. ", e);
             throw new RuntimeException(e);
+        }
+    }
+
+    LocalDate omTreUkedager(final LocalDate idag) {
+        switch (idag.getDayOfWeek()) {
+            case SUNDAY:
+                return idag.plusDays(4);
+            case MONDAY:
+            case TUESDAY:
+                return idag.plusDays(3);
+            default:
+                return idag.plusDays(5);
         }
     }
 
