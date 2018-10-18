@@ -7,11 +7,13 @@ import no.nav.syfo.domain.dto.Svar;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.*;
+import static java.util.Optional.empty;
 import static no.nav.syfo.domain.dto.Svartype.CHECKBOX_GRUPPE;
 import static no.nav.syfo.util.DatoUtil.norskDato;
 import static no.nav.syfo.util.PeriodeMapper.jsonTilPeriode;
@@ -34,6 +36,8 @@ public class BeskrivelseService {
                 soknad.getSporsmal().stream()
                         .filter(BeskrivelseService::sporsmalSkalVises)
                         .map(sporsmal -> beskrivSporsmal(sporsmal, 0))
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
                         .collect(Collectors.joining("\n"));
     }
 
@@ -63,18 +67,19 @@ public class BeskrivelseService {
         }
     }
 
-    private static String beskrivSporsmal(final Sporsmal sporsmal, final int dybde) {
+    private static Optional<String> beskrivSporsmal(final Sporsmal sporsmal, final int dybde) {
         final String innrykk = "\n" + String.join("", nCopies(dybde, "    "));
         final List<String> svarverdier = getSvarverdier(sporsmal);
         return svarverdier.isEmpty() && !CHECKBOX_GRUPPE.equals(sporsmal.getSvartype())
-                ? ""
-                : formatterSporsmalOgSvar(sporsmal).stream()
+                ? empty()
+                : Optional.of(formatterSporsmalOgSvar(sporsmal).stream()
                 .map(sporsmalOgSvar -> innrykk + sporsmalOgSvar)
                 .collect(Collectors.joining()) +
                 sporsmal.getUndersporsmal().stream()
                         .map(undersporsmal -> beskrivSporsmal(undersporsmal, dybde + 1))
-                        .filter(string -> !"".equals(string))
-                        .collect(Collectors.joining("\n"));
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .collect(Collectors.joining("\n")));
     }
 
     private static List<String> formatterSporsmalOgSvar(final Sporsmal sporsmal) {

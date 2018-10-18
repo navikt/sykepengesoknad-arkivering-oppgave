@@ -472,7 +472,7 @@ public class TestUtils {
             "    11.10.2018\n" +
             "\n" +
             "    Er utdanningen et fulltidsstudium?\n" +
-            "    Nei\n";
+            "    Nei";
 
     public static final String soknadSelvstendigMedNeisvar = "{\n" +
             "        \"id\": \"8631c48c-460c-4386-ba52-6854e1fcd354\",\n" +
@@ -863,7 +863,7 @@ public class TestUtils {
             "Nei\n" +
             "\n" +
             "I perioden 08.10.2018 - 16.10.2018 var du 100% sykmeldt som frilanser. Jobbet du noe i denne perioden?\n" +
-            "Nei\n";
+            "Nei";
 
     public static final String soknadUtland = "{\n" +
             "        \"id\": \"6311fa0e-d4d5-49a1-a6d5-c253d569f715\",\n" +
@@ -1005,5 +1005,5 @@ public class TestUtils {
             "    Ja\n" +
             "\n" +
             "    Har du avtalt med arbeidsgiveren din at du skal ha ferie i hele perioden?\n" +
-            "    Nei\n";
+            "    Nei";
 }

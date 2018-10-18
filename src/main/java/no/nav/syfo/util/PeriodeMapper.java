@@ -15,17 +15,21 @@ public class PeriodeMapper {
     private static ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     public static Periode jsonTilPeriode(final String json) {
+        final String message = "Mapping av periode-json feiler";
         try {
             final Periode periode = objectMapper.readValue(json, Periode.class);
             if (periode.getTom() == null || periode.getFom() == null
                     || periode.getFom().isAfter(periode.getTom())) {
-                throw new IllegalArgumentException();
+                log.error(message);
+                throw new IllegalArgumentException(message);
             }
             return periode;
         } catch (JsonParseException | JsonMappingException exception) {
-            throw new IllegalArgumentException(exception);
+            log.error(message);
+            throw new IllegalArgumentException(message, exception);
         } catch (IOException iOException) {
-            throw new RuntimeException(iOException);
+            log.error(message);
+            throw new RuntimeException(message, iOException);
         }
     }
 }
