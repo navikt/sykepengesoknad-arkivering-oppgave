@@ -1,13 +1,13 @@
 package no.nav.syfo.domain.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Builder;
+import lombok.Value;
 
 import java.time.LocalDate;
 import java.util.List;
 
-@Getter
-@Setter
+@Value
+@Builder
 public class Sykepengesoknad {
 
     String id;

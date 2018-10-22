@@ -49,16 +49,17 @@ public class SaksbehandlingsServiceTest {
                 .thenThrow(new RuntimeException("Opprett journal feilet"));
         when(registry.counter(any(), anyIterable())).thenReturn(mock(Counter.class));
 
-        Sykepengesoknad sykepengesoknad = new Sykepengesoknad();
-        sykepengesoknad.setId("ressursId");
-        sykepengesoknad.setSykmeldingId("sykmeldingId");
-        sykepengesoknad.setAktorId("aktorId");
-        sykepengesoknad.setSoknadstype(Soknadstype.SELVSTENDIGE_OG_FRILANSERE);
-        sykepengesoknad.setStatus("status");
-        sykepengesoknad.setFom(LocalDate.now());
-        sykepengesoknad.setTom(LocalDate.now());
-        sykepengesoknad.setOpprettetDato(LocalDate.now());
-        sykepengesoknad.setInnsendtDato(LocalDate.now());
+        Sykepengesoknad sykepengesoknad = Sykepengesoknad.builder()
+                .id("ressursId")
+                .sykmeldingId("sykmeldingId")
+                .aktorId("aktorId")
+                .soknadstype(Soknadstype.SELVSTENDIGE_OG_FRILANSERE)
+                .status("status")
+                .fom(LocalDate.now())
+                .tom(LocalDate.now())
+                .opprettetDato(LocalDate.now())
+                .innsendtDato(LocalDate.now())
+                .build();
 
         saksbehandlingsService.behandleSoknad(sykepengesoknad);
 

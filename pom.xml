@@ -56,6 +56,7 @@
         <flyway-core.version>5.0.7</flyway-core.version>
         <cxf.version>3.2.0</cxf.version>
         <jackson.version>2.9.6</jackson.version>
+        <soknad.version>1</soknad.version>
     </properties>
 
     <dependencies>
@@ -84,6 +85,12 @@
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka-test</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>no.nav.syfo.kafka</groupId>
+            <artifactId>soknad</artifactId>
+            <version>${soknad.version}</version>
         </dependency>
 
         <dependency>

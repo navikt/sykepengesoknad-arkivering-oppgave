@@ -18,6 +18,8 @@ import org.springframework.web.client.RestTemplate;
 @EnableKafka
 @EnableScheduling
 public class ApplicationConfig {
+    public static final String CALL_ID = "callId";
+
     // Sørger for at flyway migrering skjer etter at JTA transaction manager er ferdig satt opp av Spring.
     // Forhindrer WARNING: transaction manager not running? loggspam fra Atomikos.
     @Bean

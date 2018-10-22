@@ -26,12 +26,15 @@ public class ToggleListener {
     @Scheduled(cron = "*/10 * * * * *")
     public void sjekkToggleOgOppdaterListener() {
         MessageListenerContainer soknadSendt = registry.getListenerContainer("soknadSendt");
+        @Deprecated
+        MessageListenerContainer deprecatedSoknadSendt = registry.getListenerContainer("deprecatedSoknadSendt");
 
         if (toggle.isEnabled(SKAL_LESE_SOKNADER_FRA_KOE)) {
             if (!lytter) {
                 log.info("Vekker lytteren soknadSendt");
             }
             soknadSendt.resume();
+            deprecatedSoknadSendt.resume();
             lytter = true;
 
         } else {
@@ -39,6 +42,7 @@ public class ToggleListener {
                 log.info("Pauser lytteren soknadSendt");
             }
             soknadSendt.pause();
+            deprecatedSoknadSendt.pause();
             lytter = false;
         }
     }
