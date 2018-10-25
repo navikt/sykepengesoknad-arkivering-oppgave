@@ -69,10 +69,9 @@ public class RebehandleSoknadListener {
 
                         Sykepengesoknad sykepengesoknad = konverter(record.value());
 
-                        log.info("Rebehandler søknad med id {}", sykepengesoknad.getId());
-
                         feilendeInnsendinger.stream()
                                 .filter(innsending -> innsending.getRessursId().equals(sykepengesoknad.getId()))
+                                .peek(innsending -> log.info("Rebehandler søknad med id {}", innsending.getRessursId()))
                                 .findAny()
                                 .ifPresent(innsending -> behandleFeiledeSoknaderService.behandleFeiletSoknad(innsending, sykepengesoknad));
                     } catch (Exception e) {
