@@ -21,9 +21,9 @@ public class SaksbehandlingsService {
     private final BehandleSakConsumer behandleSakConsumer;
     private final OppgavebehandlingConsumer oppgavebehandlingConsumer;
     private final BehandleJournalConsumer behandleJournalConsumer;
+    private final BehandlendeEnhetService behandlendeEnhetService;
     private final AktorConsumer aktorConsumer;
     private final PersonConsumer personConsumer;
-    private final BehandlendeEnhetConsumer behandlendeEnhetConsumer;
     private final InnsendingDAO innsendingDAO;
     private final MeterRegistry registry;
 
@@ -32,16 +32,15 @@ public class SaksbehandlingsService {
             BehandleSakConsumer behandleSakConsumer,
             OppgavebehandlingConsumer oppgavebehandlingConsumer,
             BehandleJournalConsumer behandleJournalConsumer,
-            AktorConsumer aktorConsumer,
-            BehandlendeEnhetConsumer behandlendeEnhetConsumer,
+            BehandlendeEnhetService behandlendeEnhetService, AktorConsumer aktorConsumer,
             InnsendingDAO innsendingDAO,
             PersonConsumer personConsumer,
             MeterRegistry registry) {
         this.behandleSakConsumer = behandleSakConsumer;
         this.oppgavebehandlingConsumer = oppgavebehandlingConsumer;
         this.behandleJournalConsumer = behandleJournalConsumer;
+        this.behandlendeEnhetService = behandlendeEnhetService;
         this.aktorConsumer = aktorConsumer;
-        this.behandlendeEnhetConsumer = behandlendeEnhetConsumer;
         this.innsendingDAO = innsendingDAO;
         this.personConsumer = personConsumer;
         this.registry = registry;
@@ -87,11 +86,10 @@ public class SaksbehandlingsService {
                     sykepengesoknadId,
                     e);
         }
-
     }
 
     void opprettOppgave(String innsendingId, String fnr, Soknad soknad, String saksId, String journalpostId) {
-        String behandlendeEnhet = behandlendeEnhetConsumer.hentBehandlendeEnhet(fnr, soknad.getSoknadstype());
+        String behandlendeEnhet = behandlendeEnhetService.hentBehandlendeEnhet(fnr, soknad.getSoknadstype());
         String oppgaveId = oppgavebehandlingConsumer
                 .opprettOppgave(fnr, behandlendeEnhet, saksId, journalpostId, soknad);
         innsendingDAO.oppdaterOppgaveId(innsendingId, oppgaveId);
