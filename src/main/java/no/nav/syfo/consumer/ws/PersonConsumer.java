@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
-import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
 import static net.logstash.logback.encoder.org.apache.commons.lang.WordUtils.capitalizeFully;
 import static org.springframework.util.StringUtils.isEmpty;
@@ -47,7 +46,7 @@ public class PersonConsumer {
 
             return GeografiskTilknytning
                     .builder()
-                    .geografiskTilknytning(of(response.getGeografiskTilknytning()).map(geografiskTilknytning -> geografiskTilknytning.getGeografiskTilknytning()).orElse(null))
+                    .geografiskTilknytning(ofNullable(response.getGeografiskTilknytning()).map(geografiskTilknytning -> geografiskTilknytning.getGeografiskTilknytning()).orElse(null))
                     .diskresjonskode(ofNullable(response.getDiskresjonskode()).map(Kodeverdi::getValue).orElse(null))
                     .build();
         } catch (HentGeografiskTilknytningSikkerhetsbegrensing | HentGeografiskTilknytningPersonIkkeFunnet e) {
