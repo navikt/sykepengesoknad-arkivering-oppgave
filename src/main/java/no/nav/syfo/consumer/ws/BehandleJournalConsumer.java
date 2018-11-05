@@ -30,6 +30,7 @@ public class BehandleJournalConsumer {
     private PDFRestController pdfRestController;
 
     private static final String GOSYS = "FS22";
+    private static final String AUTOMATISK_JOBB = "9999";
 
     @Inject
     public BehandleJournalConsumer(
@@ -62,12 +63,12 @@ public class BehandleJournalConsumer {
                             .withApplikasjonsID("SYFOGSAK")
                             .withJournalpost(new WSJournalpost()
                                     .withDokumentDato(LocalDateTime.now())
-                                    .withJournalfoerendeEnhetREF(GOSYS)
+                                    .withJournalfoerendeEnhetREF(AUTOMATISK_JOBB)
                                     .withKanal(new WSKommunikasjonskanaler().withValue("NAV_NO"))
                                     .withSignatur(new WSSignatur().withSignert(true))
                                     .withArkivtema(new WSArkivtemaer().withValue("SYK"))
                                     .withForBruker(new WSPerson().withIdent(new WSNorskIdent().withIdent(soknad.getFnr())))
-                                    .withOpprettetAvNavn("Syfogsak")
+                                    .withOpprettetAvNavn("Automatisk jobb")
                                     .withInnhold(getJournalPostInnholdNavn(soknad.getSoknadstype()))
                                     .withEksternPart(new WSEksternPart()
                                             .withNavn(personConsumer.finnBrukerPersonnavnByFnr(soknad.getFnr()))
@@ -79,14 +80,14 @@ public class BehandleJournalConsumer {
                                                     .withTillknyttetJournalpostSomKode("HOVEDDOKUMENT")
                                                     .withJournalfoertDokument(new WSJournalfoertDokumentInfo()
                                                             .withBegrensetPartsInnsyn(false)
-                                                            .withDokumentType(new WSDokumenttyper().withValue("ES"))
+                                                            .withDokumentType(new WSDokumenttyper().withValue(utledDokumenttype(soknad)))
                                                             .withSensitivitet(true)
                                                             .withTittel(getJornalfoertDokumentTittel(soknad))
-                                                            .withKategorikode("ES")
+                                                            .withKategorikode(utledDokumenttype(soknad))
                                                             .withBeskriverInnhold(
                                                                     new WSStrukturertInnhold()
                                                                             .withFilnavn(getWSStruktureltInnholdFilnavn(soknad))
-                                                                            .withFiltype(new WSArkivfiltyper().withValue("PDF"))
+                                                                            .withFiltype(new WSArkivfiltyper().withValue("PDFA"))
                                                                             .withInnhold(pdf)
                                                                             .withVariantformat(new WSVariantformater().withValue("ARKIV"))
                                                             ))
@@ -96,6 +97,17 @@ public class BehandleJournalConsumer {
             String feilmelding = "Kunne ikke behandle journalpost for søknad med id " + soknad.getSoknadsId() + " og saks id: " + saksId;
             log.error(feilmelding, e);
             throw new RuntimeException(feilmelding, e);
+        }
+    }
+
+    private String utledDokumenttype(Soknad soknad) {
+        switch (soknad.getSoknadstype()) {
+            case SELVSTENDIGE_OG_FRILANSERE: return "søknadsyk";
+            case OPPHOLD_UTLAND: return "søknadsykutland";
+            default: {
+                log.error("Soknadstypen {} er ikke støttet ved journalføring", soknad.getSoknadstype().name());
+                throw new RuntimeException("Soknadstypen " + soknad.getSoknadstype().name() + " er ikke støttet ved journalføring");
+            }
         }
     }
 
