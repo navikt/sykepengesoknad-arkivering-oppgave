@@ -80,10 +80,10 @@ public class BehandleJournalConsumer {
                                                     .withTillknyttetJournalpostSomKode("HOVEDDOKUMENT")
                                                     .withJournalfoertDokument(new WSJournalfoertDokumentInfo()
                                                             .withBegrensetPartsInnsyn(false)
-                                                            .withDokumentType(new WSDokumenttyper().withValue("SOK"))
+                                                            .withDokumentType(new WSDokumenttyper().withValue(utledDokumenttype(soknad)))
                                                             .withSensitivitet(true)
                                                             .withTittel(getJornalfoertDokumentTittel(soknad))
-                                                            .withKategorikode("SOK")
+                                                            .withKategorikode(utledDokumenttype(soknad))
                                                             .withBeskriverInnhold(
                                                                     new WSStrukturertInnhold()
                                                                             .withFilnavn(getWSStruktureltInnholdFilnavn(soknad))
@@ -97,6 +97,17 @@ public class BehandleJournalConsumer {
             String feilmelding = "Kunne ikke behandle journalpost for søknad med id " + soknad.getSoknadsId() + " og saks id: " + saksId;
             log.error(feilmelding, e);
             throw new RuntimeException(feilmelding, e);
+        }
+    }
+
+    private String utledDokumenttype(Soknad soknad) {
+        switch (soknad.getSoknadstype()) {
+            case SELVSTENDIGE_OG_FRILANSERE: return "søknadsyk";
+            case OPPHOLD_UTLAND: return "søknadsykutland";
+            default: {
+                log.error("Soknadstypen {} er ikke støttet ved journalføring", soknad.getSoknadstype().name());
+                throw new RuntimeException("Soknadstypen " + soknad.getSoknadstype().name() + " er ikke støttet ved journalføring");
+            }
         }
     }
 

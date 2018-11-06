@@ -51,8 +51,8 @@ public class BehandleJournalConsumerTest {
 
         assertThat(request.getJournalpost().getJournalfoerendeEnhetREF()).isEqualTo("9999");
         assertThat(request.getJournalpost().getOpprettetAvNavn()).isEqualTo("Automatisk jobb");
-        assertThat(request.getJournalpost().getDokumentinfoRelasjon().get(0).getJournalfoertDokument().getDokumentType().getValue()).isEqualTo("SOK");
-        assertThat(request.getJournalpost().getDokumentinfoRelasjon().get(0).getJournalfoertDokument().getKategorikode()).isEqualTo("SOK");
+        assertThat(request.getJournalpost().getDokumentinfoRelasjon().get(0).getJournalfoertDokument().getDokumentType().getValue()).isEqualTo("søknadsyk");
+        assertThat(request.getJournalpost().getDokumentinfoRelasjon().get(0).getJournalfoertDokument().getKategorikode()).isEqualTo("søknadsyk");
         assertThat(request.getJournalpost().getDokumentinfoRelasjon().get(0).getJournalfoertDokument().getBeskriverInnhold().get(0).getFiltype().getValue()).isEqualTo("PDFA");
 
 
