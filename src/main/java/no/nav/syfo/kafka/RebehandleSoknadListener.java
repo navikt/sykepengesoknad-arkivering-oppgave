@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.consumer.repository.InnsendingDAO;
 import no.nav.syfo.domain.Innsending;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
-import no.nav.syfo.kafka.mapper.DtoToSykepengesoknadMapper;
 import no.nav.syfo.kafka.sykepengesoknad.dto.SykepengesoknadDTO;
 import no.nav.syfo.service.BehandleFeiledeSoknaderService;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -49,7 +48,7 @@ public class RebehandleSoknadListener {
 
         String groupId = "syfogsak-" + miljonavn + "-rebehandleSoknad";
         consumer = consumerFactory.createConsumer(groupId, "", "");
-        consumer.subscribe(Collections.singletonList("privat-syfo-soknadSendt-v1"));
+        consumer.subscribe(Collections.singletonList("syfo-soknad-v1"));
     }
 
     @Scheduled(cron = "0 0 * * * *")
@@ -62,7 +61,7 @@ public class RebehandleSoknadListener {
         try {
             while (!(records = consumer.poll(1000L)).isEmpty()) {
                 for (ConsumerRecord<String, SykepengesoknadDTO> record : records) {
-                    log.debug("Melding mottatt på topic: {}, partisjon: {} med offsett: {}",
+                    log.debug("Melding mottatt på topic: {}, partisjon: {} med offset: {}",
                             record.topic(), record.partition(), record.offset());
                     try {
                         MDC.put(CALL_ID, getLastHeaderByKeyAsString(record.headers(), CALL_ID, randomUUID().toString()));
