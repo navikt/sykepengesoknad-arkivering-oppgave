@@ -29,7 +29,7 @@ public class DeprecatedSoknadSendtListener {
         this.saksbehandlingsService = saksbehandlingsService;
     }
 
-    @KafkaListener(topics = "privat-syfo-soknadSendt-v1", id = "deprecatedSoknadSendt", idIsGroup = false, containerFactory = "deprecatedKafkaListenerContainerFactory")
+    @KafkaListener(topics = "privat-syfo-soknadSendt-v1", id = "deprecatedSoknadSendt", idIsGroup = false)
     public void listen(ConsumerRecord<String, SykepengesoknadDTO> cr, Acknowledgment acknowledgment) {
         log.debug("Melding mottatt på topic: {}, partisjon: {} med offsett: {}", cr.topic(), cr.partition(), cr.offset());
 
