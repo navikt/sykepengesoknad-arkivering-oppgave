@@ -28,15 +28,17 @@ public class SoknadSendtListener {
         this.saksbehandlingsService = saksbehandlingsService;
     }
 
-    @KafkaListener(topics = "privat-syfo-soknadSendt-v1", id = "soknadSendt", idIsGroup = false)
+    @KafkaListener(topics = "syfo-soknad-v1", id = "soknadSendt", idIsGroup = false)
     public void listen(ConsumerRecord<String, SykepengesoknadDTO> cr, Acknowledgment acknowledgment) {
-        log.debug("Melding mottatt på topic: {}, partisjon: {} med offsett: {}", cr.topic(), cr.partition(), cr.offset());
+        log.debug("Melding mottatt på topic: {}, partisjon: {} med offset: {}", cr.topic(), cr.partition(), cr.offset());
 
         try {
             MDC.put(CALL_ID, getLastHeaderByKeyAsString(cr.headers(), CALL_ID, randomUUID().toString()));
 
             Sykepengesoknad sykepengesoknad = konverter(cr.value());
-            saksbehandlingsService.behandleSoknad(sykepengesoknad);
+            if ("SENDT".equals(sykepengesoknad.getStatus())) {
+                saksbehandlingsService.behandleSoknad(sykepengesoknad);
+            }
 
             acknowledgment.acknowledge();
         } catch (Exception e) {

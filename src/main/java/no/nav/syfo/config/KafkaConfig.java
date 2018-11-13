@@ -39,24 +39,6 @@ public class KafkaConfig {
                 new StringDeserializer(),
                 new SykepengesoknadDeserializer());
     }
-
-    @Deprecated
-    @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, String> deprecatedKafkaListenerContainerFactory(ConsumerFactory<String, String> consumerFactory, KafkaErrorHandler kafkaErrorHandler) {
-        ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.getContainerProperties().setAckMode(AbstractMessageListenerContainer.AckMode.MANUAL_IMMEDIATE);
-        factory.getContainerProperties().setErrorHandler(kafkaErrorHandler);
-        factory.setConsumerFactory(consumerFactory);
-        return factory;
-    }
-
-    @Deprecated
-    @Bean
-    @Profile(value = {"remote", "local-kafka"})
-    @Primary
-    public ConsumerFactory<String, String> deprecatedConsumerFactory(KafkaProperties properties) {
-        return new DefaultKafkaConsumerFactory<>(properties.buildConsumerProperties());
-    }
 }
 
 
