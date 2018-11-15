@@ -45,4 +45,24 @@ public class BeskrivelseServiceTest {
         assertThat(beskrivelse).isEqualTo(beskrivelseSelvstendigMangeSvar);
     }
 
+    @Test
+    public void soknadForArbeidstakereMedNeisvar() throws IOException {
+        Sykepengesoknad sykepengesoknad = objectMapper.readValue(soknadArbeidstakerMedNeisvar, Sykepengesoknad.class);
+        Soknad soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn");
+
+        String beskrivelse = BeskrivelseService.lagBeskrivelse(soknad);
+
+        assertThat(beskrivelse).isEqualTo(beskrivelseArbeidstakerMedNeisvar);
+    }
+
+    @Test
+    public void soknadForArbeidstakereMangeSvar() throws IOException {
+        Sykepengesoknad sykepengesoknad = objectMapper.readValue(soknadArbeidstakerMangeSvar, Sykepengesoknad.class);
+        Soknad soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn");
+
+        String beskrivelse = BeskrivelseService.lagBeskrivelse(soknad);
+
+        assertThat(beskrivelse).isEqualTo(beskrivelseArbeidstakerMangeSvar);
+    }
+
 }

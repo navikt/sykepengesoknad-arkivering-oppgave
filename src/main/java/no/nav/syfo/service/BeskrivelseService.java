@@ -2,19 +2,23 @@ package no.nav.syfo.service;
 
 import no.nav.syfo.domain.Periode;
 import no.nav.syfo.domain.Soknad;
+import no.nav.syfo.domain.dto.SoknadPeriode;
 import no.nav.syfo.domain.dto.Sporsmal;
 import no.nav.syfo.domain.dto.Svar;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.*;
 import static java.util.Optional.empty;
-import static no.nav.syfo.domain.dto.Svartype.CHECKBOX_GRUPPE;
+import static no.nav.syfo.domain.dto.Svartype.*;
 import static no.nav.syfo.util.DatoUtil.norskDato;
 import static no.nav.syfo.util.PeriodeMapper.jsonTilPeriode;
 
@@ -23,16 +27,22 @@ public class BeskrivelseService {
     public static String lagBeskrivelse(final Soknad soknad) {
         String tittel;
         switch (soknad.getSoknadstype()) {
+            case ARBEIDSTAKERE:
+                tittel = "Søknad om sykepenger for perioden " +
+                        soknad.getFom().format(norskDato) + " - " + soknad.getTom().format(norskDato);
+                break;
             case SELVSTENDIGE_OG_FRILANSERE:
-                tittel = tittelSelvstendigFrilanser(soknad);
+                tittel = "Søknad om sykepenger fra " + soknad.getArbeidssituasjon().toString() + " for perioden " +
+                        soknad.getFom().format(norskDato) + " - " + soknad.getTom().format(norskDato);
                 break;
             case OPPHOLD_UTLAND:
-                tittel = "Søknad om å beholde sykepenger i utlandet ";
+                tittel = "Søknad om å beholde sykepenger i utlandet";
                 break;
             default:
                 throw new RuntimeException("Beskrivelse er ikke implementert for søknadstype: " + soknad.getSoknadstype());
         }
         return tittel + "\n" +
+                beskrivPerioder(soknad.getSoknadPerioder()) +
                 soknad.getSporsmal().stream()
                         .filter(BeskrivelseService::sporsmalSkalVises)
                         .map(sporsmal -> beskrivSporsmal(sporsmal, 0))
@@ -41,16 +51,16 @@ public class BeskrivelseService {
                         .collect(Collectors.joining("\n"));
     }
 
-    private static String tittelSelvstendigFrilanser(final Soknad soknad) {
-        final boolean frilanser = !soknad
-                .getSporsmalMedTag("INNTEKTSKILDE_FRILANSER_SELVSTENDIG")
-                .getSporsmalstekst()
-                .equals("Frilanser");
+    private static String beskrivPerioder(final List<SoknadPeriode> perioder) {
+        return IntStream.range(0, perioder.size())
+                .mapToObj(i -> {
+                    SoknadPeriode soknadPeriode = perioder.get(i);
+                    return "\nPeriode " + (i + 1) + ":\n" +
+                            soknadPeriode.getFom().format(norskDato) + " - " + soknadPeriode.getTom().format(norskDato) + "\n" +
+                            "Grad: " + soknadPeriode.getGrad() + "\n";
+                })
+                .collect(Collectors.joining());
 
-        return "Søknad om sykepenger for " +
-                (frilanser ? "frilanser " : "selvstendig næringsdrivende ") +
-                "for perioden " + soknad.getFom().format(norskDato) +
-                " - " + soknad.getTom().format(norskDato);
     }
 
     private static boolean sporsmalSkalVises(final Sporsmal sporsmal) {
@@ -61,31 +71,47 @@ public class BeskrivelseService {
             case "ARBEIDSGIVER":
                 return true;
             default:
-                return !"NEI".equals(getForsteSvarverdi(sporsmal))
-                        || sporsmal.getTag().startsWith("JOBBET_DU_GRADERT_")
-                        || sporsmal.getTag().startsWith("JOBBET_DU_100_PROSENT_");
+                return !"NEI".equals(getForsteSvarverdi(sporsmal));
         }
     }
 
     private static Optional<String> beskrivSporsmal(final Sporsmal sporsmal, final int dybde) {
         final String innrykk = "\n" + String.join("", nCopies(dybde, "    "));
         final List<String> svarverdier = getSvarverdier(sporsmal);
-        return svarverdier.isEmpty() && !CHECKBOX_GRUPPE.equals(sporsmal.getSvartype())
+        return svarverdier.isEmpty() && Stream.of(CHECKBOX_GRUPPE, RADIO_GRUPPE, RADIO_GRUPPE_TIMER_PROSENT).noneMatch(svartype -> svartype.equals(sporsmal.getSvartype()))
                 ? empty()
                 : Optional.of(formatterSporsmalOgSvar(sporsmal).stream()
                 .map(sporsmalOgSvar -> innrykk + sporsmalOgSvar)
                 .collect(Collectors.joining()) +
-                sporsmal.getUndersporsmal().stream()
-                        .map(undersporsmal -> beskrivSporsmal(undersporsmal, dybde + 1))
+                getUndersporsmalIgnorerRadioIGruppeTimerProsent(sporsmal).stream()
+                        .map(undersporsmal -> beskrivSporsmal(undersporsmal, getNesteDybde(sporsmal, dybde)))
                         .filter(Optional::isPresent)
                         .map(Optional::get)
                         .collect(Collectors.joining("\n")));
+    }
+
+    private static int getNesteDybde(final Sporsmal sporsmal, final int dybde) {
+        return Stream.of(RADIO_GRUPPE, RADIO_GRUPPE_TIMER_PROSENT).anyMatch(svartype -> svartype.equals(sporsmal.getSvartype()))
+                ? dybde
+                : dybde + 1;
+    }
+
+    private static List<Sporsmal> getUndersporsmalIgnorerRadioIGruppeTimerProsent(final Sporsmal sporsmal) {
+        return RADIO_GRUPPE_TIMER_PROSENT == sporsmal.getSvartype()
+                ? sporsmal.getUndersporsmal().stream()
+                .map(Sporsmal::getUndersporsmal)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList())
+                : sporsmal.getUndersporsmal();
     }
 
     private static List<String> formatterSporsmalOgSvar(final Sporsmal sporsmal) {
         switch (sporsmal.getSvartype()) {
             case CHECKBOX:
             case CHECKBOX_GRUPPE:
+            case RADIO:
+            case RADIO_GRUPPE:
+            case RADIO_GRUPPE_TIMER_PROSENT:
                 return singletonList(sporsmal.getSporsmalstekst());
             case JA_NEI:
                 return asList(sporsmal.getSporsmalstekst(), "JA".equals(getForsteSvarverdi(sporsmal)) ? "Ja" : "Nei");
@@ -97,6 +123,12 @@ public class BeskrivelseService {
                 return Stream.concat(Stream.of(sporsmal.getSporsmalstekst()),
                         getSvarverdier(sporsmal).stream()
                                 .map(BeskrivelseService::formatterPeriode))
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+            case TALL:
+                return Stream.of(sporsmal.getSporsmalstekst(),
+                        getForsteSvarverdi(sporsmal) + " " + sporsmal.getUndertekst())
+                        .filter(Objects::nonNull)
                         .collect(Collectors.toList());
             case TIMER:
                 return asList(sporsmal.getSporsmalstekst(), getForsteSvarverdi(sporsmal) + " timer");

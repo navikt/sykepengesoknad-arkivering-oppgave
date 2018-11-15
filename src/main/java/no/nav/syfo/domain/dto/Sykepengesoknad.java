@@ -19,7 +19,13 @@ public class Sykepengesoknad {
     LocalDate tom;
     LocalDate opprettetDato;
     LocalDate innsendtDato;
-    List<Sporsmal> sporsmal;
-    String korrigertAv;
+    LocalDate startSykeforlop;
+    LocalDate sykmeldingUtskrevet;
+    String arbeidsgiver;
     String korrigerer;
+    String korrigertAv;
+    Arbeidssituasjon arbeidssituasjon;
+    List<SoknadPeriode> soknadPerioder;
+    List<Sporsmal> sporsmal;
+
 }
