@@ -6,9 +6,10 @@ import lombok.Getter;
 import no.nav.syfo.domain.dto.*;
 
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static java.util.Comparator.comparingInt;
 
 @Data
 @Builder
@@ -54,9 +55,7 @@ public class Soknad {
 
     private static List<Sporsmal> endreRekkefolgePaSporsmalForPDF(final List<Sporsmal> sporsmal) {
         return sporsmal.stream()
-                .collect(Collectors.groupingBy(Soknad::plasseringSporsmalPDF))
-                .values().stream()
-                .flatMap(Collection::stream)
+                .sorted(comparingInt(Soknad::plasseringSporsmalPDF))
                 .collect(Collectors.toList());
     }
 
