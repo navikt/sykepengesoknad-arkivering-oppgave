@@ -6,6 +6,7 @@ import no.nav.syfo.kafka.sykepengesoknad.dto.SporsmalDTO;
 import no.nav.syfo.kafka.sykepengesoknad.dto.SvarDTO;
 import no.nav.syfo.kafka.sykepengesoknad.dto.SykepengesoknadDTO;
 
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
@@ -66,7 +67,9 @@ public final class DtoToSykepengesoknadMapper {
                 .sykmeldingUtskrevet(sykepengesoknad.getSykmeldingUtskrevet())
                 .korrigertAv(sykepengesoknad.getKorrigertAv())
                 .korrigerer(sykepengesoknad.getKorrigerer())
-                .soknadPerioder(sykepengesoknad.getSoknadPerioder().stream()
+                .soknadPerioder(sykepengesoknad.getSoknadPerioder() == null
+                        ? new ArrayList<>()
+                        : sykepengesoknad.getSoknadPerioder().stream()
                         .map(DtoToSykepengesoknadMapper::konverter)
                         .collect(Collectors.toList()))
                 .sporsmal(sykepengesoknad.getSporsmal().stream()
