@@ -1,5 +1,7 @@
 package no.nav.syfo.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import no.nav.syfo.consumer.repository.InnsendingDAO;
@@ -13,8 +15,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.time.LocalDate;
+import java.io.IOException;
 
+import static no.nav.syfo.TestUtils.soknadSelvstendigMedNeisvar;
 import static no.nav.syfo.domain.dto.Soknadstype.SELVSTENDIGE_OG_FRILANSERE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -42,11 +45,12 @@ public class SaksbehandlingsServiceTest {
     @InjectMocks
     private SaksbehandlingsService saksbehandlingsService;
 
+    private ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+
     @Before
     public void setup() {
         when(aktorConsumer.finnFnr(any())).thenReturn("12345678901");
         when(personConsumer.finnBrukerPersonnavnByFnr(any())).thenReturn("Personnavn");
-        when(innsendingDAO.opprettInnsending("ressursId", "aktorId")).thenReturn("uuid");
         when(behandleSakConsumer.opprettSak(any())).thenReturn("saksId");
         when(behandleJournalConsumer.opprettJournalpost(any(), any())).thenReturn("journalpostId");
         when(behandlendeEnhetService.hentBehandlendeEnhet("12345678901", SELVSTENDIGE_OG_FRILANSERE)).thenReturn("2017");
@@ -55,18 +59,8 @@ public class SaksbehandlingsServiceTest {
     }
 
     @Test
-    public void behandlerInnsending() {
-        Sykepengesoknad sykepengesoknad = Sykepengesoknad.builder()
-                .id("ressursId")
-                .sykmeldingId("sykmeldingId")
-                .aktorId("aktorId")
-                .soknadstype(SELVSTENDIGE_OG_FRILANSERE)
-                .status("status")
-                .fom(LocalDate.now())
-                .tom(LocalDate.now())
-                .opprettetDato(LocalDate.now())
-                .innsendtDato(LocalDate.now())
-                .build();
+    public void behandlerInnsending() throws IOException {
+        Sykepengesoknad sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad.class);
 
         saksbehandlingsService.behandleSoknad(sykepengesoknad);
 
@@ -74,22 +68,11 @@ public class SaksbehandlingsServiceTest {
     }
 
     @Test
-    public void feilendeInnsendingLeggesIBasen() {
+    public void feilendeInnsendingLeggesIBasen() throws IOException {
         when(behandleJournalConsumer.opprettJournalpost(any(), any()))
                 .thenThrow(new RuntimeException("Opprett journal feilet"));
 
-        Sykepengesoknad sykepengesoknad = Sykepengesoknad.builder()
-                .id("ressursId")
-                .sykmeldingId("sykmeldingId")
-                .aktorId("aktorId")
-                .soknadstype(SELVSTENDIGE_OG_FRILANSERE)
-                .status("status")
-                .fom(LocalDate.now())
-                .tom(LocalDate.now())
-                .opprettetDato(LocalDate.now())
-                .innsendtDato(LocalDate.now())
-                .build();
-
+        Sykepengesoknad sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad.class);
         saksbehandlingsService.behandleSoknad(sykepengesoknad);
 
         verify(innsendingDAO, times(1)).leggTilFeiletInnsending(any());

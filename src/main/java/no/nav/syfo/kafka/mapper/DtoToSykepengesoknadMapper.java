@@ -1,6 +1,7 @@
 package no.nav.syfo.kafka.mapper;
 
 import no.nav.syfo.domain.dto.*;
+import no.nav.syfo.kafka.sykepengesoknad.dto.SoknadPeriodeDTO;
 import no.nav.syfo.kafka.sykepengesoknad.dto.SporsmalDTO;
 import no.nav.syfo.kafka.sykepengesoknad.dto.SvarDTO;
 import no.nav.syfo.kafka.sykepengesoknad.dto.SykepengesoknadDTO;
@@ -40,6 +41,14 @@ public final class DtoToSykepengesoknadMapper {
                 .build();
     }
 
+    private static SoknadPeriode konverter(SoknadPeriodeDTO soknadPeriode) {
+        return SoknadPeriode.builder()
+                .fom(soknadPeriode.getFom())
+                .tom(soknadPeriode.getTom())
+                .grad(soknadPeriode.getGrad())
+                .build();
+    }
+
     public static Sykepengesoknad konverter(SykepengesoknadDTO sykepengesoknad) {
         return Sykepengesoknad.builder()
                 .id(sykepengesoknad.getId())
@@ -51,11 +60,18 @@ public final class DtoToSykepengesoknadMapper {
                 .tom(sykepengesoknad.getTom())
                 .opprettetDato(sykepengesoknad.getOpprettetDato())
                 .innsendtDato(sykepengesoknad.getInnsendtDato())
+                .arbeidsgiver(sykepengesoknad.getArbeidsgiver())
+                .arbeidssituasjon(konverter(Arbeidssituasjon.class, sykepengesoknad.getArbeidssituasjon()))
+                .startSykeforlop(sykepengesoknad.getStartSykeforlop())
+                .sykmeldingUtskrevet(sykepengesoknad.getSykmeldingUtskrevet())
+                .korrigertAv(sykepengesoknad.getKorrigertAv())
+                .korrigerer(sykepengesoknad.getKorrigerer())
+                .soknadPerioder(sykepengesoknad.getSoknadPerioder().stream()
+                        .map(DtoToSykepengesoknadMapper::konverter)
+                        .collect(Collectors.toList()))
                 .sporsmal(sykepengesoknad.getSporsmal().stream()
                         .map(DtoToSykepengesoknadMapper::konverter)
                         .collect(Collectors.toList()))
-                .korrigertAv(sykepengesoknad.getKorrigertAv())
-                .korrigerer(sykepengesoknad.getKorrigerer())
                 .build();
     }
 }

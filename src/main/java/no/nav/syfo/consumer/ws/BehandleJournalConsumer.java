@@ -16,9 +16,7 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.time.LocalDateTime;
 
-import static no.nav.syfo.domain.dto.PDFTemplate.SELVSTENDIGNAERINGSDRIVENDE;
-import static no.nav.syfo.domain.dto.PDFTemplate.SYKEPENGERUTLAND;
-import static no.nav.syfo.domain.dto.Soknadstype.OPPHOLD_UTLAND;
+import static no.nav.syfo.domain.dto.PDFTemplate.*;
 import static no.nav.syfo.util.DatoUtil.norskDato;
 
 @Component
@@ -100,30 +98,53 @@ public class BehandleJournalConsumer {
     }
 
     private String getJornalfoertDokumentTittel(Soknad soknad) {
-        if (soknad.getSoknadstype() == OPPHOLD_UTLAND) {
-            return "Søknad om å beholde sykepenger utenfor Norge";
+        switch (soknad.getSoknadstype()) {
+            case OPPHOLD_UTLAND:
+                return "Søknad om å beholde sykepenger utenfor Norge";
+            case SELVSTENDIGE_OG_FRILANSERE:
+                return "Søknad om sykepenger fra Selvstendig/Frilanser for periode: " + soknad.getFom().format(norskDato) + " til " + soknad.getTom().format(norskDato);
+            case ARBEIDSTAKERE:
+                return "Søknad om sykepenger " + soknad.getFom().format(norskDato) + " - " + soknad.getTom().format(norskDato);
+            default:
+                throw new RuntimeException("Har ikke implementert journalført dokumenttittel for søknad av typen: " + soknad.getSoknadstype());
         }
-        return "Søknad om sykepenger fra Selvstendig/Frilanser for periode: " + soknad.getFom().format(norskDato) + " til " + soknad.getTom().format(norskDato);
     }
 
     private String getWSStruktureltInnholdFilnavn(Soknad soknad) {
-        if (soknad.getSoknadstype() == OPPHOLD_UTLAND) {
-            return "soknad-" + soknad.getInnsendtDato().format(norskDato);
+        switch (soknad.getSoknadstype()) {
+            case OPPHOLD_UTLAND:
+                return "soknad-" + soknad.getInnsendtDato().format(norskDato);
+            case SELVSTENDIGE_OG_FRILANSERE:
+                return "Søknad om sykepenger fra Selvstendig/Frilanser for periode: " + soknad.getFom().format(norskDato) + " til " + soknad.getTom().format(norskDato);
+            case ARBEIDSTAKERE:
+                return "Søknad om sykepenger " + soknad.getFom().format(norskDato) + " - " + soknad.getTom().format(norskDato);
+            default:
+                throw new RuntimeException("Har ikke implementert strukturert innhold-filnavn for søknad av typen: " + soknad.getSoknadstype());
         }
-        return "Søknad om sykepenger fra Selvstendig/Frilanser for periode: " + soknad.getFom().format(norskDato) + " til " + soknad.getTom().format(norskDato);
     }
 
     private String getJournalPostInnholdNavn(Soknadstype soknadstype) {
-        if (soknadstype == OPPHOLD_UTLAND) {
-            return "Søknad om å beholde sykepenger utenfor Norge";
+        switch (soknadstype) {
+            case OPPHOLD_UTLAND:
+                return "Søknad om å beholde sykepenger utenfor Norge";
+            case SELVSTENDIGE_OG_FRILANSERE:
+            case ARBEIDSTAKERE:
+                return "Søknad om sykepenger";
+            default:
+                throw new RuntimeException("Har ikke implementert strukturert innhold-filnavn for søknad av typen: " + soknadstype);
         }
-        return "Søknad om sykepenger";
     }
 
     private PDFTemplate hentPDFTemplateEtterSoknadstype(Soknadstype soknadstype) {
-        if (soknadstype == OPPHOLD_UTLAND) {
-            return SYKEPENGERUTLAND;
+        switch (soknadstype) {
+            case OPPHOLD_UTLAND:
+                return SYKEPENGERUTLAND;
+            case SELVSTENDIGE_OG_FRILANSERE:
+                return SELVSTENDIGNAERINGSDRIVENDE;
+            case ARBEIDSTAKERE:
+                return ARBEIDSTAKERE;
+            default:
+                throw new RuntimeException("Har ikke implementert PDF-template for søknad av typen: " + soknadstype);
         }
-        return SELVSTENDIGNAERINGSDRIVENDE;
     }
 }

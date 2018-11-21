@@ -16,6 +16,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
 
+import static no.nav.syfo.TestUtils.soknadSelvstendigMedNeisvar;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -34,13 +35,14 @@ public class BehandleJournalConsumerTest {
     @InjectMocks
     private BehandleJournalConsumer behandleJournalConsumer;
 
+    private ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+
     @Test
     public void opprettJournalpost() throws IOException {
         when(behandleJournalV2.journalfoerInngaaendeHenvendelse(any()))
                 .thenReturn(new WSJournalfoerInngaaendeHenvendelseResponse().withJournalpostId("id"));
 
-        String serialisertSoknad = "{\"id\":\"test-kafka-sykepengesoknad\",\"aktorId\":\"aktorId\",\"sykmeldingId\":\"sykmelding-id\",\"soknadstype\":\"SELVSTENDIGE_OG_FRILANSERE\",\"status\":\"TIL_SENDING\",\"fom\":\"2018-06-06\",\"tom\":\"2018-07-07\",\"opprettetDato\":\"2018-06-06\",\"sporsmal\":[{\"id\":\"1\",\"tag\":null,\"sporsmalstekst\":\"Dette er et testspørsmål\",\"undertekst\":null,\"svartype\":\"PROSENT\",\"min\":null,\"max\":null,\"kriterieForVisningAvUndersporsmal\":null,\"svar\":[{\"verdi\":\"69\"}],\"undersporsmal\":null}],\"innsendtDato\":\"2018-06-20\"}";
-        Sykepengesoknad sykepengesoknad = new ObjectMapper().registerModule(new JavaTimeModule()).readValue(serialisertSoknad, Sykepengesoknad.class);
+        Sykepengesoknad sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad.class);
         Soknad soknad = Soknad.lagSoknad(sykepengesoknad, "22026900623", "Kjersti Glad");
         String id = behandleJournalConsumer.opprettJournalpost(soknad, "saksId");
 
@@ -51,14 +53,13 @@ public class BehandleJournalConsumerTest {
     public void opprettJournalpostTaklerFeil() throws IOException {
         when(behandleJournalV2.journalfoerInngaaendeHenvendelse(any())).thenThrow(new RuntimeException("test"));
 
-        String serialisertSoknad = "{\"id\":\"test-kafka-sykepengesoknad\",\"aktorId\":\"aktorId\",\"sykmeldingId\":\"sykmelding-id\",\"soknadstype\":\"SELVSTENDIGE_OG_FRILANSERE\",\"status\":\"TIL_SENDING\",\"fom\":\"2018-06-06\",\"tom\":\"2018-07-07\",\"opprettetDato\":\"2018-06-06\",\"sporsmal\":[{\"id\":\"1\",\"tag\":null,\"sporsmalstekst\":\"Dette er et testspørsmål\",\"undertekst\":null,\"svartype\":\"PROSENT\",\"min\":null,\"max\":null,\"kriterieForVisningAvUndersporsmal\":null,\"svar\":[{\"verdi\":\"69\"}],\"undersporsmal\":null}],\"innsendtDato\":\"2018-06-20\"}";
-        Sykepengesoknad sykepengesoknad = new ObjectMapper().registerModule(new JavaTimeModule()).readValue(serialisertSoknad, Sykepengesoknad.class);
+        Sykepengesoknad sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad.class);
         Soknad soknad = Soknad.lagSoknad(sykepengesoknad, "22026900623", "Kjersti Glad");
 
         try {
             behandleJournalConsumer.opprettJournalpost(soknad, "saksid");
         } catch (RuntimeException e) {
-            assertThat(e).hasMessage("Kunne ikke behandle journalpost for søknad med id test-kafka-sykepengesoknad og saks id: saksid");
+            assertThat(e).hasMessage("Kunne ikke behandle journalpost for søknad med id daa8b4b5-ece8-4e6d-ab7e-c7354958201a og saks id: saksid");
         }
     }
 }
