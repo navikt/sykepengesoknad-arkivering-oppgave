@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Value
-@Builder
+@Builder(toBuilder = true)
 public class Sykepengesoknad {
 
     String id;
