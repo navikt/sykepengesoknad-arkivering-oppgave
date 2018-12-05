@@ -17,7 +17,7 @@ public class ArbeidsfordelingConsumer {
 
     private ArbeidsfordelingV1 arbeidsfordelingV1;
 
-    public static final String BEHANDLINGSTEMA_OPPHOLD_UTLAND = "ab0314";
+    static final String BEHANDLINGSTEMA_OPPHOLD_UTLAND = "ab0314";
 
     public ArbeidsfordelingConsumer(ArbeidsfordelingV1 arbeidsfordelingV1) {
         this.arbeidsfordelingV1 = arbeidsfordelingV1;
@@ -36,7 +36,7 @@ public class ArbeidsfordelingConsumer {
                     .filter(wsOrganisasjonsenhet -> AKTIV.equals(wsOrganisasjonsenhet.getStatus()))
                     .map(WSOrganisasjonsenhet::getEnhetId)
                     .findFirst()
-                    .orElseThrow(() -> new RuntimeException("Fant ingen aktiv enhet for " + geografiskTilknytning));
+                    .orElseThrow(() -> new RuntimeException("Fant ingen aktiv enhet for " + geografiskTilknytning.geografiskTilknytning));
         } catch (FinnBehandlendeEnhetListeUgyldigInput e) {
             log.error("Feil ved henting av brukers forvaltningsenhet", e);
             throw new RuntimeException("Feil ved henting av brukers forvaltningsenhet", e);

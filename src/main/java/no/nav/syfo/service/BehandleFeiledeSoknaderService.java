@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 
+import static no.nav.syfo.domain.dto.Arbeidssituasjon.NAERINGSDRIVENDE;
+
 @Slf4j
 @Component
 public class BehandleFeiledeSoknaderService {
@@ -47,6 +49,12 @@ public class BehandleFeiledeSoknaderService {
                 journalpostId = behandleFraJournalpost(innsendingsId, saksId, sykepengesoknad);
             }
             if (innsending.getOppgaveId() == null) {
+
+                //TODO fjerne denne når behandling av de to søknadene er gjennomført
+                if ("f1ed031a-4801-4c6b-b194-4cd4d99cd888".equals(sykepengesoknad.getId()) || "dccc2fa3-9204-481f-8603-40318ebb022c".equals(sykepengesoknad.getId())) {
+                    sykepengesoknad = sykepengesoknad.toBuilder().arbeidssituasjon(NAERINGSDRIVENDE).build();
+                }
+
                 behandleFraOppgave(innsendingsId, saksId, journalpostId, sykepengesoknad);
             }
 
