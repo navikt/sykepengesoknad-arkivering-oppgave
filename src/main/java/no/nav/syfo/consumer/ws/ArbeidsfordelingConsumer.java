@@ -25,7 +25,9 @@ public class ArbeidsfordelingConsumer {
 
     public String finnBehandlendeEnhet(GeografiskTilknytning geografiskTilknytning, Soknadstype soknadstype) {
         try {
-            return arbeidsfordelingV1.finnBehandlendeEnhetListe(new WSFinnBehandlendeEnhetListeRequest()
+            return "NOR".equals(geografiskTilknytning.geografiskTilknytning)
+                    ? "4474"
+                    : arbeidsfordelingV1.finnBehandlendeEnhetListe(new WSFinnBehandlendeEnhetListeRequest()
                     .withArbeidsfordelingKriterier(new WSArbeidsfordelingKriterier()
                             .withDiskresjonskode(geografiskTilknytning.diskresjonskode != null ? new WSDiskresjonskoder().withValue(geografiskTilknytning.diskresjonskode) : null)
                             .withGeografiskTilknytning(new WSGeografi().withValue(geografiskTilknytning.geografiskTilknytning))
