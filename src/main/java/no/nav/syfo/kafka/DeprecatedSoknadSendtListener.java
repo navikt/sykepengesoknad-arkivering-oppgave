@@ -2,7 +2,6 @@ package no.nav.syfo.kafka;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
-import no.nav.syfo.kafka.interfaces.Soknad;
 import no.nav.syfo.kafka.soknad.dto.SoknadDTO;
 import no.nav.syfo.service.SaksbehandlingsService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -20,29 +19,26 @@ import static no.nav.syfo.kafka.mapper.DtoToSykepengesoknadMapper.konverter;
 
 @Component
 @Slf4j
-public class SoknadSendtListener {
+@Deprecated
+public class DeprecatedSoknadSendtListener {
 
     private final SaksbehandlingsService saksbehandlingsService;
 
     @Inject
-    public SoknadSendtListener(SaksbehandlingsService saksbehandlingsService) {
+    public DeprecatedSoknadSendtListener(SaksbehandlingsService saksbehandlingsService) {
         this.saksbehandlingsService = saksbehandlingsService;
     }
 
-    @KafkaListener(topics = "syfo-soknad-v2", id = "soknadSendt", idIsGroup = false)
-    public void listen(ConsumerRecord<String, Soknad> cr, Acknowledgment acknowledgment) {
+    @KafkaListener(topics = "syfo-soknad-v1", id = "soknadSendt", idIsGroup = false, containerFactory = "deprecatedKafkaListenerContainerFactory")
+    public void listen(ConsumerRecord<String, SoknadDTO> cr, Acknowledgment acknowledgment) {
         log.debug("Melding mottatt på topic: {}, partisjon: {} med offset: {}", cr.topic(), cr.partition(), cr.offset());
 
         try {
             MDC.put(CALL_ID, getLastHeaderByKeyAsString(cr.headers(), CALL_ID).orElseGet(() -> randomUUID().toString()));
 
-            Soknad soknad = cr.value();
-
-            if (soknad instanceof SoknadDTO) {
-                Sykepengesoknad sykepengesoknad = konverter((SoknadDTO) soknad);
-                if ("SENDT".equals(sykepengesoknad.getStatus())) {
-                    saksbehandlingsService.behandleSoknad(sykepengesoknad);
-                }
+            Sykepengesoknad sykepengesoknad = konverter(cr.value());
+            if ("SENDT".equals(sykepengesoknad.getStatus())) {
+                saksbehandlingsService.behandleSoknad(sykepengesoknad);
             }
 
             acknowledgment.acknowledge();

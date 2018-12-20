@@ -1,10 +1,10 @@
 package no.nav.syfo.kafka.mapper;
 
 import no.nav.syfo.domain.dto.*;
-import no.nav.syfo.kafka.sykepengesoknad.dto.SoknadPeriodeDTO;
-import no.nav.syfo.kafka.sykepengesoknad.dto.SporsmalDTO;
-import no.nav.syfo.kafka.sykepengesoknad.dto.SvarDTO;
-import no.nav.syfo.kafka.sykepengesoknad.dto.SykepengesoknadDTO;
+import no.nav.syfo.kafka.soknad.dto.SoknadPeriodeDTO;
+import no.nav.syfo.kafka.soknad.dto.SporsmalDTO;
+import no.nav.syfo.kafka.soknad.dto.SvarDTO;
+import no.nav.syfo.kafka.soknad.dto.SoknadDTO;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -50,7 +50,7 @@ public final class DtoToSykepengesoknadMapper {
                 .build();
     }
 
-    public static Sykepengesoknad konverter(SykepengesoknadDTO sykepengesoknad) {
+    public static Sykepengesoknad konverter(SoknadDTO sykepengesoknad) {
         return Sykepengesoknad.builder()
                 .id(sykepengesoknad.getId())
                 .sykmeldingId(sykepengesoknad.getSykmeldingId())

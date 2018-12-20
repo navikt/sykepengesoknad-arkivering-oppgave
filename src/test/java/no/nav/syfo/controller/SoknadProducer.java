@@ -3,7 +3,7 @@ package no.nav.syfo.controller;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.domain.dto.Soknadstype;
 import no.nav.syfo.kafka.TestProducer;
-import no.nav.syfo.kafka.sykepengesoknad.dto.SykepengesoknadDTO;
+import no.nav.syfo.kafka.soknad.dto.SoknadDTO;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -26,7 +26,7 @@ public class SoknadProducer {
     @ResponseBody
     @RequestMapping(value = "/produce", produces = MediaType.TEXT_PLAIN_VALUE)
     public String produce() {
-        SykepengesoknadDTO sykepengesoknad = SykepengesoknadDTO.builder()
+        SoknadDTO sykepengesoknad = SoknadDTO.builder()
                 .aktorId("aktorId")
                 .fom(LocalDate.of(2018, 10, 10))
                 .tom(LocalDate.of(2018, 10, 10))

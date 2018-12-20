@@ -56,7 +56,10 @@
         <flyway-core.version>5.0.7</flyway-core.version>
         <cxf.version>3.2.0</cxf.version>
         <jackson.version>2.9.6</jackson.version>
-        <soknad.version>2</soknad.version>
+
+        <serialisering.version>1</serialisering.version>
+        <soknad.version>4</soknad.version>
+        <sykepengesoknad.version>1</sykepengesoknad.version>
     </properties>
 
     <dependencies>
@@ -89,8 +92,18 @@
 
         <dependency>
             <groupId>no.nav.syfo.kafka</groupId>
+            <artifactId>serialisering</artifactId>
+            <version>${serialisering.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.syfo.kafka</groupId>
             <artifactId>soknad</artifactId>
             <version>${soknad.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.syfo.kafka</groupId>
+            <artifactId>sykepengesoknad</artifactId>
+            <version>${sykepengesoknad.version}</version>
         </dependency>
 
         <dependency>

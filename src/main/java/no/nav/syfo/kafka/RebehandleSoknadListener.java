@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.consumer.repository.InnsendingDAO;
 import no.nav.syfo.domain.Innsending;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
-import no.nav.syfo.kafka.sykepengesoknad.dto.SykepengesoknadDTO;
+import no.nav.syfo.kafka.soknad.dto.SoknadDTO;
 import no.nav.syfo.service.BehandleFeiledeSoknaderService;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -33,7 +33,7 @@ public class RebehandleSoknadListener {
     private final BehandleFeiledeSoknaderService behandleFeiledeSoknaderService;
     private final InnsendingDAO innsendingDAO;
     private final MeterRegistry registry;
-    private Consumer<String, SykepengesoknadDTO> consumer;
+    private Consumer<String, SoknadDTO> consumer;
 
     @Inject
     public RebehandleSoknadListener(
@@ -41,7 +41,7 @@ public class RebehandleSoknadListener {
             InnsendingDAO innsendingDAO,
             MeterRegistry registry,
             @Value("${fasit.environment.name}") String miljonavn,
-            ConsumerFactory<String, SykepengesoknadDTO> consumerFactory) {
+            ConsumerFactory<String, SoknadDTO> consumerFactory) {
         this.behandleFeiledeSoknaderService = behandleFeiledeSoknaderService;
         this.innsendingDAO = innsendingDAO;
         this.registry = registry;
@@ -57,14 +57,14 @@ public class RebehandleSoknadListener {
 
         consumer.poll(100L);
         consumer.seekToBeginning(consumer.assignment());
-        ConsumerRecords<String, SykepengesoknadDTO> records;
+        ConsumerRecords<String, SoknadDTO> records;
         try {
             while (!(records = consumer.poll(1000L)).isEmpty()) {
-                for (ConsumerRecord<String, SykepengesoknadDTO> record : records) {
+                for (ConsumerRecord<String, SoknadDTO> record : records) {
                     log.debug("Melding mottatt på topic: {}, partisjon: {} med offset: {}",
                             record.topic(), record.partition(), record.offset());
                     try {
-                        MDC.put(CALL_ID, getLastHeaderByKeyAsString(record.headers(), CALL_ID, randomUUID().toString()));
+                        MDC.put(CALL_ID, getLastHeaderByKeyAsString(record.headers(), CALL_ID).orElseGet(() -> randomUUID().toString()));
 
                         Sykepengesoknad sykepengesoknad = konverter(record.value());
 
