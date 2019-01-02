@@ -69,18 +69,20 @@ public class RebehandleSoknadListener {
                     try {
                         MDC.put(CALL_ID, getLastHeaderByKeyAsString(record.headers(), CALL_ID).orElseGet(() -> randomUUID().toString()));
 
-                        Sykepengesoknad sykepengesoknad;
+                        Sykepengesoknad sykepengesoknad=null;
                         if (record.value() instanceof SykepengesoknadDTO) {
                             sykepengesoknad = konverter((SykepengesoknadDTO) record.value());
-                        } else {
+                        } else if (record.value() instanceof SoknadDTO){
                             sykepengesoknad = konverter((SoknadDTO) record.value());
                         }
-
-                        feilendeInnsendinger.stream()
-                                .filter(innsending -> innsending.getRessursId().equals(sykepengesoknad.getId()))
-                                .peek(innsending -> log.info("Rebehandler søknad med id {}", innsending.getRessursId()))
-                                .findAny()
-                                .ifPresent(innsending -> behandleFeiledeSoknaderService.behandleFeiletSoknad(innsending, sykepengesoknad));
+                        if(sykepengesoknad!=null) {
+                            final Sykepengesoknad finalsoknad=sykepengesoknad;
+                            feilendeInnsendinger.stream()
+                                    .filter(innsending -> innsending.getRessursId().equals(finalsoknad.getId()))
+                                    .peek(innsending -> log.info("Rebehandler søknad med id {}", innsending.getRessursId()))
+                                    .findAny()
+                                    .ifPresent(innsending -> behandleFeiledeSoknaderService.behandleFeiletSoknad(innsending, finalsoknad));
+                        }
                     } catch (Exception e) {
                         log.warn("Uventet feil ved behandling av søknad", e);
                     } finally {

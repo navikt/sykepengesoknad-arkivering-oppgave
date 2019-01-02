@@ -62,17 +62,17 @@ public class KafkaConfig {
             } catch (IOException e) {
                 throw new RuntimeException("Feil ved konvertering av bytes til søknad", e);
             }
-        },
-                annenfunksjon = (headers, bytes) -> {
-                    try {
-                        return objectMapper.readValue(bytes, SoknadDTO.class);
-                    } catch (IOException e) {
-                        throw new RuntimeException("Feil ved konvertering av bytes til søknad", e);
-                    }
-                };
+        };
+        BiFunction<Headers, byte[], Soknad> selvstendigfunksjon = (headers, bytes) -> {
+            try {
+                return objectMapper.readValue(bytes, SoknadDTO.class);
+            } catch (IOException e) {
+                throw new RuntimeException("Feil ved konvertering av bytes til søknad", e);
+            }
+        };
         soknadmapper.put("SYKEPENGESOKNAD", sykepengefunksjon);
-        soknadmapper.put("SELVSTENDIG", annenfunksjon);
-        soknadmapper.put("UTENLANDS", annenfunksjon);
+        soknadmapper.put("SELVSTENDIG", selvstendigfunksjon);
+        soknadmapper.put("UTENLANDS", selvstendigfunksjon);
         return new DefaultKafkaConsumerFactory<>(
                 properties.buildConsumerProperties(),
                 new StringDeserializer(),

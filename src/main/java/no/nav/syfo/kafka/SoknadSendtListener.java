@@ -44,8 +44,7 @@ public class SoknadSendtListener {
                 if ("SENDT".equals(sykepengesoknad.getStatus())) {
                     saksbehandlingsService.behandleSoknad(sykepengesoknad);
                 }
-            }
-            else if (soknad instanceof SykepengesoknadDTO) {
+            } else if (soknad instanceof SykepengesoknadDTO) {
                 Sykepengesoknad sykepengesoknad = konverter((SykepengesoknadDTO) soknad);
                 if ("SENDT".equals(sykepengesoknad.getStatus())) {
                     saksbehandlingsService.behandleSoknad(sykepengesoknad);
