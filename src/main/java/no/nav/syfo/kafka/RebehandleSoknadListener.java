@@ -70,11 +70,10 @@ public class RebehandleSoknadListener {
                         MDC.put(CALL_ID, getLastHeaderByKeyAsString(record.headers(), CALL_ID).orElseGet(() -> randomUUID().toString()));
 
                         Sykepengesoknad sykepengesoknad;
-                        if(record.value() instanceof SykepengesoknadDTO) {
-                            sykepengesoknad=konverter((SykepengesoknadDTO)record.value());
-                        }
-                        else{
-                            sykepengesoknad=konverter((SoknadDTO) record.value());
+                        if (record.value() instanceof SykepengesoknadDTO) {
+                            sykepengesoknad = konverter((SykepengesoknadDTO) record.value());
+                        } else {
+                            sykepengesoknad = konverter((SoknadDTO) record.value());
                         }
 
                         feilendeInnsendinger.stream()

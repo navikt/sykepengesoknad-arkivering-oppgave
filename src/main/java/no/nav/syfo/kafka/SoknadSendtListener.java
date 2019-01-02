@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
 import no.nav.syfo.kafka.interfaces.Soknad;
 import no.nav.syfo.kafka.soknad.dto.SoknadDTO;
+import no.nav.syfo.kafka.sykepengesoknad.dto.SykepengesoknadDTO;
 import no.nav.syfo.service.SaksbehandlingsService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.MDC;
@@ -40,6 +41,12 @@ public class SoknadSendtListener {
 
             if (soknad instanceof SoknadDTO) {
                 Sykepengesoknad sykepengesoknad = konverter((SoknadDTO) soknad);
+                if ("SENDT".equals(sykepengesoknad.getStatus())) {
+                    saksbehandlingsService.behandleSoknad(sykepengesoknad);
+                }
+            }
+            else if (soknad instanceof SykepengesoknadDTO) {
+                Sykepengesoknad sykepengesoknad = konverter((SykepengesoknadDTO) soknad);
                 if ("SENDT".equals(sykepengesoknad.getStatus())) {
                     saksbehandlingsService.behandleSoknad(sykepengesoknad);
                 }
