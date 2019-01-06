@@ -47,8 +47,8 @@ public class DeprecatedRebehandleSoknadListener {
         this.innsendingDAO = innsendingDAO;
         this.registry = registry;
 
-        String groupId = "syfogsak-" + miljonavn + "-rebehandleSoknad";
-        consumer = consumerFactory.createConsumer(groupId, "", "");
+        String groupId = "syfogsak-" + miljonavn + "-rebehandleSoknad-deprecated";
+        consumer = consumerFactory.createConsumer(groupId, "rebehandleSoknad-deprecated");
         consumer.subscribe(Collections.singletonList("syfo-soknad-v1"));
     }
 
@@ -65,7 +65,7 @@ public class DeprecatedRebehandleSoknadListener {
                     log.debug("Melding mottatt på topic: {}, partisjon: {} med offset: {}",
                             record.topic(), record.partition(), record.offset());
                     try {
-                        MDC.put(CALL_ID, getLastHeaderByKeyAsString(record.headers(), CALL_ID).orElseGet(() -> randomUUID().toString()));
+                        MDC.put(CALL_ID, getLastHeaderByKeyAsString(record.headers(), CALL_ID).orElseGet(randomUUID()::toString));
 
                         Sykepengesoknad sykepengesoknad = konverter(record.value());
 

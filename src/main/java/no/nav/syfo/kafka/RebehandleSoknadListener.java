@@ -51,7 +51,7 @@ public class RebehandleSoknadListener {
         this.registry = registry;
 
         String groupId = "syfogsak-" + miljonavn + "-rebehandleSoknad";
-        consumer = consumerFactory.createConsumer(groupId, "", "");
+        consumer = consumerFactory.createConsumer(groupId, "rebehandleSoknad");
         consumer.subscribe(Collections.singletonList("syfo-soknad-v2"));
     }
 
@@ -68,7 +68,7 @@ public class RebehandleSoknadListener {
                     log.debug("Melding mottatt på topic: {}, partisjon: {} med offset: {}",
                             record.topic(), record.partition(), record.offset());
                     try {
-                        MDC.put(CALL_ID, getLastHeaderByKeyAsString(record.headers(), CALL_ID).orElseGet(() -> randomUUID().toString()));
+                        MDC.put(CALL_ID, getLastHeaderByKeyAsString(record.headers(), CALL_ID).orElseGet(randomUUID()::toString));
 
                         Sykepengesoknad sykepengesoknad = null;
                         if (record.value() instanceof SykepengesoknadDTO) {

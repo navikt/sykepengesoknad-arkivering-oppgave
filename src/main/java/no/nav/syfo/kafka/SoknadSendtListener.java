@@ -36,7 +36,7 @@ public class SoknadSendtListener {
         log.debug("Melding mottatt på topic: {}, partisjon: {} med offset: {}", cr.topic(), cr.partition(), cr.offset());
 
         try {
-            MDC.put(CALL_ID, getLastHeaderByKeyAsString(cr.headers(), CALL_ID).orElseGet(() -> randomUUID().toString()));
+            MDC.put(CALL_ID, getLastHeaderByKeyAsString(cr.headers(), CALL_ID).orElseGet(randomUUID()::toString));
 
             Soknad soknad = cr.value();
 
