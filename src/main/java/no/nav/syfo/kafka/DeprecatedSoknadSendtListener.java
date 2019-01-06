@@ -15,7 +15,7 @@ import javax.inject.Inject;
 import static java.util.UUID.randomUUID;
 import static no.nav.syfo.config.ApplicationConfig.CALL_ID;
 import static no.nav.syfo.kafka.KafkaHeaderConstants.getLastHeaderByKeyAsString;
-import static no.nav.syfo.kafka.mapper.DtoToSykepengesoknadMapper.konverter;
+import static no.nav.syfo.kafka.mapper.SoknadDtoToSykepengesoknadMapper.konverter;
 
 @Component
 @Slf4j
@@ -29,7 +29,7 @@ public class DeprecatedSoknadSendtListener {
         this.saksbehandlingsService = saksbehandlingsService;
     }
 
-    @KafkaListener(topics = "syfo-soknad-v1", id = "soknadSendt", idIsGroup = false, containerFactory = "deprecatedKafkaListenerContainerFactory")
+    @KafkaListener(topics = "syfo-soknad-v1", id = "deprecatedSoknadSendt", idIsGroup = false, containerFactory = "deprecatedKafkaListenerContainerFactory")
     public void listen(ConsumerRecord<String, SoknadDTO> cr, Acknowledgment acknowledgment) {
         log.debug("Melding mottatt på topic: {}, partisjon: {} med offset: {}", cr.topic(), cr.partition(), cr.offset());
 

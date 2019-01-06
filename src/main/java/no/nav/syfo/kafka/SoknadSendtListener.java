@@ -17,7 +17,8 @@ import javax.inject.Inject;
 import static java.util.UUID.randomUUID;
 import static no.nav.syfo.config.ApplicationConfig.CALL_ID;
 import static no.nav.syfo.kafka.KafkaHeaderConstants.getLastHeaderByKeyAsString;
-import static no.nav.syfo.kafka.mapper.DtoToSykepengesoknadMapper.konverter;
+import static no.nav.syfo.kafka.mapper.SykepengesoknadDtoToSykepengesoknadMapper.konverter;
+import static no.nav.syfo.kafka.mapper.SoknadDtoToSykepengesoknadMapper.konverter;
 
 @Component
 @Slf4j
@@ -39,16 +40,15 @@ public class SoknadSendtListener {
 
             Soknad soknad = cr.value();
 
+            Sykepengesoknad sykepengesoknad = null;
             if (soknad instanceof SoknadDTO) {
-                Sykepengesoknad sykepengesoknad = konverter((SoknadDTO) soknad);
-                if ("SENDT".equals(sykepengesoknad.getStatus())) {
-                    saksbehandlingsService.behandleSoknad(sykepengesoknad);
-                }
+                sykepengesoknad = konverter((SoknadDTO) soknad);
             } else if (soknad instanceof SykepengesoknadDTO) {
-                Sykepengesoknad sykepengesoknad = konverter((SykepengesoknadDTO) soknad);
-                if ("SENDT".equals(sykepengesoknad.getStatus())) {
-                    saksbehandlingsService.behandleSoknad(sykepengesoknad);
-                }
+                sykepengesoknad = konverter((SykepengesoknadDTO) soknad);
+            }
+
+            if (sykepengesoknad != null && "SENDT".equals(sykepengesoknad.getStatus())) {
+                saksbehandlingsService.behandleSoknad(sykepengesoknad);
             }
 
             acknowledgment.acknowledge();

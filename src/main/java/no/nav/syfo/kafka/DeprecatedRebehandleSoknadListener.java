@@ -25,7 +25,7 @@ import java.util.List;
 import static java.util.UUID.randomUUID;
 import static no.nav.syfo.config.ApplicationConfig.CALL_ID;
 import static no.nav.syfo.kafka.KafkaHeaderConstants.getLastHeaderByKeyAsString;
-import static no.nav.syfo.kafka.mapper.DtoToSykepengesoknadMapper.konverter;
+import static no.nav.syfo.kafka.mapper.SoknadDtoToSykepengesoknadMapper.konverter;
 
 @Deprecated
 @Slf4j
