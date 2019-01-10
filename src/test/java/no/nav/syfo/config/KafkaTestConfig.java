@@ -1,38 +1,30 @@
 package no.nav.syfo.config;
 
-import no.nav.syfo.kafka.sykepengesoknad.deserializer.SykepengesoknadDeserializer;
-import no.nav.syfo.kafka.sykepengesoknad.dto.SykepengesoknadDTO;
-import no.nav.syfo.kafka.sykepengesoknad.serializer.SykepengesoknadSerializer;
-import org.apache.kafka.common.serialization.StringDeserializer;
+import no.nav.syfo.kafka.soknad.dto.SoknadDTO;
+import no.nav.syfo.kafka.soknad.serializer.FunctionSerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
-import org.springframework.kafka.core.*;
+import org.springframework.kafka.core.DefaultKafkaProducerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.core.ProducerFactory;
 
 @Configuration
 @EnableKafka
 public class KafkaTestConfig {
 
     @Bean
-    public ConsumerFactory<String, SykepengesoknadDTO> consumerFactory(KafkaProperties kafkaProperties) {
-        return new DefaultKafkaConsumerFactory<>(kafkaProperties.buildConsumerProperties(), new StringDeserializer(), new SykepengesoknadDeserializer());
-    }
-
-    @Deprecated
-    @Bean
-    public ConsumerFactory<String, String> deprecatedConsumerFactory(KafkaProperties kafkaProperties) {
-        return new DefaultKafkaConsumerFactory<>(kafkaProperties.buildConsumerProperties(), new StringDeserializer(), new StringDeserializer());
+    public ProducerFactory<String, SoknadDTO> producerFactory(KafkaProperties kafkaProperties) {
+        return new DefaultKafkaProducerFactory<>(
+                kafkaProperties.buildProducerProperties(),
+                new StringSerializer(),
+                new FunctionSerializer<>(soknadDTO -> new byte[]{1}));
     }
 
     @Bean
-    public ProducerFactory<String, SykepengesoknadDTO> producerFactory(KafkaProperties kafkaProperties) {
-        return new DefaultKafkaProducerFactory<>(kafkaProperties.buildProducerProperties(), new StringSerializer(), new SykepengesoknadSerializer());
-    }
-
-    @Bean
-    public KafkaTemplate<String, SykepengesoknadDTO> kafkaTemplate(ProducerFactory<String, SykepengesoknadDTO> producerFactory) {
+    public KafkaTemplate<String, SoknadDTO> kafkaTemplate(ProducerFactory<String, SoknadDTO> producerFactory) {
         return new KafkaTemplate<>(producerFactory);
     }
 }
