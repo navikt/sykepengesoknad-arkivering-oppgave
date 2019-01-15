@@ -64,6 +64,7 @@ public final class SykepengesoknadDtoToSykepengesoknadMapper {
                 .tom(sykepengesoknad.getTom())
                 .opprettetDato(toLocalDate(sykepengesoknad.getOpprettet()))
                 .innsendtDato(toLocalDate(sykepengesoknad.getSendtNav()))
+                .sendtArbeidsgiver(toLocalDate(sykepengesoknad.getSendtArbeidsgiver()))
                 .arbeidsgiver(sykepengesoknad.getArbeidsgiver().getNavn())
                 .arbeidssituasjon(konverter(Arbeidssituasjon.class, sykepengesoknad.getArbeidssituasjon()))
                 .startSykeforlop(sykepengesoknad.getStartSyketilfelle())
