@@ -23,6 +23,7 @@ public class Soknad {
     LocalDate fom;
     LocalDate tom;
     LocalDate innsendtDato;
+    LocalDate sendtArbeidsgiver;
     LocalDate startSykeforlop;
     LocalDate sykmeldingUtskrevet;
     String arbeidsgiver;
@@ -42,6 +43,7 @@ public class Soknad {
                 .fom(sykepengesoknad.getFom())
                 .tom(sykepengesoknad.getTom())
                 .innsendtDato(sykepengesoknad.getInnsendtDato())
+                .sendtArbeidsgiver(sykepengesoknad.getSendtArbeidsgiver())
                 .startSykeforlop(sykepengesoknad.getStartSykeforlop())
                 .sykmeldingUtskrevet(sykepengesoknad.getSykmeldingUtskrevet())
                 .arbeidsgiver(sykepengesoknad.getArbeidsgiver())

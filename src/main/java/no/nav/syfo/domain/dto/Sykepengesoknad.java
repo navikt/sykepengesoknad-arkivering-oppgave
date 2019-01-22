@@ -19,6 +19,7 @@ public class Sykepengesoknad {
     LocalDate tom;
     LocalDate opprettetDato;
     LocalDate innsendtDato;
+    LocalDate sendtArbeidsgiver;
     LocalDate startSykeforlop;
     LocalDate sykmeldingUtskrevet;
     String arbeidsgiver;
