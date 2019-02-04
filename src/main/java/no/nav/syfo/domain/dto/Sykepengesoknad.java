@@ -18,11 +18,11 @@ public class Sykepengesoknad {
     String status;
     LocalDate fom;
     LocalDate tom;
-    LocalDate opprettetDato;
+    LocalDateTime opprettet;
     LocalDateTime sendtNav;
     LocalDateTime sendtArbeidsgiver;
     LocalDate startSykeforlop;
-    LocalDate sykmeldingUtskrevet;
+    LocalDateTime sykmeldingSkrevet;
     String arbeidsgiver;
     String korrigerer;
     String korrigertAv;

@@ -62,13 +62,13 @@ public final class SykepengesoknadDtoToSykepengesoknadMapper {
                 .status(sykepengesoknad.getStatus().name())
                 .fom(sykepengesoknad.getFom())
                 .tom(sykepengesoknad.getTom())
-                .opprettetDato(toLocalDate(sykepengesoknad.getOpprettet()))
+                .opprettet(sykepengesoknad.getOpprettet())
                 .sendtNav(sykepengesoknad.getSendtNav())
                 .sendtArbeidsgiver(sykepengesoknad.getSendtArbeidsgiver())
                 .arbeidsgiver(sykepengesoknad.getArbeidsgiver().getNavn())
                 .arbeidssituasjon(konverter(Arbeidssituasjon.class, sykepengesoknad.getArbeidssituasjon()))
                 .startSykeforlop(sykepengesoknad.getStartSyketilfelle())
-                .sykmeldingUtskrevet(toLocalDate(sykepengesoknad.getSykmeldingSkrevet()))
+                .sykmeldingSkrevet(sykepengesoknad.getSykmeldingSkrevet())
                 .korrigertAv(sykepengesoknad.getKorrigertAv())
                 .korrigerer(sykepengesoknad.getKorrigerer())
                 .soknadPerioder(stream(sykepengesoknad.getSoknadsperioder())
@@ -82,9 +82,5 @@ public final class SykepengesoknadDtoToSykepengesoknadMapper {
 
     private static <T> Stream<T> stream(List<T> list) {
         return list == null ? Stream.empty() : list.stream();
-    }
-
-    private static LocalDate toLocalDate(LocalDateTime dateTime) {
-        return ofNullable(dateTime).map(LocalDateTime::toLocalDate).orElse(null);
     }
 }

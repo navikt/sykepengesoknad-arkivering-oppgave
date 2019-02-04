@@ -50,7 +50,7 @@ public class BehandleFeiledeSoknaderServiceTest {
                 .tom(LocalDate.of(2018, 9, 13))
                 .status("SENDT")
                 .sendtNav(LocalDate.of(2018, 9, 13).atStartOfDay())
-                .opprettetDato(LocalDate.of(2018, 9, 7))
+                .opprettet(LocalDate.of(2018, 9, 7).atStartOfDay())
                 .build();
 
         globalInnsending = Innsending.builder()

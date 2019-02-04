@@ -47,7 +47,7 @@ public class Soknad {
                 .innsendtDato(sykepengesoknad.getSendtNav().toLocalDate())
                 .sendtArbeidsgiver(ofNullable(sykepengesoknad.getSendtArbeidsgiver()).map(LocalDateTime::toLocalDate).orElse(null))
                 .startSykeforlop(sykepengesoknad.getStartSykeforlop())
-                .sykmeldingUtskrevet(sykepengesoknad.getSykmeldingUtskrevet())
+                .sykmeldingUtskrevet(ofNullable(sykepengesoknad.getSykmeldingSkrevet()).map(LocalDateTime::toLocalDate).orElse(null))
                 .arbeidsgiver(sykepengesoknad.getArbeidsgiver())
                 .korrigerer(sykepengesoknad.getKorrigerer())
                 .korrigertAv(sykepengesoknad.getKorrigertAv())
