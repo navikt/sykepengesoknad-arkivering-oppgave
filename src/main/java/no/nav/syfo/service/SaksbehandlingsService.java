@@ -46,11 +46,17 @@ public class SaksbehandlingsService {
         this.registry = registry;
     }
 
+    private boolean ikkeSendtTilNav(Sykepengesoknad sykepengesoknad) {
+        return !("SENDT".equals(sykepengesoknad.getStatus()) && sykepengesoknad.getSendtNav() != null);
+    }
+
+    private boolean ettersendtTilArbeidsgiver(Sykepengesoknad sykepengesoknad) {
+        return sykepengesoknad.getSendtArbeidsgiver() != null
+                && sykepengesoknad.getSendtNav().isBefore(sykepengesoknad.getSendtArbeidsgiver());
+    }
+
     public void behandleSoknad(Sykepengesoknad sykepengesoknad) {
-        if (!"SENDT".equals(sykepengesoknad.getStatus())
-                || sykepengesoknad.getSendtNav() == null
-                || (sykepengesoknad.getSendtArbeidsgiver() != null
-                && sykepengesoknad.getSendtNav().isBefore(sykepengesoknad.getSendtArbeidsgiver()))) {
+        if (ikkeSendtTilNav(sykepengesoknad) || ettersendtTilArbeidsgiver(sykepengesoknad)) {
             return;
         }
 
