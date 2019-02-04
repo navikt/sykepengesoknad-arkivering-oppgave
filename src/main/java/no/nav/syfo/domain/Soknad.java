@@ -6,10 +6,12 @@ import lombok.Getter;
 import no.nav.syfo.domain.dto.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparingInt;
+import static java.util.Optional.ofNullable;
 
 @Data
 @Builder
@@ -42,8 +44,8 @@ public class Soknad {
                 .soknadstype(sykepengesoknad.getSoknadstype())
                 .fom(sykepengesoknad.getFom())
                 .tom(sykepengesoknad.getTom())
-                .innsendtDato(sykepengesoknad.getInnsendtDato())
-                .sendtArbeidsgiver(sykepengesoknad.getSendtArbeidsgiver())
+                .innsendtDato(sykepengesoknad.getSendtNav().toLocalDate())
+                .sendtArbeidsgiver(ofNullable(sykepengesoknad.getSendtArbeidsgiver()).map(LocalDateTime::toLocalDate).orElse(null))
                 .startSykeforlop(sykepengesoknad.getStartSykeforlop())
                 .sykmeldingUtskrevet(sykepengesoknad.getSykmeldingUtskrevet())
                 .arbeidsgiver(sykepengesoknad.getArbeidsgiver())

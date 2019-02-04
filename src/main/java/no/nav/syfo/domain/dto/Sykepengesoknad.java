@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Value;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Value
@@ -18,8 +19,8 @@ public class Sykepengesoknad {
     LocalDate fom;
     LocalDate tom;
     LocalDate opprettetDato;
-    LocalDate innsendtDato;
-    LocalDate sendtArbeidsgiver;
+    LocalDateTime sendtNav;
+    LocalDateTime sendtArbeidsgiver;
     LocalDate startSykeforlop;
     LocalDate sykmeldingUtskrevet;
     String arbeidsgiver;

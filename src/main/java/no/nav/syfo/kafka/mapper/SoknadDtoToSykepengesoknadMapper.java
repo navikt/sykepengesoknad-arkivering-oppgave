@@ -6,7 +6,9 @@ import no.nav.syfo.kafka.soknad.dto.SoknadPeriodeDTO;
 import no.nav.syfo.kafka.soknad.dto.SporsmalDTO;
 import no.nav.syfo.kafka.soknad.dto.SvarDTO;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -61,7 +63,7 @@ public final class SoknadDtoToSykepengesoknadMapper {
                 .fom(soknad.getFom())
                 .tom(soknad.getTom())
                 .opprettetDato(soknad.getOpprettetDato())
-                .innsendtDato(soknad.getInnsendtDato())
+                .sendtNav(Optional.ofNullable(soknad.getInnsendtDato()).map(LocalDate::atStartOfDay).orElse(null))
                 .arbeidsgiver(soknad.getArbeidsgiver())
                 .arbeidssituasjon(konverter(Arbeidssituasjon.class, soknad.getArbeidssituasjon()))
                 .startSykeforlop(soknad.getStartSykeforlop())

@@ -47,7 +47,7 @@ public class SoknadSendtListener {
                 sykepengesoknad = konverter((SykepengesoknadDTO) soknad);
             }
 
-            if (sykepengesoknad != null && "SENDT".equals(sykepengesoknad.getStatus())) {
+            if (sykepengesoknad != null) {
                 saksbehandlingsService.behandleSoknad(sykepengesoknad);
             }
 

@@ -16,7 +16,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
+import static no.nav.syfo.TestUtils.soknadArbeidstakerMedNeisvar;
 import static no.nav.syfo.TestUtils.soknadSelvstendigMedNeisvar;
 import static no.nav.syfo.domain.dto.Soknadstype.SELVSTENDIGE_OG_FRILANSERE;
 import static org.mockito.ArgumentMatchers.any;
@@ -59,7 +61,73 @@ public class SaksbehandlingsServiceTest {
     }
 
     @Test
-    public void behandlerInnsending() throws IOException {
+    public void behandlerIkkeIkkeSendteSoknader() throws IOException {
+        Sykepengesoknad sykepengesoknad = objectMapper.readValue(soknadArbeidstakerMedNeisvar, Sykepengesoknad.class)
+                .toBuilder()
+                .status("NY")
+                .build();
+
+        saksbehandlingsService.behandleSoknad(sykepengesoknad);
+
+        verify(innsendingDAO, never()).finnInnsendingForSykepengesoknad(any());
+    }
+
+    @Test
+    public void behandlerIkkeSoknaderSomIkkeErSendtTilNav() throws IOException {
+        Sykepengesoknad sykepengesoknad = objectMapper.readValue(soknadArbeidstakerMedNeisvar, Sykepengesoknad.class)
+                .toBuilder()
+                .sendtNav(null)
+                .build();
+
+        saksbehandlingsService.behandleSoknad(sykepengesoknad);
+
+        verify(innsendingDAO, never()).finnInnsendingForSykepengesoknad(any());
+    }
+
+    @Test
+    public void behandlerIkkeSoknaderSomEttersendesTilArbeidsgiver() throws IOException {
+        LocalDateTime now = LocalDateTime.now();
+        Sykepengesoknad sykepengesoknad = objectMapper.readValue(soknadArbeidstakerMedNeisvar, Sykepengesoknad.class)
+                .toBuilder()
+                .sendtNav(now)
+                .sendtArbeidsgiver(now.plusNanos(1))
+                .build();
+
+        saksbehandlingsService.behandleSoknad(sykepengesoknad);
+
+        verify(innsendingDAO, never()).finnInnsendingForSykepengesoknad(any());
+    }
+
+    @Test
+    public void behandlerSoknaderSomEttersendesTilNav() throws IOException {
+        LocalDateTime now = LocalDateTime.now();
+        Sykepengesoknad sykepengesoknad = objectMapper.readValue(soknadArbeidstakerMedNeisvar, Sykepengesoknad.class)
+                .toBuilder()
+                .sendtNav(now.plusNanos(1))
+                .sendtArbeidsgiver(now)
+                .build();
+
+        saksbehandlingsService.behandleSoknad(sykepengesoknad);
+
+        verify(innsendingDAO).settBehandlet(any());
+    }
+
+    @Test
+    public void behandlerSoknaderSomSkalTilNavOgArbeidsgiver() throws IOException {
+        LocalDateTime now = LocalDateTime.now();
+        Sykepengesoknad sykepengesoknad = objectMapper.readValue(soknadArbeidstakerMedNeisvar, Sykepengesoknad.class)
+                .toBuilder()
+                .sendtNav(now)
+                .sendtArbeidsgiver(now)
+                .build();
+
+        saksbehandlingsService.behandleSoknad(sykepengesoknad);
+
+        verify(innsendingDAO).settBehandlet(any());
+    }
+
+    @Test
+    public void behandlerSoknaderSomSkalTilNav() throws IOException {
         Sykepengesoknad sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad.class);
 
         saksbehandlingsService.behandleSoknad(sykepengesoknad);

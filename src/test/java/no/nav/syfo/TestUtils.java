@@ -11,7 +11,7 @@ public class TestUtils {
             "        \"fom\": \"2018-05-20\",\n" +
             "        \"tom\": \"2018-05-28\",\n" +
             "        \"opprettetDato\": \"2018-11-16\",\n" +
-            "        \"innsendtDato\": \"2018-11-16\",\n" +
+            "        \"sendtNav\": \"2018-11-16T00:00:00\",\n" +
             "        \"startSykeforlop\": null,\n" +
             "        \"sykmeldingUtskrevet\": null,\n" +
             "        \"arbeidsgiver\": null,\n" +
@@ -538,7 +538,7 @@ public class TestUtils {
             "        \"fom\": \"2018-05-20\",\n" +
             "        \"tom\": \"2018-05-28\",\n" +
             "        \"opprettetDato\": \"2018-11-16\",\n" +
-            "        \"innsendtDato\": \"2018-11-16\",\n" +
+            "        \"sendtNav\": \"2018-11-16T00:00:00\",\n" +
             "        \"startSykeforlop\": null,\n" +
             "        \"sykmeldingUtskrevet\": null,\n" +
             "        \"arbeidsgiver\": null,\n" +
@@ -947,7 +947,7 @@ public class TestUtils {
             "    \"fom\": null,\n" +
             "    \"tom\": null,\n" +
             "    \"opprettetDato\": \"2018-11-16\",\n" +
-            "    \"innsendtDato\": \"2018-11-16\",\n" +
+            "    \"sendtNav\": \"2018-11-16T00:00:00\",\n" +
             "    \"startSykeforlop\": null,\n" +
             "    \"sykmeldingUtskrevet\": null,\n" +
             "    \"arbeidsgiver\": null,\n" +
@@ -1094,7 +1094,7 @@ public class TestUtils {
             "        \"fom\": \"2018-10-16\",\n" +
             "        \"tom\": \"2018-10-24\",\n" +
             "        \"opprettetDato\": \"2018-11-16\",\n" +
-            "        \"innsendtDato\": \"2018-11-16\",\n" +
+            "        \"sendtNav\": \"2018-11-16T00:00:00\",\n" +
             "        \"startSykeforlop\": \"2018-10-16\",\n" +
             "        \"sykmeldingUtskrevet\": null,\n" +
             "        \"arbeidsgiver\": \"ARBEIDSGIVER A/S\",\n" +
@@ -1792,7 +1792,7 @@ public class TestUtils {
             "        \"fom\": \"2018-10-16\",\n" +
             "        \"tom\": \"2018-10-24\",\n" +
             "        \"opprettetDato\": \"2018-11-16\",\n" +
-            "        \"innsendtDato\": \"2018-11-16\",\n" +
+            "        \"sendtNav\": \"2018-11-16T00:00:00\",\n" +
             "        \"startSykeforlop\": \"2018-10-16\",\n" +
             "        \"sykmeldingUtskrevet\": null,\n" +
             "        \"arbeidsgiver\": \"ARBEIDSGIVER A/S\",\n" +

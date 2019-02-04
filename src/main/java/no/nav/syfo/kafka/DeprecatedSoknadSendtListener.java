@@ -1,7 +1,6 @@
 package no.nav.syfo.kafka;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.syfo.domain.dto.Sykepengesoknad;
 import no.nav.syfo.kafka.soknad.dto.SoknadDTO;
 import no.nav.syfo.service.SaksbehandlingsService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -36,10 +35,7 @@ public class DeprecatedSoknadSendtListener {
         try {
             MDC.put(CALL_ID, getLastHeaderByKeyAsString(cr.headers(), CALL_ID).orElseGet(randomUUID()::toString));
 
-            Sykepengesoknad sykepengesoknad = konverter(cr.value());
-            if ("SENDT".equals(sykepengesoknad.getStatus())) {
-                saksbehandlingsService.behandleSoknad(sykepengesoknad);
-            }
+            saksbehandlingsService.behandleSoknad(konverter(cr.value()));
 
             acknowledgment.acknowledge();
         } catch (Exception e) {

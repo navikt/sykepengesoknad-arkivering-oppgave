@@ -47,6 +47,13 @@ public class SaksbehandlingsService {
     }
 
     public void behandleSoknad(Sykepengesoknad sykepengesoknad) {
+        if (!"SENDT".equals(sykepengesoknad.getStatus())
+                || sykepengesoknad.getSendtNav() == null
+                || (sykepengesoknad.getSendtArbeidsgiver() != null
+                && sykepengesoknad.getSendtNav().isBefore(sykepengesoknad.getSendtArbeidsgiver()))) {
+            return;
+        }
+
         String sykepengesoknadId = sykepengesoknad.getId();
         String aktorId = sykepengesoknad.getAktorId();
         Optional<Innsending> innsending = innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknadId);

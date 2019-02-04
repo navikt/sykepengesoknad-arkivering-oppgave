@@ -49,7 +49,7 @@ public class BehandleFeiledeSoknaderServiceTest {
                 .fom(LocalDate.of(2018, 9, 7))
                 .tom(LocalDate.of(2018, 9, 13))
                 .status("SENDT")
-                .innsendtDato(LocalDate.of(2018, 9, 13))
+                .sendtNav(LocalDate.of(2018, 9, 13).atStartOfDay())
                 .opprettetDato(LocalDate.of(2018, 9, 7))
                 .build();
 
