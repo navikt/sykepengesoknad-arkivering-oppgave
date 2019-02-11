@@ -1,7 +1,7 @@
 package no.nav.syfo.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.syfo.domain.Soknad;
+import no.nav.syfo.domain.PdfSoknad;
 import no.nav.syfo.domain.dto.PDFTemplate;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
@@ -18,13 +18,13 @@ public class PDFRestController {
         this.restTemplate = restTemplate;
     }
 
-    public byte[] getPDF(Soknad soknad, PDFTemplate template) {
+    public byte[] getPDF(PdfSoknad soknad, PDFTemplate template) {
         final String url = "http://pdf-gen.default/api/v1/genpdf/syfosoknader/" + template;
 
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        final HttpEntity<Soknad> entity = new HttpEntity<>(soknad, headers);
+        final HttpEntity<PdfSoknad> entity = new HttpEntity<>(soknad, headers);
 
         final ResponseEntity<byte[]> result = restTemplate.exchange(url, HttpMethod.POST, entity, byte[].class);
 

@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.consumer.repository.InnsendingDAO;
 import no.nav.syfo.consumer.ws.AktorConsumer;
 import no.nav.syfo.domain.Innsending;
-import no.nav.syfo.domain.Soknad;
+import no.nav.syfo.domain.PdfSoknad;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
 import org.springframework.stereotype.Component;
 
@@ -89,7 +89,7 @@ public class BehandleFeiledeSoknaderService {
     }
 
     private String behandleFraJournalpost(String innsendingsId, String saksId, Sykepengesoknad sykepengesoknad) {
-        Soknad soknad = saksbehandlingsService
+        PdfSoknad soknad = saksbehandlingsService
                 .opprettSoknad(
                         sykepengesoknad,
                         aktorConsumer.finnFnr(sykepengesoknad.getAktorId())

@@ -6,8 +6,6 @@ import no.nav.syfo.kafka.sykepengesoknad.dto.SporsmalDTO;
 import no.nav.syfo.kafka.sykepengesoknad.dto.SvarDTO;
 import no.nav.syfo.kafka.sykepengesoknad.dto.SykepengesoknadDTO;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -50,6 +48,7 @@ public final class SykepengesoknadDtoToSykepengesoknadMapper {
                 .fom(soknadPeriode.getFom())
                 .tom(soknadPeriode.getTom())
                 .grad(soknadPeriode.getSykmeldingsgrad())
+                .faktiskGrad(soknadPeriode.getFaktiskGrad())
                 .build();
     }
 

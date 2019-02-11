@@ -1,7 +1,7 @@
 package no.nav.syfo.service;
 
+import no.nav.syfo.domain.PdfSoknad;
 import no.nav.syfo.domain.Periode;
-import no.nav.syfo.domain.Soknad;
 import no.nav.syfo.domain.dto.SoknadPeriode;
 import no.nav.syfo.domain.dto.Sporsmal;
 import no.nav.syfo.domain.dto.Svar;
@@ -24,7 +24,7 @@ import static no.nav.syfo.util.PeriodeMapper.jsonTilPeriode;
 
 public class BeskrivelseService {
 
-    public static String lagBeskrivelse(final Soknad soknad) {
+    public static String lagBeskrivelse(final PdfSoknad soknad) {
         String tittel;
         switch (soknad.getSoknadstype()) {
             case ARBEIDSTAKERE:

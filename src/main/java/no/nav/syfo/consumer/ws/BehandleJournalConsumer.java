@@ -2,7 +2,7 @@ package no.nav.syfo.consumer.ws;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.controller.PDFRestController;
-import no.nav.syfo.domain.Soknad;
+import no.nav.syfo.domain.PdfSoknad;
 import no.nav.syfo.domain.dto.PDFTemplate;
 import no.nav.syfo.domain.dto.Soknadstype;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.BehandleJournalV2;
@@ -39,7 +39,7 @@ public class BehandleJournalConsumer {
         this.pdfRestController = pdfRestController;
     }
 
-    public String opprettJournalpost(Soknad soknad, String saksId) {
+    public String opprettJournalpost(PdfSoknad soknad, String saksId) {
         byte[] pdf;
 
         try {
@@ -53,7 +53,7 @@ public class BehandleJournalConsumer {
         return journalforSoknad(soknad, saksId, pdf);
     }
 
-    private String journalforSoknad(Soknad soknad, String saksId, byte[] pdf) {
+    private String journalforSoknad(PdfSoknad soknad, String saksId, byte[] pdf) {
         try {
             return behandleJournalV2.journalfoerInngaaendeHenvendelse(
                     new WSJournalfoerInngaaendeHenvendelseRequest()
@@ -97,7 +97,7 @@ public class BehandleJournalConsumer {
         }
     }
 
-    private String getJornalfoertDokumentTittel(Soknad soknad) {
+    private String getJornalfoertDokumentTittel(PdfSoknad soknad) {
         switch (soknad.getSoknadstype()) {
             case OPPHOLD_UTLAND:
                 return "Søknad om å beholde sykepenger utenfor Norge";
@@ -110,7 +110,7 @@ public class BehandleJournalConsumer {
         }
     }
 
-    private String getWSStruktureltInnholdFilnavn(Soknad soknad) {
+    private String getWSStruktureltInnholdFilnavn(PdfSoknad soknad) {
         switch (soknad.getSoknadstype()) {
             case OPPHOLD_UTLAND:
                 return "soknad-" + soknad.getInnsendtDato().format(norskDato);

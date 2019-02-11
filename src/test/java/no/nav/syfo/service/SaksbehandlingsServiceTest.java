@@ -6,7 +6,7 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import no.nav.syfo.consumer.repository.InnsendingDAO;
 import no.nav.syfo.consumer.ws.*;
-import no.nav.syfo.domain.Soknad;
+import no.nav.syfo.domain.PdfSoknad;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,7 +56,7 @@ public class SaksbehandlingsServiceTest {
         when(behandleSakConsumer.opprettSak(any())).thenReturn("saksId");
         when(behandleJournalConsumer.opprettJournalpost(any(), any())).thenReturn("journalpostId");
         when(behandlendeEnhetService.hentBehandlendeEnhet("12345678901", SELVSTENDIGE_OG_FRILANSERE)).thenReturn("2017");
-        when(oppgavebehandlingConsumer.opprettOppgave(anyString(), anyString(), anyString(), anyString(), any(Soknad.class))).thenReturn("oppgaveId");
+        when(oppgavebehandlingConsumer.opprettOppgave(anyString(), anyString(), anyString(), anyString(), any(PdfSoknad.class))).thenReturn("oppgaveId");
         when(registry.counter(any(), anyIterable())).thenReturn(mock(Counter.class));
     }
 

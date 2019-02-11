@@ -1,7 +1,7 @@
 package no.nav.syfo.consumer.ws;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.syfo.domain.Soknad;
+import no.nav.syfo.domain.PdfSoknad;
 import no.nav.syfo.domain.dto.Soknadstype;
 import no.nav.tjeneste.virksomhet.oppgavebehandling.v3.OppgavebehandlingV3;
 import no.nav.tjeneste.virksomhet.oppgavebehandling.v3.meldinger.WSOpprettOppgave;
@@ -24,7 +24,7 @@ public class OppgavebehandlingConsumer {
         this.oppgavebehandlingV3 = oppgavebehandlingV3;
     }
 
-    public String opprettOppgave(String fnr, String behandlendeEnhet, String saksId, String journalpostId, Soknad soknad) {
+    public String opprettOppgave(String fnr, String behandlendeEnhet, String saksId, String journalpostId, PdfSoknad soknad) {
         try {
             return oppgavebehandlingV3.opprettOppgave(new WSOpprettOppgaveRequest()
                     .withOpprettetAvEnhetId(9999)

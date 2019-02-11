@@ -16,7 +16,7 @@ import static java.util.Optional.ofNullable;
 @Data
 @Builder
 @Getter
-public class Soknad {
+public class PdfSoknad {
     String aktorId;
     String soknadsId;
     String fnr;
@@ -35,8 +35,8 @@ public class Soknad {
     List<SoknadPeriode> soknadPerioder;
     List<Sporsmal> sporsmal;
 
-    public static Soknad lagSoknad(Sykepengesoknad sykepengesoknad, String fnr, String navn) {
-        return Soknad.builder()
+    public static PdfSoknad lagSoknad(Sykepengesoknad sykepengesoknad, String fnr, String navn) {
+        return PdfSoknad.builder()
                 .aktorId(sykepengesoknad.getAktorId())
                 .soknadsId(sykepengesoknad.getId())
                 .fnr(fnr)
@@ -59,7 +59,7 @@ public class Soknad {
 
     private static List<Sporsmal> endreRekkefolgePaSporsmalForPDF(final List<Sporsmal> sporsmal) {
         return sporsmal.stream()
-                .sorted(comparingInt(Soknad::plasseringSporsmalPDF))
+                .sorted(comparingInt(PdfSoknad::plasseringSporsmalPDF))
                 .collect(Collectors.toList());
     }
 
