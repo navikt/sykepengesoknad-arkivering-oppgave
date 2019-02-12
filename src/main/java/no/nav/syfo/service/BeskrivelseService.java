@@ -1,7 +1,7 @@
 package no.nav.syfo.service;
 
-import no.nav.syfo.domain.PdfSoknad;
 import no.nav.syfo.domain.Periode;
+import no.nav.syfo.domain.Soknad;
 import no.nav.syfo.domain.dto.SoknadPeriode;
 import no.nav.syfo.domain.dto.Sporsmal;
 import no.nav.syfo.domain.dto.Svar;
@@ -24,7 +24,7 @@ import static no.nav.syfo.util.PeriodeMapper.jsonTilPeriode;
 
 public class BeskrivelseService {
 
-    public static String lagBeskrivelse(final PdfSoknad soknad) {
+    public static String lagBeskrivelse(final Soknad soknad) {
         String tittel;
         switch (soknad.getSoknadstype()) {
             case ARBEIDSTAKERE:
@@ -55,9 +55,13 @@ public class BeskrivelseService {
         return IntStream.range(0, perioder.size())
                 .mapToObj(i -> {
                     SoknadPeriode soknadPeriode = perioder.get(i);
+                    String faktiskGrad = soknadPeriode.getFaktiskGrad() != null
+                            ? "Oppgitt faktisk arbeidsgrad: " + soknadPeriode.getFaktiskGrad() + "\n"
+                            : "";
                     return "\nPeriode " + (i + 1) + ":\n" +
                             soknadPeriode.getFom().format(norskDato) + " - " + soknadPeriode.getTom().format(norskDato) + "\n" +
-                            "Grad: " + soknadPeriode.getGrad() + "\n";
+                            "Grad: " + soknadPeriode.getGrad() + "\n" +
+                            faktiskGrad;
                 })
                 .collect(Collectors.joining());
 

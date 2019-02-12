@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.consumer.repository.InnsendingDAO;
 import no.nav.syfo.consumer.ws.*;
 import no.nav.syfo.domain.Innsending;
-import no.nav.syfo.domain.PdfSoknad;
+import no.nav.syfo.domain.Soknad;
 import no.nav.syfo.domain.dto.Soknadstype;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
 import org.springframework.stereotype.Component;
@@ -77,7 +77,7 @@ public class SaksbehandlingsService {
 
         try {
             String fnr = aktorConsumer.finnFnr(aktorId);
-            PdfSoknad soknad = opprettSoknad(sykepengesoknad, fnr);
+            Soknad soknad = opprettSoknad(sykepengesoknad, fnr);
             String saksId = opprettSak(innsendingId, fnr);
             String journalpostId = opprettJournalpost(innsendingId, soknad, saksId);
 
@@ -101,14 +101,14 @@ public class SaksbehandlingsService {
         }
     }
 
-    void opprettOppgave(String innsendingId, String fnr, PdfSoknad soknad, String saksId, String journalpostId) {
+    void opprettOppgave(String innsendingId, String fnr, Soknad soknad, String saksId, String journalpostId) {
         String behandlendeEnhet = behandlendeEnhetService.hentBehandlendeEnhet(fnr, soknad.getSoknadstype());
         String oppgaveId = oppgavebehandlingConsumer
                 .opprettOppgave(fnr, behandlendeEnhet, saksId, journalpostId, soknad);
         innsendingDAO.oppdaterOppgaveId(innsendingId, oppgaveId);
     }
 
-    String opprettJournalpost(String innsendingId, PdfSoknad soknad, String saksId) {
+    String opprettJournalpost(String innsendingId, Soknad soknad, String saksId) {
         String journalpostId = behandleJournalConsumer.opprettJournalpost(soknad, saksId);
         innsendingDAO.oppdaterJournalpostId(innsendingId, journalpostId);
         return journalpostId;
@@ -120,8 +120,8 @@ public class SaksbehandlingsService {
         return saksId;
     }
 
-    PdfSoknad opprettSoknad(Sykepengesoknad sykepengesoknad, String fnr) {
-        return PdfSoknad.lagSoknad(sykepengesoknad, fnr, personConsumer.finnBrukerPersonnavnByFnr(fnr));
+    Soknad opprettSoknad(Sykepengesoknad sykepengesoknad, String fnr) {
+        return Soknad.lagSoknad(sykepengesoknad, fnr, personConsumer.finnBrukerPersonnavnByFnr(fnr));
     }
 
     private void tellInnsendingBehandlet(Soknadstype soknadstype) {

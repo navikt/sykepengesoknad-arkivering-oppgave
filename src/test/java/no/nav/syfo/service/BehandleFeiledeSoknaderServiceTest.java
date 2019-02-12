@@ -3,7 +3,7 @@ package no.nav.syfo.service;
 import no.nav.syfo.consumer.repository.InnsendingDAO;
 import no.nav.syfo.consumer.ws.AktorConsumer;
 import no.nav.syfo.domain.Innsending;
-import no.nav.syfo.domain.PdfSoknad;
+import no.nav.syfo.domain.Soknad;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,9 +59,9 @@ public class BehandleFeiledeSoknaderServiceTest {
                 .build();
 
         when(saksbehandlingsService.opprettSak("innsendingsId", "fnr")).thenReturn("saksId");
-        when(saksbehandlingsService.opprettJournalpost(anyString(), any(PdfSoknad.class), anyString())).thenReturn("journalpostId");
+        when(saksbehandlingsService.opprettJournalpost(anyString(), any(Soknad.class), anyString())).thenReturn("journalpostId");
         when(aktorConsumer.finnFnr("aktorId")).thenReturn("fnr");
-        when(saksbehandlingsService.opprettSoknad(any(), anyString())).thenReturn(PdfSoknad.lagSoknad(sykepengesoknad, "fnr", "Ola Nordmann"));
+        when(saksbehandlingsService.opprettSoknad(any(), anyString())).thenReturn(Soknad.lagSoknad(sykepengesoknad, "fnr", "Ola Nordmann"));
     }
 
     @Test
@@ -71,8 +71,8 @@ public class BehandleFeiledeSoknaderServiceTest {
         verify(innsendingDAO).oppdaterAktorId("innsendingsId", "aktorId");
 
         verify(saksbehandlingsService).opprettSak(anyString(), anyString());
-        verify(saksbehandlingsService).opprettJournalpost(anyString(), any(PdfSoknad.class), anyString());
-        verify(saksbehandlingsService).opprettOppgave(anyString(), anyString(), any(PdfSoknad.class), anyString(), anyString());
+        verify(saksbehandlingsService).opprettJournalpost(anyString(), any(Soknad.class), anyString());
+        verify(saksbehandlingsService).opprettOppgave(anyString(), anyString(), any(Soknad.class), anyString(), anyString());
 
         verify(innsendingDAO).settBehandlet("innsendingsId");
         verify(innsendingDAO).fjernFeiletInnsending("innsendingsId");
@@ -89,8 +89,8 @@ public class BehandleFeiledeSoknaderServiceTest {
         verify(innsendingDAO, never()).oppdaterAktorId("innsendingsId", "aktorId");
 
         verify(saksbehandlingsService).opprettSak(anyString(), anyString());
-        verify(saksbehandlingsService).opprettJournalpost(anyString(), any(PdfSoknad.class), anyString());
-        verify(saksbehandlingsService).opprettOppgave(anyString(), anyString(), any(PdfSoknad.class), anyString(), anyString());
+        verify(saksbehandlingsService).opprettJournalpost(anyString(), any(Soknad.class), anyString());
+        verify(saksbehandlingsService).opprettOppgave(anyString(), anyString(), any(Soknad.class), anyString(), anyString());
 
         verify(innsendingDAO).settBehandlet("innsendingsId");
         verify(innsendingDAO).fjernFeiletInnsending("innsendingsId");
@@ -106,8 +106,8 @@ public class BehandleFeiledeSoknaderServiceTest {
         behandleFeiledeSoknaderService.behandleFeiletSoknad(innsending, sykepengesoknad);
 
         verify(saksbehandlingsService, never()).opprettSak(anyString(), anyString());
-        verify(saksbehandlingsService).opprettJournalpost(anyString(), any(PdfSoknad.class), anyString());
-        verify(saksbehandlingsService).opprettOppgave(anyString(), anyString(), any(PdfSoknad.class), anyString(), anyString());
+        verify(saksbehandlingsService).opprettJournalpost(anyString(), any(Soknad.class), anyString());
+        verify(saksbehandlingsService).opprettOppgave(anyString(), anyString(), any(Soknad.class), anyString(), anyString());
 
         verify(innsendingDAO).settBehandlet("innsendingsId");
         verify(innsendingDAO).fjernFeiletInnsending("innsendingsId");
@@ -124,8 +124,8 @@ public class BehandleFeiledeSoknaderServiceTest {
         behandleFeiledeSoknaderService.behandleFeiletSoknad(innsending, sykepengesoknad);
 
         verify(saksbehandlingsService, never()).opprettSak(anyString(), anyString());
-        verify(saksbehandlingsService, never()).opprettJournalpost(anyString(), any(PdfSoknad.class), anyString());
-        verify(saksbehandlingsService).opprettOppgave(anyString(), anyString(), any(PdfSoknad.class), anyString(), anyString());
+        verify(saksbehandlingsService, never()).opprettJournalpost(anyString(), any(Soknad.class), anyString());
+        verify(saksbehandlingsService).opprettOppgave(anyString(), anyString(), any(Soknad.class), anyString(), anyString());
 
         verify(innsendingDAO).settBehandlet("innsendingsId");
         verify(innsendingDAO).fjernFeiletInnsending("innsendingsId");

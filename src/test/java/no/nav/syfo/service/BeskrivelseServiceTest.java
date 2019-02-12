@@ -2,7 +2,7 @@ package no.nav.syfo.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import no.nav.syfo.domain.PdfSoknad;
+import no.nav.syfo.domain.Soknad;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
 import org.junit.Test;
 
@@ -18,7 +18,7 @@ public class BeskrivelseServiceTest {
     @Test
     public void soknadForUtlandsopphold() throws IOException {
         Sykepengesoknad sykepengesoknad = objectMapper.readValue(soknadUtland, Sykepengesoknad.class);
-        PdfSoknad soknad = PdfSoknad.lagSoknad(sykepengesoknad, "fnr", "navn");
+        Soknad soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn");
 
         String beskrivelse = BeskrivelseService.lagBeskrivelse(soknad);
 
@@ -28,7 +28,7 @@ public class BeskrivelseServiceTest {
     @Test
     public void soknadForSelvstendigeMedNeisvar() throws IOException {
         Sykepengesoknad sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad.class);
-        PdfSoknad soknad = PdfSoknad.lagSoknad(sykepengesoknad, "fnr", "navn");
+        Soknad soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn");
 
         String beskrivelse = BeskrivelseService.lagBeskrivelse(soknad);
 
@@ -38,7 +38,7 @@ public class BeskrivelseServiceTest {
     @Test
     public void soknadForSelvstendigeMedMangeSvar() throws IOException {
         Sykepengesoknad sykepengesoknad = objectMapper.readValue(soknadSelvstendigMangeSvar, Sykepengesoknad.class);
-        PdfSoknad soknad = PdfSoknad.lagSoknad(sykepengesoknad, "fnr", "navn");
+        Soknad soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn");
 
         String beskrivelse = BeskrivelseService.lagBeskrivelse(soknad);
 
@@ -48,7 +48,7 @@ public class BeskrivelseServiceTest {
     @Test
     public void soknadForArbeidstakereMedNeisvar() throws IOException {
         Sykepengesoknad sykepengesoknad = objectMapper.readValue(soknadArbeidstakerMedNeisvar, Sykepengesoknad.class);
-        PdfSoknad soknad = PdfSoknad.lagSoknad(sykepengesoknad, "fnr", "navn");
+        Soknad soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn");
 
         String beskrivelse = BeskrivelseService.lagBeskrivelse(soknad);
 
@@ -58,7 +58,7 @@ public class BeskrivelseServiceTest {
     @Test
     public void soknadForArbeidstakereMangeSvar() throws IOException {
         Sykepengesoknad sykepengesoknad = objectMapper.readValue(soknadArbeidstakerMangeSvar, Sykepengesoknad.class);
-        PdfSoknad soknad = PdfSoknad.lagSoknad(sykepengesoknad, "fnr", "navn");
+        Soknad soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn");
 
         String beskrivelse = BeskrivelseService.lagBeskrivelse(soknad);
 

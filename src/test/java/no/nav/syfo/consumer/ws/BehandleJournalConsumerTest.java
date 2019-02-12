@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.controller.PDFRestController;
-import no.nav.syfo.domain.PdfSoknad;
+import no.nav.syfo.domain.Soknad;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.BehandleJournalV2;
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.WSJournalfoerInngaaendeHenvendelseResponse;
@@ -43,7 +43,7 @@ public class BehandleJournalConsumerTest {
                 .thenReturn(new WSJournalfoerInngaaendeHenvendelseResponse().withJournalpostId("id"));
 
         Sykepengesoknad sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad.class);
-        PdfSoknad soknad = PdfSoknad.lagSoknad(sykepengesoknad, "22026900623", "Kjersti Glad");
+        Soknad soknad = Soknad.lagSoknad(sykepengesoknad, "22026900623", "Kjersti Glad");
         String id = behandleJournalConsumer.opprettJournalpost(soknad, "saksId");
 
         assertThat(id).isEqualTo("id");
@@ -54,7 +54,7 @@ public class BehandleJournalConsumerTest {
         when(behandleJournalV2.journalfoerInngaaendeHenvendelse(any())).thenThrow(new RuntimeException("test"));
 
         Sykepengesoknad sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad.class);
-        PdfSoknad soknad = PdfSoknad.lagSoknad(sykepengesoknad, "22026900623", "Kjersti Glad");
+        Soknad soknad = Soknad.lagSoknad(sykepengesoknad, "22026900623", "Kjersti Glad");
 
         try {
             behandleJournalConsumer.opprettJournalpost(soknad, "saksid");
