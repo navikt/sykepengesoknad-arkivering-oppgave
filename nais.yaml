@@ -1,5 +1,5 @@
 name: syfogsak
-team: sykefravr
+team: teamsykefravr
 image: "repo.adeo.no:5443/syfogsak"
 replicas:
   min: 1
