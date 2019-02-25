@@ -14,4 +14,7 @@ public class SoknadPeriode {
     LocalDate fom;
     LocalDate tom;
     Integer grad;
+    Integer faktiskGrad;
+    Double avtaltTimer;
+    Double faktiskTimer;
 }

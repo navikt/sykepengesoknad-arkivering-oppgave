@@ -55,9 +55,13 @@ public class BeskrivelseService {
         return IntStream.range(0, perioder.size())
                 .mapToObj(i -> {
                     SoknadPeriode soknadPeriode = perioder.get(i);
+                    String faktiskGrad = soknadPeriode.getFaktiskGrad() != null
+                            ? "Oppgitt faktisk arbeidsgrad: " + soknadPeriode.getFaktiskGrad() + "\n"
+                            : "";
                     return "\nPeriode " + (i + 1) + ":\n" +
                             soknadPeriode.getFom().format(norskDato) + " - " + soknadPeriode.getTom().format(norskDato) + "\n" +
-                            "Grad: " + soknadPeriode.getGrad() + "\n";
+                            "Grad: " + soknadPeriode.getGrad() + "\n" +
+                            faktiskGrad;
                 })
                 .collect(Collectors.joining());
 

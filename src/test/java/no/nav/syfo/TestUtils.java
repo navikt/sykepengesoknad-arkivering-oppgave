@@ -1803,12 +1803,18 @@ public class TestUtils {
             "            {\n" +
             "                \"fom\": \"2018-10-16\",\n" +
             "                \"tom\": \"2018-10-20\",\n" +
-            "                \"grad\": 100\n" +
+            "                \"grad\": 100,\n" +
+            "                \"faktiskGrad\": 79,\n" +
+            "                \"avtaltTimer\": 37.5,\n" +
+            "                \"faktiskTimer\": null\n" +
             "            },\n" +
             "            {\n" +
             "                \"fom\": \"2018-10-21\",\n" +
             "                \"tom\": \"2018-10-24\",\n" +
-            "                \"grad\": 40\n" +
+            "                \"grad\": 40,\n" +
+            "                \"faktiskGrad\": 440,\n" +
+            "                \"avtaltTimer\": 37.5,\n" +
+            "                \"faktiskTimer\": 66\n" +
             "            }\n" +
             "        ],\n" +
             "        \"sporsmal\": [\n" +
@@ -2555,10 +2561,12 @@ public class TestUtils {
             "Periode 1:\n" +
             "16.10.2018 - 20.10.2018\n" +
             "Grad: 100\n" +
+            "Oppgitt faktisk arbeidsgrad: 79\n" +
             "\n" +
             "Periode 2:\n" +
             "21.10.2018 - 24.10.2018\n" +
             "Grad: 40\n" +
+            "Oppgitt faktisk arbeidsgrad: 440\n" +
             "\n" +
             "Vi har registrert at du ble sykmeldt tirsdag 16. oktober 2018. Brukte du egenmeldinger og/eller var du sykmeldt i perioden 30. september - 15. oktober 2018?\n" +
             "Ja\n" +
