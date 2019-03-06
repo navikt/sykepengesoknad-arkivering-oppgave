@@ -65,3 +65,8 @@ toggle:
       enabled: true
       byEnvironment:
       - local
+
+
+aad_syfoinntektsmelding_clientid_username: clientId
+no.nav.security.oidc.issuer.azuread.acceptedaudience: myClientId
+syfo-jwt-issuer.url: getToken.no
