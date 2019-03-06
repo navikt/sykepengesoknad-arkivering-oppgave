@@ -1,8 +1,8 @@
 package no.nav.syfo.service;
 
-import domain.Innsending;
 import no.nav.syfo.consumer.repository.InnsendingDAO;
 import no.nav.syfo.consumer.ws.AktorConsumer;
+import no.nav.syfo.domain.Innsending;
 import no.nav.syfo.domain.Soknad;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
 import org.junit.Before;

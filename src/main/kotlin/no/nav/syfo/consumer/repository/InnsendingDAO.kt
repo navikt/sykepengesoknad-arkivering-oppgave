@@ -1,6 +1,6 @@
 package no.nav.syfo.consumer.repository
 
-import domain.Innsending
+import no.nav.syfo.domain.Innsending
 import no.nav.syfo.log
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
