@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServletResponse
 @Order(Ordered.LOWEST_PRECEDENCE)
 class AzureADTokenFilter(val syfogsakClientId: String, val authorizedConsumerClientIds: List<String>, val issuer:String) : HandlerInterceptor {
 
-//    val log = log()
     val mapper = ObjectMapper()
             .registerModule(KotlinModule())
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)

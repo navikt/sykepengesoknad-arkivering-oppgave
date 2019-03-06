@@ -1,10 +1,10 @@
 package no.nav.syfo.kafka;
 
+import domain.Innsending;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.consumer.repository.InnsendingDAO;
-import no.nav.syfo.domain.Innsending;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
 import no.nav.syfo.kafka.soknad.dto.SoknadDTO;
 import no.nav.syfo.service.BehandleFeiledeSoknaderService;

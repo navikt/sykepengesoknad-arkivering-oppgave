@@ -1,18 +1,17 @@
 package no.nav.syfo.service;
 
+import domain.Innsending;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.consumer.repository.InnsendingDAO;
 import no.nav.syfo.consumer.ws.*;
-import no.nav.syfo.domain.Innsending;
 import no.nav.syfo.domain.Soknad;
 import no.nav.syfo.domain.dto.Soknadstype;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.util.Optional;
 
 @Slf4j
 @Component
@@ -62,10 +61,10 @@ public class SaksbehandlingsService {
 
         String sykepengesoknadId = sykepengesoknad.getId();
         String aktorId = sykepengesoknad.getAktorId();
-        Optional<Innsending> innsending = innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknadId);
+        Innsending innsending = innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknadId);
 
-        if (innsending.isPresent()) {
-            String innsendingId = innsending.get().getInnsendingsId();
+        if (innsending != null) {
+            String innsendingId = innsending.getInnsendingsId();
             log.warn("Innsending for sykepengesøknad {} allerede opprettet med id {}.",
                     sykepengesoknadId,
                     innsendingId
