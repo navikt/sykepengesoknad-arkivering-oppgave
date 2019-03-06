@@ -32,13 +32,13 @@ class AzureADTokenFilter(val syfogsakClientId: String, val authorizedConsumerCli
                         val claimsJson = auth
                                 ?.let { JwtHelper.decode(it) }
                                 ?.claims
-                                ?: throw OIDCUnauthorizedException("Request mangler Authorization, eller claims")
+                                ?: throw OIDCUnauthorizedException("Ugyldige credentials")
 
                         val claims = mapper.readValue(claimsJson, Claims::class.java)
                         if (!(claims.appid in authorizedConsumerClientIds
                                 && claims.aud == syfogsakClientId
                                 && claims.iss == issuer)) {
-                            throw OIDCUnauthorizedException("Tokenet har ikke gyldige claims")
+                            throw OIDCUnauthorizedException("Ugyldige credentials")
                         }
                     }
         }
