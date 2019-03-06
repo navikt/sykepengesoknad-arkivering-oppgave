@@ -38,6 +38,14 @@ resources:
 fasitResources:
   exposed:
   used:
+  - alias: syfoinntektsmelding_clientid
+    resourceType: credential
+  - alias: syfo-jwt-issuer
+    resourceType: baseurl
+  - alias: aad_syfogsak_clientid
+      resourceType: credential
+      propertyMap:
+        username: NO_NAV_SECURITY_OIDC_ISSUER_AZUREAD_ACCEPTEDAUDIENCE
   - alias: virksomhet:BehandleSak_v1
     resourceType: webserviceendpoint
   - alias: Journal_v2
