@@ -42,7 +42,7 @@ class InnsendingDAOTest {
         innsendingDAO.oppdaterOppgaveId(uuid, "oppgaveId")
         innsendingDAO.settBehandlet(uuid)
 
-        val innsendinger = jdbcTemplate.query("SELECT * FROM INNSENDING", InnsendingDAO.innsendingRowMapper())
+        val innsendinger = jdbcTemplate.query("SELECT * FROM INNSENDING", innsendingRowMapper)
 
         assertThat(innsendinger.size).isEqualTo(1)
         assertThat(innsendinger.get(0).innsendingsId).isEqualTo(uuid)

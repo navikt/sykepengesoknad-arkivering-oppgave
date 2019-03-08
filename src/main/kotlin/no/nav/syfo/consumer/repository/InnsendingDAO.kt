@@ -87,7 +87,9 @@ class InnsendingDAO(private val namedParameterJdbcTemplate: NamedParameterJdbcTe
         return namedParameterJdbcTemplate.query(
                 "SELECT * FROM INNSENDING WHERE RESSURS_ID = :ressursId",
                 MapSqlParameterSource()
-                        .addValue("ressursId", sykepengesoknadId), innsendingRowMapper()
+                        .addValue("ressursId", sykepengesoknadId),
+
+                innsendingRowMapper
         ).firstOrNull()
     }
 
@@ -97,7 +99,7 @@ class InnsendingDAO(private val namedParameterJdbcTemplate: NamedParameterJdbcTe
                         "FROM INNSENDING " +
                         "WHERE INNSENDING_UUID IN (SELECT INNSENDING_UUID FROM FEILET_INNSENDING)",
 
-                innsendingRowMapper()
+                innsendingRowMapper
         )
     }
 
@@ -113,39 +115,24 @@ class InnsendingDAO(private val namedParameterJdbcTemplate: NamedParameterJdbcTe
         return namedParameterJdbcTemplate.query(
                 "SELECT * FROM INNSENDING WHERE AKTOR_ID = :aktorId AND BEHANDLET IS NOT NULL",
                 MapSqlParameterSource()
-                        .addValue("aktorId", aktorId), innsendingRowMapper()
+                        .addValue("aktorId", aktorId),
+
+                innsendingRowMapper
         )
                 .filter { it.saksId != null }
                 .sortedByDescending { it.behandlet }
                 .map { it.saksId }
                 .firstOrNull()
     }
+}
 
-    fun innsendingRowMapper(): (ResultSet, Int) -> Innsending {
-        return { resultSet, _ ->
-            Innsending(
-                    innsendingsId = resultSet.getString("INNSENDING_UUID"),
-                    ressursId = resultSet.getString("RESSURS_ID"),
-                    aktorId = resultSet.getString("AKTOR_ID"),
-                    saksId = resultSet.getString("SAKS_ID"),
-                    journalpostId = resultSet.getString("JOURNALPOST_ID"),
-                    oppgaveId = resultSet.getString("OPPGAVE_ID"),
-                    behandlet = resultSet.getDate("BEHANDLET")?.toLocalDate())
-        }
-    }
-
-    companion object {
-        fun innsendingRowMapper(): (ResultSet, Int) -> Innsending {
-            return { resultSet, _ ->
-                Innsending(
-                        innsendingsId = resultSet.getString("INNSENDING_UUID"),
-                        ressursId = resultSet.getString("RESSURS_ID"),
-                        aktorId = resultSet.getString("AKTOR_ID"),
-                        saksId = resultSet.getString("SAKS_ID"),
-                        journalpostId = resultSet.getString("JOURNALPOST_ID"),
-                        oppgaveId = resultSet.getString("OPPGAVE_ID"),
-                        behandlet = resultSet.getDate("BEHANDLET")?.toLocalDate())
-            }
-        }
-    }
+val innsendingRowMapper: (ResultSet, Int) -> Innsending = { resultSet, _ ->
+    Innsending(
+            innsendingsId = resultSet.getString("INNSENDING_UUID"),
+            ressursId = resultSet.getString("RESSURS_ID"),
+            aktorId = resultSet.getString("AKTOR_ID"),
+            saksId = resultSet.getString("SAKS_ID"),
+            journalpostId = resultSet.getString("JOURNALPOST_ID"),
+            oppgaveId = resultSet.getString("OPPGAVE_ID"),
+            behandlet = resultSet.getDate("BEHANDLET")?.toLocalDate())
 }
