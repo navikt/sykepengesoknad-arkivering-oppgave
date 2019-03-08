@@ -53,10 +53,7 @@ public class BehandleFeiledeSoknaderServiceTest {
                 .opprettet(LocalDate.of(2018, 9, 7).atStartOfDay())
                 .build();
 
-        globalInnsending = Innsending.builder()
-                .innsendingsId("innsendingsId")
-                .ressursId("soknadsId")
-                .build();
+        globalInnsending = new Innsending("innsendingsId", "soknadsId", null, null ,null, null, null);
 
         when(saksbehandlingsService.opprettSak("innsendingsId", "fnr")).thenReturn("saksId");
         when(saksbehandlingsService.opprettJournalpost(anyString(), any(Soknad.class), anyString())).thenReturn("journalpostId");
@@ -80,9 +77,7 @@ public class BehandleFeiledeSoknaderServiceTest {
 
     @Test
     public void rebehandlerInnsendingSomHarFeiletISak() {
-        Innsending innsending = globalInnsending.toBuilder()
-                .aktorId("aktorId")
-                .build();
+        Innsending innsending = globalInnsending.copy(globalInnsending.getInnsendingsId(), globalInnsending.getRessursId(), "aktorId", null, null, null, null);
 
         behandleFeiledeSoknaderService.behandleFeiletSoknad(innsending, sykepengesoknad);
 
@@ -98,10 +93,7 @@ public class BehandleFeiledeSoknaderServiceTest {
 
     @Test
     public void rebehandlerInnsendingSomHarFeiletIJournalPost() {
-        Innsending innsending = globalInnsending.toBuilder()
-                .aktorId("aktorId")
-                .saksId("saksId")
-                .build();
+        Innsending innsending = globalInnsending.copy(globalInnsending.getInnsendingsId(), globalInnsending.getRessursId(), "aktorId", "saksId", null, null, null);
 
         behandleFeiledeSoknaderService.behandleFeiletSoknad(innsending, sykepengesoknad);
 
@@ -115,11 +107,7 @@ public class BehandleFeiledeSoknaderServiceTest {
 
     @Test
     public void rebehandlerInnsendingSomHarFeiletIOppgave() {
-        Innsending innsending = globalInnsending.toBuilder()
-                .aktorId("aktorId")
-                .saksId("saksId")
-                .journalpostId("journalpostId")
-                .build();
+        Innsending innsending = globalInnsending.copy(globalInnsending.getInnsendingsId(), globalInnsending.getRessursId(), "aktorId", "saksId", "journalpostId", null, null);
 
         behandleFeiledeSoknaderService.behandleFeiletSoknad(innsending, sykepengesoknad);
 
@@ -130,6 +118,4 @@ public class BehandleFeiledeSoknaderServiceTest {
         verify(innsendingDAO).settBehandlet("innsendingsId");
         verify(innsendingDAO).fjernFeiletInnsending("innsendingsId");
     }
-
-
 }
