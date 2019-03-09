@@ -11,23 +11,23 @@ import java.util.List;
 @Builder(toBuilder = true)
 public class Sykepengesoknad {
 
-    String id;
-    String sykmeldingId;
-    String aktorId;
-    Soknadstype soknadstype;
-    String status;
-    LocalDate fom;
-    LocalDate tom;
-    LocalDateTime opprettet;
-    LocalDateTime sendtNav;
-    LocalDateTime sendtArbeidsgiver;
-    LocalDate startSykeforlop;
-    LocalDateTime sykmeldingSkrevet;
-    String arbeidsgiver;
-    String korrigerer;
-    String korrigertAv;
-    Arbeidssituasjon arbeidssituasjon;
-    List<SoknadPeriode> soknadPerioder;
-    List<Sporsmal> sporsmal;
+    public String id;
+    public String sykmeldingId;
+    public String aktorId;
+    public Soknadstype soknadstype;
+    public String status;
+    public LocalDate fom;
+    public LocalDate tom;
+    public LocalDateTime opprettet;
+    public LocalDateTime sendtNav;
+    public LocalDateTime sendtArbeidsgiver;
+    public LocalDate startSykeforlop;
+    public LocalDateTime sykmeldingSkrevet;
+    public String arbeidsgiver;
+    public String korrigerer;
+    public String korrigertAv;
+    public Arbeidssituasjon arbeidssituasjon;
+    public List<SoknadPeriode> soknadPerioder;
+    public List<Sporsmal> sporsmal;
 
 }

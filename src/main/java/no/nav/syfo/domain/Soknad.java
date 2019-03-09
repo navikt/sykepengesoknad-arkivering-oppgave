@@ -17,23 +17,24 @@ import static java.util.Optional.ofNullable;
 @Builder
 @Getter
 public class Soknad {
-    String aktorId;
-    String soknadsId;
-    String fnr;
-    String navn;
-    Soknadstype soknadstype;
-    LocalDate fom;
-    LocalDate tom;
-    LocalDate innsendtDato;
-    LocalDate sendtArbeidsgiver;
-    LocalDate startSykeforlop;
-    LocalDate sykmeldingUtskrevet;
-    String arbeidsgiver;
-    String korrigerer;
-    String korrigertAv;
-    Arbeidssituasjon arbeidssituasjon;
-    List<SoknadPeriode> soknadPerioder;
-    List<Sporsmal> sporsmal;
+
+    public String aktorId;
+    public String soknadsId;
+    public String fnr;
+    public String navn;
+    public Soknadstype soknadstype;
+    public LocalDate fom;
+    public LocalDate tom;
+    public LocalDate innsendtDato;
+    public LocalDate sendtArbeidsgiver;
+    public LocalDate startSykeforlop;
+    public LocalDate sykmeldingUtskrevet;
+    public String arbeidsgiver;
+    public String korrigerer;
+    public String korrigertAv;
+    public Arbeidssituasjon arbeidssituasjon;
+    public List<SoknadPeriode> soknadPerioder;
+    public List<Sporsmal> sporsmal;
 
     public static Soknad lagSoknad(Sykepengesoknad sykepengesoknad, String fnr, String navn) {
         return Soknad.builder()

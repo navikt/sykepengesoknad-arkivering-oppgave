@@ -9,8 +9,7 @@ import no.nav.syfo.domain.dto.Sykepengesoknad;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-
-import static no.nav.syfo.domain.dto.Arbeidssituasjon.NAERINGSDRIVENDE;
+import java.time.LocalDate;
 
 @Slf4j
 @Component
@@ -43,18 +42,12 @@ public class BehandleFeiledeSoknaderService {
             }
 
             if (saksId == null) {
-                saksId = behandleFraSaksId(innsendingsId, aktorId);
+                saksId = behandleFraSaksId(innsendingsId, aktorConsumer.finnFnr(aktorId), aktorId, sykepengesoknad.getFom());
             }
             if (journalpostId == null) {
                 journalpostId = behandleFraJournalpost(innsendingsId, saksId, sykepengesoknad);
             }
             if (innsending.getOppgaveId() == null) {
-
-                //TODO fjerne denne når behandling av de to søknadene er gjennomført
-                if ("f1ed031a-4801-4c6b-b194-4cd4d99cd888".equals(sykepengesoknad.getId()) || "dccc2fa3-9204-481f-8603-40318ebb022c".equals(sykepengesoknad.getId())) {
-                    sykepengesoknad = sykepengesoknad.toBuilder().arbeidssituasjon(NAERINGSDRIVENDE).build();
-                }
-
                 behandleFraOppgave(innsendingsId, saksId, journalpostId, sykepengesoknad);
             }
 
@@ -102,11 +95,7 @@ public class BehandleFeiledeSoknaderService {
                         saksId);
     }
 
-    private String behandleFraSaksId(String innsendingsId, String aktorId) {
-        return saksbehandlingsService
-                .opprettSak(
-                        innsendingsId,
-                        aktorConsumer.finnFnr(aktorId)
-                );
+    private String behandleFraSaksId(String innsendingsId, String fnr, String aktorId, LocalDate soknadFom) {
+        return saksbehandlingsService.finnEllerOpprettSak(innsendingsId, fnr, aktorId, soknadFom);
     }
 }

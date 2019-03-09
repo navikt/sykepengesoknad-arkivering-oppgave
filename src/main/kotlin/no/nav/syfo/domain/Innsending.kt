@@ -10,5 +10,7 @@ data class Innsending(
         val saksId: String? = null,
         val journalpostId: String? = null,
         val oppgaveId: String? = null,
-        val behandlet: LocalDate? = null
+        val behandlet: LocalDate? = null,
+        val soknadFom: LocalDate? = null,
+        val soknadTom: LocalDate? = null
 )

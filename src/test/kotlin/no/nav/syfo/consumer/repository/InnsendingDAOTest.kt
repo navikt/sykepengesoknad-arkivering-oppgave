@@ -36,7 +36,7 @@ class InnsendingDAOTest {
 
     @Test
     fun lagreInnsending() {
-        val uuid = innsendingDAO.opprettInnsending("soknad-uuid", "aktor")
+        val uuid = innsendingDAO.opprettInnsending("soknad-uuid", "aktor", LocalDate.of(2019,3,8), LocalDate.of(2019,3,20))
         innsendingDAO.oppdaterSaksId(uuid, "saksId")
         innsendingDAO.oppdaterJournalpostId(uuid, "journalpostId")
         innsendingDAO.oppdaterOppgaveId(uuid, "oppgaveId")
@@ -56,7 +56,7 @@ class InnsendingDAOTest {
 
     @Test
     fun sjekkOmInnsendingForSoknadAlleredeErLaget() {
-        innsendingDAO.opprettInnsending("soknad_123", "aktor")
+        innsendingDAO.opprettInnsending("soknad_123", "aktor", LocalDate.of(2019,3,8), LocalDate.of(2019,3,20))
 
         val innsending = innsendingDAO.finnInnsendingForSykepengesoknad("soknad_123")
         assertThat(innsending).isNotNull()
@@ -69,8 +69,8 @@ class InnsendingDAOTest {
     fun hentFeilendeInnsendinger() {
         jdbcTemplate.update("INSERT INTO INNSENDING(INNSENDING_UUID, RESSURS_ID, AKTOR_ID) VALUES ('UUID-1', 'RESSURSID-1', 'AKTOR-1')")
         jdbcTemplate.update("INSERT INTO INNSENDING(INNSENDING_UUID, RESSURS_ID, AKTOR_ID, SAKS_ID) VALUES ('UUID-4', 'RESSURSID-4', 'AKTOR-4', 'SAK-4')")
-        jdbcTemplate.update("INSERT INTO INNSENDING VALUES ('UUID-2', 'RESSURSID-2', 'AKTORID-2', 'SAKSID-2', 'JOURNALPOSTID-2', 'OPPGAVEID-2', '2018-09-14')")
-        jdbcTemplate.update("INSERT INTO INNSENDING VALUES ('UUID-3', 'RESSURSID-3', 'AKTORID-3', 'SAKSID-3', 'JOURNALPOSTID-3', 'OPPGAVEID-3', '2018-09-15')")
+        jdbcTemplate.update("INSERT INTO INNSENDING VALUES ('UUID-2', 'RESSURSID-2', 'AKTORID-2', 'SAKSID-2', 'JOURNALPOSTID-2', 'OPPGAVEID-2', '2018-09-14', null, null)")
+        jdbcTemplate.update("INSERT INTO INNSENDING VALUES ('UUID-3', 'RESSURSID-3', 'AKTORID-3', 'SAKSID-3', 'JOURNALPOSTID-3', 'OPPGAVEID-3', '2018-09-15', null, null)")
 
         jdbcTemplate.update("INSERT INTO FEILET_INNSENDING (INNSENDING_UUID, TIDSPUNKT) VALUES ('UUID-1', '2018-09-13')")
         jdbcTemplate.update("INSERT INTO FEILET_INNSENDING (INNSENDING_UUID, TIDSPUNKT) VALUES ('UUID-4', '2018-09-13')")
@@ -86,9 +86,9 @@ class InnsendingDAOTest {
     fun finnSisteSak() {
         jdbcTemplate.update("INSERT INTO INNSENDING(INNSENDING_UUID, RESSURS_ID, AKTOR_ID) VALUES ('UUID-1', 'RESSURSID-1', 'AKTORID-1')")
         jdbcTemplate.update("INSERT INTO INNSENDING(INNSENDING_UUID, RESSURS_ID, AKTOR_ID, SAKS_ID) VALUES ('UUID-4', 'RESSURSID-2', 'AKTORID-1', 'SAK-1')")
-        jdbcTemplate.update("INSERT INTO INNSENDING VALUES ('UUID-2', 'RESSURSID-3', 'AKTORID-1', 'SAKSID-2', 'JOURNALPOSTID-2', 'OPPGAVEID-2', '2018-09-14')")
-        jdbcTemplate.update("INSERT INTO INNSENDING VALUES ('UUID-3', 'RESSURSID-4', 'AKTORID-1', 'SAKSID-3', 'JOURNALPOSTID-2', 'OPPGAVEID-2', '2018-09-18')")
-        jdbcTemplate.update("INSERT INTO INNSENDING VALUES ('UUID-5', 'RESSURSID-5', 'AKTORID-1', 'SAKSID-4', 'JOURNALPOSTID-2', 'OPPGAVEID-2', '2018-09-13')")
+        jdbcTemplate.update("INSERT INTO INNSENDING VALUES ('UUID-2', 'RESSURSID-3', 'AKTORID-1', 'SAKSID-2', 'JOURNALPOSTID-2', 'OPPGAVEID-2', '2018-09-14', null, null)")
+        jdbcTemplate.update("INSERT INTO INNSENDING VALUES ('UUID-3', 'RESSURSID-4', 'AKTORID-1', 'SAKSID-3', 'JOURNALPOSTID-2', 'OPPGAVEID-2', '2018-09-18', null, null)")
+        jdbcTemplate.update("INSERT INTO INNSENDING VALUES ('UUID-5', 'RESSURSID-5', 'AKTORID-1', 'SAKSID-4', 'JOURNALPOSTID-2', 'OPPGAVEID-2', '2018-09-13', null, null)")
 
         val sisteSak = innsendingDAO.finnSisteSak("AKTORID-1")
         assertThat(sisteSak).isEqualTo("SAKSID-3")
