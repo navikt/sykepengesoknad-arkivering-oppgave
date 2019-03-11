@@ -1,12 +1,24 @@
 package no.nav.syfo
 
+import org.mockito.ArgumentCaptor
 import org.mockito.Mockito
 
-// Hjelpemetoder for å brygge bro mellom nullbare argumenter i Mockitos argumentMatcher og Kotlin
-fun <T> any(): T {
-    Mockito.any<T>()
-    return uninitialized()
-}
+/**
+ * Returns Mockito.eq() as nullable type to avoid java.lang.IllegalStateException when
+ * null is returned.
+ *
+ * Generic T is nullable because implicitly bounded by Any?.
+ */
+fun <T> eq(obj: T): T = Mockito.eq<T>(obj)
 
-private fun <T> uninitialized(): T = null as T
-// END
+/**
+ * Returns Mockito.any() as nullable type to avoid java.lang.IllegalStateException when
+ * null is returned.
+ */
+fun <T> any(): T = Mockito.any<T>()
+
+/**
+ * Returns ArgumentCaptor.capture() as nullable type to avoid java.lang.IllegalStateException
+ * when null is returned.
+ */
+fun <T> capture(argumentCaptor: ArgumentCaptor<T>): T = argumentCaptor.capture()

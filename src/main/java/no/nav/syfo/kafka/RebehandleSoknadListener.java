@@ -7,6 +7,8 @@ import no.nav.syfo.consumer.repository.InnsendingDAO;
 import no.nav.syfo.domain.Innsending;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
 import no.nav.syfo.kafka.interfaces.Soknad;
+import no.nav.syfo.kafka.mapper.SoknadDtoToSykepengesoknadMapper;
+import no.nav.syfo.kafka.mapper.SykepengesoknadDtoToSykepengesoknadMapper;
 import no.nav.syfo.kafka.soknad.dto.SoknadDTO;
 import no.nav.syfo.kafka.sykepengesoknad.dto.SykepengesoknadDTO;
 import no.nav.syfo.service.BehandleFeiledeSoknaderService;
@@ -27,8 +29,6 @@ import java.util.List;
 import static java.util.UUID.randomUUID;
 import static no.nav.syfo.config.ApplicationConfig.CALL_ID;
 import static no.nav.syfo.kafka.KafkaHeaderConstants.getLastHeaderByKeyAsString;
-import static no.nav.syfo.kafka.mapper.SoknadDtoToSykepengesoknadMapper.konverter;
-import static no.nav.syfo.kafka.mapper.SykepengesoknadDtoToSykepengesoknadMapper.konverter;
 
 
 @Slf4j
@@ -72,9 +72,9 @@ public class RebehandleSoknadListener {
 
                         Sykepengesoknad sykepengesoknad = null;
                         if (record.value() instanceof SykepengesoknadDTO) {
-                            sykepengesoknad = konverter((SykepengesoknadDTO) record.value());
+                            sykepengesoknad = SykepengesoknadDtoToSykepengesoknadMapper.INSTANCE.konverter((SykepengesoknadDTO) record.value());
                         } else if (record.value() instanceof SoknadDTO) {
-                            sykepengesoknad = konverter((SoknadDTO) record.value());
+                            sykepengesoknad = SoknadDtoToSykepengesoknadMapper.INSTANCE.konverter((SoknadDTO) record.value());
                         }
                         if (sykepengesoknad != null) {
                             final Sykepengesoknad finalsoknad = sykepengesoknad;

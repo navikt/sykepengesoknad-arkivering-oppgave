@@ -3,6 +3,8 @@ package no.nav.syfo.kafka;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
 import no.nav.syfo.kafka.interfaces.Soknad;
+import no.nav.syfo.kafka.mapper.SoknadDtoToSykepengesoknadMapper;
+import no.nav.syfo.kafka.mapper.SykepengesoknadDtoToSykepengesoknadMapper;
 import no.nav.syfo.kafka.soknad.dto.SoknadDTO;
 import no.nav.syfo.kafka.sykepengesoknad.dto.SykepengesoknadDTO;
 import no.nav.syfo.service.SaksbehandlingsService;
@@ -17,8 +19,6 @@ import javax.inject.Inject;
 import static java.util.UUID.randomUUID;
 import static no.nav.syfo.config.ApplicationConfig.CALL_ID;
 import static no.nav.syfo.kafka.KafkaHeaderConstants.getLastHeaderByKeyAsString;
-import static no.nav.syfo.kafka.mapper.SykepengesoknadDtoToSykepengesoknadMapper.konverter;
-import static no.nav.syfo.kafka.mapper.SoknadDtoToSykepengesoknadMapper.konverter;
 
 @Component
 @Slf4j
@@ -42,9 +42,9 @@ public class SoknadSendtListener {
 
             Sykepengesoknad sykepengesoknad = null;
             if (soknad instanceof SoknadDTO) {
-                sykepengesoknad = konverter((SoknadDTO) soknad);
+                sykepengesoknad = SoknadDtoToSykepengesoknadMapper.INSTANCE.konverter((SoknadDTO) soknad);
             } else if (soknad instanceof SykepengesoknadDTO) {
-                sykepengesoknad = konverter((SykepengesoknadDTO) soknad);
+                sykepengesoknad = SykepengesoknadDtoToSykepengesoknadMapper.INSTANCE.konverter((SykepengesoknadDTO) soknad);
             }
 
             if (sykepengesoknad != null) {

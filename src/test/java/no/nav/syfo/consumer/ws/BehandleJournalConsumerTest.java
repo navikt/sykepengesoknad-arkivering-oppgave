@@ -2,6 +2,7 @@ package no.nav.syfo.consumer.ws;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.module.kotlin.KotlinModule;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.controller.PDFRestController;
 import no.nav.syfo.domain.Soknad;
@@ -35,7 +36,9 @@ public class BehandleJournalConsumerTest {
     @InjectMocks
     private BehandleJournalConsumer behandleJournalConsumer;
 
-    private ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+    private ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule())
+            .registerModule(new KotlinModule());
 
     @Test
     public void opprettJournalpost() throws IOException {
@@ -43,7 +46,7 @@ public class BehandleJournalConsumerTest {
                 .thenReturn(new WSJournalfoerInngaaendeHenvendelseResponse().withJournalpostId("id"));
 
         Sykepengesoknad sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad.class);
-        Soknad soknad = Soknad.lagSoknad(sykepengesoknad, "22026900623", "Kjersti Glad");
+        Soknad soknad = Soknad.Companion.lagSoknad(sykepengesoknad, "22026900623", "Kjersti Glad");
         String id = behandleJournalConsumer.opprettJournalpost(soknad, "saksId");
 
         assertThat(id).isEqualTo("id");
@@ -54,7 +57,7 @@ public class BehandleJournalConsumerTest {
         when(behandleJournalV2.journalfoerInngaaendeHenvendelse(any())).thenThrow(new RuntimeException("test"));
 
         Sykepengesoknad sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad.class);
-        Soknad soknad = Soknad.lagSoknad(sykepengesoknad, "22026900623", "Kjersti Glad");
+        Soknad soknad = Soknad.Companion.lagSoknad(sykepengesoknad, "22026900623", "Kjersti Glad");
 
         try {
             behandleJournalConsumer.opprettJournalpost(soknad, "saksid");

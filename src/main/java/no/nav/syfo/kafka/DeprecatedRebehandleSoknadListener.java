@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.syfo.consumer.repository.InnsendingDAO;
 import no.nav.syfo.domain.Innsending;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
+import no.nav.syfo.kafka.mapper.SoknadDtoToSykepengesoknadMapper;
 import no.nav.syfo.kafka.soknad.dto.SoknadDTO;
 import no.nav.syfo.service.BehandleFeiledeSoknaderService;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -25,7 +26,6 @@ import java.util.List;
 import static java.util.UUID.randomUUID;
 import static no.nav.syfo.config.ApplicationConfig.CALL_ID;
 import static no.nav.syfo.kafka.KafkaHeaderConstants.getLastHeaderByKeyAsString;
-import static no.nav.syfo.kafka.mapper.SoknadDtoToSykepengesoknadMapper.konverter;
 
 @Deprecated
 @Slf4j
@@ -67,7 +67,7 @@ public class DeprecatedRebehandleSoknadListener {
                     try {
                         MDC.put(CALL_ID, getLastHeaderByKeyAsString(record.headers(), CALL_ID).orElseGet(randomUUID()::toString));
 
-                        Sykepengesoknad sykepengesoknad = konverter(record.value());
+                        Sykepengesoknad sykepengesoknad = SoknadDtoToSykepengesoknadMapper.INSTANCE.konverter(record.value());
 
                         feilendeInnsendinger.stream()
                                 .filter(innsending -> innsending.getRessursId().equals(sykepengesoknad.getId()))

@@ -18,7 +18,7 @@ class InnsendingDAO(private val namedParameterJdbcTemplate: NamedParameterJdbcTe
 
     val log = log()
 
-    fun opprettInnsending(sykepengesoknadId: String, aktorId: String, soknadFom: LocalDate, soknadTom: LocalDate): String {
+    fun opprettInnsending(sykepengesoknadId: String, aktorId: String, soknadFom: LocalDate?, soknadTom: LocalDate?): String {
         val uuid = UUID.randomUUID().toString()
 
         namedParameterJdbcTemplate.update(

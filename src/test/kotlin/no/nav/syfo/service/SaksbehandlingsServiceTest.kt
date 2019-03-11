@@ -2,6 +2,7 @@ package no.nav.syfo.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.syfo.TestUtils.soknadArbeidstakerMedNeisvar
@@ -50,7 +51,7 @@ class SaksbehandlingsServiceTest {
     @InjectMocks
     lateinit var saksbehandlingsService: SaksbehandlingsService
 
-    private val objectMapper = ObjectMapper().registerModule(JavaTimeModule())
+    private val objectMapper = ObjectMapper().registerModules(JavaTimeModule(), KotlinModule())
 
     @Before
     fun setup() {
@@ -69,9 +70,7 @@ class SaksbehandlingsServiceTest {
     @Throws(IOException::class)
     fun behandlerIkkeIkkeSendteSoknader() {
         val sykepengesoknad = objectMapper.readValue(soknadArbeidstakerMedNeisvar, Sykepengesoknad::class.java)
-                .toBuilder()
-                .status("NY")
-                .build()
+                .copy(status = "NY")
 
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
@@ -82,9 +81,7 @@ class SaksbehandlingsServiceTest {
     @Throws(IOException::class)
     fun behandlerIkkeSoknaderSomIkkeErSendtTilNav() {
         val sykepengesoknad = objectMapper.readValue(soknadArbeidstakerMedNeisvar, Sykepengesoknad::class.java)
-                .toBuilder()
-                .sendtNav(null)
-                .build()
+                .copy(sendtNav = null)
 
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
@@ -96,10 +93,7 @@ class SaksbehandlingsServiceTest {
     fun behandlerIkkeSoknaderSomEttersendesTilArbeidsgiver() {
         val now = LocalDateTime.now()
         val sykepengesoknad = objectMapper.readValue(soknadArbeidstakerMedNeisvar, Sykepengesoknad::class.java)
-                .toBuilder()
-                .sendtNav(now)
-                .sendtArbeidsgiver(now.plusNanos(1))
-                .build()
+                .copy(sendtNav = now, sendtArbeidsgiver = now.plusHours(1))
 
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
@@ -111,10 +105,7 @@ class SaksbehandlingsServiceTest {
     fun behandlerSoknaderSomEttersendesTilNav() {
         val now = LocalDateTime.now()
         val sykepengesoknad = objectMapper.readValue(soknadArbeidstakerMedNeisvar, Sykepengesoknad::class.java)
-                .toBuilder()
-                .sendtNav(now.plusNanos(1))
-                .sendtArbeidsgiver(now)
-                .build()
+                .copy(sendtNav = now.plusNanos(1), sendtArbeidsgiver = now)
 
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
@@ -126,10 +117,7 @@ class SaksbehandlingsServiceTest {
     fun behandlerSoknaderSomSkalTilNavOgArbeidsgiver() {
         val now = LocalDateTime.now()
         val sykepengesoknad = objectMapper.readValue(soknadArbeidstakerMedNeisvar, Sykepengesoknad::class.java)
-                .toBuilder()
-                .sendtNav(now)
-                .sendtArbeidsgiver(now)
-                .build()
+                .copy(sendtNav = now, sendtArbeidsgiver = now)
 
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
@@ -161,10 +149,7 @@ class SaksbehandlingsServiceTest {
     @Test
     fun brukerEksisterendeSakOmSoknadErPafolgende() {
     val sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad::class.java)
-            .toBuilder()
-            .fom(LocalDate.of(2019,3,11))
-            .tom(LocalDate.of(2019,3,20))
-            .build()
+            .copy(fom = LocalDate.of(2019,3,11), tom = LocalDate.of(2019,3,20))
 
         given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019,3,10))))
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
@@ -176,10 +161,7 @@ class SaksbehandlingsServiceTest {
     @Test
     fun brukerIkkeEksisterendeSakOmSoknadIkkeErPafolgende() {
         val sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad::class.java)
-                .toBuilder()
-                .fom(LocalDate.of(2019,3,11))
-                .tom(LocalDate.of(2019,3,20))
-                .build()
+                .copy(fom = LocalDate.of(2019,3,11), tom = LocalDate.of(2019,3,20))
 
         given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019,3,6))))
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
@@ -191,10 +173,7 @@ class SaksbehandlingsServiceTest {
     @Test
     fun brukerEksisterendeSakOmSoknadErPafolgendeMedHelg() {
         val sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad::class.java)
-                .toBuilder()
-                .fom(LocalDate.of(2019,3,11))
-                .tom(LocalDate.of(2019,3,20))
-                .build()
+                .copy(fom = LocalDate.of(2019,3,11), tom = LocalDate.of(2019,3,20))
 
         given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019,3,9))))
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
@@ -206,10 +185,7 @@ class SaksbehandlingsServiceTest {
     @Test
     fun brukerIkkeEksisterendeSakOmSoknadInnenforToDagerMenIkkeHelg() {
         val sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad::class.java)
-                .toBuilder()
-                .fom(LocalDate.of(2019,3,12))
-                .tom(LocalDate.of(2019,3,21))
-                .build()
+                .copy(fom = LocalDate.of(2019,3,12), tom = LocalDate.of(2019,3,21))
 
         given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019,3,10))))
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
@@ -221,10 +197,7 @@ class SaksbehandlingsServiceTest {
     @Test
     fun brukerIkkeEksisterendeSakOmViIkkeHarTidligereInnsending() {
         val sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad::class.java)
-                .toBuilder()
-                .fom(LocalDate.of(2019,3,12))
-                .tom(LocalDate.of(2019,3,21))
-                .build()
+                .copy(fom = LocalDate.of(2019,3,12), tom = LocalDate.of(2019,3,21))
 
         given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(emptyList())
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
@@ -236,10 +209,7 @@ class SaksbehandlingsServiceTest {
     @Test
     fun brukerIkkeEksistrendeSakOmInnsendingErEtterSoknad() {
         val sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad::class.java)
-                .toBuilder()
-                .fom(LocalDate.of(2019,2,12))
-                .tom(LocalDate.of(2019,2,21))
-                .build()
+                .copy(fom = LocalDate.of(2019,2,11), tom = LocalDate.of(2019,2,21))
 
         given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019,3,10))))
         saksbehandlingsService.behandleSoknad(sykepengesoknad)

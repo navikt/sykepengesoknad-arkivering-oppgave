@@ -33,7 +33,7 @@ class SaksbehandlingsService(
     }
 
     private fun ettersendtTilArbeidsgiver(sykepengesoknad: Sykepengesoknad): Boolean {
-        return sykepengesoknad.sendtArbeidsgiver != null && sykepengesoknad.sendtNav.isBefore(sykepengesoknad.sendtArbeidsgiver)
+        return sykepengesoknad.sendtArbeidsgiver != null && sykepengesoknad.sendtNav?.isBefore(sykepengesoknad.sendtArbeidsgiver) ?: false
     }
 
     fun behandleSoknad(sykepengesoknad: Sykepengesoknad) {
@@ -97,17 +97,13 @@ class SaksbehandlingsService(
         return journalpostId
     }
 
-    fun finnEllerOpprettSak(innsendingId: String, fnr: String, aktorId: String, soknadFom: LocalDate?): String {
-        val maybeEksisterendeSaksId = innsendingDAO.finnTidligereInnsendinger(aktorId)
-                .filter { (it.soknadTom).isBefore(soknadFom ?: LocalDate.MIN) }
-                .sortedByDescending { it.soknadTom }
-                .firstOrNull()
-                ?.let {
-                    if (erPaFolgendeMinusHelg(it.soknadTom, soknadFom ?: LocalDate.MAX)) return it.saksId else null
-                }
-
-        return maybeEksisterendeSaksId ?: opprettSak(fnr, innsendingId)
-    }
+    fun finnEllerOpprettSak(innsendingId: String, fnr: String, aktorId: String, soknadFom: LocalDate?): String =
+            innsendingDAO.finnTidligereInnsendinger(aktorId)
+                    .filter { (it.soknadTom).isBefore(soknadFom ?: LocalDate.MIN) }
+                    .filter { erPaFolgendeInkludertHelg(it.soknadTom, soknadFom ?: LocalDate.MAX) }
+                    .sortedByDescending { it.soknadTom }
+                    .firstOrNull()
+                    ?.let { it.saksId } ?: opprettSak(fnr, innsendingId)
 
     private fun opprettSak(fnr: String, innsendingId: String): String {
         val saksId = behandleSakConsumer.opprettSak(fnr)
@@ -115,7 +111,7 @@ class SaksbehandlingsService(
         return saksId
     }
 
-    fun erPaFolgendeMinusHelg(one: LocalDate, two: LocalDate): Boolean {
+    fun erPaFolgendeInkludertHelg(one: LocalDate, two: LocalDate): Boolean {
         if (ChronoUnit.DAYS.between(one, two) > 2 || !one.isBefore(two)) {
             return false
         }
@@ -139,23 +135,23 @@ class SaksbehandlingsService(
         return Soknad.lagSoknad(sykepengesoknad, fnr, personConsumer.finnBrukerPersonnavnByFnr(fnr))
     }
 
-    private fun tellInnsendingBehandlet(soknadstype: Soknadstype) {
+    private fun tellInnsendingBehandlet(soknadstype: Soknadstype?) {
         registry.counter(
                 "syfogsak.innsending.behandlet",
                 Tags.of(
                         "type", "info",
-                        "soknadstype", soknadstype.name,
+                        "soknadstype", soknadstype?.name ?: "UKJENT",
                         "help", "Antall ferdigbehandlede innsendinger."
                 ))
                 .increment()
     }
 
-    private fun tellInnsendingFeilet(soknadstype: Soknadstype) {
+    private fun tellInnsendingFeilet(soknadstype: Soknadstype?) {
         registry.counter(
                 "syfogsak.innsending.feilet",
                 Tags.of(
                         "type", "info",
-                        "soknadstype", soknadstype.name,
+                        "soknadstype", soknadstype?.name ?: "UKJENT",
                         "help", "Antall innsendinger hvor feil mot baksystemer gjorde at behandling ikke kunne fullføres."
                 ))
                 .increment()
