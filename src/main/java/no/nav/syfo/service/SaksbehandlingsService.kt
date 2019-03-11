@@ -112,11 +112,14 @@ class SaksbehandlingsService(
     }
 
     fun erPaFolgendeInkludertHelg(one: LocalDate, two: LocalDate): Boolean {
-        if (ChronoUnit.DAYS.between(one, two) > 2 || !one.isBefore(two)) {
+        val between = ChronoUnit.DAYS.between(one, two)
+        val dagerMellom = if(between == 0L) 0L else between - 1L
+
+        if (dagerMellom  > 2 || !one.isBefore(two)) {
             return false
         }
 
-        val dageneMellom = Stream.iterate(one) { it.plusDays(1) }.limit(ChronoUnit.DAYS.between(one, two)).toList()
+        val dageneMellom = Stream.iterate(one.plusDays(1)) { it.plusDays(1) }.limit(dagerMellom).toList()
 
         when {
             dageneMellom.isEmpty() -> return true
@@ -131,9 +134,8 @@ class SaksbehandlingsService(
         }
     }
 
-    fun opprettSoknad(sykepengesoknad: Sykepengesoknad, fnr: String): Soknad {
-        return Soknad.lagSoknad(sykepengesoknad, fnr, personConsumer.finnBrukerPersonnavnByFnr(fnr))
-    }
+    fun opprettSoknad(sykepengesoknad: Sykepengesoknad, fnr: String): Soknad =
+        Soknad.lagSoknad(sykepengesoknad, fnr, personConsumer.finnBrukerPersonnavnByFnr(fnr))
 
     private fun tellInnsendingBehandlet(soknadstype: Soknadstype?) {
         registry.counter(

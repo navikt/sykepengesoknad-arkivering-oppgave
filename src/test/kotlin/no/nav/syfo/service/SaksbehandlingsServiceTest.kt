@@ -175,7 +175,7 @@ class SaksbehandlingsServiceTest {
         val sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad::class.java)
                 .copy(fom = LocalDate.of(2019,3,11), tom = LocalDate.of(2019,3,20))
 
-        given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019,3,9))))
+        given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019,3,8))))
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
         verify(behandleSakConsumer, never()).opprettSak(ArgumentMatchers.anyString())
@@ -217,4 +217,6 @@ class SaksbehandlingsServiceTest {
         verify(behandleSakConsumer).opprettSak(ArgumentMatchers.anyString())
         verify(innsendingDAO).settBehandlet("innsending-guid")
     }
+
+    // TODO: Test med flere innsendinger
 }
