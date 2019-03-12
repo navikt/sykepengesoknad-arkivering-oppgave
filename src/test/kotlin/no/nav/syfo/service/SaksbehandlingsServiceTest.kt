@@ -57,7 +57,7 @@ class SaksbehandlingsServiceTest {
     fun setup() {
         given(aktorConsumer.finnFnr(any())).willReturn("12345678901")
         given(personConsumer.finnBrukerPersonnavnByFnr(any())).willReturn("Personnavn")
-        given(behandleSakConsumer.opprettSak(any())).willReturn("saksId")
+        given(behandleSakConsumer.opprettSak(any())).willReturn("ny-sak-fra-gsak")
         given(behandleJournalConsumer.opprettJournalpost(any(), any())).willReturn("journalpostId")
         given(behandlendeEnhetService.hentBehandlendeEnhet("12345678901", SELVSTENDIGE_OG_FRILANSERE)).willReturn("2017")
         given(behandlendeEnhetService.hentBehandlendeEnhet("12345678901", ARBEIDSTAKERE)).willReturn("2017")
@@ -148,75 +148,95 @@ class SaksbehandlingsServiceTest {
 
     @Test
     fun brukerEksisterendeSakOmSoknadErPafolgende() {
-    val sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad::class.java)
-            .copy(fom = LocalDate.of(2019,3,11), tom = LocalDate.of(2019,3,20))
+        val sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad::class.java)
+                .copy(fom = LocalDate.of(2019, 3, 11), tom = LocalDate.of(2019, 3, 20))
 
-        given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019,3,10))))
+        given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019, 3, 10))))
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
         verify(behandleSakConsumer, never()).opprettSak(ArgumentMatchers.anyString())
+        verify(innsendingDAO).oppdaterSaksId("innsending-guid", "sak1")
         verify(innsendingDAO).settBehandlet("innsending-guid")
     }
 
     @Test
     fun brukerIkkeEksisterendeSakOmSoknadIkkeErPafolgende() {
         val sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad::class.java)
-                .copy(fom = LocalDate.of(2019,3,11), tom = LocalDate.of(2019,3,20))
+                .copy(fom = LocalDate.of(2019, 3, 11), tom = LocalDate.of(2019, 3, 20))
 
-        given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019,3,6))))
+        given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019, 3, 6))))
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
         verify(behandleSakConsumer).opprettSak(ArgumentMatchers.anyString())
+        verify(innsendingDAO).oppdaterSaksId("innsending-guid", "ny-sak-fra-gsak")
         verify(innsendingDAO).settBehandlet("innsending-guid")
     }
 
     @Test
     fun brukerEksisterendeSakOmSoknadErPafolgendeMedHelg() {
         val sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad::class.java)
-                .copy(fom = LocalDate.of(2019,3,11), tom = LocalDate.of(2019,3,20))
+                .copy(fom = LocalDate.of(2019, 3, 11), tom = LocalDate.of(2019, 3, 20))
 
-        given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019,3,8))))
+        given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019, 3, 8))))
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
         verify(behandleSakConsumer, never()).opprettSak(ArgumentMatchers.anyString())
+        verify(innsendingDAO).oppdaterSaksId("innsending-guid", "sak1")
         verify(innsendingDAO).settBehandlet("innsending-guid")
     }
 
     @Test
     fun brukerIkkeEksisterendeSakOmSoknadInnenforToDagerMenIkkeHelg() {
         val sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad::class.java)
-                .copy(fom = LocalDate.of(2019,3,12), tom = LocalDate.of(2019,3,21))
+                .copy(fom = LocalDate.of(2019, 3, 12), tom = LocalDate.of(2019, 3, 21))
 
-        given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019,3,10))))
+        given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019, 3, 10))))
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
         verify(behandleSakConsumer).opprettSak(ArgumentMatchers.anyString())
+        verify(innsendingDAO).oppdaterSaksId("innsending-guid", "ny-sak-fra-gsak")
         verify(innsendingDAO).settBehandlet("innsending-guid")
     }
 
     @Test
     fun brukerIkkeEksisterendeSakOmViIkkeHarTidligereInnsending() {
         val sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad::class.java)
-                .copy(fom = LocalDate.of(2019,3,12), tom = LocalDate.of(2019,3,21))
+                .copy(fom = LocalDate.of(2019, 3, 12), tom = LocalDate.of(2019, 3, 21))
 
         given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(emptyList())
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
         verify(behandleSakConsumer).opprettSak(ArgumentMatchers.anyString())
+        verify(innsendingDAO).oppdaterSaksId("innsending-guid", "ny-sak-fra-gsak")
         verify(innsendingDAO).settBehandlet("innsending-guid")
     }
 
     @Test
     fun brukerIkkeEksistrendeSakOmInnsendingErEtterSoknad() {
         val sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad::class.java)
-                .copy(fom = LocalDate.of(2019,2,11), tom = LocalDate.of(2019,2,21))
+                .copy(fom = LocalDate.of(2019, 2, 11), tom = LocalDate.of(2019, 2, 21))
 
-        given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019,3,10))))
+        given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019, 3, 10))))
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
         verify(behandleSakConsumer).opprettSak(ArgumentMatchers.anyString())
+        verify(innsendingDAO).oppdaterSaksId("innsending-guid", "ny-sak-fra-gsak")
         verify(innsendingDAO).settBehandlet("innsending-guid")
     }
 
-    // TODO: Test med flere innsendinger
+    @Test
+    fun brukerEksisterendeSakOmSoknadErPafolgendeMedHelgFlereInnsendinger() {
+        val sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad::class.java)
+                .copy(fom = LocalDate.of(2019, 3, 11), tom = LocalDate.of(2019, 3, 20))
+
+        given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(
+                TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019, 2, 8)),
+                TidligereInnsending("aktorId-745463060", "sak2", LocalDate.now(), LocalDate.of(2019, 3, 8)),
+                TidligereInnsending("aktorId-745463060", "sak3", LocalDate.now(), LocalDate.of(2018, 3, 8))))
+        saksbehandlingsService.behandleSoknad(sykepengesoknad)
+
+        verify(behandleSakConsumer, never()).opprettSak(ArgumentMatchers.anyString())
+        verify(innsendingDAO).oppdaterSaksId("innsending-guid", "sak2")
+        verify(innsendingDAO).settBehandlet("innsending-guid")
+    }
 }

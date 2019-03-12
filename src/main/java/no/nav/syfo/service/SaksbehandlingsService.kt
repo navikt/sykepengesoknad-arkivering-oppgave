@@ -103,7 +103,11 @@ class SaksbehandlingsService(
                     .filter { erPaFolgendeInkludertHelg(it.soknadTom, soknadFom ?: LocalDate.MAX) }
                     .sortedByDescending { it.soknadTom }
                     .firstOrNull()
-                    ?.let { it.saksId } ?: opprettSak(fnr, innsendingId)
+                    ?.let {
+                        innsendingDAO.oppdaterSaksId(innsendingId, it.saksId)
+                        return it.saksId
+                    }
+                    ?: opprettSak(fnr, innsendingId)
 
     private fun opprettSak(fnr: String, innsendingId: String): String {
         val saksId = behandleSakConsumer.opprettSak(fnr)
@@ -113,9 +117,9 @@ class SaksbehandlingsService(
 
     fun erPaFolgendeInkludertHelg(one: LocalDate, two: LocalDate): Boolean {
         val between = ChronoUnit.DAYS.between(one, two)
-        val dagerMellom = if(between == 0L) 0L else between - 1L
+        val dagerMellom = if (between == 0L) 0L else between - 1L
 
-        if (dagerMellom  > 2 || !one.isBefore(two)) {
+        if (dagerMellom > 2 || !one.isBefore(two)) {
             return false
         }
 
@@ -135,7 +139,7 @@ class SaksbehandlingsService(
     }
 
     fun opprettSoknad(sykepengesoknad: Sykepengesoknad, fnr: String): Soknad =
-        Soknad.lagSoknad(sykepengesoknad, fnr, personConsumer.finnBrukerPersonnavnByFnr(fnr))
+            Soknad.lagSoknad(sykepengesoknad, fnr, personConsumer.finnBrukerPersonnavnByFnr(fnr))
 
     private fun tellInnsendingBehandlet(soknadstype: Soknadstype?) {
         registry.counter(
