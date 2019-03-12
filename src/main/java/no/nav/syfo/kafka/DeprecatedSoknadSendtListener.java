@@ -1,7 +1,6 @@
 package no.nav.syfo.kafka;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.syfo.kafka.mapper.SoknadDtoToSykepengesoknadMapper;
 import no.nav.syfo.kafka.soknad.dto.SoknadDTO;
 import no.nav.syfo.service.SaksbehandlingsService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -15,6 +14,7 @@ import javax.inject.Inject;
 import static java.util.UUID.randomUUID;
 import static no.nav.syfo.config.ApplicationConfig.CALL_ID;
 import static no.nav.syfo.kafka.KafkaHeaderConstants.getLastHeaderByKeyAsString;
+import static no.nav.syfo.kafka.mapper.SoknadDtoToSykepengesoknadMapperKt.toSykepengesoknad;
 
 @Component
 @Slf4j
@@ -35,7 +35,7 @@ public class DeprecatedSoknadSendtListener {
         try {
             MDC.put(CALL_ID, getLastHeaderByKeyAsString(cr.headers(), CALL_ID).orElseGet(randomUUID()::toString));
 
-            saksbehandlingsService.behandleSoknad(SoknadDtoToSykepengesoknadMapper.INSTANCE.toSykepengesoknad(cr.value()));
+            saksbehandlingsService.behandleSoknad(toSykepengesoknad(cr.value()));
 
             acknowledgment.acknowledge();
         } catch (Exception e) {
