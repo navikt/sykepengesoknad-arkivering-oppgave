@@ -72,9 +72,9 @@ public class RebehandleSoknadListener {
 
                         Sykepengesoknad sykepengesoknad = null;
                         if (record.value() instanceof SykepengesoknadDTO) {
-                            sykepengesoknad = SykepengesoknadDtoToSykepengesoknadMapper.INSTANCE.konverter((SykepengesoknadDTO) record.value());
+                            sykepengesoknad = SykepengesoknadDtoToSykepengesoknadMapper.INSTANCE.toSykepengesoknad((SykepengesoknadDTO) record.value());
                         } else if (record.value() instanceof SoknadDTO) {
-                            sykepengesoknad = SoknadDtoToSykepengesoknadMapper.INSTANCE.konverter((SoknadDTO) record.value());
+                            sykepengesoknad = SoknadDtoToSykepengesoknadMapper.INSTANCE.toSykepengesoknad((SoknadDTO) record.value());
                         }
                         if (sykepengesoknad != null) {
                             final Sykepengesoknad finalsoknad = sykepengesoknad;

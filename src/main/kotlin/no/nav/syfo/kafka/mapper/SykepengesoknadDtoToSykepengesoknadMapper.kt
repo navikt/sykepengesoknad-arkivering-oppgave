@@ -8,44 +8,43 @@ import no.nav.syfo.kafka.sykepengesoknad.dto.SoknadsperiodeDTO
 import no.nav.syfo.kafka.sykepengesoknad.dto.SporsmalDTO
 import no.nav.syfo.kafka.sykepengesoknad.dto.SvarDTO
 import no.nav.syfo.kafka.sykepengesoknad.dto.SykepengesoknadDTO
-import java.util.stream.Stream
 
 object SykepengesoknadDtoToSykepengesoknadMapper {
 
-    private inline fun <T:Enum<*>, reified U : Enum<*>> T?.enumValueOrNull(): U? =
+    private inline fun <T : Enum<*>, reified U : Enum<*>> T?.enumValueOrNull(): U? =
             U::class.java.enumConstants.firstOrNull { it.name == this?.name }
 
-    private fun konverter(svar: SvarDTO): Svar {
-        return Svar(svar.verdi)
-    }
+    private fun SvarDTO.toSvar(): Svar =
+            Svar(this.verdi)
 
-    private fun konverter(sporsmal: SporsmalDTO): Sporsmal {
-        return Sporsmal(
-                id = sporsmal.id,
-                tag = sporsmal.tag,
-                sporsmalstekst = sporsmal.sporsmalstekst,
-                undertekst = sporsmal.undertekst,
-                svartype = sporsmal.svartype.enumValueOrNull(),
-                min = sporsmal.min,
-                max = sporsmal.max,
-                kriterieForVisningAvUndersporsmal = sporsmal.kriteriumForVisningAvUndersporsmal.enumValueOrNull(),
-                svar = sporsmal.svar.map { SykepengesoknadDtoToSykepengesoknadMapper.konverter(it) },
-                undersporsmal = sporsmal.undersporsmal.map { SykepengesoknadDtoToSykepengesoknadMapper.konverter(it) }
-        )
-    }
 
-    private fun konverter(soknadPeriode: SoknadsperiodeDTO): SoknadPeriode {
-        return SoknadPeriode(
-                fom = soknadPeriode.fom,
-                tom = soknadPeriode.tom,
-                grad = soknadPeriode.sykmeldingsgrad,
-                faktiskGrad = soknadPeriode.faktiskGrad)
-    }
+    private fun SporsmalDTO.toSporsmal(): Sporsmal =
+            Sporsmal(
+                    id = this.id,
+                    tag = this.tag,
+                    sporsmalstekst = this.sporsmalstekst,
+                    undertekst = this.undertekst,
+                    svartype = this.svartype.enumValueOrNull(),
+                    min = this.min,
+                    max = this.max,
+                    kriterieForVisningAvUndersporsmal = this.kriteriumForVisningAvUndersporsmal.enumValueOrNull(),
+                    svar = this.svar.map { it.toSvar() },
+                    undersporsmal = this.undersporsmal.map { it.toSporsmal() }
+            )
 
-    fun konverter(sykepengesoknad: SykepengesoknadDTO): Sykepengesoknad {
+
+    private fun SoknadsperiodeDTO.toSoknadPeriode(): SoknadPeriode =
+            SoknadPeriode(
+                    fom = this.fom,
+                    tom = this.tom,
+                    grad = this.sykmeldingsgrad,
+                    faktiskGrad = this.faktiskGrad)
+
+
+    fun toSykepengesoknad(sykepengesoknad: SykepengesoknadDTO): Sykepengesoknad {
         return Sykepengesoknad(
                 id = sykepengesoknad.id,
-                sykmeldingId =  sykepengesoknad.sykmeldingId,
+                sykmeldingId = sykepengesoknad.sykmeldingId,
                 aktorId = sykepengesoknad.aktorId,
                 soknadstype = sykepengesoknad.type.enumValueOrNull(),
                 status = sykepengesoknad.status.name,
@@ -60,12 +59,8 @@ object SykepengesoknadDtoToSykepengesoknadMapper {
                 sykmeldingSkrevet = sykepengesoknad.sykmeldingSkrevet,
                 korrigertAv = sykepengesoknad.korrigertAv,
                 korrigerer = sykepengesoknad.korrigerer,
-                soknadPerioder = sykepengesoknad.soknadsperioder.map { SykepengesoknadDtoToSykepengesoknadMapper.konverter(it) },
-                sporsmal = sykepengesoknad.sporsmal.map { SykepengesoknadDtoToSykepengesoknadMapper.konverter(it) }
+                soknadPerioder = sykepengesoknad.soknadsperioder.map { it.toSoknadPeriode() },
+                sporsmal = sykepengesoknad.sporsmal.map { it.toSporsmal() }
         )
-    }
-
-    private fun <T> stream(list: List<T>?): Stream<T> {
-        return list?.stream() ?: Stream.empty()
     }
 }

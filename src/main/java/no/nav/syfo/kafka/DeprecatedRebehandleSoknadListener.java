@@ -67,7 +67,7 @@ public class DeprecatedRebehandleSoknadListener {
                     try {
                         MDC.put(CALL_ID, getLastHeaderByKeyAsString(record.headers(), CALL_ID).orElseGet(randomUUID()::toString));
 
-                        Sykepengesoknad sykepengesoknad = SoknadDtoToSykepengesoknadMapper.INSTANCE.konverter(record.value());
+                        Sykepengesoknad sykepengesoknad = SoknadDtoToSykepengesoknadMapper.INSTANCE.toSykepengesoknad(record.value());
 
                         feilendeInnsendinger.stream()
                                 .filter(innsending -> innsending.getRessursId().equals(sykepengesoknad.getId()))

@@ -42,9 +42,9 @@ public class SoknadSendtListener {
 
             Sykepengesoknad sykepengesoknad = null;
             if (soknad instanceof SoknadDTO) {
-                sykepengesoknad = SoknadDtoToSykepengesoknadMapper.INSTANCE.konverter((SoknadDTO) soknad);
+                sykepengesoknad = SoknadDtoToSykepengesoknadMapper.INSTANCE.toSykepengesoknad((SoknadDTO) soknad);
             } else if (soknad instanceof SykepengesoknadDTO) {
-                sykepengesoknad = SykepengesoknadDtoToSykepengesoknadMapper.INSTANCE.konverter((SykepengesoknadDTO) soknad);
+                sykepengesoknad = SykepengesoknadDtoToSykepengesoknadMapper.INSTANCE.toSykepengesoknad((SykepengesoknadDTO) soknad);
             }
 
             if (sykepengesoknad != null) {

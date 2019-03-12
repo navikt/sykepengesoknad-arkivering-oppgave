@@ -35,7 +35,7 @@ public class DeprecatedSoknadSendtListener {
         try {
             MDC.put(CALL_ID, getLastHeaderByKeyAsString(cr.headers(), CALL_ID).orElseGet(randomUUID()::toString));
 
-            saksbehandlingsService.behandleSoknad(SoknadDtoToSykepengesoknadMapper.INSTANCE.konverter(cr.value()));
+            saksbehandlingsService.behandleSoknad(SoknadDtoToSykepengesoknadMapper.INSTANCE.toSykepengesoknad(cr.value()));
 
             acknowledgment.acknowledge();
         } catch (Exception e) {

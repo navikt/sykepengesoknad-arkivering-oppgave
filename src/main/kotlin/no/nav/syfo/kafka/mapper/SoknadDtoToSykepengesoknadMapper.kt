@@ -14,50 +14,47 @@ object SoknadDtoToSykepengesoknadMapper {
     private inline fun <reified U : Enum<*>> String?.enumValueOrNull(): U? =
             U::class.java.enumConstants.firstOrNull { it.name == this }
 
-    private fun konverter(svar: SvarDTO): Svar {
-        return Svar(svar.verdi)
-    }
+    private fun SporsmalDTO.toSporsmal(): Sporsmal =
+            Sporsmal(
+                    id = this.id,
+                    tag = this.tag,
+                    sporsmalstekst = this.sporsmalstekst,
+                    undertekst = this.undertekst,
+                    svartype = this.svartype.enumValueOrNull(),
+                    min = this.min,
+                    max = this.max,
+                    kriterieForVisningAvUndersporsmal = this.kriterieForVisningAvUndersporsmal.enumValueOrNull(),
+                    svar = this.svar.map { it.toSvar() },
+                    undersporsmal = this.undersporsmal.map { it.toSporsmal() }
+            )
 
-    private fun konverter(sporsmal: SporsmalDTO): Sporsmal {
-        return Sporsmal(
-                id = sporsmal.id,
-                tag = sporsmal.tag,
-                sporsmalstekst = sporsmal.sporsmalstekst,
-                undertekst = sporsmal.undertekst,
-                svartype = sporsmal.svartype.enumValueOrNull(),
-                min = sporsmal.min,
-                max = sporsmal.max,
-                kriterieForVisningAvUndersporsmal = sporsmal.kriterieForVisningAvUndersporsmal.enumValueOrNull(),
-                svar = sporsmal.svar.map { SoknadDtoToSykepengesoknadMapper.konverter(it) },
-                undersporsmal = sporsmal.undersporsmal.map { SoknadDtoToSykepengesoknadMapper.konverter(it) }
-        )
-    }
+    private fun SvarDTO.toSvar(): Svar =
+            Svar(this.verdi)
 
-    private fun konverter(soknadPeriode: SoknadPeriodeDTO): SoknadPeriode {
-        return SoknadPeriode(
-                fom = soknadPeriode.fom,
-                tom = soknadPeriode.tom,
-                grad = soknadPeriode.grad)
-    }
+    private fun SoknadPeriodeDTO.toSoknadPeriode(): SoknadPeriode =
+            SoknadPeriode(
+                    fom = this.fom,
+                    tom = this.tom,
+                    grad = this.grad)
 
-    fun konverter(soknad: SoknadDTO): Sykepengesoknad {
-        return Sykepengesoknad(
-                id = soknad.id,
-                sykmeldingId = soknad.sykmeldingId,
-                aktorId = soknad.aktorId,
-                soknadstype = soknad.soknadstype.enumValueOrNull(),
-                status = soknad.status,
-                fom = soknad.fom,
-                tom = soknad.tom,
-                opprettet = soknad.opprettetDato.atStartOfDay(),
-                sendtNav = soknad.innsendtDato?.atStartOfDay(),
-                arbeidsgiver = soknad.arbeidsgiver,
-                arbeidssituasjon = soknad.arbeidssituasjon.enumValueOrNull(),
-                startSykeforlop = soknad.startSykeforlop,
-                sykmeldingSkrevet = soknad.sykmeldingUtskrevet?.atStartOfDay(),
-                korrigertAv = soknad.korrigertAv,
-                korrigerer = soknad.korrigerer,
-                soknadPerioder = soknad.soknadPerioder.map { SoknadDtoToSykepengesoknadMapper.konverter(it) },
-                sporsmal = soknad.sporsmal.map { SoknadDtoToSykepengesoknadMapper.konverter(it) })
-    }
+    fun SoknadDTO.toSykepengesoknad(): Sykepengesoknad =
+            Sykepengesoknad(
+                    id = this.id,
+                    sykmeldingId = this.sykmeldingId,
+                    aktorId = this.aktorId,
+                    soknadstype = this.soknadstype.enumValueOrNull(),
+                    status = this.status,
+                    fom = this.fom,
+                    tom = this.tom,
+                    opprettet = this.opprettetDato.atStartOfDay(),
+                    sendtNav = this.innsendtDato?.atStartOfDay(),
+                    arbeidsgiver = this.arbeidsgiver,
+                    arbeidssituasjon = this.arbeidssituasjon.enumValueOrNull(),
+                    startSykeforlop = this.startSykeforlop,
+                    sykmeldingSkrevet = this.sykmeldingUtskrevet?.atStartOfDay(),
+                    korrigertAv = this.korrigertAv,
+                    korrigerer = this.korrigerer,
+                    soknadPerioder = this.soknadPerioder.map { it.toSoknadPeriode() },
+                    sporsmal = this.sporsmal.map { it.toSporsmal() })
+
 }
