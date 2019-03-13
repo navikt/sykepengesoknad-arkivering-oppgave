@@ -32,7 +32,7 @@ public class BeskrivelseService {
                         soknad.getFom().format(norskDato) + " - " + soknad.getTom().format(norskDato);
                 break;
             case SELVSTENDIGE_OG_FRILANSERE:
-                tittel = "Søknad om sykepenger fra " + soknad.getArbeidssituasjon().toString() + " for perioden " +
+                tittel = "Søknad om sykepenger fra " + soknad.getArbeidssituasjon().getNavn() + " for perioden " +
                         soknad.getFom().format(norskDato) + " - " + soknad.getTom().format(norskDato);
                 break;
             case OPPHOLD_UTLAND:
