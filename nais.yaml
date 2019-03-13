@@ -6,14 +6,6 @@ replicas:
   max: 1
   cpuThresholdPercentage: 90
 port: 8080
-alerts:
-- alert: ingenSoknaderBehandlet
-  expr: sum(increase(syfogsak_innsending_behandlet_total[24h])) < 0.8
-  for: 1m
-  annotations:
-    action: "Syfogsak har ikke behandlet soknader på 24 timer. Sjekk i errorloggen: https://logs.adeo.no/goto/c117ef2a4003c420e43d391f8007ddda"
-  labels:
-    severity: Warning
 healthcheck:
   liveness:
     path: /internal/isAlive
