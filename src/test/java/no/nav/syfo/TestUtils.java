@@ -1782,6 +1782,19 @@ public class TestUtils {
             "Betaler arbeidsgiveren lønnen din når du er syk?\n" +
             "Vet ikke";
 
+    public static final String beskrivelseArbeidstakerMedNeisvarKorrigert = "Søknad om sykepenger for perioden 16.10.2018 - 24.10.2018 KORRIGERING\n" +
+            "\n" +
+            "Periode 1:\n" +
+            "16.10.2018 - 20.10.2018\n" +
+            "Grad: 100\n" +
+            "\n" +
+            "Periode 2:\n" +
+            "21.10.2018 - 24.10.2018\n" +
+            "Grad: 40\n" +
+            "\n" +
+            "Betaler arbeidsgiveren lønnen din når du er syk?\n" +
+            "Vet ikke";
+
 
     public static final String soknadArbeidstakerMangeSvar = "{\n" +
             "        \"id\": \"27010c11-9200-44c7-b44c-6428bc6762d7\",\n" +
