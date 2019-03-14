@@ -48,11 +48,6 @@ public class SoknadSendtListener {
             }
 
             if (sykepengesoknad != null) {
-                log.info("Soknad er deserialisert fra kafka:");
-                log.info("id: {}", sykepengesoknad.getId());
-                log.info("fom: {}", sykepengesoknad.getFom());
-                log.info("tom: {}", sykepengesoknad.getTom());
-                log.info("status: {}", sykepengesoknad.getStatus());
                 saksbehandlingsService.behandleSoknad(sykepengesoknad);
             }
 
