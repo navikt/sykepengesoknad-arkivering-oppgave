@@ -19,9 +19,7 @@ public class PDFRestController {
     }
 
     public byte[] getPDF(Soknad soknad, PDFTemplate template) {
-        final String url = "http://pdf-gen.default/api/v1/genpdf/syfosoknader/" + template;
-
-        log.info("Spør pdf-gen på url: {}", url);
+        final String url = "http://pdf-gen.default/api/v1/genpdf/syfosoknader/" + template.getEndpoint();
 
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
