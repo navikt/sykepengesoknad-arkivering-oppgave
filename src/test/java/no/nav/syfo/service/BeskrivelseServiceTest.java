@@ -68,7 +68,7 @@ public class BeskrivelseServiceTest {
     @Test
     public void korrigertSoknadFremgarAvBeskrivelse() throws IOException {
         Sykepengesoknad sykepengesoknad = objectMapper.readValue(soknadArbeidstakerMedNeisvar, Sykepengesoknad.class);
-        Soknad soknad = Soknad.Companion.lagSoknad(sykepengesoknad, "fnr", "navn");
+        Soknad soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn");
         soknad.setKorrigerer("1234");
 
         String beskrivelse = BeskrivelseService.lagBeskrivelse(soknad);
