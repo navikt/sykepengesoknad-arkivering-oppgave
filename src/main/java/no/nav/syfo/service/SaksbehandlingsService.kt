@@ -13,7 +13,6 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.util.stream.Stream
-import kotlin.streams.toList
 
 @Component
 class SaksbehandlingsService(
@@ -116,26 +115,11 @@ class SaksbehandlingsService(
     }
 
     fun erPaFolgendeInkludertHelg(one: LocalDate, two: LocalDate): Boolean {
-        val between = ChronoUnit.DAYS.between(one, two)
-        val dagerMellom = if (between == 0L) 0L else between - 1L
 
-        if (dagerMellom > 2 || !one.isBefore(two)) {
-            return false
-        }
-
-        val dageneMellom = Stream.iterate(one.plusDays(1)) { it.plusDays(1) }.limit(dagerMellom).toList()
-
-        when {
-            dageneMellom.isEmpty() -> return true
-            else -> {
-                for (dag in dageneMellom) {
-                    if (dag.dayOfWeek != DayOfWeek.SATURDAY && dag.dayOfWeek != DayOfWeek.SUNDAY) {
-                        return false
-                    }
-                }
-                return true
-            }
-        }
+        return Stream.iterate(one.plusDays(1)) { it.plusDays(1) }
+                .limit(ChronoUnit.DAYS.between(one, two) - 1)
+                .map { it.dayOfWeek }
+                .allMatch{ it == DayOfWeek.SATURDAY || it == DayOfWeek.SUNDAY}
     }
 
     fun opprettSoknad(sykepengesoknad: Sykepengesoknad, fnr: String): Soknad =
