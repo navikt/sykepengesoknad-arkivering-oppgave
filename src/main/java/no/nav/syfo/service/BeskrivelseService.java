@@ -41,7 +41,7 @@ public class BeskrivelseService {
             default:
                 throw new RuntimeException("Beskrivelse er ikke implementert for søknadstype: " + soknad.getSoknadstype());
         }
-        return tittel + "\n" +
+        return tittel + (soknad.getKorrigerer() != null ? " KORRIGERING" : "") + "\n" +
                 beskrivPerioder(soknad.getSoknadPerioder()) +
                 soknad.getSporsmal().stream()
                         .filter(BeskrivelseService::sporsmalSkalVises)
