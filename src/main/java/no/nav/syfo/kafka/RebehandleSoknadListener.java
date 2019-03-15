@@ -27,8 +27,8 @@ import java.util.List;
 import static java.util.UUID.randomUUID;
 import static no.nav.syfo.config.ApplicationConfig.CALL_ID;
 import static no.nav.syfo.kafka.KafkaHeaderConstants.getLastHeaderByKeyAsString;
-import static no.nav.syfo.kafka.mapper.SoknadDtoToSykepengesoknadMapper.konverter;
-import static no.nav.syfo.kafka.mapper.SykepengesoknadDtoToSykepengesoknadMapper.konverter;
+import static no.nav.syfo.kafka.mapper.SoknadDtoToSykepengesoknadMapperKt.toSykepengesoknad;
+import static no.nav.syfo.kafka.mapper.SykepengesoknadDtoToSykepengesoknadMapperKt.toSykepengesoknad;
 
 
 @Slf4j
@@ -72,9 +72,9 @@ public class RebehandleSoknadListener {
 
                         Sykepengesoknad sykepengesoknad = null;
                         if (record.value() instanceof SykepengesoknadDTO) {
-                            sykepengesoknad = konverter((SykepengesoknadDTO) record.value());
+                            sykepengesoknad = toSykepengesoknad((SykepengesoknadDTO) record.value());
                         } else if (record.value() instanceof SoknadDTO) {
-                            sykepengesoknad = konverter((SoknadDTO) record.value());
+                            sykepengesoknad = toSykepengesoknad((SoknadDTO) record.value());
                         }
                         if (sykepengesoknad != null) {
                             final Sykepengesoknad finalsoknad = sykepengesoknad;

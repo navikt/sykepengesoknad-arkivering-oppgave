@@ -25,7 +25,7 @@ import java.util.List;
 import static java.util.UUID.randomUUID;
 import static no.nav.syfo.config.ApplicationConfig.CALL_ID;
 import static no.nav.syfo.kafka.KafkaHeaderConstants.getLastHeaderByKeyAsString;
-import static no.nav.syfo.kafka.mapper.SoknadDtoToSykepengesoknadMapper.konverter;
+import static no.nav.syfo.kafka.mapper.SoknadDtoToSykepengesoknadMapperKt.toSykepengesoknad;
 
 @Deprecated
 @Slf4j
@@ -67,7 +67,7 @@ public class DeprecatedRebehandleSoknadListener {
                     try {
                         MDC.put(CALL_ID, getLastHeaderByKeyAsString(record.headers(), CALL_ID).orElseGet(randomUUID()::toString));
 
-                        Sykepengesoknad sykepengesoknad = konverter(record.value());
+                        Sykepengesoknad sykepengesoknad = toSykepengesoknad(record.value());
 
                         feilendeInnsendinger.stream()
                                 .filter(innsending -> innsending.getRessursId().equals(sykepengesoknad.getId()))

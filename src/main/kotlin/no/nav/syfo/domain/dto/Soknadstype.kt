@@ -1,6 +1,6 @@
-package no.nav.syfo.domain.dto;
+package no.nav.syfo.domain.dto
 
-public enum Soknadstype {
+enum class Soknadstype {
     SELVSTENDIGE_OG_FRILANSERE,
     OPPHOLD_UTLAND,
     ARBEIDSTAKERE

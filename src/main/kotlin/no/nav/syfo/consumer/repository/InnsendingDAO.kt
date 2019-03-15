@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.sql.ResultSet
+import java.time.LocalDate
 import java.util.*
 
 @Service
@@ -17,15 +18,17 @@ class InnsendingDAO(private val namedParameterJdbcTemplate: NamedParameterJdbcTe
 
     val log = log()
 
-    fun opprettInnsending(sykepengesoknadId: String, aktorId: String): String {
+    fun opprettInnsending(sykepengesoknadId: String, aktorId: String, soknadFom: LocalDate?, soknadTom: LocalDate?): String {
         val uuid = UUID.randomUUID().toString()
 
         namedParameterJdbcTemplate.update(
-                "INSERT INTO INNSENDING (INNSENDING_UUID, RESSURS_ID, AKTOR_ID) VALUES (:uuid, :ressursId, :aktorId)",
+                "INSERT INTO INNSENDING (INNSENDING_UUID, RESSURS_ID, AKTOR_ID, SOKNAD_FOM, SOKNAD_TOM) VALUES (:uuid, :ressursId, :aktorId, :fom, :tom)",
                 MapSqlParameterSource()
                         .addValue("uuid", uuid)
                         .addValue("ressursId", sykepengesoknadId)
                         .addValue("aktorId", aktorId)
+                        .addValue("fom", soknadFom)
+                        .addValue("tom", soknadTom)
         )
 
         return uuid
@@ -124,6 +127,37 @@ class InnsendingDAO(private val namedParameterJdbcTemplate: NamedParameterJdbcTe
                 .map { it.saksId }
                 .firstOrNull()
     }
+
+    fun finnTidligereInnsendinger(aktorId: String): List<TidligereInnsending> {
+        return namedParameterJdbcTemplate.query(
+                """
+                    SELECT * FROM INNSENDING WHERE AKTOR_ID = :aktorId
+                    AND SAKS_ID IS NOT NULL
+                    AND BEHANDLET IS NOT NULL
+                    AND SOKNAD_TOM IS NOT NULL
+                    """,
+                MapSqlParameterSource()
+                        .addValue("aktorId", aktorId),
+
+                tidligereInnsendingRowMapper
+        )
+    }
+}
+
+data class TidligereInnsending(
+        val aktorId: String,
+        val saksId: String,
+        val behandlet: LocalDate,
+        val soknadTom: LocalDate
+)
+
+val tidligereInnsendingRowMapper: (ResultSet, Int) -> TidligereInnsending = { resultSet, _ ->
+    TidligereInnsending(
+            aktorId = resultSet.getString("AKTOR_ID"),
+            saksId = resultSet.getString("SAKS_ID"),
+            behandlet = resultSet.getDate("BEHANDLET").toLocalDate(),
+            soknadTom = resultSet.getDate("SOKNAD_TOM").toLocalDate()
+    )
 }
 
 val innsendingRowMapper: (ResultSet, Int) -> Innsending = { resultSet, _ ->
@@ -134,5 +168,8 @@ val innsendingRowMapper: (ResultSet, Int) -> Innsending = { resultSet, _ ->
             saksId = resultSet.getString("SAKS_ID"),
             journalpostId = resultSet.getString("JOURNALPOST_ID"),
             oppgaveId = resultSet.getString("OPPGAVE_ID"),
-            behandlet = resultSet.getDate("BEHANDLET")?.toLocalDate())
+            behandlet = resultSet.getDate("BEHANDLET")?.toLocalDate(),
+            soknadFom = resultSet.getDate("SOKNAD_FOM")?.toLocalDate(),
+            soknadTom = resultSet.getDate("SOKNAD_TOM")?.toLocalDate()
+    )
 }
