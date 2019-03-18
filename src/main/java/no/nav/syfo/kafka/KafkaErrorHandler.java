@@ -38,8 +38,8 @@ public class KafkaErrorHandler implements ContainerAwareErrorHandler {
         records
                 .forEach(record -> log.error("Feil i prossesseringen av record med offset:{} og innhold:{}", record.offset(), record.value()));
 
-        STOPPING_ERROR_HANDLER.handle(thrownException, records, consumer, container);
         registry.counter("syfogsak.kafkalytter.stoppet", Tags.of("type", "feil", "help", "Kafkalytteren har stoppet som følge av feil.")).increment();
+        STOPPING_ERROR_HANDLER.handle(thrownException, records, consumer, container);
     }
 
     private boolean exceptionIsClass(Throwable t, Class klazz) {
