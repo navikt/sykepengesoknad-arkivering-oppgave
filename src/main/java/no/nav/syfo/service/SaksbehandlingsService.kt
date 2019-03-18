@@ -2,6 +2,7 @@ package no.nav.syfo.service
 
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tags
+import no.nav.syfo.consumer.aktor.AktorConsumer
 import no.nav.syfo.consumer.repository.InnsendingDAO
 import no.nav.syfo.consumer.ws.*
 import no.nav.syfo.domain.Soknad

@@ -1,8 +1,8 @@
 package no.nav.syfo.service;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.syfo.consumer.aktor.AktorConsumer;
 import no.nav.syfo.consumer.repository.InnsendingDAO;
-import no.nav.syfo.consumer.ws.AktorConsumer;
 import no.nav.syfo.domain.Innsending;
 import no.nav.syfo.domain.Soknad;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
