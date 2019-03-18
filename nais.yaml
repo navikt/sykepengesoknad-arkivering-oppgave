@@ -72,3 +72,5 @@ fasitResources:
     resourceType: restservice
   - alias: aktoerregister.api.v1
     resourceType: restservice
+  - alias: security-token-service-token
+    resourceType: restservice

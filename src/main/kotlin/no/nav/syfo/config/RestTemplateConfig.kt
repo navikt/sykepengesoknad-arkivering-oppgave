@@ -16,9 +16,4 @@ class RestTemplateConfig {
                 .basicAuthorization(username, password)
                 .build()
     }
-
-    @Bean
-    fun restTemplate(): RestTemplate {
-        return RestTemplate()
-    }
 }
