@@ -8,6 +8,7 @@ import io.micrometer.core.instrument.MeterRegistry
 import no.nav.syfo.TestUtils.soknadArbeidstakerMedNeisvar
 import no.nav.syfo.TestUtils.soknadSelvstendigMedNeisvar
 import no.nav.syfo.any
+import no.nav.syfo.consumer.aktor.AktorConsumer
 import no.nav.syfo.consumer.repository.InnsendingDAO
 import no.nav.syfo.consumer.repository.TidligereInnsending
 import no.nav.syfo.consumer.ws.*

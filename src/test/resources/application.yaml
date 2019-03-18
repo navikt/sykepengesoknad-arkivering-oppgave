@@ -19,10 +19,11 @@ javax.net.ssl:
 
 servicegateway.url: servicegateway.url
 securitytokenservice.url: sts.url
+security-token-service-token.url: sts.new.url
 
 behandleJournal.v2.endpointurl: "behandleJournalv2.url"
 Journal.v2.endpointurl: "behandleJournalv2.url"
-aktoer.v2.endpointurl: "aktor.url"
+aktoerregister.api.v1.url: "aktoerregister.api.v1.url"
 
 virksomhet:
   behandlesak.v1.endpointurl: "behandlesakv1.url"
