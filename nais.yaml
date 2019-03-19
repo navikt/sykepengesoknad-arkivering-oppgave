@@ -38,8 +38,6 @@ fasitResources:
     resourceType: credential
     propertyMap:
       username: NO_NAV_SECURITY_OIDC_ISSUER_AZUREAD_ACCEPTEDAUDIENCE
-  - alias: virksomhet:BehandleSak_v1
-    resourceType: webserviceendpoint
   - alias: Journal_v2
     resourceType: webserviceendpoint
   - alias: virksomhet:Arbeidsfordeling_v1
@@ -73,4 +71,6 @@ fasitResources:
   - alias: aktoerregister.api.v1
     resourceType: restservice
   - alias: security-token-service-token
+    resourceType: restservice
+  - alias: sak.saker
     resourceType: restservice

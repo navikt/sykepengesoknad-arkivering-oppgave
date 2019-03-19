@@ -11,6 +11,7 @@ import no.nav.syfo.any
 import no.nav.syfo.consumer.aktor.AktorConsumer
 import no.nav.syfo.consumer.repository.InnsendingDAO
 import no.nav.syfo.consumer.repository.TidligereInnsending
+import no.nav.syfo.consumer.sak.SakConsumer
 import no.nav.syfo.consumer.ws.*
 import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.Soknadstype.ARBEIDSTAKERE
@@ -39,7 +40,7 @@ class SaksbehandlingsServiceTest {
     @Mock
     lateinit var innsendingDAO: InnsendingDAO
     @Mock
-    lateinit var behandleSakConsumer: BehandleSakConsumer
+    lateinit var sakConsumer: SakConsumer
     @Mock
     lateinit var behandleJournalConsumer: BehandleJournalConsumer
     @Mock
@@ -58,7 +59,7 @@ class SaksbehandlingsServiceTest {
     fun setup() {
         given(aktorConsumer.finnFnr(any())).willReturn("12345678901")
         given(personConsumer.finnBrukerPersonnavnByFnr(any())).willReturn("Personnavn")
-        given(behandleSakConsumer.opprettSak(any())).willReturn("ny-sak-fra-gsak")
+        given(sakConsumer.opprettSak(any())).willReturn("ny-sak-fra-gsak")
         given(behandleJournalConsumer.opprettJournalpost(any(), any())).willReturn("journalpostId")
         given(behandlendeEnhetService.hentBehandlendeEnhet("12345678901", SELVSTENDIGE_OG_FRILANSERE)).willReturn("2017")
         given(behandlendeEnhetService.hentBehandlendeEnhet("12345678901", ARBEIDSTAKERE)).willReturn("2017")
@@ -155,7 +156,7 @@ class SaksbehandlingsServiceTest {
         given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019, 3, 10))))
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
-        verify(behandleSakConsumer, never()).opprettSak(ArgumentMatchers.anyString())
+        verify(sakConsumer, never()).opprettSak(ArgumentMatchers.anyString())
         verify(innsendingDAO).oppdaterSaksId("innsending-guid", "sak1")
         verify(innsendingDAO).settBehandlet("innsending-guid")
     }
@@ -168,7 +169,7 @@ class SaksbehandlingsServiceTest {
         given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019, 3, 6))))
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
-        verify(behandleSakConsumer).opprettSak(ArgumentMatchers.anyString())
+        verify(sakConsumer).opprettSak(ArgumentMatchers.anyString())
         verify(innsendingDAO).oppdaterSaksId("innsending-guid", "ny-sak-fra-gsak")
         verify(innsendingDAO).settBehandlet("innsending-guid")
     }
@@ -181,7 +182,7 @@ class SaksbehandlingsServiceTest {
         given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019, 3, 8))))
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
-        verify(behandleSakConsumer, never()).opprettSak(ArgumentMatchers.anyString())
+        verify(sakConsumer, never()).opprettSak(ArgumentMatchers.anyString())
         verify(innsendingDAO).oppdaterSaksId("innsending-guid", "sak1")
         verify(innsendingDAO).settBehandlet("innsending-guid")
     }
@@ -194,7 +195,7 @@ class SaksbehandlingsServiceTest {
         given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019, 3, 10))))
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
-        verify(behandleSakConsumer).opprettSak(ArgumentMatchers.anyString())
+        verify(sakConsumer).opprettSak(ArgumentMatchers.anyString())
         verify(innsendingDAO).oppdaterSaksId("innsending-guid", "ny-sak-fra-gsak")
         verify(innsendingDAO).settBehandlet("innsending-guid")
     }
@@ -207,7 +208,7 @@ class SaksbehandlingsServiceTest {
         given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(emptyList())
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
-        verify(behandleSakConsumer).opprettSak(ArgumentMatchers.anyString())
+        verify(sakConsumer).opprettSak(ArgumentMatchers.anyString())
         verify(innsendingDAO).oppdaterSaksId("innsending-guid", "ny-sak-fra-gsak")
         verify(innsendingDAO).settBehandlet("innsending-guid")
     }
@@ -220,7 +221,7 @@ class SaksbehandlingsServiceTest {
         given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019, 3, 10))))
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
-        verify(behandleSakConsumer).opprettSak(ArgumentMatchers.anyString())
+        verify(sakConsumer).opprettSak(ArgumentMatchers.anyString())
         verify(innsendingDAO).oppdaterSaksId("innsending-guid", "ny-sak-fra-gsak")
         verify(innsendingDAO).settBehandlet("innsending-guid")
     }
@@ -236,7 +237,7 @@ class SaksbehandlingsServiceTest {
                 TidligereInnsending("aktorId-745463060", "sak3", LocalDate.now(), LocalDate.of(2018, 3, 8))))
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
-        verify(behandleSakConsumer, never()).opprettSak(ArgumentMatchers.anyString())
+        verify(sakConsumer, never()).opprettSak(ArgumentMatchers.anyString())
         verify(innsendingDAO).oppdaterSaksId("innsending-guid", "sak2")
         verify(innsendingDAO).settBehandlet("innsending-guid")
     }

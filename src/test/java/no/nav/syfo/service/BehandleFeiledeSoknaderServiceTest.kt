@@ -56,7 +56,7 @@ class BehandleFeiledeSoknaderServiceTest {
 
         globalInnsending = Innsending("innsendingsId", "soknadsId")
 
-        given(saksbehandlingsService.finnEllerOpprettSak("innsendingsId", "fnr", "aktorId", sykepengesoknad.fom)).willReturn("saksId")
+        given(saksbehandlingsService.finnEllerOpprettSak("innsendingsId", "aktorId", sykepengesoknad.fom)).willReturn("saksId")
         given(saksbehandlingsService.opprettJournalpost(anyString(), no.nav.syfo.any(), anyString())).willReturn("journalpostId")
         given(aktorConsumer.finnFnr("aktorId")).willReturn("fnr")
         given(saksbehandlingsService.opprettSoknad(no.nav.syfo.any<Sykepengesoknad>(), anyString())).willReturn(Soknad.lagSoknad(sykepengesoknad, "fnr", "Ola Nordmann"))
@@ -68,7 +68,7 @@ class BehandleFeiledeSoknaderServiceTest {
 
         verify<InnsendingDAO>(innsendingDAO).oppdaterAktorId("innsendingsId", "aktorId")
 
-        verify<SaksbehandlingsService>(saksbehandlingsService).finnEllerOpprettSak(anyString(), anyString(), anyString(), any())
+        verify<SaksbehandlingsService>(saksbehandlingsService).finnEllerOpprettSak(anyString(), anyString(), any())
         verify<SaksbehandlingsService>(saksbehandlingsService).opprettJournalpost(anyString(), no.nav.syfo.any<Soknad>(), anyString())
         verify<SaksbehandlingsService>(saksbehandlingsService).opprettOppgave(eq("innsendingsId"), anyString(), no.nav.syfo.any(), anyString(), anyString())
 
@@ -84,7 +84,7 @@ class BehandleFeiledeSoknaderServiceTest {
 
         verify<InnsendingDAO>(innsendingDAO, never()).oppdaterAktorId("innsendingsId", "aktorId")
 
-        verify<SaksbehandlingsService>(saksbehandlingsService).finnEllerOpprettSak(anyString(), anyString(), anyString(), any())
+        verify<SaksbehandlingsService>(saksbehandlingsService).finnEllerOpprettSak(anyString(), anyString(), any())
         verify<SaksbehandlingsService>(saksbehandlingsService).opprettJournalpost(anyString(), no.nav.syfo.any(), anyString())
         verify<SaksbehandlingsService>(saksbehandlingsService).opprettOppgave(anyString(), anyString(), no.nav.syfo.any(), anyString(), anyString())
 
@@ -98,7 +98,7 @@ class BehandleFeiledeSoknaderServiceTest {
 
         behandleFeiledeSoknaderService.behandleFeiletSoknad(innsending, sykepengesoknad)
 
-        verify<SaksbehandlingsService>(saksbehandlingsService, never()).finnEllerOpprettSak(anyString(), anyString(), anyString(), any())
+        verify<SaksbehandlingsService>(saksbehandlingsService, never()).finnEllerOpprettSak(anyString(), anyString(), any())
         verify<SaksbehandlingsService>(saksbehandlingsService).opprettJournalpost(anyString(), no.nav.syfo.any(), anyString())
         verify<SaksbehandlingsService>(saksbehandlingsService).opprettOppgave(anyString(), anyString(), no.nav.syfo.any(), anyString(), anyString())
 
@@ -112,7 +112,7 @@ class BehandleFeiledeSoknaderServiceTest {
 
         behandleFeiledeSoknaderService.behandleFeiletSoknad(innsending, sykepengesoknad)
 
-        verify<SaksbehandlingsService>(saksbehandlingsService, never()).finnEllerOpprettSak(anyString(), anyString(), anyString(), any())
+        verify<SaksbehandlingsService>(saksbehandlingsService, never()).finnEllerOpprettSak(anyString(), anyString(), any())
         verify<SaksbehandlingsService>(saksbehandlingsService, never()).opprettJournalpost(anyString(), no.nav.syfo.any(), anyString())
         verify<SaksbehandlingsService>(saksbehandlingsService).opprettOppgave(anyString(), anyString(), no.nav.syfo.any(), anyString(), anyString())
 

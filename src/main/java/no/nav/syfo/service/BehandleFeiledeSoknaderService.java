@@ -42,7 +42,7 @@ public class BehandleFeiledeSoknaderService {
             }
 
             if (saksId == null) {
-                saksId = behandleFraSaksId(innsendingsId, aktorConsumer.finnFnr(aktorId), aktorId, sykepengesoknad.getFom());
+                saksId = behandleFraSaksId(innsendingsId, aktorId, sykepengesoknad.getFom());
             }
             if (journalpostId == null) {
                 journalpostId = behandleFraJournalpost(innsendingsId, saksId, sykepengesoknad);
@@ -95,7 +95,7 @@ public class BehandleFeiledeSoknaderService {
                         saksId);
     }
 
-    private String behandleFraSaksId(String innsendingsId, String fnr, String aktorId, LocalDate soknadFom) {
-        return saksbehandlingsService.finnEllerOpprettSak(innsendingsId, fnr, aktorId, soknadFom);
+    private String behandleFraSaksId(String innsendingsId, String aktorId, LocalDate soknadFom) {
+        return saksbehandlingsService.finnEllerOpprettSak(innsendingsId, aktorId, soknadFom);
     }
 }
