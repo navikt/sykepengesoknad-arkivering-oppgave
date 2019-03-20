@@ -38,14 +38,14 @@ class SakConsumerTest {
 
     @Test
     fun opprettSakOppretterSakOgReturnererSakId() {
-        val response = SakJson(1234, "SYK", "FS22", "aktorId", null, null,
+        val response = SakResponse(1234, "SYK", "FS22", "aktorId", null, null,
                 "srvsyfogsak", "2019-03-19T09:16:18.824+01:00")
 
         BDDMockito.given(restTemplate.exchange(
                 BDDMockito.anyString(),
                 BDDMockito.any(HttpMethod::class.java),
                 BDDMockito.any(HttpEntity::class.java),
-                BDDMockito.eq(SakJson::class.java)
+                BDDMockito.eq(SakResponse::class.java)
         )).willReturn(ResponseEntity(response, HttpStatus.OK))
 
         val sakId = sakConsumer.opprettSak("aktorId")
@@ -59,7 +59,7 @@ class SakConsumerTest {
                 BDDMockito.anyString(),
                 BDDMockito.any(HttpMethod::class.java),
                 BDDMockito.any(HttpEntity::class.java),
-                BDDMockito.eq(SakJson::class.java)
+                BDDMockito.eq(SakResponse::class.java)
         )).willReturn(ResponseEntity(HttpStatus.SERVICE_UNAVAILABLE))
 
         sakConsumer.opprettSak("aktorId")
@@ -76,8 +76,8 @@ class SakConsumerTest {
     fun lagRequestBodyLagerRequestMedRiktigeFelter() {
         val body = sakConsumer.lagRequestBody("aktorId")
 
-        assertThat(body["tema"]?.first()).isEqualTo("SYK")
-        assertThat(body["applikasjon"]?.first()).isEqualTo("FS22")
-        assertThat(body["aktoerId"]?.first()).isEqualTo("aktorId")
+        assertThat(body.tema).isEqualTo("SYK")
+        assertThat(body.applikasjon).isEqualTo("FS22")
+        assertThat(body.aktoerId).isEqualTo("aktorId")
     }
 }

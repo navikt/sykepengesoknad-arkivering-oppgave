@@ -7,7 +7,6 @@ import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.*
 import org.springframework.stereotype.Component
-import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
@@ -24,7 +23,7 @@ class SakConsumer(private val tokenConsumer: TokenConsumer,
         val uriString = UriComponentsBuilder.fromHttpUrl(url).toUriString()
 
         try {
-            val result = restTemplate.exchange(uriString, HttpMethod.POST, HttpEntity(lagRequestBody(aktorId), lagRequestHeaders()), SakJson::class.java)
+            val result = restTemplate.exchange(uriString, HttpMethod.POST, HttpEntity(lagRequestBody(aktorId), lagRequestHeaders()), SakResponse::class.java)
 
             if (result.statusCode != HttpStatus.OK) {
                 if (result.statusCode == HttpStatus.CONFLICT) {
@@ -37,7 +36,8 @@ class SakConsumer(private val tokenConsumer: TokenConsumer,
 
             return result
                     .let {
-                        it.body ?: throw RuntimeException("Sak-respons mangler ved oppretting av sak for $aktorId - skal ikke kunne skje!")
+                        it.body
+                                ?: throw RuntimeException("Sak-respons mangler ved oppretting av sak for $aktorId - skal ikke kunne skje!")
                     }
                     .id.toString()
         } catch (e: HttpClientErrorException) {
@@ -56,16 +56,17 @@ class SakConsumer(private val tokenConsumer: TokenConsumer,
         return headers
     }
 
-    fun lagRequestBody(aktorId: String): LinkedMultiValueMap<String, String> {
-        val body = LinkedMultiValueMap<String, String>()
-        body.add("tema", "SYK")
-        body.add("applikasjon", "FS22")
-        body.add("aktoerId", aktorId)
-        return body
-    }
+    fun lagRequestBody(aktorId: String): SakRequest =
+            SakRequest("SYK", "FS22", aktorId)
 }
 
-data class SakJson(
+data class SakRequest(
+        val tema: String,
+        val applikasjon: String,
+        val aktoerId: String
+)
+
+data class SakResponse(
         val id: Int,
         val tema: String?,
         val applikasjon: String?,
