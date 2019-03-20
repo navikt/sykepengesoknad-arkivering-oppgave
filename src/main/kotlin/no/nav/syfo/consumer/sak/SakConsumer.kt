@@ -48,7 +48,7 @@ class SakConsumer(private val tokenConsumer: TokenConsumer,
 
     fun lagRequestHeaders(): HttpHeaders {
         val headers = HttpHeaders()
-        headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
+        headers.contentType = MediaType.APPLICATION_JSON
         headers.set("Authorization", "Bearer " + tokenConsumer.token.access_token)
         headers.set("Nav-Call-Id", MDC.get(CALL_ID))
         headers.set("X-Correlation-ID", MDC.get(CALL_ID))
