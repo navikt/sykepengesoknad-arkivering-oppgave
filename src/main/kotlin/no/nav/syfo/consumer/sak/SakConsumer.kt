@@ -25,7 +25,7 @@ class SakConsumer(private val tokenConsumer: TokenConsumer,
         try {
             val result = restTemplate.exchange(uriString, HttpMethod.POST, HttpEntity(lagRequestBody(aktorId), lagRequestHeaders()), SakResponse::class.java)
 
-            if (result.statusCode != HttpStatus.OK) {
+            if (result.statusCode != HttpStatus.CREATED) {
                 if (result.statusCode == HttpStatus.CONFLICT) {
                     log.error("Tilsvarende sak finnes fra før for aktør $aktorId")
                 }

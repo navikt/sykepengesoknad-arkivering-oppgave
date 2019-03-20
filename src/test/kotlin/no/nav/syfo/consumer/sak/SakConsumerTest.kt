@@ -46,7 +46,7 @@ class SakConsumerTest {
                 BDDMockito.any(HttpMethod::class.java),
                 BDDMockito.any(HttpEntity::class.java),
                 BDDMockito.eq(SakResponse::class.java)
-        )).willReturn(ResponseEntity(response, HttpStatus.OK))
+        )).willReturn(ResponseEntity(response, HttpStatus.CREATED))
 
         val sakId = sakConsumer.opprettSak("aktorId")
 
