@@ -4,6 +4,7 @@ import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tags
 import no.nav.syfo.consumer.aktor.AktorConsumer
 import no.nav.syfo.consumer.repository.InnsendingDAO
+import no.nav.syfo.consumer.sak.SakConsumer
 import no.nav.syfo.consumer.ws.*
 import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.Soknadstype
@@ -17,7 +18,7 @@ import java.util.stream.Stream
 
 @Component
 class SaksbehandlingsService(
-        private val behandleSakConsumer: BehandleSakConsumer,
+        private val sakConsumer: SakConsumer,
         private val oppgavebehandlingConsumer: OppgavebehandlingConsumer,
         private val behandleJournalConsumer: BehandleJournalConsumer,
         private val behandlendeEnhetService: BehandlendeEnhetService,
@@ -60,7 +61,7 @@ class SaksbehandlingsService(
             val fnr = aktorConsumer.finnFnr(aktorId)
             val soknad = opprettSoknad(sykepengesoknad, fnr)
 
-            val saksId = finnEllerOpprettSak(innsendingId, fnr, aktorId, soknad.fom)
+            val saksId = finnEllerOpprettSak(innsendingId, aktorId, soknad.fom)
             val journalpostId = opprettJournalpost(innsendingId, soknad, saksId)
 
             opprettOppgave(innsendingId, fnr, soknad, saksId, journalpostId)
@@ -97,7 +98,7 @@ class SaksbehandlingsService(
         return journalpostId
     }
 
-    fun finnEllerOpprettSak(innsendingId: String, fnr: String, aktorId: String, soknadFom: LocalDate?): String =
+    fun finnEllerOpprettSak(innsendingId: String, aktorId: String, soknadFom: LocalDate?): String =
             innsendingDAO.finnTidligereInnsendinger(aktorId)
                     .filter { (it.soknadTom).isBefore(soknadFom ?: LocalDate.MIN) }
                     .filter { erPaFolgendeInkludertHelg(it.soknadTom, soknadFom ?: LocalDate.MAX) }
@@ -107,10 +108,10 @@ class SaksbehandlingsService(
                         innsendingDAO.oppdaterSaksId(innsendingId, it.saksId)
                         return it.saksId
                     }
-                    ?: opprettSak(fnr, innsendingId)
+                    ?: opprettSak(aktorId, innsendingId)
 
-    private fun opprettSak(fnr: String, innsendingId: String): String {
-        val saksId = behandleSakConsumer.opprettSak(fnr)
+    private fun opprettSak(aktorId: String, innsendingId: String): String {
+        val saksId = sakConsumer.opprettSak(aktorId)
         innsendingDAO.oppdaterSaksId(innsendingId, saksId)
         return saksId
     }

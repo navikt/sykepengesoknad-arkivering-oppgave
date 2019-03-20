@@ -216,12 +216,6 @@
 
         <dependency>
             <groupId>no.nav.syfo.tjenester</groupId>
-            <artifactId>behandleSak-v1</artifactId>
-            <version>1.0.2</version>
-        </dependency>
-
-        <dependency>
-            <groupId>no.nav.syfo.tjenester</groupId>
             <artifactId>behandleJournal-v2</artifactId>
             <version>1.0.2</version>
         </dependency>
@@ -248,12 +242,6 @@
             <groupId>no.nav.syfo.tjenester</groupId>
             <artifactId>arbeidsfordeling-v1-tjenestespesifikasjon</artifactId>
             <version>1.0.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>no.nav.syfo.tjenester</groupId>
-            <artifactId>aktoer-v2</artifactId>
-            <version>1.0</version>
         </dependency>
 
         <dependency>
