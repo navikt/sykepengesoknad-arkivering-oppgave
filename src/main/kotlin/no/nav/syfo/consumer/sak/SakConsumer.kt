@@ -1,5 +1,6 @@
 package no.nav.syfo.consumer.sak
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import no.nav.syfo.config.ApplicationConfig.CALL_ID
 import no.nav.syfo.consumer.token.TokenConsumer
 import no.nav.syfo.log
@@ -66,6 +67,7 @@ data class SakRequest(
         val aktoerId: String
 )
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class SakResponse(
         val id: Int,
         val tema: String?,
