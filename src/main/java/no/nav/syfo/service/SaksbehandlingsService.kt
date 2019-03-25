@@ -3,9 +3,11 @@ package no.nav.syfo.service
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tags
 import no.nav.syfo.consumer.aktor.AktorConsumer
+import no.nav.syfo.consumer.oppgave.OppgaveConsumer
 import no.nav.syfo.consumer.repository.InnsendingDAO
 import no.nav.syfo.consumer.sak.SakConsumer
-import no.nav.syfo.consumer.ws.*
+import no.nav.syfo.consumer.ws.BehandleJournalConsumer
+import no.nav.syfo.consumer.ws.PersonConsumer
 import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.Soknadstype
 import no.nav.syfo.domain.dto.Sykepengesoknad
@@ -19,7 +21,7 @@ import java.util.stream.Stream
 @Component
 class SaksbehandlingsService(
         private val sakConsumer: SakConsumer,
-        private val oppgavebehandlingConsumer: OppgavebehandlingConsumer,
+        private val oppgaveConsumer: OppgaveConsumer,
         private val behandleJournalConsumer: BehandleJournalConsumer,
         private val behandlendeEnhetService: BehandlendeEnhetService,
         private val aktorConsumer: AktorConsumer,
@@ -64,7 +66,7 @@ class SaksbehandlingsService(
             val saksId = finnEllerOpprettSak(innsendingId, aktorId, soknad.fom)
             val journalpostId = opprettJournalpost(innsendingId, soknad, saksId)
 
-            opprettOppgave(innsendingId, fnr, soknad, saksId, journalpostId)
+            opprettOppgave(innsendingId, fnr, aktorId, soknad, saksId, journalpostId)
 
             innsendingDAO.settBehandlet(innsendingId)
 
@@ -85,10 +87,10 @@ class SaksbehandlingsService(
     }
 
 
-    fun opprettOppgave(innsendingId: String, fnr: String, soknad: Soknad, saksId: String, journalpostId: String) {
+    fun opprettOppgave(innsendingId: String, fnr: String, aktorId: String, soknad: Soknad, saksId: String, journalpostId: String) {
         val behandlendeEnhet = behandlendeEnhetService.hentBehandlendeEnhet(fnr, soknad.soknadstype)
-        val oppgaveId = oppgavebehandlingConsumer
-                .opprettOppgave(fnr, behandlendeEnhet, saksId, journalpostId, soknad)
+        val oppgaveId = oppgaveConsumer
+                .opprettOppgave(aktorId, behandlendeEnhet, saksId, journalpostId, soknad)
         innsendingDAO.oppdaterOppgaveId(innsendingId, oppgaveId)
     }
 
