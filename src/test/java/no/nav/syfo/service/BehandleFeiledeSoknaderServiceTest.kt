@@ -59,7 +59,7 @@ class BehandleFeiledeSoknaderServiceTest {
         given(saksbehandlingsService.finnEllerOpprettSak("innsendingsId", "aktorId", sykepengesoknad.fom)).willReturn("saksId")
         given(saksbehandlingsService.opprettJournalpost(anyString(), no.nav.syfo.any(), anyString())).willReturn("journalpostId")
         given(aktorConsumer.finnFnr("aktorId")).willReturn("fnr")
-        given(saksbehandlingsService.opprettSoknad(no.nav.syfo.any<Sykepengesoknad>(), anyString())).willReturn(Soknad.lagSoknad(sykepengesoknad, "fnr", "Ola Nordmann"))
+        given(saksbehandlingsService.opprettSoknad(no.nav.syfo.any(), anyString())).willReturn(Soknad.lagSoknad(sykepengesoknad, "fnr", "Ola Nordmann"))
     }
 
     @Test
@@ -69,8 +69,8 @@ class BehandleFeiledeSoknaderServiceTest {
         verify<InnsendingDAO>(innsendingDAO).oppdaterAktorId("innsendingsId", "aktorId")
 
         verify<SaksbehandlingsService>(saksbehandlingsService).finnEllerOpprettSak(anyString(), anyString(), any())
-        verify<SaksbehandlingsService>(saksbehandlingsService).opprettJournalpost(anyString(), no.nav.syfo.any<Soknad>(), anyString())
-        verify<SaksbehandlingsService>(saksbehandlingsService).opprettOppgave(eq("innsendingsId"), anyString(), no.nav.syfo.any(), anyString(), anyString())
+        verify<SaksbehandlingsService>(saksbehandlingsService).opprettJournalpost(anyString(), no.nav.syfo.any(), anyString())
+        verify<SaksbehandlingsService>(saksbehandlingsService).opprettOppgave(eq("innsendingsId"), anyString(), anyString(), no.nav.syfo.any(), anyString(), anyString())
 
         verify<InnsendingDAO>(innsendingDAO).settBehandlet("innsendingsId")
         verify<InnsendingDAO>(innsendingDAO).fjernFeiletInnsending("innsendingsId")
@@ -86,7 +86,7 @@ class BehandleFeiledeSoknaderServiceTest {
 
         verify<SaksbehandlingsService>(saksbehandlingsService).finnEllerOpprettSak(anyString(), anyString(), any())
         verify<SaksbehandlingsService>(saksbehandlingsService).opprettJournalpost(anyString(), no.nav.syfo.any(), anyString())
-        verify<SaksbehandlingsService>(saksbehandlingsService).opprettOppgave(anyString(), anyString(), no.nav.syfo.any(), anyString(), anyString())
+        verify<SaksbehandlingsService>(saksbehandlingsService).opprettOppgave(anyString(), anyString(), anyString(), no.nav.syfo.any(), anyString(), anyString())
 
         verify<InnsendingDAO>(innsendingDAO).settBehandlet("innsendingsId")
         verify<InnsendingDAO>(innsendingDAO).fjernFeiletInnsending("innsendingsId")
@@ -100,7 +100,7 @@ class BehandleFeiledeSoknaderServiceTest {
 
         verify<SaksbehandlingsService>(saksbehandlingsService, never()).finnEllerOpprettSak(anyString(), anyString(), any())
         verify<SaksbehandlingsService>(saksbehandlingsService).opprettJournalpost(anyString(), no.nav.syfo.any(), anyString())
-        verify<SaksbehandlingsService>(saksbehandlingsService).opprettOppgave(anyString(), anyString(), no.nav.syfo.any(), anyString(), anyString())
+        verify<SaksbehandlingsService>(saksbehandlingsService).opprettOppgave(anyString(), anyString(), anyString(), no.nav.syfo.any(), anyString(), anyString())
 
         verify<InnsendingDAO>(innsendingDAO).settBehandlet("innsendingsId")
         verify<InnsendingDAO>(innsendingDAO).fjernFeiletInnsending("innsendingsId")
@@ -114,7 +114,7 @@ class BehandleFeiledeSoknaderServiceTest {
 
         verify<SaksbehandlingsService>(saksbehandlingsService, never()).finnEllerOpprettSak(anyString(), anyString(), any())
         verify<SaksbehandlingsService>(saksbehandlingsService, never()).opprettJournalpost(anyString(), no.nav.syfo.any(), anyString())
-        verify<SaksbehandlingsService>(saksbehandlingsService).opprettOppgave(anyString(), anyString(), no.nav.syfo.any(), anyString(), anyString())
+        verify<SaksbehandlingsService>(saksbehandlingsService).opprettOppgave(anyString(), anyString(), anyString(), no.nav.syfo.any(), anyString(), anyString())
 
         verify<InnsendingDAO>(innsendingDAO).settBehandlet("innsendingsId")
         verify<InnsendingDAO>(innsendingDAO).fjernFeiletInnsending("innsendingsId")

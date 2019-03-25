@@ -9,10 +9,12 @@ import no.nav.syfo.TestUtils.soknadArbeidstakerMedNeisvar
 import no.nav.syfo.TestUtils.soknadSelvstendigMedNeisvar
 import no.nav.syfo.any
 import no.nav.syfo.consumer.aktor.AktorConsumer
+import no.nav.syfo.consumer.oppgave.OppgaveConsumer
 import no.nav.syfo.consumer.repository.InnsendingDAO
 import no.nav.syfo.consumer.repository.TidligereInnsending
 import no.nav.syfo.consumer.sak.SakConsumer
-import no.nav.syfo.consumer.ws.*
+import no.nav.syfo.consumer.ws.BehandleJournalConsumer
+import no.nav.syfo.consumer.ws.PersonConsumer
 import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.Soknadstype.ARBEIDSTAKERE
 import no.nav.syfo.domain.dto.Soknadstype.SELVSTENDIGE_OG_FRILANSERE
@@ -42,11 +44,11 @@ class SaksbehandlingsServiceTest {
     @Mock
     lateinit var sakConsumer: SakConsumer
     @Mock
+    lateinit var oppgaveConsumer: OppgaveConsumer
+    @Mock
     lateinit var behandleJournalConsumer: BehandleJournalConsumer
     @Mock
     lateinit var behandlendeEnhetService: BehandlendeEnhetService
-    @Mock
-    lateinit var oppgavebehandlingConsumer: OppgavebehandlingConsumer
     @Mock
     lateinit var registry: MeterRegistry
 
@@ -63,7 +65,7 @@ class SaksbehandlingsServiceTest {
         given(behandleJournalConsumer.opprettJournalpost(any(), any())).willReturn("journalpostId")
         given(behandlendeEnhetService.hentBehandlendeEnhet("12345678901", SELVSTENDIGE_OG_FRILANSERE)).willReturn("2017")
         given(behandlendeEnhetService.hentBehandlendeEnhet("12345678901", ARBEIDSTAKERE)).willReturn("2017")
-        given(oppgavebehandlingConsumer.opprettOppgave(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), any(Soknad::class.java))).willReturn("oppgaveId")
+        given(oppgaveConsumer.opprettOppgave(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), any())).willReturn("oppgaveId")
         given<Counter>(registry.counter(ArgumentMatchers.anyString(), ArgumentMatchers.anyIterable())).willReturn(mock(Counter::class.java))
         given(innsendingDAO.opprettInnsending(any(), any(), any(), any())).willReturn("innsending-guid")
     }

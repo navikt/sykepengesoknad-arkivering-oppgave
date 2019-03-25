@@ -70,11 +70,13 @@ public class BehandleFeiledeSoknaderService {
             String saksId,
             String journalpostId,
             Sykepengesoknad sykepengesoknad) {
-        String fnr = aktorConsumer.finnFnr(sykepengesoknad.getAktorId());
+        String aktorId = sykepengesoknad.getAktorId();
+        String fnr = aktorConsumer.finnFnr(aktorId);
 
         saksbehandlingsService.opprettOppgave(
                 innsendingsId,
                 fnr,
+                aktorId,
                 saksbehandlingsService.opprettSoknad(sykepengesoknad, fnr),
                 saksId,
                 journalpostId

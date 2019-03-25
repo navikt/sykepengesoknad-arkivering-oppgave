@@ -44,8 +44,6 @@ fasitResources:
     resourceType: webserviceendpoint
   - alias: virksomhet:Person_v3
     resourceType: webserviceendpoint
-  - alias: virksomhet:Oppgavebehandling_v3
-    resourceType: webserviceendpoint
   - alias: BehandleJournal_v2
     resourceType: webserviceendpoint
   - alias: servicegateway
@@ -73,4 +71,6 @@ fasitResources:
   - alias: security-token-service-token
     resourceType: restservice
   - alias: sak.saker
+    resourceType: restservice
+  - alias: oppgave.oppgaver
     resourceType: restservice
