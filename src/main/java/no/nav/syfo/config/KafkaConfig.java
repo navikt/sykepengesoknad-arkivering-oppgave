@@ -24,8 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 
-import static java.util.Collections.emptyMap;
-
 @Configuration
 @EnableKafka
 public class KafkaConfig {
@@ -68,38 +66,6 @@ public class KafkaConfig {
                 properties.buildConsumerProperties(),
                 new StringDeserializer(),
                 new MultiFunctionDeserializer<>(deserializere, (bytes) -> null));
-    }
-
-    @Bean
-    @Deprecated
-    public ConcurrentKafkaListenerContainerFactory<String, SoknadDTO> deprecatedKafkaListenerContainerFactory(
-            ConsumerFactory<String, SoknadDTO> deprecatedConsumerFactory,
-            KafkaErrorHandler kafkaErrorHandler) {
-        ConcurrentKafkaListenerContainerFactory<String, SoknadDTO> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.getContainerProperties().setAckMode(AbstractMessageListenerContainer.AckMode.MANUAL_IMMEDIATE);
-        factory.getContainerProperties().setErrorHandler(kafkaErrorHandler);
-        factory.setConsumerFactory(deprecatedConsumerFactory);
-        return factory;
-    }
-
-    @Bean
-    @Deprecated
-    public ConsumerFactory<String, SoknadDTO> deprecatedConsumerFactory(
-            KafkaProperties properties) {
-        ObjectMapper objectMapper = new ObjectMapper()
-                .registerModule(new JavaTimeModule())
-                .configure(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE, true);
-        return new DefaultKafkaConsumerFactory<>(
-                properties.buildConsumerProperties(),
-                new StringDeserializer(),
-                new MultiFunctionDeserializer<>(emptyMap(),
-                        bytes -> {
-                            try {
-                                return objectMapper.readValue(bytes, SoknadDTO.class);
-                            } catch (IOException e) {
-                                throw new RuntimeException("Feil ved konvertering av bytes til søknad", e);
-                            }
-                        }));
     }
 }
 

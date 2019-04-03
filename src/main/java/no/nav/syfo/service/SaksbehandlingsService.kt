@@ -29,7 +29,7 @@ class SaksbehandlingsService(
         private val personConsumer: PersonConsumer,
         private val registry: MeterRegistry) {
 
-    val log = log()
+    private val log = log()
 
     private fun ikkeSendtTilNav(sykepengesoknad: Sykepengesoknad): Boolean {
         return !("SENDT" == sykepengesoknad.status && sykepengesoknad.sendtNav != null)
