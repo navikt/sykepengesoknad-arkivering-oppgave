@@ -1771,6 +1771,9 @@ public class TestUtils {
 
     public static final String beskrivelseArbeidstakerMedNeisvar = "Søknad om sykepenger for perioden 16.10.2018 - 24.10.2018\n" +
             "\n" +
+            "Arbeidsgiver: ARBEIDSGIVER A/S" +
+            "\n" +
+            "\n" +
             "Periode 1:\n" +
             "16.10.2018 - 20.10.2018\n" +
             "Grad: 100\n" +
@@ -1783,6 +1786,9 @@ public class TestUtils {
             "Vet ikke";
 
     public static final String beskrivelseArbeidstakerMedNeisvarKorrigert = "Søknad om sykepenger for perioden 16.10.2018 - 24.10.2018 KORRIGERING\n" +
+            "\n" +
+            "Arbeidsgiver: ARBEIDSGIVER A/S" +
+            "\n" +
             "\n" +
             "Periode 1:\n" +
             "16.10.2018 - 20.10.2018\n" +
@@ -2570,6 +2576,9 @@ public class TestUtils {
             "    }";
 
     public static final String beskrivelseArbeidstakerMangeSvar = "Søknad om sykepenger for perioden 16.10.2018 - 24.10.2018\n" +
+            "\n" +
+            "Arbeidsgiver: ARBEIDSGIVER A/S" +
+            "\n" +
             "\n" +
             "Periode 1:\n" +
             "16.10.2018 - 20.10.2018\n" +

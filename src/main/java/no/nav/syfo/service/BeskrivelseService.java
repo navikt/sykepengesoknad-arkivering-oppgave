@@ -3,6 +3,7 @@ package no.nav.syfo.service;
 import no.nav.syfo.domain.Periode;
 import no.nav.syfo.domain.Soknad;
 import no.nav.syfo.domain.dto.SoknadPeriode;
+import no.nav.syfo.domain.dto.Soknadstype;
 import no.nav.syfo.domain.dto.Sporsmal;
 import no.nav.syfo.domain.dto.Svar;
 
@@ -42,6 +43,7 @@ public class BeskrivelseService {
                 throw new RuntimeException("Beskrivelse er ikke implementert for søknadstype: " + soknad.getSoknadstype());
         }
         return tittel + (soknad.getKorrigerer() != null ? " KORRIGERING" : "") + "\n" +
+                beskrivArbeidsgiver(soknad) +
                 beskrivPerioder(soknad.getSoknadPerioder()) +
                 soknad.getSporsmal().stream()
                         .filter(BeskrivelseService::sporsmalSkalVises)
@@ -65,6 +67,12 @@ public class BeskrivelseService {
                 })
                 .collect(Collectors.joining());
 
+    }
+
+    private static String beskrivArbeidsgiver(final Soknad soknad) {
+        return soknad.getSoknadstype() == Soknadstype.ARBEIDSTAKERE
+            ?  "\nArbeidsgiver: " + soknad.getArbeidsgiver() + "\n"
+            : "";
     }
 
     private static boolean sporsmalSkalVises(final Sporsmal sporsmal) {
