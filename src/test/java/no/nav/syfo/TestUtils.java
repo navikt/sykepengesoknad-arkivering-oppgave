@@ -1069,6 +1069,140 @@ public class TestUtils {
             "    ]\n" +
             "}";
 
+    public static final String soknadUtlandMedSvartypeLand = "{\n" +
+            "    \"id\": \"95f44b7e-1e58-4b18-b355-511463cde6f9\",\n" +
+            "    \"aktorId\": \"aktorId-745463060\",\n" +
+            "    \"sykmeldingId\": null,\n" +
+            "    \"soknadstype\": \"OPPHOLD_UTLAND\",\n" +
+            "    \"status\": \"SENDT\",\n" +
+            "    \"fom\": null,\n" +
+            "    \"tom\": null,\n" +
+            "    \"opprettet\": \"2018-11-16T00:00:00\",\n" +
+            "    \"sendtNav\": \"2018-11-16T00:00:00\",\n" +
+            "    \"startSykeforlop\": null,\n" +
+            "    \"sykmeldingSkrevet\": null,\n" +
+            "    \"arbeidsgiver\": null,\n" +
+            "    \"korrigerer\": null,\n" +
+            "    \"korrigertAv\": null,\n" +
+            "    \"arbeidssituasjon\": null,\n" +
+            "    \"soknadPerioder\": [],\n" +
+            "    \"sporsmal\": [\n" +
+            "        {\n" +
+            "            \"id\": \"153\",\n" +
+            "            \"tag\": \"PERIODEUTLAND\",\n" +
+            "            \"sporsmalstekst\": \"Når skal du være utenfor Norge?\",\n" +
+            "            \"undertekst\": null,\n" +
+            "            \"svartype\": \"PERIODER\",\n" +
+            "            \"min\": \"2018-08-16\",\n" +
+            "            \"max\": \"2019-05-16\",\n" +
+            "            \"kriterieForVisningAvUndersporsmal\": null,\n" +
+            "            \"svar\": [\n" +
+            "                    {\n" +
+            "                        \"verdi\": \"{\\\"fom\\\":\\\"2018-12-10\\\",\\\"tom\\\":\\\"2018-12-18\\\"}\"\n" +
+            "                    }\n" +
+            "                ],\n" +
+            "            \"undersporsmal\": []\n" +
+            "        },\n" +
+            "        {\n" +
+            "            \"id\": \"154\",\n" +
+            "            \"tag\": \"LAND\",\n" +
+            "            \"sporsmalstekst\": \"Hvor skal du reise?\",\n" +
+            "            \"undertekst\": null,\n" +
+            "            \"svartype\": \"LAND\",\n" +
+            "            \"min\": null,\n" +
+            "            \"max\": \"50\",\n" +
+            "            \"kriterieForVisningAvUndersporsmal\": null,\n" +
+            "            \"svar\": [\n" +
+            "                    {\n" +
+            "                        \"verdi\": \"Sverige\"\n" +
+            "                    },\n" +
+            "                    {\n" +
+            "                        \"verdi\": \"Danmark\"\n" +
+            "                    }\n" +
+            "                ],\n" +
+            "            \"undersporsmal\": []\n" +
+            "        },\n" +
+            "        {\n" +
+            "            \"id\": \"155\",\n" +
+            "            \"tag\": \"ARBEIDSGIVER\",\n" +
+            "            \"sporsmalstekst\": \"Har du arbeidsgiver?\",\n" +
+            "            \"undertekst\": null,\n" +
+            "            \"svartype\": \"JA_NEI\",\n" +
+            "            \"min\": null,\n" +
+            "            \"max\": null,\n" +
+            "            \"kriterieForVisningAvUndersporsmal\": \"JA\",\n" +
+            "            \"svar\": [\n" +
+            "                    {\n" +
+            "                        \"verdi\": \"JA\"\n" +
+            "                    }\n" +
+            "                ],\n" +
+            "            \"undersporsmal\": [\n" +
+            "                {\n" +
+            "                    \"id\": \"156\",\n" +
+            "                    \"tag\": \"SYKMELDINGSGRAD\",\n" +
+            "                    \"sporsmalstekst\": \"Er du 100 % sykmeldt?\",\n" +
+            "                    \"undertekst\": null,\n" +
+            "                    \"svartype\": \"JA_NEI\",\n" +
+            "                    \"min\": null,\n" +
+            "                    \"max\": null,\n" +
+            "                    \"kriterieForVisningAvUndersporsmal\": null,\n" +
+            "                    \"svar\": [\n" +
+            "                            {\n" +
+            "                                \"verdi\": \"JA\"\n" +
+            "                            }\n" +
+            "                        ],\n" +
+            "                    \"undersporsmal\": []\n" +
+            "                },\n" +
+            "                {\n" +
+            "                    \"id\": \"157\",\n" +
+            "                    \"tag\": \"FERIE\",\n" +
+            "                    \"sporsmalstekst\": \"Har du avtalt med arbeidsgiveren din at du skal ha ferie i hele perioden?\",\n" +
+            "                    \"undertekst\": null,\n" +
+            "                    \"svartype\": \"JA_NEI\",\n" +
+            "                    \"min\": null,\n" +
+            "                    \"max\": null,\n" +
+            "                    \"kriterieForVisningAvUndersporsmal\": null,\n" +
+            "                    \"svar\": [\n" +
+            "                            {\n" +
+            "                                \"verdi\": \"NEI\"\n" +
+            "                            }\n" +
+            "                        ],\n" +
+            "                    \"undersporsmal\": []\n" +
+            "                }\n" +
+            "            ]\n" +
+            "        },\n" +
+            "        {\n" +
+            "            \"id\": \"158\",\n" +
+            "            \"tag\": \"BEKREFT_OPPLYSNINGER_UTLAND_INFO\",\n" +
+            "            \"sporsmalstekst\": \"Før du reiser ber vi deg bekrefte:\",\n" +
+            "            \"undertekst\": \"<ul>\\n    <li>Reisen vil ikke gjøre at jeg blir dårligere </li>\\n    <li>Reisen vil ikke gjøre at sykefraværet blir lengre</li>\\n    <li>Reisen vil ikke hindre planlagt behandling eller oppfølging fra NAV</li>\\n</ul>\",\n" +
+            "            \"svartype\": \"IKKE_RELEVANT\",\n" +
+            "            \"min\": null,\n" +
+            "            \"max\": null,\n" +
+            "            \"kriterieForVisningAvUndersporsmal\": null,\n" +
+            "            \"svar\": [],\n" +
+            "            \"undersporsmal\": [\n" +
+            "                {\n" +
+            "                    \"id\": \"159\",\n" +
+            "                    \"tag\": \"BEKREFT_OPPLYSNINGER_UTLAND\",\n" +
+            "                    \"sporsmalstekst\": \"Jeg bekrefter de tre punktene ovenfor. Jeg har avklart reisen med legen.\",\n" +
+            "                    \"undertekst\": null,\n" +
+            "                    \"svartype\": \"CHECKBOX_PANEL\",\n" +
+            "                    \"min\": null,\n" +
+            "                    \"max\": null,\n" +
+            "                    \"kriterieForVisningAvUndersporsmal\": null,\n" +
+            "                    \"svar\": [\n" +
+            "                            {\n" +
+            "                                \"verdi\": \"CHECKED\"\n" +
+            "                            }\n" +
+            "                        ],\n" +
+            "                    \"undersporsmal\": []\n" +
+            "                }\n" +
+            "            ]\n" +
+            "        }\n" +
+            "    ]\n" +
+            "}";
+
     public static final String beskrivelseUtland = "Søknad om å beholde sykepenger i utlandet\n" +
             "\n" +
             "Når skal du være utenfor Norge?\n" +
@@ -1076,6 +1210,23 @@ public class TestUtils {
             "\n" +
             "Hvor skal du reise?\n" +
             "Laksefiske\n" +
+            "\n" +
+            "Har du arbeidsgiver?\n" +
+            "Ja\n" +
+            "    Er du 100 % sykmeldt?\n" +
+            "    Ja\n" +
+            "\n" +
+            "    Har du avtalt med arbeidsgiveren din at du skal ha ferie i hele perioden?\n" +
+            "    Nei";
+
+    public static final String beskrivelseUtlandMedSvartypeLand = "Søknad om å beholde sykepenger i utlandet\n" +
+            "\n" +
+            "Når skal du være utenfor Norge?\n" +
+            "10.12.2018 - 18.12.2018\n" +
+            "\n" +
+            "Hvor skal du reise?\n" +
+            "- Sverige\n" +
+            "- Danmark\n" +
             "\n" +
             "Har du arbeidsgiver?\n" +
             "Ja\n" +

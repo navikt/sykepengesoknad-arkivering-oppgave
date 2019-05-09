@@ -27,6 +27,16 @@ public class BeskrivelseServiceTest {
     }
 
     @Test
+    public void soknadForUtlandsoppholdMedSvartypeLand() throws IOException {
+        Sykepengesoknad sykepengesoknad = objectMapper.readValue(soknadUtlandMedSvartypeLand, Sykepengesoknad.class);
+        Soknad soknad = Soknad.Companion.lagSoknad(sykepengesoknad, "fnr", "navn");
+
+        String beskrivelse = BeskrivelseService.lagBeskrivelse(soknad);
+
+        assertThat(beskrivelse).isEqualTo(beskrivelseUtlandMedSvartypeLand);
+    }
+
+    @Test
     public void soknadForSelvstendigeMedNeisvar() throws IOException {
         Sykepengesoknad sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad.class);
         Soknad soknad = Soknad.Companion.lagSoknad(sykepengesoknad, "fnr", "navn");

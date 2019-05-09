@@ -10,6 +10,7 @@ enum class Svartype {
     PERIODER,
     TIMER,
     FRITEKST,
+    LAND,
     IKKE_RELEVANT,
     PROSENT,
     RADIO_GRUPPE,

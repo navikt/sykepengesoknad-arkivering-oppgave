@@ -137,6 +137,12 @@ public class BeskrivelseService {
                                 .map(BeskrivelseService::formatterPeriode))
                         .filter(Objects::nonNull)
                         .collect(Collectors.toList());
+            case LAND:
+                return Stream.concat(Stream.of(sporsmal.getSporsmalstekst()),
+                        getSvarverdier(sporsmal).stream()
+                                .map(BeskrivelseService::formatterLand))
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
             case TALL:
                 return Stream.of(sporsmal.getSporsmalstekst(),
                         getForsteSvarverdi(sporsmal) + " " + sporsmal.getUndertekst())
@@ -173,5 +179,9 @@ public class BeskrivelseService {
         final Periode periode = jsonTilPeriode(svarverdi);
         return periode.getFom().format(norskDato) + " - " +
                 periode.getTom().format(norskDato);
+    }
+
+    private static String formatterLand(final String svarverdi) {
+        return "- " + svarverdi;
     }
 }
