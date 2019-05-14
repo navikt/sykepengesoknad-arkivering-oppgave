@@ -61,7 +61,7 @@ public class BehandleFeiledeSoknaderService {
                         innsendingsId, sykepengesoknad.getId());
             }
         } catch (RuntimeException e) {
-            log.error("Feilet ved rebehandling av innsending med id: {}", innsendingsId, e);
+            log.error("Feilet ved rebehandling av innsending med ressursid: {}", sykepengesoknad.getId(), e);
         }
     }
 
