@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.kotlin.KotlinModule;
 import no.nav.syfo.domain.Soknad;
+import no.nav.syfo.domain.dto.Soknadstype;
 import no.nav.syfo.domain.dto.Sykepengesoknad;
 import org.junit.Test;
 
@@ -85,5 +86,17 @@ public class BeskrivelseServiceTest {
         String beskrivelse = BeskrivelseService.lagBeskrivelse(soknad);
 
         assertThat(beskrivelse).isEqualTo(beskrivelseArbeidstakerMedNeisvarKorrigert);
+    }
+
+    @Test
+    public void talerAtArbeidssituasjonIkkeErSatt() throws IOException {
+        Sykepengesoknad sykepengesoknad = objectMapper.readValue(soknadArbeidstakerMedNeisvar, Sykepengesoknad.class);
+        Soknad soknad = Soknad.Companion.lagSoknad(sykepengesoknad, "fnr", "navn");
+        soknad.setArbeidssituasjon(null);
+        soknad.setSoknadstype(Soknadstype.SELVSTENDIGE_OG_FRILANSERE);
+
+        String beskrivelse = BeskrivelseService.lagBeskrivelse(soknad);
+
+        assertThat(beskrivelse).isNotEmpty();
     }
 }
