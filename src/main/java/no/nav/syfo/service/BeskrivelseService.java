@@ -33,7 +33,9 @@ public class BeskrivelseService {
                         soknad.getFom().format(norskDato) + " - " + soknad.getTom().format(norskDato);
                 break;
             case SELVSTENDIGE_OG_FRILANSERE:
-                tittel = "Søknad om sykepenger fra " + soknad.getArbeidssituasjon().getNavn() + " for perioden " +
+                // Det kan finnes eldre søknader som mangler arbeidssituasjon
+                String arbeidssituasjon = soknad.getArbeidssituasjon() != null ? soknad.getArbeidssituasjon().getNavn() : "Selvstendig Næringsdrivende / Frilanser";
+                tittel = "Søknad om sykepenger fra " + arbeidssituasjon + " for perioden " +
                         soknad.getFom().format(norskDato) + " - " + soknad.getTom().format(norskDato);
                 break;
             case OPPHOLD_UTLAND:
