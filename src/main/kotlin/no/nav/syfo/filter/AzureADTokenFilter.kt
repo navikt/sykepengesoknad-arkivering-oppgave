@@ -28,7 +28,7 @@ class AzureADTokenFilter(val syfogsakClientId: String, val authorizedConsumerCli
                     ?.issuer
                     ?.takeIf { it.equals(AZUREAD) }
                     ?.let {
-                        val auth: String? = request.getHeader("Authorization").substringAfter("Bearer").trim()
+                        val auth: String? = request.getHeader("Authorization")?.substringAfter("Bearer")?.trim()
                         val claimsJson = auth
                                 ?.let { JwtHelper.decode(it) }
                                 ?.claims
