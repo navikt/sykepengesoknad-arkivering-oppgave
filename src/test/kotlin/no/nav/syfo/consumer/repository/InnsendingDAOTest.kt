@@ -8,9 +8,12 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit4.SpringRunner
 import java.time.LocalDate
+import java.util.UUID
 import javax.inject.Inject
 
 @RunWith(SpringRunner::class)
@@ -56,7 +59,7 @@ class InnsendingDAOTest {
 
     @Test
     fun sjekkOmInnsendingForSoknadAlleredeErLaget() {
-        innsendingDAO.opprettInnsending("soknad_123", "aktor", LocalDate.of(2019,3,8), LocalDate.of(2019,3,20))
+        innsendingDAO.opprettInnsending("soknad_123", "aktor", LocalDate.of(2019, 3, 8), LocalDate.of(2019, 3, 20))
 
         val innsending = innsendingDAO.finnInnsendingForSykepengesoknad("soknad_123")
         assertThat(innsending).isNotNull()
@@ -81,26 +84,31 @@ class InnsendingDAOTest {
         assertThat(feilendeInnsendinger[0].innsendingsId).isEqualTo("UUID-1")
         assertThat(feilendeInnsendinger[1].innsendingsId).isEqualTo("UUID-4")
     }
+}
 
-    @Test
-    fun finnSisteSak() {
-        jdbcTemplate.update("INSERT INTO INNSENDING(INNSENDING_UUID, RESSURS_ID, AKTOR_ID) VALUES ('UUID-1', 'RESSURSID-1', 'AKTORID-1')")
-        jdbcTemplate.update("INSERT INTO INNSENDING(INNSENDING_UUID, RESSURS_ID, AKTOR_ID, SAKS_ID) VALUES ('UUID-4', 'RESSURSID-2', 'AKTORID-1', 'SAK-1')")
-        jdbcTemplate.update("INSERT INTO INNSENDING VALUES ('UUID-2', 'RESSURSID-3', 'AKTORID-1', 'SAKSID-2', 'JOURNALPOSTID-2', 'OPPGAVEID-2', '2018-09-14', null, null)")
-        jdbcTemplate.update("INSERT INTO INNSENDING VALUES ('UUID-3', 'RESSURSID-4', 'AKTORID-1', 'SAKSID-3', 'JOURNALPOSTID-2', 'OPPGAVEID-2', '2018-09-18', null, null)")
-        jdbcTemplate.update("INSERT INTO INNSENDING VALUES ('UUID-5', 'RESSURSID-5', 'AKTORID-1', 'SAKSID-4', 'JOURNALPOSTID-2', 'OPPGAVEID-2', '2018-09-13', null, null)")
-
-        val sisteSak = innsendingDAO.finnSisteSak("AKTORID-1")
-        assertThat(sisteSak).isEqualTo("SAKSID-3")
-    }
-
-    @Test
-    fun finnSisteSakErTom() {
-        jdbcTemplate.update("INSERT INTO INNSENDING(INNSENDING_UUID, RESSURS_ID, AKTOR_ID) VALUES ('UUID-1', 'RESSURSID-1', 'AKTORID-1')")
-        jdbcTemplate.update("INSERT INTO INNSENDING(INNSENDING_UUID, RESSURS_ID, AKTOR_ID, SAKS_ID) VALUES ('UUID-4', 'RESSURSID-2', 'AKTORID-1', 'SAK-1')")
-
-        val sisteSak = innsendingDAO.finnSisteSak("AKTORID-1")
-        assertThat(sisteSak).isNull()
-    }
+fun NamedParameterJdbcTemplate.insertBehandletSoknad(
+    uuid: String? = UUID.randomUUID().toString(),
+    ressursId: String? = UUID.randomUUID().toString(),
+    aktor: String? = "aktor",
+    saksId: String? = "saksId",
+    journalpostId: String? = "journalpostId",
+    oppgaveId: String? = "oppgaveId",
+    behandlet: LocalDate? = LocalDate.now(),
+    soknadFom: LocalDate? = LocalDate.now().minusDays(10),
+    soknadTom: LocalDate? = LocalDate.now()
+) {
+    update(
+        "INSERT INTO INNSENDING(INNSENDING_UUID, RESSURS_ID, AKTOR_ID, SAKS_ID, JOURNALPOST_ID, OPPGAVE_ID, BEHANDLET, SOKNAD_FOM, SOKNAD_TOM) VALUES (:uuid, :ressursId, :aktor, :saksId, :journalpostId, :oppgaveId, :behandlet, :soknadFom, :soknadTom)",
+        MapSqlParameterSource()
+            .addValue("uuid", uuid)
+            .addValue("ressursId", ressursId)
+            .addValue("aktor", aktor)
+            .addValue("saksId", saksId)
+            .addValue("journalpostId", journalpostId)
+            .addValue("oppgaveId", oppgaveId)
+            .addValue("behandlet", behandlet)
+            .addValue("soknadFom", soknadFom)
+            .addValue("soknadTom", soknadTom)
+    )
 }
 
