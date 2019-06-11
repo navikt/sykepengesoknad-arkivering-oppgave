@@ -161,14 +161,14 @@ class SakControllerTest {
     @Test
     fun soknadFomGrenseverdierOverlapper() {
         assertThat(
-            SakController.overlapperMedSoknad(
+            overlapperMedSoknad(
                 innsending = tidligereInnsending,
                 fom = LocalDate.of(2019, 6, 1),
                 tom = LocalDate.of(2019, 6, 15)
             )
         ).isTrue()
         assertThat(
-            SakController.overlapperMedSoknad(
+            overlapperMedSoknad(
                 innsending = tidligereInnsending,
                 fom = LocalDate.of(2019, 6, 10),
                 tom = LocalDate.of(2019, 6, 15)
@@ -179,14 +179,14 @@ class SakControllerTest {
     @Test
     fun soknadTomGrenseverdierOverlapper() {
         assertThat(
-            SakController.overlapperMedSoknad(
+            overlapperMedSoknad(
                 innsending = tidligereInnsending,
                 fom = LocalDate.of(2019, 5, 1),
                 tom = LocalDate.of(2019, 6, 1)
             )
         ).isTrue()
         assertThat(
-            SakController.overlapperMedSoknad(
+            overlapperMedSoknad(
                 innsending = tidligereInnsending,
                 fom = LocalDate.of(2019, 5, 1),
                 tom = LocalDate.of(2019, 6, 10)
@@ -197,21 +197,21 @@ class SakControllerTest {
     @Test
     fun soknadFomEllerTomInnenforGrenseOverlapper() {
         assertThat(
-            SakController.overlapperMedSoknad(
+            overlapperMedSoknad(
                 innsending = tidligereInnsending,
                 fom = LocalDate.of(2019, 6, 2),
                 tom = LocalDate.of(2019, 6, 15)
             )
         ).isTrue()
         assertThat(
-            SakController.overlapperMedSoknad(
+            overlapperMedSoknad(
                 innsending = tidligereInnsending,
                 fom = LocalDate.of(2019, 6, 2),
                 tom = LocalDate.of(2019, 6, 9)
             )
         ).isTrue()
         assertThat(
-            SakController.overlapperMedSoknad(
+            overlapperMedSoknad(
                 innsending = tidligereInnsending,
                 fom = LocalDate.of(2019, 5, 2),
                 tom = LocalDate.of(2019, 6, 9)
@@ -222,14 +222,14 @@ class SakControllerTest {
     @Test
     fun soknaderForEllerEtterInntektsmeldingOverlapperIkke() {
         assertThat(
-            SakController.overlapperMedSoknad(
+            overlapperMedSoknad(
                 innsending = tidligereInnsending,
                 fom = LocalDate.of(2019, 5, 2),
                 tom = LocalDate.of(2019, 5, 31)
             )
         ).isFalse()
         assertThat(
-            SakController.overlapperMedSoknad(
+            overlapperMedSoknad(
                 innsending = tidligereInnsending,
                 fom = LocalDate.of(2019, 6, 11),
                 tom = LocalDate.of(2019, 6, 20)

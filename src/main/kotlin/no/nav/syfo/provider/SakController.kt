@@ -50,15 +50,13 @@ class SakController(
     data class SisteSakRespons(
         val sisteSak: String?
     )
+}
 
-    companion object {
-        fun overlapperMedSoknad(innsending: TidligereInnsending, fom: LocalDate?, tom: LocalDate?): Boolean {
-            return if (fom != null && tom != null) {
-                val range = innsending.soknadFom..innsending.soknadTom
-                fom in range || tom in range
-            } else {
-                true
-            }
-        }
+fun overlapperMedSoknad(innsending: TidligereInnsending, fom: LocalDate?, tom: LocalDate?): Boolean {
+    return if (fom != null && tom != null) {
+        val range = innsending.soknadFom..innsending.soknadTom
+        fom in range || tom in range
+    } else {
+        true
     }
 }
