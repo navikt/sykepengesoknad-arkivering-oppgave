@@ -123,7 +123,7 @@ class SakControllerTest {
     fun fomLikTomErGyldig() {
         mockMvc
             .perform(
-                MockMvcRequestBuilders.get("/aktor/sisteSak?fom=2019-06-02&tom=2019-06-06")
+                MockMvcRequestBuilders.get("/aktor/sisteSak?fom=2019-06-06&tom=2019-06-06")
                     .header("Authorization", "Bearer $jwt")
                     .contentType(MediaType.APPLICATION_JSON)
             ).andExpect(status().isOk).andReturn()
