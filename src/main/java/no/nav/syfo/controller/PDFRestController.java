@@ -19,7 +19,7 @@ public class PDFRestController {
     }
 
     public byte[] getPDF(Soknad soknad, PDFTemplate template) {
-        final String url = "http://syfopfgen/api/v1/genpdf/syfosoknader/" + template.getEndpoint();
+        final String url = "http://syfopdfgen/api/v1/genpdf/syfosoknader/" + template.getEndpoint();
 
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
