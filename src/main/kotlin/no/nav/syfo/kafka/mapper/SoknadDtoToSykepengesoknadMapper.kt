@@ -53,7 +53,7 @@ fun SoknadDTO.toSykepengesoknad(): Sykepengesoknad =
                 sykmeldingSkrevet = sykmeldingUtskrevet?.atStartOfDay(),
                 korrigertAv = korrigertAv,
                 korrigerer = korrigerer,
-                soknadPerioder = soknadPerioder.map { it.toSoknadPeriode() },
+                soknadPerioder = soknadPerioder?.map { it.toSoknadPeriode() },
                 sporsmal = sporsmal.map { it.toSporsmal() })
 
 
