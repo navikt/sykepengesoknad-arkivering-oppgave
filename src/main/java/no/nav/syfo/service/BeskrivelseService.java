@@ -46,7 +46,7 @@ public class BeskrivelseService {
         }
         return tittel + (soknad.getKorrigerer() != null ? " KORRIGERING" : "") + "\n" +
                 beskrivArbeidsgiver(soknad) +
-                beskrivPerioder(soknad.getSoknadPerioder()) +
+                Optional.ofNullable(soknad.getSoknadPerioder()).map(BeskrivelseService::beskrivPerioder).orElse("") +
                 soknad.getSporsmal().stream()
                         .filter(BeskrivelseService::sporsmalSkalVises)
                         .map(sporsmal -> beskrivSporsmal(sporsmal, 0))

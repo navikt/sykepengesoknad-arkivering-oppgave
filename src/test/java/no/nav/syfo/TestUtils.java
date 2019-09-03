@@ -954,7 +954,6 @@ public class TestUtils {
             "    \"korrigerer\": null,\n" +
             "    \"korrigertAv\": null,\n" +
             "    \"arbeidssituasjon\": null,\n" +
-            "    \"soknadPerioder\": [],\n" +
             "    \"sporsmal\": [\n" +
             "        {\n" +
             "            \"id\": \"153\",\n" +
@@ -1085,7 +1084,6 @@ public class TestUtils {
             "    \"korrigerer\": null,\n" +
             "    \"korrigertAv\": null,\n" +
             "    \"arbeidssituasjon\": null,\n" +
-            "    \"soknadPerioder\": [],\n" +
             "    \"sporsmal\": [\n" +
             "        {\n" +
             "            \"id\": \"153\",\n" +
