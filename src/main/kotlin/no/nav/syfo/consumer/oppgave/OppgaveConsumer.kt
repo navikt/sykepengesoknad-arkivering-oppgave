@@ -1,12 +1,12 @@
 package no.nav.syfo.consumer.oppgave
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import no.nav.syfo.config.ApplicationConfig.CALL_ID
+import no.nav.syfo.config.CALL_ID
 import no.nav.syfo.consumer.token.TokenConsumer
 import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.Soknadstype
 import no.nav.syfo.log
-import no.nav.syfo.service.BeskrivelseService.lagBeskrivelse
+import no.nav.syfo.service.lagBeskrivelse
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.*

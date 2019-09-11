@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.nav.security.spring.oidc.test.JwtTokenGenerator
-import no.nav.syfo.Application
+import no.nav.syfo.AZUREAD
 import no.nav.syfo.TestApplication
 import no.nav.syfo.consumer.repository.TidligereInnsending
 import no.nav.syfo.consumer.repository.insertBehandletSoknad
@@ -44,7 +44,7 @@ class SakControllerTest {
         .registerModule(JavaTimeModule())
         .registerModule(KotlinModule())
 
-    private val jwt = JwtTokenGenerator.createSignedJWT(buildClaimSet(subject = "syfoinntektsmelding", issuer = Application.AZUREAD, appId = "syfoinntektsmelding_clientid", audience = "syfogsak_clientid")).serialize()
+    private val jwt = JwtTokenGenerator.createSignedJWT(buildClaimSet(subject = "syfoinntektsmelding", issuer = AZUREAD, appId = "syfoinntektsmelding_clientid", audience = "syfogsak_clientid")).serialize()
 
     @After
     fun cleanup() {

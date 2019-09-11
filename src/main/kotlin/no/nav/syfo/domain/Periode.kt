@@ -4,6 +4,6 @@ import java.time.LocalDate
 
 
 data class Periode(
-        val fom: LocalDate? = null,
-        val tom: LocalDate? = null
+        val fom: LocalDate,
+        val tom: LocalDate
 )

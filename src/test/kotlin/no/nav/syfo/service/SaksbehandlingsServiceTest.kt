@@ -5,8 +5,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
-import no.nav.syfo.TestUtils.soknadArbeidstakerMedNeisvar
-import no.nav.syfo.TestUtils.soknadSelvstendigMedNeisvar
+import no.nav.syfo.TestApplication
 import no.nav.syfo.any
 import no.nav.syfo.consumer.aktor.AktorConsumer
 import no.nav.syfo.consumer.oppgave.OppgaveConsumer
@@ -25,10 +24,7 @@ import org.mockito.ArgumentMatchers
 import org.mockito.BDDMockito.given
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.never
-import org.mockito.Mockito.times
-import org.mockito.Mockito.verify
+import org.mockito.Mockito.*
 import org.mockito.junit.MockitoJUnitRunner
 import java.io.IOException
 import java.time.LocalDate
@@ -75,7 +71,7 @@ class SaksbehandlingsServiceTest {
     @Test
     @Throws(IOException::class)
     fun behandlerIkkeIkkeSendteSoknader() {
-        val sykepengesoknad = objectMapper.readValue(soknadArbeidstakerMedNeisvar, Sykepengesoknad::class.java)
+        val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
                 .copy(status = "NY")
 
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
@@ -86,7 +82,7 @@ class SaksbehandlingsServiceTest {
     @Test
     @Throws(IOException::class)
     fun behandlerIkkeSoknaderSomIkkeErSendtTilNav() {
-        val sykepengesoknad = objectMapper.readValue(soknadArbeidstakerMedNeisvar, Sykepengesoknad::class.java)
+        val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
                 .copy(sendtNav = null)
 
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
@@ -98,7 +94,7 @@ class SaksbehandlingsServiceTest {
     @Throws(IOException::class)
     fun behandlerIkkeSoknaderSomEttersendesTilArbeidsgiver() {
         val now = LocalDateTime.now()
-        val sykepengesoknad = objectMapper.readValue(soknadArbeidstakerMedNeisvar, Sykepengesoknad::class.java)
+        val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
                 .copy(sendtNav = now, sendtArbeidsgiver = now.plusHours(1))
 
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
@@ -110,7 +106,7 @@ class SaksbehandlingsServiceTest {
     @Throws(IOException::class)
     fun behandlerSoknaderSomEttersendesTilNav() {
         val now = LocalDateTime.now()
-        val sykepengesoknad = objectMapper.readValue(soknadArbeidstakerMedNeisvar, Sykepengesoknad::class.java)
+        val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
                 .copy(sendtNav = now.plusNanos(1), sendtArbeidsgiver = now)
 
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
@@ -122,7 +118,7 @@ class SaksbehandlingsServiceTest {
     @Throws(IOException::class)
     fun behandlerSoknaderSomSkalTilNavOgArbeidsgiver() {
         val now = LocalDateTime.now()
-        val sykepengesoknad = objectMapper.readValue(soknadArbeidstakerMedNeisvar, Sykepengesoknad::class.java)
+        val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
                 .copy(sendtNav = now, sendtArbeidsgiver = now)
 
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
@@ -133,7 +129,7 @@ class SaksbehandlingsServiceTest {
     @Test
     @Throws(IOException::class)
     fun behandlerSoknaderSomSkalTilNav() {
-        val sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad::class.java)
+        val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
 
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
@@ -146,7 +142,7 @@ class SaksbehandlingsServiceTest {
         given(behandleJournalConsumer.opprettJournalpost(any(), any()))
                 .willThrow(RuntimeException("Opprett journal feilet"))
 
-        val sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad::class.java)
+        val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
         verify<InnsendingDAO>(innsendingDAO, times(1)).leggTilFeiletInnsending(any())
@@ -154,7 +150,7 @@ class SaksbehandlingsServiceTest {
 
     @Test
     fun brukerEksisterendeSakOmSoknadErPafolgende() {
-        val sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad::class.java)
+        val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
                 .copy(fom = LocalDate.of(2019, 3, 11), tom = LocalDate.of(2019, 3, 20))
 
         given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019, 3, 1),LocalDate.of(2019, 3, 10))))
@@ -167,7 +163,7 @@ class SaksbehandlingsServiceTest {
 
     @Test
     fun brukerIkkeEksisterendeSakOmSoknadIkkeErPafolgende() {
-        val sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad::class.java)
+        val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
                 .copy(fom = LocalDate.of(2019, 3, 11), tom = LocalDate.of(2019, 3, 20))
 
         given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019, 3, 1),LocalDate.of(2019, 3, 6))))
@@ -180,7 +176,7 @@ class SaksbehandlingsServiceTest {
 
     @Test
     fun brukerEksisterendeSakOmSoknadErPafolgendeMedHelg() {
-        val sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad::class.java)
+        val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
                 .copy(fom = LocalDate.of(2019, 3, 11), tom = LocalDate.of(2019, 3, 20))
 
         given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019, 3, 1),LocalDate.of(2019, 3, 8))))
@@ -193,7 +189,7 @@ class SaksbehandlingsServiceTest {
 
     @Test
     fun brukerIkkeEksisterendeSakOmSoknadInnenforToDagerMenIkkeHelg() {
-        val sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad::class.java)
+        val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
                 .copy(fom = LocalDate.of(2019, 3, 12), tom = LocalDate.of(2019, 3, 21))
 
         given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019, 3, 1),LocalDate.of(2019, 3, 10))))
@@ -206,7 +202,7 @@ class SaksbehandlingsServiceTest {
 
     @Test
     fun brukerIkkeEksisterendeSakOmViIkkeHarTidligereInnsending() {
-        val sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad::class.java)
+        val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
                 .copy(fom = LocalDate.of(2019, 3, 12), tom = LocalDate.of(2019, 3, 21))
 
         given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(emptyList())
@@ -219,7 +215,7 @@ class SaksbehandlingsServiceTest {
 
     @Test
     fun brukerIkkeEksistrendeSakOmInnsendingErEtterSoknad() {
-        val sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad::class.java)
+        val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
                 .copy(fom = LocalDate.of(2019, 2, 11), tom = LocalDate.of(2019, 2, 21))
 
         given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019, 3, 1),LocalDate.of(2019, 3, 10))))
@@ -232,7 +228,7 @@ class SaksbehandlingsServiceTest {
 
     @Test
     fun brukerEksisterendeSakOmSoknadErPafolgendeMedHelgFlereInnsendinger() {
-        val sykepengesoknad = objectMapper.readValue(soknadSelvstendigMedNeisvar, Sykepengesoknad::class.java)
+        val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
                 .copy(fom = LocalDate.of(2019, 3, 11), tom = LocalDate.of(2019, 3, 20))
 
         given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(
