@@ -1,6 +1,10 @@
 package no.nav.syfo.domain
 
-import no.nav.syfo.domain.dto.*
+import no.nav.syfo.domain.dto.Arbeidssituasjon
+import no.nav.syfo.domain.dto.SoknadPeriode
+import no.nav.syfo.domain.dto.Soknadstype
+import no.nav.syfo.domain.dto.Sporsmal
+import no.nav.syfo.domain.dto.Sykepengesoknad
 import java.time.LocalDate
 import java.util.Optional.ofNullable
 
@@ -43,7 +47,7 @@ data class Soknad(
                         korrigertAv = sykepengesoknad.korrigertAv,
                         arbeidssituasjon = sykepengesoknad.arbeidssituasjon,
                         soknadPerioder = sykepengesoknad.soknadPerioder,
-                        sporsmal = endreRekkefolgePaSporsmalForPDF(sykepengesoknad.sporsmal ?: emptyList())
+                        sporsmal = endreRekkefolgePaSporsmalForPDF(sykepengesoknad.sporsmal)
                 )
 
 
