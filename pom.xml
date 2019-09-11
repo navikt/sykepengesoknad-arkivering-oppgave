@@ -9,10 +9,6 @@
     <version>1.0.0-SNAPSHOT</version>
     <name>Syfogsak</name>
 
-    <prerequisites>
-        <maven>3.3.9</maven>
-    </prerequisites>
-
     <scm>
         <developerConnection>scm:git:https://github.com/navikt/syfogsak.git</developerConnection>
         <url>https://github.com/navikt/syfogsak</url>
@@ -58,6 +54,7 @@
         <flyway-core.version>5.0.7</flyway-core.version>
         <cxf.version>3.2.0</cxf.version>
         <jackson.version>2.9.6</jackson.version>
+        <maven-enforcer-plugin.version>3.0.0-M2</maven-enforcer-plugin.version>
 
         <serialisering.version>1</serialisering.version>
         <soknad.version>4</soknad.version>
@@ -311,6 +308,7 @@
                 <artifactId>kotlin-maven-plugin</artifactId>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <version>${kotlin.version}</version>
+
                 <configuration>
                     <args>
                         <arg>-Xjsr305=strict</arg>
@@ -391,6 +389,26 @@
                         </goals>
                         <configuration>
                             <finalName>app</finalName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>${maven-enforcer-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>enforce-maven</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>3.3.9</version>
+                                </requireMavenVersion>
+                            </rules>
                         </configuration>
                     </execution>
                 </executions>
