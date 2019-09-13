@@ -53,4 +53,15 @@ class PersonConsumerTest {
         assertThat(geografiskTilknytning.geografiskTilknytning).isEqualTo("2017")
         assertThat(geografiskTilknytning.diskresjonskode).isEqualTo("SPSF")
     }
+
+    @Test
+    fun taklerAtGeografiskTilknytningErNull() {
+        `when`(personV3!!.hentGeografiskTilknytning(any())).thenReturn(HentGeografiskTilknytningResponse()
+                .withDiskresjonskode(Diskresjonskoder().withValue("SPSF")))
+
+        val geografiskTilknytning = personConsumer!!.hentGeografiskTilknytning("fnr")
+
+        assertThat(geografiskTilknytning.geografiskTilknytning).isNull()
+        assertThat(geografiskTilknytning.diskresjonskode).isEqualTo("SPSF")
+    }
 }

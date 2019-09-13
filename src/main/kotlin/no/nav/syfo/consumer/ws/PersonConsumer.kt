@@ -34,7 +34,7 @@ constructor(private val personV3: PersonV3) {
                     .withIdent(NorskIdent()
                     .withIdent(fnr))))
 
-            return GeografiskTilknytning(response.geografiskTilknytning.geografiskTilknytning, response.diskresjonskode?.value)
+            return GeografiskTilknytning(response.geografiskTilknytning?.geografiskTilknytning, response.diskresjonskode?.value)
 
 
         } catch (e: HentGeografiskTilknytningSikkerhetsbegrensing) {
