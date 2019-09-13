@@ -49,8 +49,8 @@ constructor(private val personV3: PersonV3) {
 
     private fun fulltNavn(personnavn: Personnavn): String {
         val navn: String = when {
-            personnavn.fornavn.isEmpty() -> personnavn.etternavn
-            personnavn.mellomnavn.isEmpty() -> personnavn.fornavn + " " + personnavn.etternavn
+            personnavn.fornavn.isNullOrBlank() -> personnavn.etternavn
+            personnavn.mellomnavn.isNullOrBlank() -> personnavn.fornavn + " " + personnavn.etternavn
             else -> personnavn.fornavn + " " + personnavn.mellomnavn + " " + personnavn.etternavn
         }
 
