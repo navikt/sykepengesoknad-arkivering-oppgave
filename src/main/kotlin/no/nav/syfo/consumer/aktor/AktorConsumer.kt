@@ -1,6 +1,6 @@
 package no.nav.syfo.consumer.aktor
 
-import no.nav.syfo.config.ApplicationConfig.CALL_ID
+import no.nav.syfo.config.CALL_ID
 import no.nav.syfo.consumer.token.TokenConsumer
 import no.nav.syfo.log
 import org.slf4j.MDC

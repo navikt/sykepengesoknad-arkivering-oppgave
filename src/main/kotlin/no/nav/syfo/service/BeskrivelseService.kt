@@ -1,0 +1,145 @@
+package no.nav.syfo.service
+
+import no.nav.syfo.domain.Soknad
+import no.nav.syfo.domain.dto.SoknadPeriode
+import no.nav.syfo.domain.dto.Soknadstype
+import no.nav.syfo.domain.dto.Sporsmal
+import no.nav.syfo.domain.dto.Svartype.*
+import no.nav.syfo.util.DatoUtil.norskDato
+import no.nav.syfo.util.PeriodeMapper.jsonTilPeriode
+import java.time.LocalDate
+import java.util.Collections.nCopies
+
+fun lagBeskrivelse(soknad: Soknad): String {
+    val tittel: String
+    when (soknad.soknadstype) {
+        Soknadstype.ARBEIDSTAKERE -> {
+            tittel = "Søknad om sykepenger for perioden " +
+            soknad.fom!!.format(norskDato) + " - " + soknad.tom!!.format(norskDato)
+        }
+        Soknadstype.SELVSTENDIGE_OG_FRILANSERE -> {
+            // Det kan finnes eldre søknader som mangler arbeidssituasjon
+            val arbeidssituasjon = soknad.arbeidssituasjon?.navn ?: "Selvstendig Næringsdrivende / Frilanser"
+            tittel = "Søknad om sykepenger fra " + arbeidssituasjon + " for perioden " +
+                    soknad.fom!!.format(norskDato) + " - " + soknad.tom!!.format(norskDato)
+        }
+        Soknadstype.OPPHOLD_UTLAND -> {
+            tittel = "Søknad om å beholde sykepenger i utlandet"
+        }
+        else -> {
+            throw RuntimeException("Beskrivelse er ikke implementert for søknadstype: " + soknad.soknadstype!!)
+        }
+    }
+
+    return tittel + (soknad.korrigerer?.let { " KORRIGERING" } ?: "") + "\n" +
+            beskrivArbeidsgiver(soknad) +
+            (soknad.soknadPerioder?.let { beskrivPerioder(it) } ?: "") +
+
+            soknad.sporsmal
+                    .asSequence()
+                    .filter { sporsmalSkalVises(it) }
+                    .map { sporsmal -> beskrivSporsmal(sporsmal, 0) }
+                    .filter { it.isNotBlank() }
+                    .joinToString("\n")
+}
+
+private fun beskrivPerioder(perioder: List<SoknadPeriode>): String {
+    return perioder.mapIndexed(){ index, soknadPeriode ->
+        val (fom, tom, grad, faktiskGrad) = soknadPeriode
+        "\nPeriode " + (index + 1) + ":\n" +
+                fom!!.format(norskDato) + " - " + tom!!.format(norskDato) + "\n" +
+                "Grad: " + grad + "\n" +
+                (faktiskGrad?.let { "Oppgitt faktisk arbeidsgrad: $it\n" } ?: "")
+        }.joinToString("")
+}
+
+private fun beskrivArbeidsgiver(soknad: Soknad): String {
+    return  if (soknad.soknadstype === Soknadstype.ARBEIDSTAKERE)
+                "\nArbeidsgiver: " + soknad.arbeidsgiver + "\n"
+            else
+                ""
+}
+
+private fun sporsmalSkalVises(sporsmal: Sporsmal): Boolean {
+    return when (sporsmal.tag) {
+        "ANSVARSERKLARING", "BEKREFT_OPPLYSNINGER" -> false
+        "ARBEIDSGIVER" -> true
+        else -> "NEI" != getForsteSvarverdi(sporsmal)
+    }
+}
+
+private fun beskrivSporsmal(sporsmal: Sporsmal, dybde: Int): String {
+    val innrykk = "\n" + nCopies(dybde, "    ").joinToString("")
+    val svarverdier = getSvarverdier(sporsmal)
+
+    return if (svarverdier.isEmpty() && sporsmal.svartype !in listOf(CHECKBOX_GRUPPE, RADIO_GRUPPE, RADIO_GRUPPE_TIMER_PROSENT)) {
+        ""
+    }
+    else {
+        formatterSporsmalOgSvar(sporsmal).joinToString("") {
+                sporsmalOgSvar -> innrykk + sporsmalOgSvar
+            }.plus (
+                getUndersporsmalIgnorerRadioIGruppeTimerProsent(sporsmal)
+                        ?.map { beskrivSporsmal(it, getNesteDybde(sporsmal, dybde)) }
+                        ?.filter { it.isNotBlank() }
+                        ?.joinToString("\n")
+                        ?: ""
+            )
+    }
+}
+
+private fun getNesteDybde(sporsmal: Sporsmal, dybde: Int): Int {
+    return when (sporsmal.svartype) {
+        RADIO_GRUPPE,RADIO_GRUPPE_TIMER_PROSENT -> dybde
+        else -> dybde + 1
+    }
+}
+
+private fun getUndersporsmalIgnorerRadioIGruppeTimerProsent(sporsmal: Sporsmal): List<Sporsmal>? {
+    return if (RADIO_GRUPPE_TIMER_PROSENT === sporsmal.svartype)
+        sporsmal.undersporsmal!!
+                .map { it.undersporsmal }
+                .flatMap { it!! }
+                .toList()
+    else
+        sporsmal.undersporsmal
+}
+
+private fun formatterSporsmalOgSvar(sporsmal: Sporsmal): List<String> {
+    return when (sporsmal.svartype) {
+        CHECKBOX, CHECKBOX_GRUPPE, RADIO, RADIO_GRUPPE, RADIO_GRUPPE_TIMER_PROSENT ->
+                    listOfNotNull(sporsmal.sporsmalstekst)
+        JA_NEI ->   listOfNotNull(sporsmal.sporsmalstekst, if ("JA" == getForsteSvarverdi(sporsmal)) "Ja" else "Nei")
+        DATO ->     listOfNotNull(sporsmal.sporsmalstekst, formatterDato(getForsteSvarverdi(sporsmal)))
+        PERIODE ->  listOfNotNull(sporsmal.sporsmalstekst, formatterPeriode(getForsteSvarverdi(sporsmal)))
+        PERIODER -> listOfNotNull(sporsmal.sporsmalstekst) + getSvarverdier(sporsmal).map { formatterPeriode(it) }
+        LAND ->     listOfNotNull(sporsmal.sporsmalstekst) + getSvarverdier(sporsmal).map { formatterLand(it) }
+        TALL ->     listOfNotNull(sporsmal.sporsmalstekst, getForsteSvarverdi(sporsmal) + " " + sporsmal.undertekst)
+        TIMER ->    listOfNotNull(sporsmal.sporsmalstekst, getForsteSvarverdi(sporsmal) + " timer")
+        PROSENT ->  listOfNotNull(sporsmal.sporsmalstekst, getForsteSvarverdi(sporsmal) + " prosent")
+        FRITEKST -> listOfNotNull(sporsmal.sporsmalstekst, getForsteSvarverdi(sporsmal))
+        else ->     emptyList()
+    }
+}
+
+private fun getSvarverdier(sporsmal: Sporsmal): List<String> {
+    return sporsmal.svar?.mapNotNull { it.verdi } ?: emptyList()
+}
+
+private fun getForsteSvarverdi(sporsmal: Sporsmal): String {
+    return sporsmal.svar?.firstOrNull()?.verdi ?: ""
+}
+
+private fun formatterDato(svarverdi: String?): String {
+    return LocalDate.parse(svarverdi!!).format(norskDato)
+}
+
+private fun formatterPeriode(svarverdi: String?): String {
+    val (fom, tom) = jsonTilPeriode(svarverdi)
+    return fom.format(norskDato) + " - " +
+            tom.format(norskDato)
+}
+
+private fun formatterLand(svarverdi: String): String {
+    return "- $svarverdi"
+}

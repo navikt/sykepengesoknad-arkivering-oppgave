@@ -1,0 +1,129 @@
+{
+  "id": "95f44b7e-1e58-4b18-b355-511463cde6f9",
+  "aktorId": "aktorId-745463060",
+  "sykmeldingId": null,
+  "soknadstype": "OPPHOLD_UTLAND",
+  "status": "SENDT",
+  "fom": null,
+  "tom": null,
+  "opprettet": "2018-11-16T00:00:00",
+  "sendtNav": "2018-11-16T00:00:00",
+  "startSykeforlop": null,
+  "sykmeldingSkrevet": null,
+  "arbeidsgiver": null,
+  "korrigerer": null,
+  "korrigertAv": null,
+  "arbeidssituasjon": null,
+  "sporsmal": [
+    {
+      "id": "153",
+      "tag": "PERIODEUTLAND",
+      "sporsmalstekst": "Når skal du være utenfor Norge?",
+      "undertekst": null,
+      "svartype": "PERIODER",
+      "min": "2018-08-16",
+      "max": "2019-05-16",
+      "kriterieForVisningAvUndersporsmal": null,
+      "svar": [
+        {
+          "verdi": "{\"fom\":\"2018-12-10\",\"tom\":\"2018-12-18\"}"
+        }
+      ],
+      "undersporsmal": []
+    },
+    {
+      "id": "154",
+      "tag": "LAND",
+      "sporsmalstekst": "Hvor skal du reise?",
+      "undertekst": null,
+      "svartype": "FRITEKST",
+      "min": null,
+      "max": "50",
+      "kriterieForVisningAvUndersporsmal": null,
+      "svar": [
+        {
+          "verdi": "Laksefiske"
+        }
+      ],
+      "undersporsmal": []
+    },
+    {
+      "id": "155",
+      "tag": "ARBEIDSGIVER",
+      "sporsmalstekst": "Har du arbeidsgiver?",
+      "undertekst": null,
+      "svartype": "JA_NEI",
+      "min": null,
+      "max": null,
+      "kriterieForVisningAvUndersporsmal": "JA",
+      "svar": [
+        {
+          "verdi": "JA"
+        }
+      ],
+      "undersporsmal": [
+        {
+          "id": "156",
+          "tag": "SYKMELDINGSGRAD",
+          "sporsmalstekst": "Er du 100 % sykmeldt?",
+          "undertekst": null,
+          "svartype": "JA_NEI",
+          "min": null,
+          "max": null,
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [
+            {
+              "verdi": "JA"
+            }
+          ],
+          "undersporsmal": []
+        },
+        {
+          "id": "157",
+          "tag": "FERIE",
+          "sporsmalstekst": "Har du avtalt med arbeidsgiveren din at du skal ha ferie i hele perioden?",
+          "undertekst": null,
+          "svartype": "JA_NEI",
+          "min": null,
+          "max": null,
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [
+            {
+              "verdi": "NEI"
+            }
+          ],
+          "undersporsmal": []
+        }
+      ]
+    },
+    {
+      "id": "158",
+      "tag": "BEKREFT_OPPLYSNINGER_UTLAND_INFO",
+      "sporsmalstekst": "Før du reiser ber vi deg bekrefte:",
+      "undertekst": "<ul>\\n    <li>Reisen vil ikke gjøre at jeg blir dårligere </li>\\n    <li>Reisen vil ikke gjøre at sykefraværet blir lengre</li>\\n    <li>Reisen vil ikke hindre planlagt behandling eller oppfølging fra NAV</li>\\n</ul>",
+      "svartype": "IKKE_RELEVANT",
+      "min": null,
+      "max": null,
+      "kriterieForVisningAvUndersporsmal": null,
+      "svar": [],
+      "undersporsmal": [
+        {
+          "id": "159",
+          "tag": "BEKREFT_OPPLYSNINGER_UTLAND",
+          "sporsmalstekst": "Jeg bekrefter de tre punktene ovenfor. Jeg har avklart reisen med legen.",
+          "undertekst": null,
+          "svartype": "CHECKBOX_PANEL",
+          "min": null,
+          "max": null,
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [
+            {
+              "verdi": "CHECKED"
+            }
+          ],
+          "undersporsmal": []
+        }
+      ]
+    }
+  ]
+}

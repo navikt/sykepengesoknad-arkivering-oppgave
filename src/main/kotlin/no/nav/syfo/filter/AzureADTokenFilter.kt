@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.nav.security.oidc.api.ProtectedWithClaims
 import no.nav.security.spring.oidc.validation.interceptor.OIDCUnauthorizedException
-import no.nav.syfo.Application.AZUREAD
+import no.nav.syfo.AZUREAD
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.security.jwt.JwtHelper

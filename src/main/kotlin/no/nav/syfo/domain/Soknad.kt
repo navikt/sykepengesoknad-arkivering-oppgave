@@ -6,7 +6,6 @@ import no.nav.syfo.domain.dto.Soknadstype
 import no.nav.syfo.domain.dto.Sporsmal
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import java.time.LocalDate
-import java.util.Optional.ofNullable
 
 data class Soknad(
         var aktorId: String? = null,
@@ -25,7 +24,7 @@ data class Soknad(
         var korrigertAv: String? = null,
         var arbeidssituasjon: Arbeidssituasjon? = null,
         var soknadPerioder: List<SoknadPeriode>? = null,
-        var sporsmal: List<Sporsmal>? = null) {
+        var sporsmal: List<Sporsmal>) {
 
     companion object {
 
@@ -39,9 +38,9 @@ data class Soknad(
                         fom = sykepengesoknad.fom,
                         tom = sykepengesoknad.tom,
                         innsendtDato = sykepengesoknad.sendtNav?.toLocalDate(),
-                        sendtArbeidsgiver = ofNullable(sykepengesoknad.sendtArbeidsgiver).map { it.toLocalDate() }.orElse(null),
+                        sendtArbeidsgiver = sykepengesoknad.sendtArbeidsgiver?.toLocalDate(),
                         startSykeforlop = sykepengesoknad.startSykeforlop,
-                        sykmeldingUtskrevet = ofNullable(sykepengesoknad.sykmeldingSkrevet).map { it.toLocalDate() }.orElse(null),
+                        sykmeldingUtskrevet = sykepengesoknad.sykmeldingSkrevet?.toLocalDate(),
                         arbeidsgiver = sykepengesoknad.arbeidsgiver,
                         korrigerer = sykepengesoknad.korrigerer,
                         korrigertAv = sykepengesoknad.korrigertAv,

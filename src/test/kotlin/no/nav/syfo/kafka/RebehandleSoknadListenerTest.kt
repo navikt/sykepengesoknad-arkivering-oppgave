@@ -3,7 +3,6 @@ package no.nav.syfo.kafka
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.syfo.consumer.repository.InnsendingDAO
 import no.nav.syfo.domain.Innsending
-import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.syfo.kafka.interfaces.Soknad
 import no.nav.syfo.kafka.soknad.dto.SoknadDTO
 import no.nav.syfo.kafka.sykepengesoknad.dto.*
@@ -15,7 +14,6 @@ import org.apache.kafka.common.TopicPartition
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
 import org.mockito.Mockito.*
@@ -108,7 +106,7 @@ class RebehandleSoknadListenerTest {
 
         rebehandleSoknadListener.listen()
 
-        verify(behandleFeiledeSoknaderService).behandleFeiletSoknad(ArgumentMatchers.any(Innsending::class.java), ArgumentMatchers.any(Sykepengesoknad::class.java))
+        verify(behandleFeiledeSoknaderService).behandleFeiletSoknad(no.nav.syfo.any(), no.nav.syfo.any())
     }
 
     @Test
@@ -152,7 +150,7 @@ class RebehandleSoknadListenerTest {
 
         rebehandleSoknadListener.listen()
 
-        verify(behandleFeiledeSoknaderService).behandleFeiletSoknad(ArgumentMatchers.any(Innsending::class.java), ArgumentMatchers.any(Sykepengesoknad::class.java))
+        verify(behandleFeiledeSoknaderService).behandleFeiletSoknad(no.nav.syfo.any(), no.nav.syfo.any())
     }
 
     @Test
@@ -196,7 +194,7 @@ class RebehandleSoknadListenerTest {
 
         rebehandleSoknadListener.listen()
 
-        verify(behandleFeiledeSoknaderService, never()).behandleFeiletSoknad(ArgumentMatchers.any(Innsending::class.java), ArgumentMatchers.any(Sykepengesoknad::class.java))
+        verify(behandleFeiledeSoknaderService, never()).behandleFeiletSoknad(no.nav.syfo.any(), no.nav.syfo.any())
     }
 
     @Test
@@ -240,7 +238,7 @@ class RebehandleSoknadListenerTest {
 
         rebehandleSoknadListener.listen()
 
-        verify(behandleFeiledeSoknaderService, never()).behandleFeiletSoknad(ArgumentMatchers.any(Innsending::class.java), ArgumentMatchers.any(Sykepengesoknad::class.java))
+        verify(behandleFeiledeSoknaderService, never()).behandleFeiletSoknad(no.nav.syfo.any(), no.nav.syfo.any())
     }
 
     @Test
@@ -282,7 +280,7 @@ class RebehandleSoknadListenerTest {
 
         rebehandleSoknadListener.listen()
 
-        verify(behandleFeiledeSoknaderService, never()).behandleFeiletSoknad(ArgumentMatchers.any(Innsending::class.java), ArgumentMatchers.any(Sykepengesoknad::class.java))
+        verify(behandleFeiledeSoknaderService, never()).behandleFeiletSoknad(no.nav.syfo.any(), no.nav.syfo.any())
     }
 
     @Test
@@ -326,7 +324,7 @@ class RebehandleSoknadListenerTest {
 
         rebehandleSoknadListener.listen()
 
-        verify(behandleFeiledeSoknaderService, never()).behandleFeiletSoknad(ArgumentMatchers.any(Innsending::class.java), ArgumentMatchers.any(Sykepengesoknad::class.java))
+        verify(behandleFeiledeSoknaderService, never()).behandleFeiletSoknad(no.nav.syfo.any(), no.nav.syfo.any())
     }
 
     @Test
@@ -370,7 +368,7 @@ class RebehandleSoknadListenerTest {
 
         rebehandleSoknadListener.listen()
 
-        verify(behandleFeiledeSoknaderService).behandleFeiletSoknad(ArgumentMatchers.any(Innsending::class.java), ArgumentMatchers.any(Sykepengesoknad::class.java))
+        verify(behandleFeiledeSoknaderService).behandleFeiletSoknad(no.nav.syfo.any(), no.nav.syfo.any())
     }
 
     @Test
@@ -421,7 +419,7 @@ class RebehandleSoknadListenerTest {
 
         rebehandleSoknadListener.listen()
 
-        verify(behandleFeiledeSoknaderService, times(2)).behandleFeiletSoknad(ArgumentMatchers.any(Innsending::class.java), ArgumentMatchers.any(Sykepengesoknad::class.java))
+        verify(behandleFeiledeSoknaderService, times(2)).behandleFeiletSoknad(no.nav.syfo.any(), no.nav.syfo.any())
     }
 
     @Test
@@ -475,13 +473,14 @@ class RebehandleSoknadListenerTest {
 
         rebehandleSoknadListener.listen()
 
-        verify(behandleFeiledeSoknaderService, times(2)).behandleFeiletSoknad(ArgumentMatchers.any(Innsending::class.java), ArgumentMatchers.any(Sykepengesoknad::class.java))
+        verify(behandleFeiledeSoknaderService, times(2)).behandleFeiletSoknad(no.nav.syfo.any(), no.nav.syfo.any())
     }
 
     @Test
     fun rebehandleSoknadSykepengesoknadDTOToSoknaderIToPartisjoner() {
+        val innsending = Innsending("innsending", "id")
         `when`(innsendingDAO.hentFeilendeInnsendinger()).thenReturn(listOf(
-                Innsending("innsending", "id")
+                innsending
         ))
 
         val soknad = SykepengesoknadDTO.builder()
@@ -528,6 +527,6 @@ class RebehandleSoknadListenerTest {
 
         rebehandleSoknadListener.listen()
 
-        verify(behandleFeiledeSoknaderService, times(2)).behandleFeiletSoknad(ArgumentMatchers.any(Innsending::class.java), ArgumentMatchers.any(Sykepengesoknad::class.java))
+        verify(behandleFeiledeSoknaderService, times(2)).behandleFeiletSoknad(no.nav.syfo.any(), no.nav.syfo.any())
     }
 }
