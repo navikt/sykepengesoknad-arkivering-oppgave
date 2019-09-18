@@ -101,16 +101,15 @@ class SaksbehandlingsService(
     }
 
     fun finnEllerOpprettSak(innsendingId: String, aktorId: String, soknadFom: LocalDate?): String =
-            innsendingDAO.finnTidligereInnsendinger(aktorId)
-                    .filter { (it.soknadTom).isBefore(soknadFom ?: LocalDate.MIN) }
-                    .filter { erPaFolgendeInkludertHelg(it.soknadTom, soknadFom ?: LocalDate.MAX) }
-                    .sortedByDescending { it.soknadTom }
-                    .firstOrNull()
-                    ?.let {
-                        innsendingDAO.oppdaterSaksId(innsendingId, it.saksId)
-                        return it.saksId
-                    }
-                    ?: opprettSak(aktorId, innsendingId)
+        innsendingDAO.finnTidligereInnsendinger(aktorId)
+            .filter { (it.soknadTom).isBefore(soknadFom ?: LocalDate.MIN) }
+            .filter { erPaFolgendeInkludertHelg(it.soknadTom, soknadFom ?: LocalDate.MAX) }
+            .maxBy { it.soknadTom }
+            ?.let {
+                innsendingDAO.oppdaterSaksId(innsendingId, it.saksId)
+                return it.saksId
+            }
+            ?: opprettSak(aktorId, innsendingId)
 
     private fun opprettSak(aktorId: String, innsendingId: String): String {
         val saksId = sakConsumer.opprettSak(aktorId)
