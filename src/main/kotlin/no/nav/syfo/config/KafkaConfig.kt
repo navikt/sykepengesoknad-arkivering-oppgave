@@ -3,6 +3,7 @@ package no.nav.syfo.config
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import no.nav.syfo.kafka.KafkaErrorHandler
 import no.nav.syfo.kafka.interfaces.Soknad
 import no.nav.syfo.kafka.soknad.deserializer.MultiFunctionDeserializer
@@ -65,6 +66,7 @@ class KafkaConfig {
     fun consumerFactoryArbeidsledig(properties: KafkaProperties): ConsumerFactory<String, SykepengesoknadArbeidsledigDTO>  {
         val objectMapper = ObjectMapper()
             .registerModule(JavaTimeModule())
+            .registerKotlinModule()
             .configure(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE, true)
         return DefaultKafkaConsumerFactory(
             properties.buildConsumerProperties(),
