@@ -72,7 +72,7 @@ class KafkaConfig {
             MultiFunctionDeserializer(emptyMap()
             ) { bytes ->
                 try {
-                    objectMapper.readValue<SykepengesoknadArbeidsledigDTO>(bytes, SykepengesoknadArbeidsledigDTO::class.java)
+                    objectMapper.readValue(bytes, SykepengesoknadArbeidsledigDTO::class.java)
                 } catch (e: IOException) {
                     throw RuntimeException("Feil ved konvertering av bytes til SykepengesoknadArbeidsledigDTO", e)
                 }
