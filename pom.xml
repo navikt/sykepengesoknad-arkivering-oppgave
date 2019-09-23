@@ -59,6 +59,7 @@
         <serialisering.version>1</serialisering.version>
         <soknad.version>4</soknad.version>
         <sykepengesoknad.version>1</sykepengesoknad.version>
+        <sykepengesoknadarbeidsledig.version>1</sykepengesoknadarbeidsledig.version>
     </properties>
 
     <dependencies>
@@ -121,6 +122,11 @@
             <groupId>no.nav.syfo.kafka</groupId>
             <artifactId>sykepengesoknad</artifactId>
             <version>${sykepengesoknad.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.syfo.kafka</groupId>
+            <artifactId>sykepengesoknadarbeidsledig</artifactId>
+            <version>${sykepengesoknadarbeidsledig.version}</version>
         </dependency>
 
         <dependency>

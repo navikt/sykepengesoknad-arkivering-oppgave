@@ -2,7 +2,7 @@ package no.nav.syfo.service
 
 import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.SoknadPeriode
-import no.nav.syfo.domain.dto.Soknadstype
+import no.nav.syfo.domain.dto.Soknadstype.*
 import no.nav.syfo.domain.dto.Sporsmal
 import no.nav.syfo.domain.dto.Svartype.*
 import no.nav.syfo.util.DatoUtil.norskDato
@@ -13,18 +13,21 @@ import java.util.Collections.nCopies
 fun lagBeskrivelse(soknad: Soknad): String {
     val tittel: String
     when (soknad.soknadstype) {
-        Soknadstype.ARBEIDSTAKERE -> {
+        ARBEIDSTAKERE -> {
             tittel = "Søknad om sykepenger for perioden " +
             soknad.fom!!.format(norskDato) + " - " + soknad.tom!!.format(norskDato)
         }
-        Soknadstype.SELVSTENDIGE_OG_FRILANSERE -> {
+        SELVSTENDIGE_OG_FRILANSERE -> {
             // Det kan finnes eldre søknader som mangler arbeidssituasjon
             val arbeidssituasjon = soknad.arbeidssituasjon?.navn ?: "Selvstendig Næringsdrivende / Frilanser"
             tittel = "Søknad om sykepenger fra " + arbeidssituasjon + " for perioden " +
                     soknad.fom!!.format(norskDato) + " - " + soknad.tom!!.format(norskDato)
         }
-        Soknadstype.OPPHOLD_UTLAND -> {
+        OPPHOLD_UTLAND -> {
             tittel = "Søknad om å beholde sykepenger i utlandet"
+        }
+        ARBEIDSLEDIG -> {
+            tittel = "Søknad om sykepenger for arbeidsledig"
         }
         else -> {
             throw RuntimeException("Beskrivelse er ikke implementert for søknadstype: " + soknad.soknadstype!!)
@@ -54,7 +57,7 @@ private fun beskrivPerioder(perioder: List<SoknadPeriode>): String {
 }
 
 private fun beskrivArbeidsgiver(soknad: Soknad): String {
-    return  if (soknad.soknadstype === Soknadstype.ARBEIDSTAKERE)
+    return  if (soknad.soknadstype === ARBEIDSTAKERE)
                 "\nArbeidsgiver: " + soknad.arbeidsgiver + "\n"
             else
                 ""

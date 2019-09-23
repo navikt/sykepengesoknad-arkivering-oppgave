@@ -3,8 +3,10 @@ package no.nav.syfo.consumer.ws
 import no.nav.syfo.controller.PDFRestController
 import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.PDFTemplate
-import no.nav.syfo.domain.dto.PDFTemplate.*
+import no.nav.syfo.domain.dto.PDFTemplate.SELVSTENDIGNAERINGSDRIVENDE
+import no.nav.syfo.domain.dto.PDFTemplate.SYKEPENGERUTLAND
 import no.nav.syfo.domain.dto.Soknadstype
+import no.nav.syfo.domain.dto.Soknadstype.*
 import no.nav.syfo.log
 import no.nav.syfo.util.DatoUtil.norskDato
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.BehandleJournalV2
@@ -84,35 +86,38 @@ constructor(
 
     private fun getJornalfoertDokumentTittel(soknad: Soknad): String {
         return when (soknad.soknadstype) {
-            Soknadstype.OPPHOLD_UTLAND -> "Søknad om å beholde sykepenger utenfor Norge"
-            Soknadstype.SELVSTENDIGE_OG_FRILANSERE -> "Søknad om sykepenger fra Selvstendig/Frilanser for periode: " + soknad.fom!!.format(norskDato) + " til " + soknad.tom!!.format(norskDato)
-            Soknadstype.ARBEIDSTAKERE -> "Søknad om sykepenger " + soknad.fom!!.format(norskDato) + " - " + soknad.tom!!.format(norskDato)
+            OPPHOLD_UTLAND -> "Søknad om å beholde sykepenger utenfor Norge"
+            SELVSTENDIGE_OG_FRILANSERE -> "Søknad om sykepenger fra Selvstendig/Frilanser for periode: " + soknad.fom!!.format(norskDato) + " til " + soknad.tom!!.format(norskDato)
+            ARBEIDSTAKERE -> "Søknad om sykepenger " + soknad.fom!!.format(norskDato) + " - " + soknad.tom!!.format(norskDato)
+            ARBEIDSLEDIG -> "Søknad om sykepenger fra arbeidsledig for periode: " + soknad.fom!!.format(norskDato) + " til " + soknad.tom!!.format(norskDato)
             else -> throw RuntimeException("Har ikke implementert journalført dokumenttittel for søknad av typen: " + soknad.soknadstype!!)
         }
     }
 
     private fun getWSStruktureltInnholdFilnavn(soknad: Soknad): String {
         return when (soknad.soknadstype) {
-            Soknadstype.OPPHOLD_UTLAND -> "soknad-" + soknad.innsendtDato!!.format(norskDato)
-            Soknadstype.SELVSTENDIGE_OG_FRILANSERE -> "Søknad om sykepenger fra Selvstendig/Frilanser for periode: " + soknad.fom!!.format(norskDato) + " til " + soknad.tom!!.format(norskDato)
-            Soknadstype.ARBEIDSTAKERE -> "Søknad om sykepenger " + soknad.fom!!.format(norskDato) + " - " + soknad.tom!!.format(norskDato)
+            OPPHOLD_UTLAND -> "soknad-" + soknad.innsendtDato!!.format(norskDato)
+            SELVSTENDIGE_OG_FRILANSERE -> "Søknad om sykepenger fra Selvstendig/Frilanser for periode: " + soknad.fom!!.format(norskDato) + " til " + soknad.tom!!.format(norskDato)
+            ARBEIDSTAKERE -> "Søknad om sykepenger " + soknad.fom!!.format(norskDato) + " - " + soknad.tom!!.format(norskDato)
+            ARBEIDSLEDIG -> "Søknad om sykepenger fra arbeidsledig for periode: " + soknad.fom!!.format(norskDato) + " til " + soknad.tom!!.format(norskDato)
             else -> throw RuntimeException("Har ikke implementert strukturert innhold-filnavn for søknad av typen: " + soknad.soknadstype!!)
         }
     }
 
     private fun getJournalPostInnholdNavn(soknadstype: Soknadstype?): String {
         return when (soknadstype) {
-            Soknadstype.OPPHOLD_UTLAND -> "Søknad om å beholde sykepenger utenfor Norge"
-            Soknadstype.SELVSTENDIGE_OG_FRILANSERE, Soknadstype.ARBEIDSTAKERE -> "Søknad om sykepenger"
+            OPPHOLD_UTLAND -> "Søknad om å beholde sykepenger utenfor Norge"
+            SELVSTENDIGE_OG_FRILANSERE, ARBEIDSTAKERE, ARBEIDSLEDIG -> "Søknad om sykepenger"
             else -> throw RuntimeException("Har ikke implementert strukturert innhold-filnavn for søknad av typen: $soknadstype")
         }
     }
 
     private fun hentPDFTemplateEtterSoknadstype(soknadstype: Soknadstype?): PDFTemplate {
         return when (soknadstype) {
-            Soknadstype.OPPHOLD_UTLAND -> SYKEPENGERUTLAND
-            Soknadstype.SELVSTENDIGE_OG_FRILANSERE -> SELVSTENDIGNAERINGSDRIVENDE
-            Soknadstype.ARBEIDSTAKERE -> ARBEIDSTAKERE
+            OPPHOLD_UTLAND -> SYKEPENGERUTLAND
+            SELVSTENDIGE_OG_FRILANSERE -> SELVSTENDIGNAERINGSDRIVENDE
+            ARBEIDSTAKERE -> PDFTemplate.ARBEIDSTAKERE
+            ARBEIDSLEDIG -> PDFTemplate.ARBEIDSLEDIG
             else -> throw RuntimeException("Har ikke implementert PDF-template for søknad av typen: $soknadstype")
         }
     }
