@@ -28,7 +28,7 @@ constructor(
 
     fun opprettJournalpost(soknad: Soknad, saksId: String): String {
         val pdf: ByteArray?
-
+        throw java.lang.RuntimeException("Skal feile for å teste rebehandling...")  //TODO: Legges inn for å teste rebehandling
         try {
             pdf = pdfRestController.getPDF(soknad, hentPDFTemplateEtterSoknadstype(soknad.soknadstype!!))
         } catch (e: RuntimeException) {
