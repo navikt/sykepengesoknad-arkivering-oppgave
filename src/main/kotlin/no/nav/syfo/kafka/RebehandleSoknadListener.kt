@@ -1,7 +1,5 @@
 package no.nav.syfo.kafka
 
-import io.micrometer.core.instrument.MeterRegistry
-import io.micrometer.core.instrument.Tags
 import no.nav.syfo.config.CALL_ID
 import no.nav.syfo.consumer.repository.InnsendingDAO
 import no.nav.syfo.domain.dto.Sykepengesoknad
@@ -25,7 +23,6 @@ import java.util.UUID.randomUUID
 class RebehandleSoknadListener(
         private val behandleFeiledeSoknaderService: BehandleFeiledeSoknaderService,
         private val innsendingDAO: InnsendingDAO,
-        private val registry: MeterRegistry,
         @Value("\${fasit.environment.name}") miljonavn: String,
         consumerFactory: ConsumerFactory<String, Soknad>) {
 
@@ -48,6 +45,7 @@ class RebehandleSoknadListener(
     @Scheduled(cron = "0 0 * * * *")
     fun listen() {
         val feilendeInnsendinger = innsendingDAO.hentFeilendeInnsendinger()
+        var antallFeilende = 0
 
         consumer.poll(100L)
         consumer.seekToBeginning(consumer.assignment())
@@ -56,7 +54,6 @@ class RebehandleSoknadListener(
                 val records = consumer.poll(1000L)
                         .takeUnless { it.isEmpty }
                         ?: break
-
                 records.forEach { record ->
                     log.debug("Melding mottatt på topic: {}, partisjon: {} med offset: {}",
                             record.topic(), record.partition(), record.offset())
@@ -83,6 +80,7 @@ class RebehandleSoknadListener(
                                 }
                     } catch (e: Exception) {
                         log.warn("Uventet feil ved behandling av søknad", e)
+                        antallFeilende++
                     } finally {
                         MDC.remove(CALL_ID)
                     }
@@ -92,13 +90,7 @@ class RebehandleSoknadListener(
             // ignore for shutdown
         }
 
-        val antallFeilende = innsendingDAO.hentFeilendeInnsendinger().size
-        log.info("registrerer metrikker, {} rebehandlinger feiler.", antallFeilende)
-        registry.gauge("syfogsak.rebehandling.feilet",
-                Tags.of(
-                        "type", "info",
-                        "help", "Antall innsendinger som fortsatt feiler etter rebehandling."
-                ),
-                antallFeilende)
+        if(antallFeilende > 0)
+            log.info("Rebehandling av søknad feiler {} ganger.", antallFeilende)
     }
 }

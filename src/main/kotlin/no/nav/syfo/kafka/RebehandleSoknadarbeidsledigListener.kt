@@ -1,7 +1,6 @@
 package no.nav.syfo.kafka
 
 import io.micrometer.core.instrument.MeterRegistry
-import io.micrometer.core.instrument.Tags
 import no.nav.syfo.config.CALL_ID
 import no.nav.syfo.consumer.repository.InnsendingDAO
 import no.nav.syfo.domain.dto.Sykepengesoknad
@@ -38,14 +37,12 @@ class RebehandleSoknadarbeidsledigListener(
     private fun Sykepengesoknad.sendtTilNav(): Boolean =
         status == "SENDT" && sendtNav != null
 
-    private fun Sykepengesoknad.ettersendtTilArbeidsgiver(): Boolean =
-        sendtArbeidsgiver != null && sendtNav?.isBefore(sendtArbeidsgiver) ?: false
-
     private val log = log()
 
     @Scheduled(cron = "0 0 * * * *")
     fun listen() {
         val feilendeInnsendinger = innsendingDAO.hentFeilendeInnsendinger()
+        var antallFeilende = 0
 
         consumer.poll(100L)
         consumer.seekToBeginning(consumer.assignment())
@@ -64,8 +61,7 @@ class RebehandleSoknadarbeidsledigListener(
                         val sykepengesoknad = record.value().toSykepengesoknad()
 
                         sykepengesoknad
-                            ?.takeIf { it.sendtTilNav() }
-                            ?.takeUnless { it.ettersendtTilArbeidsgiver() }
+                            .takeIf { it.sendtTilNav() }
                             ?.also { soknad ->
                                 feilendeInnsendinger
                                     .firstOrNull { innsending -> innsending.ressursId == soknad.id }
@@ -76,6 +72,7 @@ class RebehandleSoknadarbeidsledigListener(
                             }
                     } catch (e: Exception) {
                         log.warn("Uventet feil ved rebehandling av arbeidsledigsøknad", e)
+                        antallFeilende++
                     } finally {
                         MDC.remove(CALL_ID)
                     }
@@ -85,13 +82,7 @@ class RebehandleSoknadarbeidsledigListener(
             // ignore for shutdown
         }
 
-        val antallFeilende = innsendingDAO.hentFeilendeInnsendinger().size
-        log.info("registrerer metrikker, {} rebehandlinger feiler.", antallFeilende)
-        registry.gauge("syfogsak.rebehandling.feilet",
-            Tags.of(
-                "type", "info",
-                "help", "Antall innsendinger som fortsatt feiler etter rebehandling."
-            ),
-            antallFeilende)
+        if(antallFeilende > 0)
+            log.info("Rebehandling av søknad arbeidsledig feiler {} ganger.", antallFeilende)
     }
 }
