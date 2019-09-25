@@ -207,45 +207,6 @@ class RebehandleSoknadarbeidsledigListenerTest {
     }
 
     @Test
-    fun rebehandleSoknadSykepengesoknadArbeidsledigDTOEttersendtTilNav() {
-        `when`(innsendingDAO.hentFeilendeInnsendinger()).thenReturn(listOf(
-            Innsending("innsending", "id")
-        ))
-
-        val soknad = SykepengesoknadArbeidsledigDTO(
-            id = "id",
-            sykmeldingId = "sykmeldingId",
-            aktorId = "aktorId",
-            status = SENDT,
-            fom = LocalDate.now(),
-            tom = LocalDate.now(),
-            opprettet = LocalDateTime.now(),
-            sendtNav = LocalDateTime.now(),
-            startSyketilfelle = LocalDate.now(),
-            sykmeldingSkrevet = LocalDateTime.now(),
-            korrigertAv = null,
-            korrigerer = null,
-            soknadsperioder = emptyList(),
-            sporsmal = emptyList())
-
-        val records = ConsumerRecords<String, SykepengesoknadArbeidsledigDTO>(mapOf(
-            TopicPartition("syfo-soknad-arbeidsledig-v1", 1) to
-                listOf(
-                    ConsumerRecord<String, SykepengesoknadArbeidsledigDTO>(
-                        "syfo-soknad-arbeidsledig-v1",
-                        1,
-                        1,
-                        "key",
-                        soknad
-                    ))))
-        `when`(consumer.poll(1000L)).thenReturn(records, ConsumerRecords.empty())
-
-        rebehandleSoknadarbeidsledigListener.listen()
-
-        verify(behandleFeiledeSoknaderService).behandleFeiletSoknad(no.nav.syfo.any(), no.nav.syfo.any())
-    }
-
-    @Test
     fun rebehandleSoknadSykepengesoknadArbeidsledigDTOToSoknaderISammeRecords() {
         `when`(innsendingDAO.hentFeilendeInnsendinger()).thenReturn(listOf(
             Innsending("innsending", "id")
