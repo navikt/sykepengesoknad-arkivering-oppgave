@@ -1,6 +1,5 @@
 package no.nav.syfo.kafka
 
-import io.micrometer.core.instrument.MeterRegistry
 import no.nav.syfo.config.CALL_ID
 import no.nav.syfo.consumer.repository.InnsendingDAO
 import no.nav.syfo.domain.dto.Sykepengesoknad
@@ -22,7 +21,6 @@ import java.util.UUID.randomUUID
 class RebehandleSoknadarbeidsledigListener(
     private val behandleFeiledeSoknaderService: BehandleFeiledeSoknaderService,
     private val innsendingDAO: InnsendingDAO,
-    private val registry: MeterRegistry,
     @Value("\${fasit.environment.name}") miljonavn: String,
     consumerFactory: ConsumerFactory<String, SykepengesoknadArbeidsledigDTO>) {
 

@@ -1,6 +1,5 @@
 package no.nav.syfo.kafka
 
-import io.micrometer.core.instrument.MeterRegistry
 import no.nav.syfo.consumer.repository.InnsendingDAO
 import no.nav.syfo.domain.Innsending
 import no.nav.syfo.kafka.interfaces.Soknad
@@ -29,8 +28,6 @@ class RebehandleSoknadListenerTest {
     @Mock
     private lateinit var innsendingDAO: InnsendingDAO
     @Mock
-    private lateinit var registry: MeterRegistry
-    @Mock
     private lateinit var consumerFactory: ConsumerFactory<String, Soknad>
 
     private lateinit var rebehandleSoknadListener: RebehandleSoknadListener
@@ -46,7 +43,6 @@ class RebehandleSoknadListenerTest {
         rebehandleSoknadListener = RebehandleSoknadListener(
                 behandleFeiledeSoknaderService,
                 innsendingDAO,
-                registry,
                 "test",
                 consumerFactory
         )

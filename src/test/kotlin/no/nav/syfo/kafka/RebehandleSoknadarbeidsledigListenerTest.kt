@@ -1,6 +1,5 @@
 package no.nav.syfo.kafka
 
-import io.micrometer.core.instrument.MeterRegistry
 import no.nav.syfo.consumer.repository.InnsendingDAO
 import no.nav.syfo.domain.Innsending
 import no.nav.syfo.kafka.sykepengesoknadarbeidsledig.dto.SoknadsstatusDTO.NY
@@ -29,8 +28,6 @@ class RebehandleSoknadarbeidsledigListenerTest {
     @Mock
     private lateinit var innsendingDAO: InnsendingDAO
     @Mock
-    private lateinit var registry: MeterRegistry
-    @Mock
     private lateinit var consumerFactory: ConsumerFactory<String, SykepengesoknadArbeidsledigDTO>
 
     private lateinit var rebehandleSoknadarbeidsledigListener: RebehandleSoknadarbeidsledigListener
@@ -46,7 +43,6 @@ class RebehandleSoknadarbeidsledigListenerTest {
         rebehandleSoknadarbeidsledigListener = RebehandleSoknadarbeidsledigListener(
             behandleFeiledeSoknaderService,
             innsendingDAO,
-            registry,
             "test",
             consumerFactory
         )
