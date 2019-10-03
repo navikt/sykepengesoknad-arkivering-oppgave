@@ -11,6 +11,7 @@ import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.meldinger.WSFinnBehandlend
 import org.springframework.stereotype.Component
 
 const val BEHANDLINGSTEMA_OPPHOLD_UTLAND = "ab0314"
+const val NAV_OPPFOLGING_UTLAND_KONTOR_NR = "0393"
 
 @Component
 class ArbeidsfordelingConsumer(private val arbeidsfordelingV1: ArbeidsfordelingV1) {
@@ -35,8 +36,8 @@ class ArbeidsfordelingConsumer(private val arbeidsfordelingV1: ArbeidsfordelingV
             log().error("Feil ved henting av brukers forvaltningsenhet", e)
             throw RuntimeException("Feil ved henting av brukers forvaltningsenhet", e)
         } catch (e: RuntimeException) {
-            log().error("Klarte ikke å hente behandlende enhet!", e)
-            throw RuntimeException(e)
+            log().warn("Klarte ikke å hente behandlende enhet! Gir oppgaven til NAV_OPPFOLGING_UTLAND (${NAV_OPPFOLGING_UTLAND_KONTOR_NR})", e)
+            return NAV_OPPFOLGING_UTLAND_KONTOR_NR
         }
     }
 
