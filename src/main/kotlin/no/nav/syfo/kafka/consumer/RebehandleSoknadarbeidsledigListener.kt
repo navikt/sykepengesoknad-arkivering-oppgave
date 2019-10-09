@@ -1,4 +1,4 @@
-package no.nav.syfo.kafka
+package no.nav.syfo.kafka.consumer
 
 import no.nav.syfo.config.CALL_ID
 import no.nav.syfo.consumer.repository.InnsendingDAO
@@ -17,6 +17,7 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.util.UUID.randomUUID
 
+@Deprecated("Bytter ut denne med intern rebehandlingstopic - kan slettes når tabellen med feilede innsendinger er tom")
 @Component
 class RebehandleSoknadarbeidsledigListener(
     private val behandleFeiledeSoknaderService: BehandleFeiledeSoknaderService,

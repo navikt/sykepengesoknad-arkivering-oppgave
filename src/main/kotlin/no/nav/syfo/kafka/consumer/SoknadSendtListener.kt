@@ -1,4 +1,4 @@
-package no.nav.syfo.kafka
+package no.nav.syfo.kafka.consumer
 
 import no.nav.syfo.config.CALL_ID
 import no.nav.syfo.domain.dto.Sykepengesoknad

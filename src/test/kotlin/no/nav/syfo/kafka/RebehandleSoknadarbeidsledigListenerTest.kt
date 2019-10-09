@@ -2,6 +2,7 @@ package no.nav.syfo.kafka
 
 import no.nav.syfo.consumer.repository.InnsendingDAO
 import no.nav.syfo.domain.Innsending
+import no.nav.syfo.kafka.consumer.RebehandleSoknadarbeidsledigListener
 import no.nav.syfo.kafka.sykepengesoknadarbeidsledig.dto.SoknadsstatusDTO.NY
 import no.nav.syfo.kafka.sykepengesoknadarbeidsledig.dto.SoknadsstatusDTO.SENDT
 import no.nav.syfo.kafka.sykepengesoknadarbeidsledig.dto.SykepengesoknadArbeidsledigDTO
