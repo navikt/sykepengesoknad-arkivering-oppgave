@@ -11,10 +11,12 @@ import no.nav.syfo.consumer.ws.PersonConsumer
 import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.Soknadstype
 import no.nav.syfo.domain.dto.Sykepengesoknad
+import no.nav.syfo.kafka.producer.RebehandlingProducer
 import no.nav.syfo.log
 import org.springframework.stereotype.Component
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.LocalDateTime.now
 import java.time.temporal.ChronoUnit
 import java.util.stream.Stream
 
@@ -27,7 +29,8 @@ class SaksbehandlingsService(
         private val aktorConsumer: AktorConsumer,
         private val innsendingDAO: InnsendingDAO,
         private val personConsumer: PersonConsumer,
-        private val registry: MeterRegistry) {
+        private val registry: MeterRegistry,
+        private val rebehandlingProducer: RebehandlingProducer) {
 
     private val log = log()
 
@@ -76,13 +79,12 @@ class SaksbehandlingsService(
                     innsendingId
             )
         } catch (e: Exception) {
-            innsendingDAO.leggTilFeiletInnsending(innsendingId)
-
             tellInnsendingFeilet(sykepengesoknad.soknadstype)
-            log.error("Kunne ikke fullføre innsending av søknad med innsending id: {} og sykepengesøknad id: {}",
+            log.error("Kunne ikke fullføre innsending av søknad med innsending id: {} og sykepengesøknad id: {}, legger på intern rebehandling-topic",
                     innsendingId,
                     sykepengesoknadId,
                     e)
+            rebehandlingProducer.leggPaRebehandlingTopic(sykepengesoknad, now().plusMinutes(10))
         }
     }
 

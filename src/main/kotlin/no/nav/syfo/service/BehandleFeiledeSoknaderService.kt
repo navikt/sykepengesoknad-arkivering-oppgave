@@ -49,6 +49,7 @@ constructor(
             }
         } catch (e: RuntimeException) {
             log().error("Feilet ved rebehandling av innsending med ressursid: {}", sykepengesoknad.id, e)
+            throw RuntimeException(e)
         }
 
     }

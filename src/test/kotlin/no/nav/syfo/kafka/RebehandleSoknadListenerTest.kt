@@ -2,6 +2,7 @@ package no.nav.syfo.kafka
 
 import no.nav.syfo.consumer.repository.InnsendingDAO
 import no.nav.syfo.domain.Innsending
+import no.nav.syfo.kafka.consumer.RebehandleSoknadListener
 import no.nav.syfo.kafka.interfaces.Soknad
 import no.nav.syfo.kafka.soknad.dto.SoknadDTO
 import no.nav.syfo.kafka.sykepengesoknad.dto.*
@@ -41,10 +42,10 @@ class RebehandleSoknadListenerTest {
         `when`(consumerFactory.createConsumer(anyString(), anyString())).thenReturn(consumer)
 
         rebehandleSoknadListener = RebehandleSoknadListener(
-                behandleFeiledeSoknaderService,
-                innsendingDAO,
-                "test",
-                consumerFactory
+            behandleFeiledeSoknaderService,
+            innsendingDAO,
+            "test",
+            consumerFactory
         )
     }
 

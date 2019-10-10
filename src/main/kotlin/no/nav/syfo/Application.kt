@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.transaction.annotation.EnableTransactionManagement
 
 const val AZUREAD = "azuread"
+const val BEHANDLINGSTIDSPUNKT = "behandlingstidspunkt"
 
 @SpringBootApplication
 @EnableTransactionManagement

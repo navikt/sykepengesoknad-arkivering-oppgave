@@ -17,6 +17,7 @@ import no.nav.syfo.consumer.ws.PersonConsumer
 import no.nav.syfo.domain.dto.Soknadstype.ARBEIDSTAKERE
 import no.nav.syfo.domain.dto.Soknadstype.SELVSTENDIGE_OG_FRILANSERE
 import no.nav.syfo.domain.dto.Sykepengesoknad
+import no.nav.syfo.kafka.producer.RebehandlingProducer
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -49,6 +50,8 @@ class SaksbehandlingsServiceTest {
     lateinit var behandlendeEnhetService: BehandlendeEnhetService
     @Mock
     lateinit var registry: MeterRegistry
+    @Mock
+    lateinit var rebehandlingProducer: RebehandlingProducer
 
     @InjectMocks
     lateinit var saksbehandlingsService: SaksbehandlingsService
@@ -138,14 +141,24 @@ class SaksbehandlingsServiceTest {
 
     @Test
     @Throws(IOException::class)
-    fun feilendeInnsendingLeggesIBasen() {
+    fun feilendeInnsendingLeggesPaRetryTopic() {
         given(behandleJournalConsumer.opprettJournalpost(any(), any()))
-                .willThrow(RuntimeException("Opprett journal feilet"))
+            .willThrow(RuntimeException("Opprett journal feilet"))
 
         val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
-        verify<InnsendingDAO>(innsendingDAO, times(1)).leggTilFeiletInnsending(any())
+        verify(rebehandlingProducer, times(1)).leggPaRebehandlingTopic(any(), any())
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun soknadSomBehandlesLeggesIkkePaRetryTopic() {
+        val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
+
+        saksbehandlingsService.behandleSoknad(sykepengesoknad)
+
+        verify(rebehandlingProducer, never()).leggPaRebehandlingTopic(any(), any())
     }
 
     @Test
