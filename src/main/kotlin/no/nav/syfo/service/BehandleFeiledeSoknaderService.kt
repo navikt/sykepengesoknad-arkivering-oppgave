@@ -40,7 +40,6 @@ constructor(
 
             if (innsending.behandlet == null) {
                 innsendingDAO.settBehandlet(innsendingsId)
-                innsendingDAO.fjernFeiletInnsending(innsendingsId)
                 log().info("Fullført rebehandling av innsending med id: {} av soknad med id: {}",
                         innsendingsId, sykepengesoknad.id)
             } else {

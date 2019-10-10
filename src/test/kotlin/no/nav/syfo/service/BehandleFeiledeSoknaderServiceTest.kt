@@ -73,7 +73,6 @@ class BehandleFeiledeSoknaderServiceTest {
         verify<SaksbehandlingsService>(saksbehandlingsService).opprettOppgave(eq("innsendingsId"), anyString(), anyString(), any(), anyString(), anyString())
 
         verify<InnsendingDAO>(innsendingDAO).settBehandlet("innsendingsId")
-        verify<InnsendingDAO>(innsendingDAO).fjernFeiletInnsending("innsendingsId")
     }
 
     @Test
@@ -89,7 +88,6 @@ class BehandleFeiledeSoknaderServiceTest {
         verify<SaksbehandlingsService>(saksbehandlingsService).opprettOppgave(anyString(), anyString(), anyString(), any(), anyString(), anyString())
 
         verify<InnsendingDAO>(innsendingDAO).settBehandlet("innsendingsId")
-        verify<InnsendingDAO>(innsendingDAO).fjernFeiletInnsending("innsendingsId")
     }
 
     @Test
@@ -103,7 +101,6 @@ class BehandleFeiledeSoknaderServiceTest {
         verify<SaksbehandlingsService>(saksbehandlingsService).opprettOppgave(anyString(), anyString(), anyString(), any(), anyString(), anyString())
 
         verify<InnsendingDAO>(innsendingDAO).settBehandlet("innsendingsId")
-        verify<InnsendingDAO>(innsendingDAO).fjernFeiletInnsending("innsendingsId")
     }
 
     @Test
@@ -117,6 +114,5 @@ class BehandleFeiledeSoknaderServiceTest {
         verify<SaksbehandlingsService>(saksbehandlingsService).opprettOppgave(anyString(), anyString(), anyString(), any(), anyString(), anyString())
 
         verify<InnsendingDAO>(innsendingDAO).settBehandlet("innsendingsId")
-        verify<InnsendingDAO>(innsendingDAO).fjernFeiletInnsending("innsendingsId")
     }
 }
