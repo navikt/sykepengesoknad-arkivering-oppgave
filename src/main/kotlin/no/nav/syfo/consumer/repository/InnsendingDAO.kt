@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.sql.ResultSet
 import java.time.LocalDate
-import java.util.UUID
+import java.util.*
 
 @Service
 @Transactional
@@ -83,14 +83,6 @@ class InnsendingDAO(private val namedParameterJdbcTemplate: NamedParameterJdbcTe
         )
     }
 
-    fun leggTilFeiletInnsending(uuid: String) {
-        namedParameterJdbcTemplate.update(
-            "INSERT INTO FEILET_INNSENDING (INNSENDING_UUID, TIDSPUNKT) VALUES(:uuid, CURRENT_TIMESTAMP)",
-            MapSqlParameterSource()
-                .addValue("uuid", uuid)
-        )
-    }
-
     fun finnInnsendingForSykepengesoknad(sykepengesoknadId: String): Innsending? {
         return namedParameterJdbcTemplate.query(
             "SELECT * FROM INNSENDING WHERE RESSURS_ID = :ressursId",
@@ -99,24 +91,6 @@ class InnsendingDAO(private val namedParameterJdbcTemplate: NamedParameterJdbcTe
 
             innsendingRowMapper
         ).firstOrNull()
-    }
-
-    fun hentFeilendeInnsendinger(): List<Innsending> {
-        return namedParameterJdbcTemplate.query(
-            "SELECT * " +
-                    "FROM INNSENDING " +
-                    "WHERE INNSENDING_UUID IN (SELECT INNSENDING_UUID FROM FEILET_INNSENDING)",
-
-            innsendingRowMapper
-        )
-    }
-
-    fun fjernFeiletInnsending(innsendingsId: String) {
-        namedParameterJdbcTemplate.update(
-            "DELETE FROM FEILET_INNSENDING WHERE INNSENDING_UUID = :innsendingsId",
-
-            MapSqlParameterSource().addValue("innsendingsId", innsendingsId)
-        )
     }
 
     fun finnTidligereInnsendinger(aktorId: String): List<TidligereInnsending> {
