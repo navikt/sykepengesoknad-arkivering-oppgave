@@ -64,7 +64,7 @@ constructor(
                                                     .withTillknyttetJournalpostSomKode("HOVEDDOKUMENT")
                                                     .withJournalfoertDokument(WSJournalfoertDokumentInfo()
                                                             .withBegrensetPartsInnsyn(false)
-                                                            .withDokumentType(WSDokumenttyper().withValue("ES"))
+                                                            .withDokumentType(WSDokumenttyper().withValue(getBrevkode(soknad)))
                                                             .withSensitivitet(true)
                                                             .withTittel(getJornalfoertDokumentTittel(soknad))
                                                             .withKategorikode("ES")
@@ -81,6 +81,14 @@ constructor(
             val feilmelding = "Kunne ikke behandle journalpost for søknad med id " + soknad.soknadsId + " og saks id: " + saksId
             log().error(feilmelding, e)
             throw RuntimeException(feilmelding, e)
+        }
+    }
+
+    private fun getBrevkode(soknad: Soknad): String {
+        return when (soknad.soknadstype) {
+            OPPHOLD_UTLAND -> "NAV 08-07.09"
+            SELVSTENDIGE_OG_FRILANSERE, ARBEIDSTAKERE, ARBEIDSLEDIG -> "NAV 08-07.04 D"
+            else -> throw RuntimeException("Har ikke implementert brevkode for søknad av typen: " + soknad.soknadstype)
         }
     }
 
