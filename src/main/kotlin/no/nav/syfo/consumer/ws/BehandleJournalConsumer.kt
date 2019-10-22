@@ -94,7 +94,7 @@ constructor(
 
     private fun getJornalfoertDokumentTittel(soknad: Soknad): String {
         return when (soknad.soknadstype) {
-            OPPHOLD_UTLAND -> "Søknad om å beholde sykepenger utenfor Norge"
+            OPPHOLD_UTLAND -> "Søknad om å beholde sykepenger utenfor EØS"
             SELVSTENDIGE_OG_FRILANSERE -> "Søknad om sykepenger fra Selvstendig/Frilanser for periode: " + soknad.fom!!.format(norskDato) + " til " + soknad.tom!!.format(norskDato)
             ARBEIDSTAKERE -> "Søknad om sykepenger " + soknad.fom!!.format(norskDato) + " - " + soknad.tom!!.format(norskDato)
             ARBEIDSLEDIG -> "Søknad om sykepenger fra arbeidsledig for periode: " + soknad.fom!!.format(norskDato) + " til " + soknad.tom!!.format(norskDato)
@@ -114,7 +114,7 @@ constructor(
 
     private fun getJournalPostInnholdNavn(soknadstype: Soknadstype?): String {
         return when (soknadstype) {
-            OPPHOLD_UTLAND -> "Søknad om å beholde sykepenger utenfor Norge"
+            OPPHOLD_UTLAND -> "Søknad om å beholde sykepenger utenfor EØS"
             SELVSTENDIGE_OG_FRILANSERE, ARBEIDSTAKERE, ARBEIDSLEDIG -> "Søknad om sykepenger"
             else -> throw RuntimeException("Har ikke implementert strukturert innhold-filnavn for søknad av typen: $soknadstype")
         }
