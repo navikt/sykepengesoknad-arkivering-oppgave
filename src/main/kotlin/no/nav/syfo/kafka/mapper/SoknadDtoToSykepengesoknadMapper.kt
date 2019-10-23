@@ -15,16 +15,16 @@ private inline fun <reified U : Enum<*>> String?.enumValueOrNull(): U? =
 
 private fun SporsmalDTO.toSporsmal(): Sporsmal =
         Sporsmal(
-                id = id,
-                tag = tag,
+                id = id!!,
+                tag = tag!!,
                 sporsmalstekst = sporsmalstekst,
                 undertekst = undertekst,
                 svartype = svartype.enumValueOrNull(),
                 min = min,
                 max = max,
                 kriterieForVisningAvUndersporsmal = kriterieForVisningAvUndersporsmal.enumValueOrNull(),
-                svar = svar.map { it.toSvar() },
-                undersporsmal = undersporsmal.map { it.toSporsmal() }
+                svar = svar?.map { it.toSvar() },
+                undersporsmal = undersporsmal?.map { it.toSporsmal() }
         )
 
 private fun SvarDTO.toSvar(): Svar =
@@ -38,14 +38,14 @@ private fun SoknadPeriodeDTO.toSoknadPeriode(): SoknadPeriode =
 
 fun SoknadDTO.toSykepengesoknad(): Sykepengesoknad =
         Sykepengesoknad(
-                id = id,
+                id = id!!,
                 sykmeldingId = sykmeldingId,
-                aktorId = aktorId,
+                aktorId = aktorId!!,
                 soknadstype = soknadstype.enumValueOrNull(),
-                status = status,
+                status = status!!,
                 fom = fom,
                 tom = tom,
-                opprettet = opprettetDato.atStartOfDay(),
+                opprettet = opprettetDato!!.atStartOfDay(),
                 sendtNav = innsendtDato?.atStartOfDay(),
                 arbeidsgiver = arbeidsgiver,
                 arbeidssituasjon = arbeidssituasjon.enumValueOrNull(),
@@ -54,6 +54,8 @@ fun SoknadDTO.toSykepengesoknad(): Sykepengesoknad =
                 korrigertAv = korrigertAv,
                 korrigerer = korrigerer,
                 soknadPerioder = soknadPerioder?.map { it.toSoknadPeriode() },
-                sporsmal = sporsmal.map { it.toSporsmal() })
+                sporsmal = sporsmal!!.map { it.toSporsmal() },
+                avsendertype = avsendertype?.name?.enumValueOrNull()
+        )
 
 
