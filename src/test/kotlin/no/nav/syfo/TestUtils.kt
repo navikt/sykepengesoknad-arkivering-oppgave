@@ -2,7 +2,7 @@ package no.nav.syfo
 
 const val beskrivelseUtland =  "Søknad om å beholde sykepenger i utlandet\n" +
         "\n" +
-        "Når skal du være utenfor Norge?\n" +
+        "Når skal du reise?\n" +
         "10.12.2018 - 18.12.2018\n" +
         "\n" +
         "Hvor skal du reise?\n" +
@@ -18,7 +18,7 @@ const val beskrivelseUtland =  "Søknad om å beholde sykepenger i utlandet\n" +
 
 const val beskrivelseUtlandMedSvartypeLand = "Søknad om å beholde sykepenger i utlandet\n" +
         "\n" +
-        "Når skal du være utenfor Norge?\n" +
+        "Når skal du reise?\n" +
         "10.12.2018 - 18.12.2018\n" +
         "\n" +
         "Hvor skal du reise?\n" +
@@ -91,12 +91,12 @@ const val beskrivelseSelvstendigMangeSvar = "Søknad om sykepenger fra frilanser
         "\n" +
         "        Annet\n" +
         "\n" +
-        "Har du oppholdt deg utenfor Norge i perioden 20.05.2018 - 28.05.2018?\n" +
+        "Har du oppholdt deg utenfor EØS i perioden 20.05.2018 - 28.05.2018?\n" +
         "Ja\n" +
-        "    Når oppholdt du deg utenfor Norge?\n" +
+        "    Når oppholdt du deg utenfor EØS?\n" +
         "    22.05.2018 - 24.05.2018\n" +
         "\n" +
-        "    Har du søkt om å beholde sykepenger under dette oppholdet utenfor Norge?\n" +
+        "    Har du søkt om å beholde sykepenger under dette oppholdet utenfor EØS?\n" +
         "    Nei\n" +
         "\n" +
         "Har du vært under utdanning i løpet av perioden 20.05.2018 - 28.05.2018?\n" +
@@ -164,13 +164,13 @@ const val beskrivelseArbeidstakerMangeSvar = "Søknad om sykepenger for perioden
         "    Hvor mye jobbet du totalt 21. - 24. oktober 2018 hos ARBEIDSGIVER A/S?\n" +
         "    66 timer totalt\n" +
         "\n" +
-        "Har du hatt ferie, permisjon eller oppholdt deg utenfor Norge i perioden 16. - 24. oktober 2018?\n" +
+        "Har du hatt ferie, permisjon eller oppholdt deg utenfor EØS i perioden 16. - 24. oktober 2018?\n" +
         "Ja\n" +
         "    Kryss av alt som gjelder deg:\n" +
         "        Jeg tok ut ferie\n" +
         "            18.10.2018 - 20.10.2018\n" +
         "\n" +
-        "        Jeg var utenfor Norge\n" +
+        "        Jeg var utenfor EØS\n" +
         "            17.10.2018 - 18.10.2018\n" +
         "            20.10.2018 - 22.10.2018\n" +
         "\n" +
