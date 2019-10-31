@@ -21,7 +21,7 @@ import javax.inject.Inject
 class SoknadSendtListener @Inject
 constructor(private val saksbehandlingsService: SaksbehandlingsService) {
 
-    @KafkaListener(topics = ["syfo-soknad-v2"], id = "soknadSendt", idIsGroup = false)
+    @KafkaListener(topics = ["syfo-soknad-v2"], id = "soknadSendt", idIsGroup = false, containerFactory = "soknadContainerFactory")
     fun listen(cr: ConsumerRecord<String, Soknad>, acknowledgment: Acknowledgment) {
         log().debug("Melding mottatt på topic: {}, partisjon: {} med offset: {}", cr.topic(), cr.partition(), cr.offset())
 

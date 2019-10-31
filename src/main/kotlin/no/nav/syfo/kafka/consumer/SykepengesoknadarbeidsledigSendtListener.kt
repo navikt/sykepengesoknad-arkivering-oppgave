@@ -20,7 +20,7 @@ class SykepengesoknadarbeidsledigSendtListener @Inject
 constructor(private val saksbehandlingsService: SaksbehandlingsService) {
     private val log = log()
 
-    @KafkaListener(topics = ["syfo-soknad-arbeidsledig-v1"], id = "soknadArbeidsledigSendt", idIsGroup = false, containerFactory = "kafkaListenerContainerFactoryArbeidsledig")
+    @KafkaListener(topics = ["syfo-soknad-arbeidsledig-v1"], id = "soknadArbeidsledigSendt", idIsGroup = false, containerFactory = "arbeidsledigContainerFactory")
     fun listen(cr: ConsumerRecord<String, SykepengesoknadArbeidsledigDTO>, acknowledgment: Acknowledgment) {
         log.debug("Melding om søknad for arbeidsledig er mottatt på topic: {}, partisjon: {} med offset: {}", cr.topic(), cr.partition(), cr.offset())
 

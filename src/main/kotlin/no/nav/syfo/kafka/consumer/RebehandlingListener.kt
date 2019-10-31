@@ -17,7 +17,7 @@ import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
 import java.time.LocalDateTime.now
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.UUID
 import javax.inject.Inject
 
 @Component
@@ -27,7 +27,7 @@ constructor(private val behandleFeiledeSoknaderService: BehandleFeiledeSoknaderS
             private val rebehandlingProducer: RebehandlingProducer) {
     val log = log()
 
-    @KafkaListener(topics = ["syfogsak-rebehandle-soknad-v1"], id = "syfogsak-rebehandling", idIsGroup = false, containerFactory = "kafkaListenerContainerFactoryRebehandling")
+    @KafkaListener(topics = ["syfogsak-rebehandle-soknad-v1"], id = "syfogsak-rebehandling", idIsGroup = false, containerFactory = "rebehandlingContainerFactory")
     fun listen(cr: ConsumerRecord<String, Sykepengesoknad>, acknowledgment: Acknowledgment) {
         try {
             MDC.put(CALL_ID, KafkaHeaderConstants.getLastHeaderByKeyAsString(cr.headers(), CALL_ID).orElse(UUID.randomUUID().toString()))
