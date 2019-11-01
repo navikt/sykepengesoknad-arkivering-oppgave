@@ -5,7 +5,9 @@ import no.nav.syfo.log
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
+import org.springframework.stereotype.Component
 
+@Component
 class OpprettOppgaveListener() {
     val log = log()
 
