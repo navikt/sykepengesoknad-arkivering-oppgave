@@ -61,7 +61,7 @@ constructor(
         val aktorId = sykepengesoknad.aktorId
         val fnr = aktorConsumer.finnFnr(aktorId)
 
-        saksbehandlingsService.opprettOppgave(
+        saksbehandlingsService.opprettUtsattOppgave(
                 innsendingsId,
                 fnr,
                 aktorId,

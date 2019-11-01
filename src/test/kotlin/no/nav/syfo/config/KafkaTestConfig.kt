@@ -20,7 +20,7 @@ class KafkaTestConfig {
         return DefaultKafkaProducerFactory(
                 kafkaProperties.buildProducerProperties(),
                 StringSerializer(),
-                FunctionSerializer { soknadDTO -> byteArrayOf(1) })
+                FunctionSerializer { _ -> byteArrayOf(1) })
     }
 
     @Bean

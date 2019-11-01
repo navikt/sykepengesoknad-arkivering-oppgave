@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException
@@ -24,66 +23,77 @@ import java.time.LocalDate.now
 import java.time.format.DateTimeFormatter
 
 @Component
-class OppgaveConsumer(private val tokenConsumer: TokenConsumer,
-                      @Value("\${srvsyfogsak.username}") private val username: String,
-                      @Value("\${oppgave.oppgaver.url}") private val url: String,
-                      private val restTemplate: RestTemplate) {
-
+class OppgaveConsumer(
+    private val tokenConsumer: TokenConsumer,
+    @Value("\${srvsyfogsak.username}") private val username: String,
+    @Value("\${oppgave.oppgaver.url}") private val url: String,
+    private val restTemplate: RestTemplate
+) {
     val log = log()
     val oppgaveDato: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    val uriString = UriComponentsBuilder.fromHttpUrl(url).toUriString()
 
-    fun opprettOppgave(aktorId: String, behandlendeEnhet: String, saksId: String, journalpostId: String, soknad: Soknad): String {
-        val uriString = UriComponentsBuilder.fromHttpUrl(url).toUriString()
+    fun opprettOppgave(oppgaveRequest: OppgaveRequest): OppgaveResponse {
+        val request = oppdaterRequestBodyMedDatoer(oppgaveRequest)
+        return try {
+            val result = restTemplate.exchange(
+                uriString,
+                HttpMethod.POST,
+                HttpEntity(request, lagRequestHeaders()),
+                OppgaveResponse::class.java
+            )
 
-        try {
-            val result = restTemplate.exchange(uriString,
-                    HttpMethod.POST,
-                    HttpEntity(lagRequestBody(aktorId, behandlendeEnhet, saksId, journalpostId, soknad), lagRequestHeaders()),
-                    OppgaveResponse::class.java)
-
-            if (result.statusCode != HttpStatus.CREATED) {
-                val message = "Oppretting av oppgave for aktør $aktorId feiler med HTTP-" + result.statusCode
-                log.error(message)
-                throw RuntimeException(message)
+            if (!result.statusCode.is2xxSuccessful) {
+                throw RuntimeException("Oppretting av oppgave for aktør ${request.aktoerId} feiler med HTTP-${result.statusCode}")
             }
 
-            return result
-                    .let {
-                        it.body
-                                ?: throw RuntimeException("Oppgave-respons mangler ved oppretting av oppgave for $aktorId - skal ikke kunne skje!")
-                    }
-                    .id.toString()
+            result.body
+                ?: throw RuntimeException("Oppgave-respons mangler ved oppretting av oppgave for ${request.aktoerId}")
         } catch (e: HttpClientErrorException) {
-            log.error("Feil ved oppretting av oppgave for aktør $aktorId", e)
-            throw RuntimeException("Feil ved oppretting av oppgave for aktør $aktorId", e)
+            throw RuntimeException("Feil ved oppretting av oppgave for aktør ${request.aktoerId}", e)
         }
     }
 
-    fun lagRequestHeaders(): HttpHeaders {
-        val headers = HttpHeaders()
+    fun lagRequestHeaders(): HttpHeaders = HttpHeaders().also { headers ->
         headers.contentType = MediaType.APPLICATION_JSON
-        headers.set("Authorization", "Bearer " + tokenConsumer.token.access_token)
-        headers.set("Nav-Call-Id", MDC.get(CALL_ID))
-        headers.set("X-Correlation-ID", MDC.get(CALL_ID))
-        headers.set("Nav-Consumer-Id", username)
-        return headers
+        headers["Authorization"] = "Bearer ${tokenConsumer.token.access_token}"
+        headers["Nav-Call-Id"] = MDC.get(CALL_ID)
+        headers["X-Correlation-ID"] = MDC.get(CALL_ID)
+        headers["Nav-Consumer-Id"] = username
     }
 
-    fun lagRequestBody(aktorId: String, behandlendeEnhet: String, saksId: String, journalpostId: String, soknad: Soknad): OppgaveRequest =
+    fun oppdaterRequestBodyMedDatoer(oppgaveRequest: OppgaveRequest) = oppgaveRequest.copy(
+        aktivDato = now().format(oppgaveDato),
+        fristFerdigstillelse = omTreUkedager(now()).format(oppgaveDato)
+    )
+
+    companion object {
+        fun lagRequestBody(
+            aktorId: String,
+            behandlendeEnhet: String,
+            saksId: String,
+            journalpostId: String,
+            soknad: Soknad
+        ): OppgaveRequest =
             OppgaveRequest(
-                    tildeltEnhetsnr = behandlendeEnhet,
-                    opprettetAvEnhetsnr = "9999",
-                    aktoerId = aktorId,
-                    journalpostId = journalpostId,
-                    saksreferanse = saksId,
-                    beskrivelse = lagBeskrivelse(soknad),
-                    tema = "SYK",
-                    behandlingstema = if (soknad.soknadstype == Soknadstype.OPPHOLD_UTLAND) { "ab0314" } else { "ab0061" },
-                    oppgavetype = "SOK",
-                    aktivDato = now().format(oppgaveDato),
-                    fristFerdigstillelse = omTreUkedager(now()).format(oppgaveDato),
-                    prioritet = "NORM"
+                tildeltEnhetsnr = behandlendeEnhet,
+                opprettetAvEnhetsnr = "9999",
+                aktoerId = aktorId,
+                journalpostId = journalpostId,
+                saksreferanse = saksId,
+                beskrivelse = lagBeskrivelse(soknad),
+                tema = "SYK",
+                behandlingstema = if (soknad.soknadstype == Soknadstype.OPPHOLD_UTLAND) {
+                    "ab0314"
+                } else {
+                    "ab0061"
+                },
+                oppgavetype = "SOK",
+                aktivDato = null,
+                fristFerdigstillelse = null,
+                prioritet = "NORM"
             )
+    }
 
     fun omTreUkedager(idag: LocalDate): LocalDate {
         return when (idag.dayOfWeek) {
@@ -95,21 +105,21 @@ class OppgaveConsumer(private val tokenConsumer: TokenConsumer,
 }
 
 data class OppgaveRequest(
-        val tildeltEnhetsnr: String,
-        val opprettetAvEnhetsnr: String,
-        val aktoerId: String,
-        val journalpostId: String,
-        val saksreferanse: String,
-        val beskrivelse: String,
-        val tema: String,
-        val behandlingstema: String,
-        val oppgavetype: String,
-        val aktivDato: String,
-        val fristFerdigstillelse: String,
-        val prioritet: String
+    val tildeltEnhetsnr: String,
+    val opprettetAvEnhetsnr: String,
+    val aktoerId: String,
+    val journalpostId: String,
+    val saksreferanse: String,
+    val beskrivelse: String,
+    val tema: String,
+    val behandlingstema: String,
+    val oppgavetype: String,
+    val aktivDato: String?,
+    val fristFerdigstillelse: String?,
+    val prioritet: String
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class OppgaveResponse(
-        val id: Int
+    val id: Int
 )

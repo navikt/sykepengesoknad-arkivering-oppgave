@@ -16,7 +16,13 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestTemplate
-import java.time.DayOfWeek.*
+import java.time.DayOfWeek.FRIDAY
+import java.time.DayOfWeek.MONDAY
+import java.time.DayOfWeek.SATURDAY
+import java.time.DayOfWeek.SUNDAY
+import java.time.DayOfWeek.THURSDAY
+import java.time.DayOfWeek.TUESDAY
+import java.time.DayOfWeek.WEDNESDAY
 import java.time.LocalDate.now
 import java.time.temporal.TemporalAdjusters.next
 import javax.inject.Inject
@@ -77,9 +83,10 @@ class OppgaveConsumerTest {
                 BDDMockito.eq(OppgaveResponse::class.java)
         )).willReturn(ResponseEntity(response, HttpStatus.CREATED))
 
-        val oppgaveId = oppgaveConsumer.opprettOppgave(aktorId, behandlendeEnhet, saksId, journalpostId, lagSoknad(Soknadstype.ARBEIDSTAKERE))
+        val oppgaveRequest = OppgaveConsumer.lagRequestBody(aktorId, behandlendeEnhet, saksId, journalpostId, lagSoknad(Soknadstype.ARBEIDSTAKERE))
+        val oppgaveResponse = oppgaveConsumer.opprettOppgave(oppgaveRequest)
 
-        assertThat(oppgaveId).isEqualTo("1234")
+        assertThat(oppgaveResponse.id.toString()).isEqualTo("1234")
     }
 
     @Test(expected = RuntimeException::class)
@@ -91,7 +98,8 @@ class OppgaveConsumerTest {
                 BDDMockito.eq(OppgaveResponse::class.java)
         )).willReturn(ResponseEntity(HttpStatus.SERVICE_UNAVAILABLE))
 
-        oppgaveConsumer.opprettOppgave(aktorId, behandlendeEnhet, saksId, journalpostId, lagSoknad(Soknadstype.ARBEIDSTAKERE))
+        val oppgaveRequest = OppgaveConsumer.lagRequestBody(aktorId, behandlendeEnhet, saksId, journalpostId, lagSoknad(Soknadstype.ARBEIDSTAKERE))
+        oppgaveConsumer.opprettOppgave(oppgaveRequest)
     }
 
     @Test
@@ -103,7 +111,8 @@ class OppgaveConsumerTest {
 
     @Test
     fun lagRequestBodyLagerRequestMedRiktigeFelter() {
-        val body = oppgaveConsumer.lagRequestBody(aktorId, behandlendeEnhet, saksId, journalpostId, lagSoknad(Soknadstype.ARBEIDSTAKERE))
+        val bodyUtenDato = OppgaveConsumer.lagRequestBody(aktorId, behandlendeEnhet, saksId, journalpostId, lagSoknad(Soknadstype.ARBEIDSTAKERE))
+        val body = oppgaveConsumer.oppdaterRequestBodyMedDatoer(bodyUtenDato)
 
         assertThat(body.tildeltEnhetsnr).isEqualTo(behandlendeEnhet)
         assertThat(body.opprettetAvEnhetsnr).isEqualTo("9999")
@@ -121,7 +130,7 @@ class OppgaveConsumerTest {
 
     @Test
     fun lagRequestBodySetterRiktigBehandlingstemaForUtland() {
-        val body = oppgaveConsumer.lagRequestBody(aktorId, behandlendeEnhet, saksId, journalpostId, lagSoknad(Soknadstype.OPPHOLD_UTLAND))
+        val body = OppgaveConsumer.lagRequestBody(aktorId, behandlendeEnhet, saksId, journalpostId, lagSoknad(Soknadstype.OPPHOLD_UTLAND))
 
         assertThat(body.behandlingstema).isEqualTo("ab0314")
     }

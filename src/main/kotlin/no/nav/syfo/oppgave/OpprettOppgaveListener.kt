@@ -1,14 +1,14 @@
-package no.nav.syfo.kafka.consumer
+package no.nav.syfo.oppgave
 
-import no.nav.syfo.domain.dto.OpprettGosysOppgaveDTO
 import no.nav.syfo.log
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
+import javax.inject.Inject
 
 @Component
-class OpprettOppgaveListener() {
+class OpprettOppgaveListener @Inject constructor() {
     val log = log()
 
     @KafkaListener(

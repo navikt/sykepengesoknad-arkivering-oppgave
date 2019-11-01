@@ -12,7 +12,7 @@ data class Soknad(
         var soknadsId: String? = null,
         var fnr: String? = null,
         var navn: String? = null,
-        var soknadstype: Soknadstype? = null,
+        val soknadstype: Soknadstype? = null,
         var fom: LocalDate? = null,
         var tom: LocalDate? = null,
         var innsendtDato: LocalDate? = null,

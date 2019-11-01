@@ -13,7 +13,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit4.SpringRunner
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 import javax.inject.Inject
 
 @RunWith(SpringRunner::class)
@@ -25,6 +25,8 @@ class InnsendingDAOTest {
     private lateinit var innsendingDAO: InnsendingDAO
     @Inject
     private lateinit var jdbcTemplate: JdbcTemplate
+    @Inject
+    private lateinit var namedParameterJdbcTemplate: NamedParameterJdbcTemplate
 
     @Before
     fun initDB() {
@@ -38,7 +40,8 @@ class InnsendingDAOTest {
 
     @Test
     fun lagreInnsending() {
-        val uuid = innsendingDAO.opprettInnsending("soknad-uuid", "aktor", LocalDate.of(2019,3,8), LocalDate.of(2019,3,20))
+        val uuid =
+            innsendingDAO.opprettInnsending("soknad-uuid", "aktor", LocalDate.of(2019, 3, 8), LocalDate.of(2019, 3, 20))
         innsendingDAO.oppdaterSaksId(uuid, "saksId")
         innsendingDAO.oppdaterJournalpostId(uuid, "journalpostId")
         innsendingDAO.oppdaterOppgaveId(uuid, "oppgaveId")

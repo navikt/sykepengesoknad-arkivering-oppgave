@@ -13,6 +13,7 @@ import no.nav.syfo.domain.dto.Soknadstype
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.syfo.kafka.producer.RebehandlingProducer
 import no.nav.syfo.log
+import no.nav.syfo.oppgave.UtsattOppgaveDAO
 import org.springframework.stereotype.Component
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -22,45 +23,51 @@ import java.util.stream.Stream
 
 @Component
 class SaksbehandlingsService(
-        private val sakConsumer: SakConsumer,
-        private val oppgaveConsumer: OppgaveConsumer,
-        private val behandleJournalConsumer: BehandleJournalConsumer,
-        private val behandlendeEnhetService: BehandlendeEnhetService,
-        private val aktorConsumer: AktorConsumer,
-        private val innsendingDAO: InnsendingDAO,
-        private val personConsumer: PersonConsumer,
-        private val registry: MeterRegistry,
-        private val rebehandlingProducer: RebehandlingProducer) {
+    private val sakConsumer: SakConsumer,
+    private val oppgaveConsumer: OppgaveConsumer,
+    private val behandleJournalConsumer: BehandleJournalConsumer,
+    private val behandlendeEnhetService: BehandlendeEnhetService,
+    private val aktorConsumer: AktorConsumer,
+    private val innsendingDAO: InnsendingDAO,
+    private val utsattOppgaveDAO: UtsattOppgaveDAO,
+    private val personConsumer: PersonConsumer,
+    private val registry: MeterRegistry,
+    private val rebehandlingProducer: RebehandlingProducer
+) {
 
     private val log = log()
 
-    private fun ikkeSendtTilNav(sykepengesoknad: Sykepengesoknad): Boolean {
-        return !("SENDT" == sykepengesoknad.status && sykepengesoknad.sendtNav != null)
-    }
-
-    private fun ettersendtTilArbeidsgiver(sykepengesoknad: Sykepengesoknad): Boolean {
-        return sykepengesoknad.sendtArbeidsgiver != null && sykepengesoknad.sendtNav?.isBefore(sykepengesoknad.sendtArbeidsgiver) ?: false
-    }
-
     fun behandleSoknad(sykepengesoknad: Sykepengesoknad) {
-        if (ikkeSendtTilNav(sykepengesoknad) || ettersendtTilArbeidsgiver(sykepengesoknad)) {
-            return
-        }
-
         val sykepengesoknadId = sykepengesoknad.id
         val aktorId = sykepengesoknad.aktorId
-        val innsending = innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknadId)
+        if (ikkeSendtTilNav(sykepengesoknad) || ettersendtTilArbeidsgiver(sykepengesoknad)) return
 
-        innsending?.let {
-            val innsendingId = it.innsendingsId
-            log.warn("Innsending for sykepengesøknad {} allerede opprettet med id {}.",
-                    sykepengesoknadId,
-                    innsendingId
+        val eksisterendeInnsendingId = finnEksisterendeInnsendingId(sykepengesoknadId)
+        if (eksisterendeInnsendingId != null) {
+            log.warn(
+                "Innsending for sykepengesøknad {} allerede opprettet med id {}.",
+                sykepengesoknadId,
+                eksisterendeInnsendingId
             )
             return
         }
 
-        val innsendingId = innsendingDAO.opprettInnsending(sykepengesoknadId, aktorId, sykepengesoknad.fom, sykepengesoknad.tom)
+        lagOppgaver(sykepengesoknadId, aktorId, sykepengesoknad)
+    }
+
+    private fun ikkeSendtTilNav(sykepengesoknad: Sykepengesoknad) =
+        sykepengesoknad.status != "SENDT" || sykepengesoknad.sendtNav == null
+
+
+    private fun ettersendtTilArbeidsgiver(sykepengesoknad: Sykepengesoknad) =
+        sykepengesoknad.sendtArbeidsgiver != null && sykepengesoknad.sendtNav?.isBefore(sykepengesoknad.sendtArbeidsgiver) ?: false
+
+    private fun finnEksisterendeInnsendingId(sykepengesoknadId: String) =
+        innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknadId)?.innsendingsId
+
+    private fun lagOppgaver(sykepengesoknadId: String, aktorId: String, sykepengesoknad: Sykepengesoknad) {
+        val innsendingId =
+            innsendingDAO.opprettInnsending(sykepengesoknadId, aktorId, sykepengesoknad.fom, sykepengesoknad.tom)
 
         try {
             val fnr = aktorConsumer.finnFnr(aktorId)
@@ -69,31 +76,63 @@ class SaksbehandlingsService(
             val saksId = finnEllerOpprettSak(innsendingId, aktorId, soknad.fom)
             val journalpostId = opprettJournalpost(innsendingId, soknad, saksId)
 
-            opprettOppgave(innsendingId, fnr, aktorId, soknad, saksId, journalpostId)
+            opprettUtsattOppgave(innsendingId, fnr, aktorId, soknad, saksId, journalpostId)
 
-            innsendingDAO.settBehandlet(innsendingId)
+            when (soknad.soknadstype) {
+                Soknadstype.SELVSTENDIGE_OG_FRILANSERE, Soknadstype.OPPHOLD_UTLAND, Soknadstype.ARBEIDSLEDIG -> {
+                    aktiverUtsatteOppgaver(aktorId, soknad.soknadstype)
+                }
+                Soknadstype.ARBEIDSTAKERE -> {
+                    aktiverUtsatteOppgaver(aktorId, Soknadstype.ARBEIDSTAKERE)
+                }
+                null -> error("Søknadstype er null for ${soknad.soknadsId}")
+            }
 
-            tellInnsendingBehandlet(sykepengesoknad.soknadstype)
-            log.info("Søknad med id {} er behandlet i innsending med id {}",
-                    soknad.soknadsId,
-                    innsendingId
-            )
         } catch (e: Exception) {
-            tellInnsendingFeilet(sykepengesoknad.soknadstype)
-            log.error("Kunne ikke fullføre innsending av søknad med innsending id: {} og sykepengesøknad id: {}, legger på intern rebehandling-topic",
-                    innsendingId,
-                    sykepengesoknadId,
-                    e)
-            rebehandlingProducer.leggPaRebehandlingTopic(sykepengesoknad, now().plusMinutes(10))
+            innsendingFeilet(sykepengesoknad, innsendingId, e)
         }
     }
 
+    private fun innsendingFeilet(
+        sykepengesoknad: Sykepengesoknad,
+        innsendingId: String,
+        e: Exception
+    ) {
+        tellInnsendingFeilet(sykepengesoknad.soknadstype)
+        log.error(
+            "Kunne ikke fullføre innsending av søknad med innsending id: {} og sykepengesøknad id: {}, legger på intern rebehandling-topic",
+            innsendingId,
+            sykepengesoknad.id,
+            e
+        )
+        rebehandlingProducer.leggPaRebehandlingTopic(sykepengesoknad, now().plusMinutes(10))
+    }
 
-    fun opprettOppgave(innsendingId: String, fnr: String, aktorId: String, soknad: Soknad, saksId: String, journalpostId: String) {
+    fun opprettUtsattOppgave(
+        innsendingId: String,
+        fnr: String,
+        aktorId: String,
+        soknad: Soknad,
+        saksId: String,
+        journalpostId: String
+    ) {
         val behandlendeEnhet = behandlendeEnhetService.hentBehandlendeEnhet(fnr, soknad.soknadstype)
-        val oppgaveId = oppgaveConsumer
-                .opprettOppgave(aktorId, behandlendeEnhet, saksId, journalpostId, soknad)
-        innsendingDAO.oppdaterOppgaveId(innsendingId, oppgaveId)
+        val requestBody = OppgaveConsumer.lagRequestBody(aktorId, behandlendeEnhet, saksId, journalpostId, soknad)
+        utsattOppgaveDAO.lagreUtsattOppgave(soknad.soknadsId!!, requestBody)
+    }
+
+    fun aktiverUtsatteOppgaver(aktorId: String, soknadstype: Soknadstype) {
+        for (utsattOppgave in utsattOppgaveDAO.hentUtsattOppgaverForAktorId(aktorId)) {
+            val oppgaveId = oppgaveConsumer.opprettOppgave(utsattOppgave.oppgaveRequest).id.toString()
+            val innsendingId = utsattOppgave.innsendingId
+
+            innsendingDAO.oppdaterOppgaveId(oppgaveId, innsendingId)
+            utsattOppgaveDAO.fjernUtsattOppgave(innsendingId)
+            innsendingDAO.settBehandlet(innsendingId)
+
+            tellInnsendingBehandlet(soknadstype)
+            log.info("Søknad er behandlet i innsending med id {}", innsendingId)
+        }
     }
 
     fun opprettJournalpost(innsendingId: String, soknad: Soknad, saksId: String): String {
@@ -122,33 +161,35 @@ class SaksbehandlingsService(
     fun erPaFolgendeInkludertHelg(one: LocalDate, two: LocalDate): Boolean {
 
         return Stream.iterate(one.plusDays(1)) { it.plusDays(1) }
-                .limit(ChronoUnit.DAYS.between(one, two) - 1)
-                .map { it.dayOfWeek }
-                .allMatch{ it == DayOfWeek.SATURDAY || it == DayOfWeek.SUNDAY}
+            .limit(ChronoUnit.DAYS.between(one, two) - 1)
+            .map { it.dayOfWeek }
+            .allMatch { it == DayOfWeek.SATURDAY || it == DayOfWeek.SUNDAY }
     }
 
     fun opprettSoknad(sykepengesoknad: Sykepengesoknad, fnr: String): Soknad =
-            Soknad.lagSoknad(sykepengesoknad, fnr, personConsumer.finnBrukerPersonnavnByFnr(fnr))
+        Soknad.lagSoknad(sykepengesoknad, fnr, personConsumer.finnBrukerPersonnavnByFnr(fnr))
 
     private fun tellInnsendingBehandlet(soknadstype: Soknadstype?) {
         registry.counter(
-                "syfogsak.innsending.behandlet",
-                Tags.of(
-                        "type", "info",
-                        "soknadstype", soknadstype?.name ?: "UKJENT",
-                        "help", "Antall ferdigbehandlede innsendinger."
-                ))
-                .increment()
+            "syfogsak.innsending.behandlet",
+            Tags.of(
+                "type", "info",
+                "soknadstype", soknadstype?.name ?: "UKJENT",
+                "help", "Antall ferdigbehandlede innsendinger."
+            )
+        )
+            .increment()
     }
 
     private fun tellInnsendingFeilet(soknadstype: Soknadstype?) {
         registry.counter(
-                "syfogsak.innsending.feilet",
-                Tags.of(
-                        "type", "info",
-                        "soknadstype", soknadstype?.name ?: "UKJENT",
-                        "help", "Antall innsendinger hvor feil mot baksystemer gjorde at behandling ikke kunne fullføres."
-                ))
-                .increment()
+            "syfogsak.innsending.feilet",
+            Tags.of(
+                "type", "info",
+                "soknadstype", soknadstype?.name ?: "UKJENT",
+                "help", "Antall innsendinger hvor feil mot baksystemer gjorde at behandling ikke kunne fullføres."
+            )
+        )
+            .increment()
     }
 }

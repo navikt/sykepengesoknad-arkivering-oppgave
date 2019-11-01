@@ -70,7 +70,7 @@ class BehandleFeiledeSoknaderServiceTest {
 
         verify<SaksbehandlingsService>(saksbehandlingsService).finnEllerOpprettSak(anyString(), anyString(), any())
         verify<SaksbehandlingsService>(saksbehandlingsService).opprettJournalpost(anyString(), any(), anyString())
-        verify<SaksbehandlingsService>(saksbehandlingsService).opprettOppgave(eq("innsendingsId"), anyString(), anyString(), any(), anyString(), anyString())
+        verify<SaksbehandlingsService>(saksbehandlingsService).opprettUtsattOppgave(eq("innsendingsId"), anyString(), anyString(), any(), anyString(), anyString())
 
         verify<InnsendingDAO>(innsendingDAO).settBehandlet("innsendingsId")
     }
@@ -85,7 +85,7 @@ class BehandleFeiledeSoknaderServiceTest {
 
         verify<SaksbehandlingsService>(saksbehandlingsService).finnEllerOpprettSak(anyString(), anyString(), any())
         verify<SaksbehandlingsService>(saksbehandlingsService).opprettJournalpost(anyString(), any(), anyString())
-        verify<SaksbehandlingsService>(saksbehandlingsService).opprettOppgave(anyString(), anyString(), anyString(), any(), anyString(), anyString())
+        verify<SaksbehandlingsService>(saksbehandlingsService).opprettUtsattOppgave(anyString(), anyString(), anyString(), any(), anyString(), anyString())
 
         verify<InnsendingDAO>(innsendingDAO).settBehandlet("innsendingsId")
     }
@@ -98,7 +98,7 @@ class BehandleFeiledeSoknaderServiceTest {
 
         verify<SaksbehandlingsService>(saksbehandlingsService, never()).finnEllerOpprettSak(anyString(), anyString(), any())
         verify<SaksbehandlingsService>(saksbehandlingsService).opprettJournalpost(anyString(), any(), anyString())
-        verify<SaksbehandlingsService>(saksbehandlingsService).opprettOppgave(anyString(), anyString(), anyString(), any(), anyString(), anyString())
+        verify<SaksbehandlingsService>(saksbehandlingsService).opprettUtsattOppgave(anyString(), anyString(), anyString(), any(), anyString(), anyString())
 
         verify<InnsendingDAO>(innsendingDAO).settBehandlet("innsendingsId")
     }
@@ -111,7 +111,7 @@ class BehandleFeiledeSoknaderServiceTest {
 
         verify<SaksbehandlingsService>(saksbehandlingsService, never()).finnEllerOpprettSak(anyString(), anyString(), any())
         verify<SaksbehandlingsService>(saksbehandlingsService, never()).opprettJournalpost(anyString(), any(), anyString())
-        verify<SaksbehandlingsService>(saksbehandlingsService).opprettOppgave(anyString(), anyString(), anyString(), any(), anyString(), anyString())
+        verify<SaksbehandlingsService>(saksbehandlingsService).opprettUtsattOppgave(anyString(), anyString(), anyString(), any(), anyString(), anyString())
 
         verify<InnsendingDAO>(innsendingDAO).settBehandlet("innsendingsId")
     }
