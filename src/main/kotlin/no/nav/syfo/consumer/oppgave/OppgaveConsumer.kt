@@ -21,6 +21,7 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDate.now
 import java.time.format.DateTimeFormatter
+import java.util.*
 
 @Component
 class OppgaveConsumer(
@@ -55,8 +56,8 @@ class OppgaveConsumer(
     fun lagRequestHeaders(): HttpHeaders = HttpHeaders().also { headers ->
         headers.contentType = MediaType.APPLICATION_JSON
         headers["Authorization"] = "Bearer ${tokenConsumer.token.access_token}"
-        headers["Nav-Call-Id"] = MDC.get(CALL_ID)
-        headers["X-Correlation-ID"] = MDC.get(CALL_ID)
+        headers["Nav-Call-Id"] = callId()
+        headers["X-Correlation-ID"] = callId()
         headers["Nav-Consumer-Id"] = username
     }
 
@@ -92,6 +93,15 @@ class OppgaveConsumer(
             DayOfWeek.SUNDAY -> idag.plusDays(4)
             DayOfWeek.MONDAY, DayOfWeek.TUESDAY -> idag.plusDays(3)
             else -> idag.plusDays(5)
+        }
+    }
+
+    private fun callId(): String {
+        val callId = MDC.get(CALL_ID)
+        return if (callId.isNullOrEmpty()) {
+            UUID.randomUUID().toString()
+        } else {
+            callId
         }
     }
 }

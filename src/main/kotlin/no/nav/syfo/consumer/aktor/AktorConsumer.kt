@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
+import java.util.*
 
 @Component
 class AktorConsumer(private val tokenConsumer: TokenConsumer,
@@ -31,11 +32,20 @@ class AktorConsumer(private val tokenConsumer: TokenConsumer,
         return getIdent(aktorId, "NorskIdent")
     }
 
+    private fun callId(): String {
+        val callId = MDC.get(CALL_ID)
+        return if (callId.isNullOrEmpty()) {
+            UUID.randomUUID().toString()
+        } else {
+            callId
+        }
+    }
+
     private fun getIdent(sokeIdent: String, identgruppe: String): String {
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
         headers.set("Authorization", "Bearer " + tokenConsumer.token.access_token)
-        headers.set("Nav-Call-Id", MDC.get(CALL_ID))
+        headers.set("Nav-Call-Id", callId())
         headers.set("Nav-Consumer-Id", username)
         headers.set("Nav-Personidenter", sokeIdent)
 
