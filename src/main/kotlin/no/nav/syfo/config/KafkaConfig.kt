@@ -13,7 +13,6 @@ import no.nav.syfo.kafka.soknad.dto.SoknadDTO
 import no.nav.syfo.kafka.soknad.serializer.FunctionSerializer
 import no.nav.syfo.kafka.sykepengesoknad.dto.SykepengesoknadDTO
 import no.nav.syfo.kafka.sykepengesoknadarbeidsledig.dto.SykepengesoknadArbeidsledigDTO
-import no.nav.syfo.oppgave.OpprettGosysOppgaveDTO
 import org.apache.kafka.common.serialization.Deserializer
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.kafka.common.serialization.StringSerializer
@@ -49,10 +48,6 @@ class KafkaConfig(private val kafkaErrorHandler: KafkaErrorHandler, private val 
 
     @Bean
     fun rebehandlingContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, Sykepengesoknad> =
-        containerFactory(deserializer())
-
-    @Bean
-    fun opprettOppgaveContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, OpprettGosysOppgaveDTO> =
         containerFactory(deserializer())
 
     @Bean

@@ -20,8 +20,6 @@ import no.nav.syfo.domain.dto.Soknadstype.ARBEIDSTAKERE
 import no.nav.syfo.domain.dto.Soknadstype.SELVSTENDIGE_OG_FRILANSERE
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.syfo.kafka.producer.RebehandlingProducer
-import no.nav.syfo.oppgave.UtsattOppgave
-import no.nav.syfo.oppgave.UtsattOppgaveDAO
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -58,13 +56,12 @@ class SaksbehandlingsServiceTest {
     lateinit var registry: MeterRegistry
     @Mock
     lateinit var rebehandlingProducer: RebehandlingProducer
-    @Mock
-    lateinit var utsattOppgaveDAO: UtsattOppgaveDAO
 
     @InjectMocks
     lateinit var saksbehandlingsService: SaksbehandlingsService
 
     private val objectMapper = ObjectMapper().registerModules(JavaTimeModule(), KotlinModule())
+    private val aktorId = "aktorId-745463060"
 
     @Before
     fun setup() {
@@ -79,7 +76,6 @@ class SaksbehandlingsServiceTest {
         given(oppgaveConsumer.opprettOppgave(any())).willReturn(OppgaveResponse(1234))
         given<Counter>(registry.counter(ArgumentMatchers.anyString(), ArgumentMatchers.anyIterable())).willReturn(mock(Counter::class.java))
         given(innsendingDAO.opprettInnsending(any(), any(), any(), any())).willReturn("innsending-guid")
-        given(utsattOppgaveDAO.hentUtsattOppgaverForAktorId(any())).willReturn(listOf(UtsattOppgave("innsending-guid", OppgaveConsumer.lagRequestBody("aktorId-745463060", "2017", "ny-sak-fra-gsak", "journalpostId", defaultSoknad))))
     }
 
     @Test

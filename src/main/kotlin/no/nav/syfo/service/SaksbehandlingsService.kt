@@ -13,7 +13,6 @@ import no.nav.syfo.domain.dto.Soknadstype
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.syfo.kafka.producer.RebehandlingProducer
 import no.nav.syfo.log
-import no.nav.syfo.oppgave.UtsattOppgaveDAO
 import org.springframework.stereotype.Component
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -29,7 +28,6 @@ class SaksbehandlingsService(
     private val behandlendeEnhetService: BehandlendeEnhetService,
     private val aktorConsumer: AktorConsumer,
     private val innsendingDAO: InnsendingDAO,
-    private val utsattOppgaveDAO: UtsattOppgaveDAO,
     private val personConsumer: PersonConsumer,
     private val registry: MeterRegistry,
     private val rebehandlingProducer: RebehandlingProducer
@@ -55,60 +53,7 @@ class SaksbehandlingsService(
         lagOppgaver(sykepengesoknadId, aktorId, sykepengesoknad)
     }
 
-    private fun ikkeSendtTilNav(sykepengesoknad: Sykepengesoknad) =
-        sykepengesoknad.status != "SENDT" || sykepengesoknad.sendtNav == null
-
-
-    private fun ettersendtTilArbeidsgiver(sykepengesoknad: Sykepengesoknad) =
-        sykepengesoknad.sendtArbeidsgiver != null && sykepengesoknad.sendtNav?.isBefore(sykepengesoknad.sendtArbeidsgiver) ?: false
-
-    private fun finnEksisterendeInnsendingId(sykepengesoknadId: String) =
-        innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknadId)?.innsendingsId
-
-    private fun lagOppgaver(sykepengesoknadId: String, aktorId: String, sykepengesoknad: Sykepengesoknad) {
-        val innsendingId =
-            innsendingDAO.opprettInnsending(sykepengesoknadId, aktorId, sykepengesoknad.fom, sykepengesoknad.tom)
-
-        try {
-            val fnr = aktorConsumer.finnFnr(aktorId)
-            val soknad = opprettSoknad(sykepengesoknad, fnr)
-
-            val saksId = finnEllerOpprettSak(innsendingId, aktorId, soknad.fom)
-            val journalpostId = opprettJournalpost(innsendingId, soknad, saksId)
-
-            opprettUtsattOppgave(innsendingId, fnr, aktorId, soknad, saksId, journalpostId)
-
-            when (soknad.soknadstype) {
-                Soknadstype.SELVSTENDIGE_OG_FRILANSERE, Soknadstype.OPPHOLD_UTLAND, Soknadstype.ARBEIDSLEDIG -> {
-                    aktiverUtsatteOppgaver(aktorId, soknad.soknadstype)
-                }
-                Soknadstype.ARBEIDSTAKERE -> {
-                    aktiverUtsatteOppgaver(aktorId, Soknadstype.ARBEIDSTAKERE)
-                }
-                null -> error("Søknadstype er null for ${soknad.soknadsId}")
-            }
-
-        } catch (e: Exception) {
-            innsendingFeilet(sykepengesoknad, innsendingId, e)
-        }
-    }
-
-    private fun innsendingFeilet(
-        sykepengesoknad: Sykepengesoknad,
-        innsendingId: String,
-        e: Exception
-    ) {
-        tellInnsendingFeilet(sykepengesoknad.soknadstype)
-        log.error(
-            "Kunne ikke fullføre innsending av søknad med innsending id: {} og sykepengesøknad id: {}, legger på intern rebehandling-topic",
-            innsendingId,
-            sykepengesoknad.id,
-            e
-        )
-        rebehandlingProducer.leggPaRebehandlingTopic(sykepengesoknad, now().plusMinutes(10))
-    }
-
-    fun opprettUtsattOppgave(
+    fun opprettOppgave(
         innsendingId: String,
         fnr: String,
         aktorId: String,
@@ -118,21 +63,13 @@ class SaksbehandlingsService(
     ) {
         val behandlendeEnhet = behandlendeEnhetService.hentBehandlendeEnhet(fnr, soknad.soknadstype)
         val requestBody = OppgaveConsumer.lagRequestBody(aktorId, behandlendeEnhet, saksId, journalpostId, soknad)
-        utsattOppgaveDAO.lagreUtsattOppgave(soknad.soknadsId!!, requestBody)
-    }
+        val oppgaveId = oppgaveConsumer.opprettOppgave(requestBody).id.toString()
 
-    fun aktiverUtsatteOppgaver(aktorId: String, soknadstype: Soknadstype) {
-        for (utsattOppgave in utsattOppgaveDAO.hentUtsattOppgaverForAktorId(aktorId)) {
-            val oppgaveId = oppgaveConsumer.opprettOppgave(utsattOppgave.oppgaveRequest).id.toString()
-            val innsendingId = utsattOppgave.innsendingId
+        innsendingDAO.oppdaterOppgaveId(oppgaveId, innsendingId)
+        innsendingDAO.settBehandlet(innsendingId)
 
-            innsendingDAO.oppdaterOppgaveId(oppgaveId, innsendingId)
-            utsattOppgaveDAO.fjernUtsattOppgave(innsendingId)
-            innsendingDAO.settBehandlet(innsendingId)
-
-            tellInnsendingBehandlet(soknadstype)
-            log.info("Søknad er behandlet i innsending med id {}", innsendingId)
-        }
+        tellInnsendingBehandlet(soknad.soknadstype)
+        log.info("Søknad er behandlet i innsending med id {}", innsendingId)
     }
 
     fun opprettJournalpost(innsendingId: String, soknad: Soknad, saksId: String): String {
@@ -152,19 +89,54 @@ class SaksbehandlingsService(
             }
             ?: opprettSak(aktorId, innsendingId)
 
+    private fun ikkeSendtTilNav(sykepengesoknad: Sykepengesoknad) =
+        sykepengesoknad.status != "SENDT" || sykepengesoknad.sendtNav == null
+
+    private fun ettersendtTilArbeidsgiver(sykepengesoknad: Sykepengesoknad) = sykepengesoknad.sendtArbeidsgiver != null
+            && sykepengesoknad.sendtNav?.isBefore(sykepengesoknad.sendtArbeidsgiver) ?: false
+
+    private fun finnEksisterendeInnsendingId(sykepengesoknadId: String) =
+        innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknadId)?.innsendingsId
+
+    private fun lagOppgaver(sykepengesoknadId: String, aktorId: String, sykepengesoknad: Sykepengesoknad) {
+        val innsendingId =
+            innsendingDAO.opprettInnsending(sykepengesoknadId, aktorId, sykepengesoknad.fom, sykepengesoknad.tom)
+
+        try {
+            val fnr = aktorConsumer.finnFnr(aktorId)
+            val soknad = opprettSoknad(sykepengesoknad, fnr)
+
+            val saksId = finnEllerOpprettSak(innsendingId, aktorId, soknad.fom)
+            val journalpostId = opprettJournalpost(innsendingId, soknad, saksId)
+
+            opprettOppgave(innsendingId, fnr, aktorId, soknad, saksId, journalpostId)
+        } catch (e: Exception) {
+            innsendingFeilet(sykepengesoknad, innsendingId, e)
+        }
+    }
+
+    private fun innsendingFeilet(sykepengesoknad: Sykepengesoknad, innsendingId: String, e: Exception) {
+        tellInnsendingFeilet(sykepengesoknad.soknadstype)
+        log.error(
+            "Kunne ikke fullføre innsending av søknad med innsending id: {} og sykepengesøknad id: {}, legger på intern rebehandling-topic",
+            innsendingId,
+            sykepengesoknad.id,
+            e
+        )
+        rebehandlingProducer.leggPaRebehandlingTopic(sykepengesoknad, now().plusMinutes(10))
+    }
+
     private fun opprettSak(aktorId: String, innsendingId: String): String {
         val saksId = sakConsumer.opprettSak(aktorId)
         innsendingDAO.oppdaterSaksId(innsendingId, saksId)
         return saksId
     }
 
-    fun erPaFolgendeInkludertHelg(one: LocalDate, two: LocalDate): Boolean {
-
-        return Stream.iterate(one.plusDays(1)) { it.plusDays(1) }
+    fun erPaFolgendeInkludertHelg(one: LocalDate, two: LocalDate): Boolean =
+        Stream.iterate(one.plusDays(1)) { it.plusDays(1) }
             .limit(ChronoUnit.DAYS.between(one, two) - 1)
             .map { it.dayOfWeek }
             .allMatch { it == DayOfWeek.SATURDAY || it == DayOfWeek.SUNDAY }
-    }
 
     fun opprettSoknad(sykepengesoknad: Sykepengesoknad, fnr: String): Soknad =
         Soknad.lagSoknad(sykepengesoknad, fnr, personConsumer.finnBrukerPersonnavnByFnr(fnr))
@@ -177,8 +149,7 @@ class SaksbehandlingsService(
                 "soknadstype", soknadstype?.name ?: "UKJENT",
                 "help", "Antall ferdigbehandlede innsendinger."
             )
-        )
-            .increment()
+        ).increment()
     }
 
     private fun tellInnsendingFeilet(soknadstype: Soknadstype?) {
@@ -189,7 +160,6 @@ class SaksbehandlingsService(
                 "soknadstype", soknadstype?.name ?: "UKJENT",
                 "help", "Antall innsendinger hvor feil mot baksystemer gjorde at behandling ikke kunne fullføres."
             )
-        )
-            .increment()
+        ).increment()
     }
 }

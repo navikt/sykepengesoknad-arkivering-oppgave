@@ -54,22 +54,22 @@ class OppgaveConsumerTest {
 
     @Test
     fun innsendingLordagOgSondagGirSammeFristSomMandag() {
-        assertThat(oppgaveConsumer.omTreUkedager(now().with(next(SATURDAY))).dayOfWeek).isEqualTo(THURSDAY)
-        assertThat(oppgaveConsumer.omTreUkedager(now().with(next(SUNDAY))).dayOfWeek).isEqualTo(THURSDAY)
-        assertThat(oppgaveConsumer.omTreUkedager(now().with(next(MONDAY))).dayOfWeek).isEqualTo(THURSDAY)
+        assertThat(OppgaveConsumer.omTreUkedager(now().with(next(SATURDAY))).dayOfWeek).isEqualTo(THURSDAY)
+        assertThat(OppgaveConsumer.omTreUkedager(now().with(next(SUNDAY))).dayOfWeek).isEqualTo(THURSDAY)
+        assertThat(OppgaveConsumer.omTreUkedager(now().with(next(MONDAY))).dayOfWeek).isEqualTo(THURSDAY)
     }
 
     @Test
     fun fristSettesOmTreDagerUtenomHelg() {
-        assertThat(oppgaveConsumer.omTreUkedager(now().with(next(MONDAY))).dayOfWeek).isEqualTo(THURSDAY)
-        assertThat(oppgaveConsumer.omTreUkedager(now().with(next(TUESDAY))).dayOfWeek).isEqualTo(FRIDAY)
+        assertThat(OppgaveConsumer.omTreUkedager(now().with(next(MONDAY))).dayOfWeek).isEqualTo(THURSDAY)
+        assertThat(OppgaveConsumer.omTreUkedager(now().with(next(TUESDAY))).dayOfWeek).isEqualTo(FRIDAY)
     }
 
     @Test
     fun toDagerLeggesTilOverHelg() {
-        assertThat(oppgaveConsumer.omTreUkedager(now().with(next(WEDNESDAY))).dayOfWeek).isEqualTo(MONDAY)
-        assertThat(oppgaveConsumer.omTreUkedager(now().with(next(THURSDAY))).dayOfWeek).isEqualTo(TUESDAY)
-        assertThat(oppgaveConsumer.omTreUkedager(now().with(next(FRIDAY))).dayOfWeek).isEqualTo(WEDNESDAY)
+        assertThat(OppgaveConsumer.omTreUkedager(now().with(next(WEDNESDAY))).dayOfWeek).isEqualTo(MONDAY)
+        assertThat(OppgaveConsumer.omTreUkedager(now().with(next(THURSDAY))).dayOfWeek).isEqualTo(TUESDAY)
+        assertThat(OppgaveConsumer.omTreUkedager(now().with(next(FRIDAY))).dayOfWeek).isEqualTo(WEDNESDAY)
     }
 
     @Test
@@ -111,8 +111,7 @@ class OppgaveConsumerTest {
 
     @Test
     fun lagRequestBodyLagerRequestMedRiktigeFelter() {
-        val bodyUtenDato = OppgaveConsumer.lagRequestBody(aktorId, behandlendeEnhet, saksId, journalpostId, lagSoknad(Soknadstype.ARBEIDSTAKERE))
-        val body = oppgaveConsumer.oppdaterRequestBodyMedDatoer(bodyUtenDato)
+        val body = OppgaveConsumer.lagRequestBody(aktorId, behandlendeEnhet, saksId, journalpostId, lagSoknad(Soknadstype.ARBEIDSTAKERE))
 
         assertThat(body.tildeltEnhetsnr).isEqualTo(behandlendeEnhet)
         assertThat(body.opprettetAvEnhetsnr).isEqualTo("9999")

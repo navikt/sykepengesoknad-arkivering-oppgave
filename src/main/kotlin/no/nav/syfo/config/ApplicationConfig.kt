@@ -18,21 +18,20 @@ const val CALL_ID = "callId"
 @EnableKafka
 @EnableScheduling
 class ApplicationConfig {
-    // Sørger for at flyway migrering skjer etter at JTA transaction manager er ferdig satt opp av Spring.
-    // Forhindrer WARNING: transaction manager not running? loggspam fra Atomikos.
+    /**
+     * Sørger for at flyway migrering skjer etter at JTA transaction manager er ferdig satt opp av Spring.
+     * Forhindrer> `WARNING: transaction manager not running? loggspam fra Atomikos`.
+     */
     @Bean
-    internal fun flywayMigrationStrategy(jtaTransactionManager: JtaTransactionManager): FlywayMigrationStrategy {
-        return FlywayMigrationStrategy { it.migrate() }
-    }
+    internal fun flywayMigrationStrategy(jtaTransactionManager: JtaTransactionManager): FlywayMigrationStrategy =
+        FlywayMigrationStrategy { it.migrate() }
+
 
     @Bean
-    fun restTemplate(): RestTemplate {
-        val restTemplate = RestTemplate()
-        restTemplate.messageConverters
-                .mapNotNull {it as? AbstractJackson2HttpMessageConverter }
-                .map { it.objectMapper }
-                .forEach { objectMapper -> objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false) }
-        return restTemplate
+    fun restTemplate(): RestTemplate = RestTemplate().apply {
+        messageConverters
+            .mapNotNull { it as? AbstractJackson2HttpMessageConverter }
+            .forEach { it.objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false) }
     }
 }
 

@@ -30,11 +30,9 @@ class OppgaveConsumer(
     private val restTemplate: RestTemplate
 ) {
     val log = log()
-    val oppgaveDato: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val uriString = UriComponentsBuilder.fromHttpUrl(url).toUriString()
 
-    fun opprettOppgave(oppgaveRequest: OppgaveRequest): OppgaveResponse {
-        val request = oppdaterRequestBodyMedDatoer(oppgaveRequest)
+    fun opprettOppgave(request: OppgaveRequest): OppgaveResponse {
         return try {
             val result = restTemplate.exchange(
                 uriString,
@@ -62,12 +60,9 @@ class OppgaveConsumer(
         headers["Nav-Consumer-Id"] = username
     }
 
-    fun oppdaterRequestBodyMedDatoer(oppgaveRequest: OppgaveRequest) = oppgaveRequest.copy(
-        aktivDato = now().format(oppgaveDato),
-        fristFerdigstillelse = omTreUkedager(now()).format(oppgaveDato)
-    )
-
     companion object {
+        val oppgaveDato: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
         fun lagRequestBody(
             aktorId: String,
             behandlendeEnhet: String,
@@ -83,20 +78,17 @@ class OppgaveConsumer(
                 saksreferanse = saksId,
                 beskrivelse = lagBeskrivelse(soknad),
                 tema = "SYK",
-                behandlingstema = if (soknad.soknadstype == Soknadstype.OPPHOLD_UTLAND) {
-                    "ab0314"
-                } else {
-                    "ab0061"
+                behandlingstema = when (soknad.soknadstype) {
+                    Soknadstype.OPPHOLD_UTLAND -> "ab0314"
+                    else -> "ab0061"
                 },
                 oppgavetype = "SOK",
-                aktivDato = null,
-                fristFerdigstillelse = null,
+                aktivDato = now().format(oppgaveDato),
+                fristFerdigstillelse = omTreUkedager(now()).format(oppgaveDato),
                 prioritet = "NORM"
             )
-    }
 
-    fun omTreUkedager(idag: LocalDate): LocalDate {
-        return when (idag.dayOfWeek) {
+        fun omTreUkedager(idag: LocalDate) = when (idag.dayOfWeek) {
             DayOfWeek.SUNDAY -> idag.plusDays(4)
             DayOfWeek.MONDAY, DayOfWeek.TUESDAY -> idag.plusDays(3)
             else -> idag.plusDays(5)
