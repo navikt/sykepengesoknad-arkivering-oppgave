@@ -17,7 +17,7 @@ import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
 import java.time.LocalDateTime.now
 import java.time.format.DateTimeFormatter
-import java.util.UUID
+import java.util.*
 import javax.inject.Inject
 
 @Component
@@ -48,6 +48,7 @@ constructor(private val behandleFeiledeSoknaderService: BehandleFeiledeSoknaderS
             val innsending = innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknad.id)!!
             behandleFeiledeSoknaderService.behandleFeiletSoknad(innsending, sykepengesoknad)
             acknowledgment.acknowledge()
+            log.info("Søknad med id: ${sykepengesoknad.id} fullførte rebehandling")
         } catch (e: Exception) {
             val sykepengesoknad = cr.value() as Sykepengesoknad
             log.error("Uventet feil ved rebehandling av søknad ${sykepengesoknad.id}, legger søknaden tilbake på rebehandling-topic", e)
