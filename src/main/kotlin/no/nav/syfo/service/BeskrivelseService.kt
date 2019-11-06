@@ -2,36 +2,41 @@ package no.nav.syfo.service
 
 import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.SoknadPeriode
-import no.nav.syfo.domain.dto.Soknadstype.*
+import no.nav.syfo.domain.dto.Soknadstype.ARBEIDSLEDIG
+import no.nav.syfo.domain.dto.Soknadstype.ARBEIDSTAKERE
+import no.nav.syfo.domain.dto.Soknadstype.OPPHOLD_UTLAND
+import no.nav.syfo.domain.dto.Soknadstype.SELVSTENDIGE_OG_FRILANSERE
 import no.nav.syfo.domain.dto.Sporsmal
-import no.nav.syfo.domain.dto.Svartype.*
+import no.nav.syfo.domain.dto.Svartype.CHECKBOX
+import no.nav.syfo.domain.dto.Svartype.CHECKBOX_GRUPPE
+import no.nav.syfo.domain.dto.Svartype.DATO
+import no.nav.syfo.domain.dto.Svartype.FRITEKST
+import no.nav.syfo.domain.dto.Svartype.JA_NEI
+import no.nav.syfo.domain.dto.Svartype.LAND
+import no.nav.syfo.domain.dto.Svartype.PERIODE
+import no.nav.syfo.domain.dto.Svartype.PERIODER
+import no.nav.syfo.domain.dto.Svartype.PROSENT
+import no.nav.syfo.domain.dto.Svartype.RADIO
+import no.nav.syfo.domain.dto.Svartype.RADIO_GRUPPE
+import no.nav.syfo.domain.dto.Svartype.RADIO_GRUPPE_TIMER_PROSENT
+import no.nav.syfo.domain.dto.Svartype.TALL
+import no.nav.syfo.domain.dto.Svartype.TIMER
 import no.nav.syfo.util.DatoUtil.norskDato
 import no.nav.syfo.util.PeriodeMapper.jsonTilPeriode
 import java.time.LocalDate
 import java.util.Collections.nCopies
 
 fun lagBeskrivelse(soknad: Soknad): String {
-    val tittel: String
-    when (soknad.soknadstype) {
-        ARBEIDSTAKERE -> {
-            tittel = "Søknad om sykepenger for perioden " +
-            soknad.fom!!.format(norskDato) + " - " + soknad.tom!!.format(norskDato)
-        }
+    val tittel = when (soknad.soknadstype) {
+        ARBEIDSTAKERE -> "Søknad om sykepenger for perioden ${soknad.fom!!.format(norskDato)} - ${soknad.tom!!.format(norskDato)}"
         SELVSTENDIGE_OG_FRILANSERE -> {
             // Det kan finnes eldre søknader som mangler arbeidssituasjon
             val arbeidssituasjon = soknad.arbeidssituasjon?.navn ?: "Selvstendig Næringsdrivende / Frilanser"
-            tittel = "Søknad om sykepenger fra " + arbeidssituasjon + " for perioden " +
-                    soknad.fom!!.format(norskDato) + " - " + soknad.tom!!.format(norskDato)
+            "Søknad om sykepenger fra $arbeidssituasjon for perioden ${soknad.fom!!.format(norskDato)} - ${soknad.tom!!.format(norskDato)}"
         }
-        OPPHOLD_UTLAND -> {
-            tittel = "Søknad om å beholde sykepenger i utlandet"
-        }
-        ARBEIDSLEDIG -> {
-            tittel = "Søknad om sykepenger for arbeidsledig"
-        }
-        else -> {
-            throw RuntimeException("Beskrivelse er ikke implementert for søknadstype: " + soknad.soknadstype!!)
-        }
+        OPPHOLD_UTLAND -> "Søknad om å beholde sykepenger utenfor EØS"
+        ARBEIDSLEDIG -> "Søknad om sykepenger for arbeidsledig"
+        null -> error("Mangler søknadstype for ${soknad.soknadsId}")
     }
 
     return tittel + (soknad.korrigerer?.let { " KORRIGERING" } ?: "") + "\n" +

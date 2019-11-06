@@ -9,11 +9,13 @@ import no.nav.syfo.TestApplication
 import no.nav.syfo.any
 import no.nav.syfo.consumer.aktor.AktorConsumer
 import no.nav.syfo.consumer.oppgave.OppgaveConsumer
+import no.nav.syfo.consumer.oppgave.OppgaveResponse
 import no.nav.syfo.consumer.repository.InnsendingDAO
 import no.nav.syfo.consumer.repository.TidligereInnsending
 import no.nav.syfo.consumer.sak.SakConsumer
 import no.nav.syfo.consumer.ws.BehandleJournalConsumer
 import no.nav.syfo.consumer.ws.PersonConsumer
+import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.Soknadstype.ARBEIDSTAKERE
 import no.nav.syfo.domain.dto.Soknadstype.SELVSTENDIGE_OG_FRILANSERE
 import no.nav.syfo.domain.dto.Sykepengesoknad
@@ -25,9 +27,11 @@ import org.mockito.ArgumentMatchers
 import org.mockito.BDDMockito.given
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.never
+import org.mockito.Mockito.times
+import org.mockito.Mockito.verify
 import org.mockito.junit.MockitoJUnitRunner
-import java.io.IOException
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -57,22 +61,24 @@ class SaksbehandlingsServiceTest {
     lateinit var saksbehandlingsService: SaksbehandlingsService
 
     private val objectMapper = ObjectMapper().registerModules(JavaTimeModule(), KotlinModule())
+    private val aktorId = "aktorId-745463060"
 
     @Before
     fun setup() {
+        val defaultSykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
+        val defaultSoknad = Soknad.lagSoknad(defaultSykepengesoknad, "12345678901", "Personnavn")
         given(aktorConsumer.finnFnr(any())).willReturn("12345678901")
         given(personConsumer.finnBrukerPersonnavnByFnr(any())).willReturn("Personnavn")
         given(sakConsumer.opprettSak(any())).willReturn("ny-sak-fra-gsak")
         given(behandleJournalConsumer.opprettJournalpost(any(), any())).willReturn("journalpostId")
         given(behandlendeEnhetService.hentBehandlendeEnhet("12345678901", SELVSTENDIGE_OG_FRILANSERE)).willReturn("2017")
         given(behandlendeEnhetService.hentBehandlendeEnhet("12345678901", ARBEIDSTAKERE)).willReturn("2017")
-        given(oppgaveConsumer.opprettOppgave(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), any())).willReturn("oppgaveId")
+        given(oppgaveConsumer.opprettOppgave(any())).willReturn(OppgaveResponse(1234))
         given<Counter>(registry.counter(ArgumentMatchers.anyString(), ArgumentMatchers.anyIterable())).willReturn(mock(Counter::class.java))
         given(innsendingDAO.opprettInnsending(any(), any(), any(), any())).willReturn("innsending-guid")
     }
 
     @Test
-    @Throws(IOException::class)
     fun behandlerIkkeIkkeSendteSoknader() {
         val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
                 .copy(status = "NY")
@@ -83,7 +89,6 @@ class SaksbehandlingsServiceTest {
     }
 
     @Test
-    @Throws(IOException::class)
     fun behandlerIkkeSoknaderSomIkkeErSendtTilNav() {
         val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
                 .copy(sendtNav = null)
@@ -94,7 +99,6 @@ class SaksbehandlingsServiceTest {
     }
 
     @Test
-    @Throws(IOException::class)
     fun behandlerIkkeSoknaderSomEttersendesTilArbeidsgiver() {
         val now = LocalDateTime.now()
         val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
@@ -106,7 +110,6 @@ class SaksbehandlingsServiceTest {
     }
 
     @Test
-    @Throws(IOException::class)
     fun behandlerSoknaderSomEttersendesTilNav() {
         val now = LocalDateTime.now()
         val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
@@ -118,7 +121,6 @@ class SaksbehandlingsServiceTest {
     }
 
     @Test
-    @Throws(IOException::class)
     fun behandlerSoknaderSomSkalTilNavOgArbeidsgiver() {
         val now = LocalDateTime.now()
         val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
@@ -130,7 +132,6 @@ class SaksbehandlingsServiceTest {
     }
 
     @Test
-    @Throws(IOException::class)
     fun behandlerSoknaderSomSkalTilNav() {
         val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
 
@@ -140,7 +141,6 @@ class SaksbehandlingsServiceTest {
     }
 
     @Test
-    @Throws(IOException::class)
     fun feilendeInnsendingLeggesPaRetryTopic() {
         given(behandleJournalConsumer.opprettJournalpost(any(), any()))
             .willThrow(RuntimeException("Opprett journal feilet"))
@@ -152,7 +152,6 @@ class SaksbehandlingsServiceTest {
     }
 
     @Test
-    @Throws(IOException::class)
     fun soknadSomBehandlesLeggesIkkePaRetryTopic() {
         val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
 

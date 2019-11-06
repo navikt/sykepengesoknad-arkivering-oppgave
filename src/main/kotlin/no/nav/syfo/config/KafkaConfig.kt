@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import no.nav.syfo.domain.dto.OpprettGosysOppgaveDTO
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.syfo.kafka.KafkaErrorHandler
 import no.nav.syfo.kafka.interfaces.Soknad
@@ -49,10 +48,6 @@ class KafkaConfig(private val kafkaErrorHandler: KafkaErrorHandler, private val 
 
     @Bean
     fun rebehandlingContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, Sykepengesoknad> =
-        containerFactory(deserializer())
-
-    @Bean
-    fun opprettOppgaveContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, OpprettGosysOppgaveDTO> =
         containerFactory(deserializer())
 
     @Bean
