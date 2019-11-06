@@ -32,14 +32,7 @@ class AktorConsumer(private val tokenConsumer: TokenConsumer,
         return getIdent(aktorId, "NorskIdent")
     }
 
-    private fun callId(): String {
-        val callId = MDC.get(CALL_ID)
-        return if (callId.isNullOrEmpty()) {
-            UUID.randomUUID().toString()
-        } else {
-            callId
-        }
-    }
+    private fun callId() = MDC.get(CALL_ID) ?: UUID.randomUUID().toString()
 
     private fun getIdent(sokeIdent: String, identgruppe: String): String {
         val headers = HttpHeaders()

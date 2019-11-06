@@ -50,14 +50,7 @@ class SakConsumer(
         }
     }
 
-    private fun callId(): String {
-        val callId = MDC.get(CALL_ID)
-        return if (callId.isNullOrEmpty()) {
-            UUID.randomUUID().toString()
-        } else {
-            callId
-        }
-    }
+    private fun callId() = MDC.get(CALL_ID) ?: UUID.randomUUID().toString()
 
     fun lagRequestHeaders(): HttpHeaders = HttpHeaders().apply {
         this.contentType = MediaType.APPLICATION_JSON
