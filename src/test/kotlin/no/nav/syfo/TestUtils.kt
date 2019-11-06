@@ -1,6 +1,6 @@
 package no.nav.syfo
 
-const val beskrivelseUtland =  "Søknad om å beholde sykepenger i utlandet\n" +
+const val beskrivelseUtland =  "Søknad om å beholde sykepenger utenfor EØS\n" +
         "\n" +
         "Når skal du reise?\n" +
         "10.12.2018 - 18.12.2018\n" +
@@ -16,7 +16,7 @@ const val beskrivelseUtland =  "Søknad om å beholde sykepenger i utlandet\n" +
         "    Har du avtalt med arbeidsgiveren din at du skal ha ferie i hele perioden?\n" +
         "    Nei"
 
-const val beskrivelseUtlandMedSvartypeLand = "Søknad om å beholde sykepenger i utlandet\n" +
+const val beskrivelseUtlandMedSvartypeLand = "Søknad om å beholde sykepenger utenfor EØS\n" +
         "\n" +
         "Når skal du reise?\n" +
         "10.12.2018 - 18.12.2018\n" +
