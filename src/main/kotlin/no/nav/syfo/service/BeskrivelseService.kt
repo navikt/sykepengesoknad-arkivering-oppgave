@@ -34,7 +34,7 @@ fun lagBeskrivelse(soknad: Soknad): String {
             val arbeidssituasjon = soknad.arbeidssituasjon?.navn ?: "Selvstendig Næringsdrivende / Frilanser"
             "Søknad om sykepenger fra $arbeidssituasjon for perioden ${soknad.fom!!.format(norskDato)} - ${soknad.tom!!.format(norskDato)}"
         }
-        OPPHOLD_UTLAND -> "Søknad om å beholde sykepenger i utlandet"
+        OPPHOLD_UTLAND -> "Søknad om å beholde sykepenger utenfor EØS"
         ARBEIDSLEDIG -> "Søknad om sykepenger for arbeidsledig"
         null -> error("Mangler søknadstype for ${soknad.soknadsId}")
     }
