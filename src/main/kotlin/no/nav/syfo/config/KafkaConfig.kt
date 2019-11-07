@@ -25,7 +25,6 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory
 import org.springframework.kafka.core.DefaultKafkaProducerFactory
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.listener.AbstractMessageListenerContainer
-import java.util.function.BiFunction
 
 @Configuration
 @EnableKafka
@@ -73,12 +72,12 @@ class KafkaConfig(private val kafkaErrorHandler: KafkaErrorHandler, private val 
             valueDeserializer
         )
 
-    private inline fun <reified T> deserializer() = MultiFunctionDeserializer<T>(emptyMap(), objectMapper::readValue)
+    private inline fun <reified T> deserializer() = MultiFunctionDeserializer(emptyMap()) { bytes -> bytes?.let { objectMapper.readValue<T>(it) } ?: throw RuntimeException("Feiler ved deserializering")}
 
     fun soknadDeserializer() = MultiFunctionDeserializer<Soknad>(
         mapOf(
-            "SYKEPENGESOKNAD" to BiFunction { _, bytes -> objectMapper.readValue<SykepengesoknadDTO>(bytes) },
-            "SOKNAD" to BiFunction { _, bytes -> objectMapper.readValue<SoknadDTO>(bytes) }
+            "SYKEPENGESOKNAD" to { _, bytes -> bytes?.let { objectMapper.readValue<SykepengesoknadDTO>(it) } as Soknad },
+            "SOKNAD" to { _, bytes -> bytes?.let { objectMapper.readValue<SoknadDTO>(it) } as Soknad }
         )
     )
 }
