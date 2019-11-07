@@ -29,8 +29,7 @@ constructor(private val saksbehandlingsService: SaksbehandlingsService) {
         try {
             MDC.put(CALL_ID, getLastHeaderByKeyAsString(cr.headers(), CALL_ID) ?: randomUUID().toString() )
 
-            val soknad = cr.value()
-            when (soknad) {
+            when (val soknad = cr.value()) {
                 is SoknadDTO -> saksbehandlingsService.behandleSoknad(soknad.toSykepengesoknad())
                 is SykepengesoknadDTO -> saksbehandlingsService.behandleSoknad(soknad.toSykepengesoknad())
             }
