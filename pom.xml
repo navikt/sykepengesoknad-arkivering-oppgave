@@ -112,6 +112,12 @@
             <groupId>no.nav.syfo.kafka</groupId>
             <artifactId>serialisering</artifactId>
             <version>${syfokafka.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.kafka</groupId>
+                    <artifactId>kafka-clients</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>no.nav.syfo.kafka</groupId>
