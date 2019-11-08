@@ -131,6 +131,6 @@ constructor(
     }
 
     companion object {
-        private val GOSYS = "FS22"
+        private val GOSYS = "9999"
     }
 }
