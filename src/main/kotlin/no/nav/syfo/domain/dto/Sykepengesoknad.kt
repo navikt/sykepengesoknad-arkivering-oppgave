@@ -23,5 +23,6 @@ data class Sykepengesoknad(
     val arbeidssituasjon: Arbeidssituasjon? = null,
     val soknadPerioder: List<SoknadPeriode>? = null,
     val sporsmal: List<Sporsmal>,
-    val avsendertype: Avsendertype? = null
+    val avsendertype: Avsendertype? = null,
+    val ettersending: Boolean? = null
 )
