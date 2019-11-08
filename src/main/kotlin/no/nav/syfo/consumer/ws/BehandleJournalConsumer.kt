@@ -47,7 +47,7 @@ constructor(
                             .withApplikasjonsID("SYFOGSAK")
                             .withJournalpost(WSJournalpost()
                                     .withDokumentDato(LocalDateTime.now())
-                                    .withJournalfoerendeEnhetREF(GOSYS)
+                                    .withJournalfoerendeEnhetREF(JOURNALFORENDE_ENHET)
                                     .withKanal(WSKommunikasjonskanaler().withValue("NAV_NO"))
                                     .withSignatur(WSSignatur().withSignert(true))
                                     .withArkivtema(WSArkivtemaer().withValue("SYK"))
@@ -132,5 +132,6 @@ constructor(
 
     companion object {
         private val GOSYS = "FS22"
+        private val JOURNALFORENDE_ENHET = "9999"
     }
 }
