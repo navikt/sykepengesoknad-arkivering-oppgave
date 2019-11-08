@@ -61,7 +61,7 @@
         <cxf.version>3.2.0</cxf.version>
         <jackson.version>2.9.6</jackson.version>
         <maven-enforcer-plugin.version>3.0.0-M2</maven-enforcer-plugin.version>
-        <syfokafka.version>406d24a7c97f510d5a49b379f0e172afc75a26fe</syfokafka.version>
+        <syfokafka.version>73f2313563ece69d207aeb397e099a826c560009</syfokafka.version>
     </properties>
 
     <dependencies>
