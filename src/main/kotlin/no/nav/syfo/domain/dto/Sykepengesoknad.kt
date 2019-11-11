@@ -22,5 +22,7 @@ data class Sykepengesoknad(
     val korrigertAv: String? = null,
     val arbeidssituasjon: Arbeidssituasjon? = null,
     val soknadPerioder: List<SoknadPeriode>? = null,
-    val sporsmal: List<Sporsmal>
+    val sporsmal: List<Sporsmal>,
+    val avsendertype: Avsendertype? = null,
+    val ettersending: Boolean? = null
 )

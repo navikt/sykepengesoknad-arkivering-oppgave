@@ -34,6 +34,13 @@
         </snapshotRepository>
     </distributionManagement>
 
+    <repositories>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </repositories>
+
     <properties>
         <start-class>no.nav.syfo.Application</start-class>
         <java.version>1.8</java.version>
@@ -54,11 +61,7 @@
         <cxf.version>3.2.0</cxf.version>
         <jackson.version>2.9.6</jackson.version>
         <maven-enforcer-plugin.version>3.0.0-M2</maven-enforcer-plugin.version>
-
-        <serialisering.version>1</serialisering.version>
-        <soknad.version>4</soknad.version>
-        <sykepengesoknad.version>1</sykepengesoknad.version>
-        <sykepengesoknadarbeidsledig.version>1</sykepengesoknadarbeidsledig.version>
+        <syfokafka.version>73f2313563ece69d207aeb397e099a826c560009</syfokafka.version>
     </properties>
 
     <dependencies>
@@ -108,22 +111,28 @@
         <dependency>
             <groupId>no.nav.syfo.kafka</groupId>
             <artifactId>serialisering</artifactId>
-            <version>${serialisering.version}</version>
+            <version>${syfokafka.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.kafka</groupId>
+                    <artifactId>kafka-clients</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>no.nav.syfo.kafka</groupId>
             <artifactId>soknad</artifactId>
-            <version>${soknad.version}</version>
+            <version>${syfokafka.version}</version>
         </dependency>
         <dependency>
             <groupId>no.nav.syfo.kafka</groupId>
             <artifactId>sykepengesoknad</artifactId>
-            <version>${sykepengesoknad.version}</version>
+            <version>${syfokafka.version}</version>
         </dependency>
         <dependency>
             <groupId>no.nav.syfo.kafka</groupId>
             <artifactId>sykepengesoknadarbeidsledig</artifactId>
-            <version>${sykepengesoknadarbeidsledig.version}</version>
+            <version>${syfokafka.version}</version>
         </dependency>
 
         <dependency>

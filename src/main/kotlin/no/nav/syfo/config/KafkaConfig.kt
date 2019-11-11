@@ -7,8 +7,8 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.syfo.kafka.KafkaErrorHandler
+import no.nav.syfo.kafka.LegacyMultiFunctionDeserializer
 import no.nav.syfo.kafka.interfaces.Soknad
-import no.nav.syfo.kafka.soknad.deserializer.MultiFunctionDeserializer
 import no.nav.syfo.kafka.soknad.dto.SoknadDTO
 import no.nav.syfo.kafka.soknad.serializer.FunctionSerializer
 import no.nav.syfo.kafka.sykepengesoknad.dto.SykepengesoknadDTO
@@ -25,7 +25,6 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory
 import org.springframework.kafka.core.DefaultKafkaProducerFactory
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.listener.AbstractMessageListenerContainer
-import java.util.function.BiFunction
 
 @Configuration
 @EnableKafka
@@ -59,7 +58,7 @@ class KafkaConfig(private val kafkaErrorHandler: KafkaErrorHandler, private val 
         )
     )
 
-    private inline fun <reified T> containerFactory(deserializer: MultiFunctionDeserializer<T>) =
+    private inline fun <reified T> containerFactory(deserializer: Deserializer<T>) =
         ConcurrentKafkaListenerContainerFactory<String, T>().apply {
             containerProperties.ackMode = AbstractMessageListenerContainer.AckMode.MANUAL_IMMEDIATE
             containerProperties.setErrorHandler(kafkaErrorHandler)
@@ -73,12 +72,12 @@ class KafkaConfig(private val kafkaErrorHandler: KafkaErrorHandler, private val 
             valueDeserializer
         )
 
-    private inline fun <reified T> deserializer() = MultiFunctionDeserializer<T>(emptyMap(), objectMapper::readValue)
+    private inline fun <reified T> deserializer() = LegacyMultiFunctionDeserializer(emptyMap()) { bytes -> bytes?.let { objectMapper.readValue<T>(it) } ?: throw RuntimeException("Feiler ved deserializering")}
 
-    fun soknadDeserializer() = MultiFunctionDeserializer<Soknad>(
+    fun soknadDeserializer() = LegacyMultiFunctionDeserializer<Soknad>(
         mapOf(
-            "SYKEPENGESOKNAD" to BiFunction { _, bytes -> objectMapper.readValue<SykepengesoknadDTO>(bytes) },
-            "SOKNAD" to BiFunction { _, bytes -> objectMapper.readValue<SoknadDTO>(bytes) }
+            "SYKEPENGESOKNAD" to { _, bytes -> bytes?.let { objectMapper.readValue<SykepengesoknadDTO>(it) } as Soknad },
+            "SOKNAD" to { _, bytes -> bytes?.let { objectMapper.readValue<SoknadDTO>(it) } as Soknad }
         )
     )
 }

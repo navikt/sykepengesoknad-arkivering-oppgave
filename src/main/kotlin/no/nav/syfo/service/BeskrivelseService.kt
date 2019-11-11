@@ -1,6 +1,7 @@
 package no.nav.syfo.service
 
 import no.nav.syfo.domain.Soknad
+import no.nav.syfo.domain.dto.Avsendertype.SYSTEM
 import no.nav.syfo.domain.dto.SoknadPeriode
 import no.nav.syfo.domain.dto.Soknadstype.ARBEIDSLEDIG
 import no.nav.syfo.domain.dto.Soknadstype.ARBEIDSTAKERE
@@ -39,7 +40,8 @@ fun lagBeskrivelse(soknad: Soknad): String {
         null -> error("Mangler søknadstype for ${soknad.soknadsId}")
     }
 
-    return tittel + (soknad.korrigerer?.let { " KORRIGERING" } ?: "") + "\n" +
+    return (if (SYSTEM == soknad.avsendertype) "Denne søknaden er autogenerert på grunn av et registrert dødsfall\n" else "") +
+            tittel + (soknad.korrigerer?.let { " KORRIGERING" } ?: "") + "\n" +
             beskrivArbeidsgiver(soknad) +
             (soknad.soknadPerioder?.let { beskrivPerioder(it) } ?: "") +
 

@@ -4,7 +4,7 @@ import no.nav.syfo.BEHANDLINGSTIDSPUNKT
 import no.nav.syfo.config.CALL_ID
 import no.nav.syfo.consumer.repository.InnsendingDAO
 import no.nav.syfo.domain.dto.Sykepengesoknad
-import no.nav.syfo.kafka.KafkaHeaderConstants
+import no.nav.syfo.kafka.getLastHeaderByKeyAsString
 import no.nav.syfo.kafka.producer.RebehandlingProducer
 import no.nav.syfo.log
 import no.nav.syfo.service.BehandleFeiledeSoknaderService
@@ -17,7 +17,7 @@ import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
 import java.time.LocalDateTime.now
 import java.time.format.DateTimeFormatter
-import java.util.UUID
+import java.util.*
 import javax.inject.Inject
 
 @Component
@@ -30,7 +30,7 @@ constructor(private val behandleFeiledeSoknaderService: BehandleFeiledeSoknaderS
     @KafkaListener(topics = ["syfogsak-rebehandle-soknad-v1"], id = "syfogsak-rebehandling", idIsGroup = false, containerFactory = "rebehandlingContainerFactory")
     fun listen(cr: ConsumerRecord<String, Sykepengesoknad>, acknowledgment: Acknowledgment) {
         try {
-            MDC.put(CALL_ID, KafkaHeaderConstants.getLastHeaderByKeyAsString(cr.headers(), CALL_ID).orElse(UUID.randomUUID().toString()))
+            MDC.put(CALL_ID, getLastHeaderByKeyAsString(cr.headers(), CALL_ID) ?: (UUID.randomUUID().toString()))
             cr.headers().lastHeader(BEHANDLINGSTIDSPUNKT)
                 ?.value()
                 ?.let { String(it, StandardCharsets.UTF_8) }
@@ -48,6 +48,7 @@ constructor(private val behandleFeiledeSoknaderService: BehandleFeiledeSoknaderS
             val innsending = innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknad.id)!!
             behandleFeiledeSoknaderService.behandleFeiletSoknad(innsending, sykepengesoknad)
             acknowledgment.acknowledge()
+            log.info("Søknad med id: ${sykepengesoknad.id} fullførte rebehandling")
         } catch (e: Exception) {
             val sykepengesoknad = cr.value() as Sykepengesoknad
             log.error("Uventet feil ved rebehandling av søknad ${sykepengesoknad.id}, legger søknaden tilbake på rebehandling-topic", e)

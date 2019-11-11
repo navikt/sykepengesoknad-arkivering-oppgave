@@ -1,10 +1,6 @@
 package no.nav.syfo.domain
 
-import no.nav.syfo.domain.dto.Arbeidssituasjon
-import no.nav.syfo.domain.dto.SoknadPeriode
-import no.nav.syfo.domain.dto.Soknadstype
-import no.nav.syfo.domain.dto.Sporsmal
-import no.nav.syfo.domain.dto.Sykepengesoknad
+import no.nav.syfo.domain.dto.*
 import java.time.LocalDate
 
 data class Soknad(
@@ -24,8 +20,8 @@ data class Soknad(
     var korrigertAv: String? = null,
     var arbeidssituasjon: Arbeidssituasjon? = null,
     var soknadPerioder: List<SoknadPeriode>? = null,
-    var sporsmal: List<Sporsmal>
-) {
+    var sporsmal: List<Sporsmal>,
+    var avsendertype: Avsendertype? = null) {
 
     companion object {
         fun lagSoknad(sykepengesoknad: Sykepengesoknad, fnr: String, navn: String): Soknad =
@@ -46,8 +42,9 @@ data class Soknad(
                 korrigertAv = sykepengesoknad.korrigertAv,
                 arbeidssituasjon = sykepengesoknad.arbeidssituasjon,
                 soknadPerioder = sykepengesoknad.soknadPerioder,
-                sporsmal = endreRekkefolgePaSporsmalForPDF(sykepengesoknad.sporsmal)
-            )
+                sporsmal = endreRekkefolgePaSporsmalForPDF(sykepengesoknad.sporsmal),
+                avsendertype = sykepengesoknad.avsendertype
+                )
 
         private fun endreRekkefolgePaSporsmalForPDF(sporsmal: List<Sporsmal>) =
             sporsmal.sortedBy { plasseringSporsmalPDF(it) }

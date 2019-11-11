@@ -6,8 +6,9 @@ import no.nav.syfo.kafka.sykepengesoknadarbeidsledig.dto.SporsmalDTO
 import no.nav.syfo.kafka.sykepengesoknadarbeidsledig.dto.SvarDTO
 import no.nav.syfo.kafka.sykepengesoknadarbeidsledig.dto.SykepengesoknadArbeidsledigDTO
 
-private inline fun <reified U : Enum<*>> String?.enumValueOrNull(): U? =
-    U::class.java.enumConstants.firstOrNull { it.name == this }
+private inline fun <T : Enum<*>, reified U : Enum<*>> T?.enumValueOrNull(): U? =
+        U::class.java.enumConstants.firstOrNull { it.name == this?.name }
+
 
 private fun SporsmalDTO.toSporsmal(): Sporsmal =
     Sporsmal(
@@ -15,10 +16,10 @@ private fun SporsmalDTO.toSporsmal(): Sporsmal =
         tag = tag,
         sporsmalstekst = sporsmalstekst,
         undertekst = undertekst,
-        svartype = svartype?.name.enumValueOrNull(),
+        svartype = svartype?.enumValueOrNull(),
         min = min,
         max = max,
-        kriterieForVisningAvUndersporsmal = kriteriumForVisningAvUndersporsmal?.name.enumValueOrNull(),
+        kriterieForVisningAvUndersporsmal = kriteriumForVisningAvUndersporsmal?.enumValueOrNull(),
         svar = svar.map { it.toSvar() },
         undersporsmal = undersporsmal.map { it.toSporsmal() }
     )
@@ -49,4 +50,5 @@ fun SykepengesoknadArbeidsledigDTO.toSykepengesoknad(): Sykepengesoknad =
         korrigertAv = korrigertAv,
         korrigerer = korrigerer,
         soknadPerioder = soknadsperioder!!.map { it.toSoknadPeriode() },
-        sporsmal = sporsmal!!.map { it.toSporsmal() })
+        sporsmal = sporsmal!!.map { it.toSporsmal() },
+        avsendertype = avsendertype.enumValueOrNull() )
