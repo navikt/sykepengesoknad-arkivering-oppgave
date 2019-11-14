@@ -1,7 +1,7 @@
 package no.nav.syfo.filter
 
 import buildClaimSet
-import no.nav.security.spring.oidc.test.JwtTokenGenerator
+import no.nav.security.oidc.test.support.JwtTokenGenerator
 import no.nav.syfo.AZUREAD
 import no.nav.syfo.TestApplication
 import org.junit.Test

@@ -1,12 +1,12 @@
 package no.nav.syfo.mock
 
-import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.ArbeidsfordelingV1
-import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.FinnAlleBehandlendeEnheterListeUgyldigInput
-import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.FinnBehandlendeEnhetListeUgyldigInput
-import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.meldinger.WSFinnAlleBehandlendeEnheterListeRequest
-import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.meldinger.WSFinnAlleBehandlendeEnheterListeResponse
-import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.meldinger.WSFinnBehandlendeEnhetListeRequest
-import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.meldinger.WSFinnBehandlendeEnhetListeResponse
+import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.FinnAlleBehandlendeEnheterListeUgyldigInput
+import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.FinnBehandlendeEnhetListeUgyldigInput
+import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.ArbeidsfordelingV1
+import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.meldinger.FinnAlleBehandlendeEnheterListeRequest
+import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.meldinger.FinnAlleBehandlendeEnheterListeResponse
+import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.meldinger.FinnBehandlendeEnhetListeRequest
+import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.meldinger.FinnBehandlendeEnhetListeResponse
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
 
@@ -15,12 +15,16 @@ import org.springframework.stereotype.Service
 class ArbeidsfordelingMock : ArbeidsfordelingV1 {
 
     @Throws(FinnAlleBehandlendeEnheterListeUgyldigInput::class)
-    override fun finnAlleBehandlendeEnheterListe(wsFinnAlleBehandlendeEnheterListeRequest: WSFinnAlleBehandlendeEnheterListeRequest): WSFinnAlleBehandlendeEnheterListeResponse {
+    override fun finnAlleBehandlendeEnheterListe(
+        wsFinnAlleBehandlendeEnheterListeRequest: FinnAlleBehandlendeEnheterListeRequest
+    ): FinnAlleBehandlendeEnheterListeResponse {
         throw RuntimeException("Ikke implementert i mock")
     }
 
     @Throws(FinnBehandlendeEnhetListeUgyldigInput::class)
-    override fun finnBehandlendeEnhetListe(wsFinnBehandlendeEnhetListeRequest: WSFinnBehandlendeEnhetListeRequest): WSFinnBehandlendeEnhetListeResponse {
+    override fun finnBehandlendeEnhetListe(
+        wsFinnBehandlendeEnhetListeRequest: FinnBehandlendeEnhetListeRequest
+    ): FinnBehandlendeEnhetListeResponse {
         throw RuntimeException("Ikke implementert i mock")
     }
 

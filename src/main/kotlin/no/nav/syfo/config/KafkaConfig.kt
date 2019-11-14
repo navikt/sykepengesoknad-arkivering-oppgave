@@ -25,6 +25,7 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory
 import org.springframework.kafka.core.DefaultKafkaProducerFactory
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.listener.AbstractMessageListenerContainer
+import org.springframework.kafka.listener.ContainerProperties
 
 @Configuration
 @EnableKafka
@@ -60,8 +61,8 @@ class KafkaConfig(private val kafkaErrorHandler: KafkaErrorHandler, private val 
 
     private inline fun <reified T> containerFactory(deserializer: Deserializer<T>) =
         ConcurrentKafkaListenerContainerFactory<String, T>().apply {
-            containerProperties.ackMode = AbstractMessageListenerContainer.AckMode.MANUAL_IMMEDIATE
-            containerProperties.setErrorHandler(kafkaErrorHandler)
+            containerProperties.ackMode = ContainerProperties.AckMode.MANUAL_IMMEDIATE
+            setErrorHandler(kafkaErrorHandler)
             consumerFactory = consumerFactory(deserializer)
         }
 

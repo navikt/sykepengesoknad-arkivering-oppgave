@@ -11,29 +11,41 @@ import org.springframework.stereotype.Service
 @ConditionalOnProperty(value = ["mockWS"], havingValue = "true")
 class BehandleJournalMock : BehandleJournalV2 {
 
-    override fun arkiverUstrukturertKrav(wsArkiverUstrukturertKravRequest: WSArkiverUstrukturertKravRequest): WSArkiverUstrukturertKravResponse {
+    override fun arkiverUstrukturertKrav(
+        wsArkiverUstrukturertKravRequest: ArkiverUstrukturertKravRequest
+    ): ArkiverUstrukturertKravResponse {
         throw RuntimeException("Ikke implementert i mock")
     }
 
-    override fun journalfoerUtgaaendeHenvendelse(wsJournalfoerUtgaaendeHenvendelseRequest: WSJournalfoerUtgaaendeHenvendelseRequest): WSJournalfoerUtgaaendeHenvendelseResponse {
+    override fun journalfoerUtgaaendeHenvendelse(
+        wsJournalfoerUtgaaendeHenvendelseRequest: JournalfoerUtgaaendeHenvendelseRequest
+    ): JournalfoerUtgaaendeHenvendelseResponse {
         throw RuntimeException("Ikke implementert i mock")
     }
 
     @Throws(FerdigstillDokumentopplastingFerdigstillDokumentopplastingjournalpostIkkeFunnet::class)
-    override fun ferdigstillDokumentopplasting(wsFerdigstillDokumentopplastingRequest: WSFerdigstillDokumentopplastingRequest) {
+    override fun ferdigstillDokumentopplasting(
+        wsFerdigstillDokumentopplastingRequest: FerdigstillDokumentopplastingRequest
+    ) {
         throw RuntimeException("Ikke implementert i mock")
     }
 
-    override fun journalfoerNotat(wsJournalfoerNotatRequest: WSJournalfoerNotatRequest): WSJournalfoerNotatResponse {
+    override fun journalfoerNotat(
+        wsJournalfoerNotatRequest: JournalfoerNotatRequest
+    ): JournalfoerNotatResponse {
         throw RuntimeException("Ikke implementert i mock")
     }
 
     @Throws(LagreVedleggPaaJournalpostLagreVedleggPaaJournalpostjournalpostIkkeFunnet::class)
-    override fun lagreVedleggPaaJournalpost(wsLagreVedleggPaaJournalpostRequest: WSLagreVedleggPaaJournalpostRequest): WSLagreVedleggPaaJournalpostResponse {
+    override fun lagreVedleggPaaJournalpost(
+        wsLagreVedleggPaaJournalpostRequest: LagreVedleggPaaJournalpostRequest
+    ): LagreVedleggPaaJournalpostResponse {
         throw RuntimeException("Ikke implementert i mock")
     }
 
-    override fun journalfoerInngaaendeHenvendelse(wsJournalfoerInngaaendeHenvendelseRequest: WSJournalfoerInngaaendeHenvendelseRequest): WSJournalfoerInngaaendeHenvendelseResponse {
+    override fun journalfoerInngaaendeHenvendelse(
+        wsJournalfoerInngaaendeHenvendelseRequest: JournalfoerInngaaendeHenvendelseRequest
+    ): JournalfoerInngaaendeHenvendelseResponse {
         throw RuntimeException("Ikke implementert i mock")
     }
 
