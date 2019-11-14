@@ -62,6 +62,7 @@
         <jackson.version>2.9.6</jackson.version>
         <maven-enforcer-plugin.version>3.0.0-M2</maven-enforcer-plugin.version>
         <syfokafka.version>73f2313563ece69d207aeb397e099a826c560009</syfokafka.version>
+        <tjenestespesifikasjoner.version>1.2019.08.16-13.46-35cbdfd492d4</tjenestespesifikasjoner.version>
     </properties>
 
     <dependencies>
@@ -222,9 +223,9 @@
         </dependency>
 
         <dependency>
-            <groupId>no.nav.syfo.tjenester</groupId>
-            <artifactId>behandleJournal-v2</artifactId>
-            <version>1.0.2</version>
+            <groupId>no.nav.tjenestespesifikasjoner</groupId>
+            <artifactId>nav-fim-behandleJournal-v2-tjenestespesifikasjon</artifactId>
+            <version>${tjenestespesifikasjoner.version}</version>
         </dependency>
 
         <dependency>
