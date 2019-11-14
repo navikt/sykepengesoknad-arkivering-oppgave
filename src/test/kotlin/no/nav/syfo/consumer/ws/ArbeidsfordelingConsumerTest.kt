@@ -60,8 +60,8 @@ class ArbeidsfordelingConsumerTest {
 
         assertThat(kriterier.diskresjonskode).isNull()
         assertThat(kriterier.behandlingstema).isNull()
-        assertThat(kriterier.geografiskTilknytning).isEqualTo(Geografi().apply { value = "2017" })
-        assertThat(kriterier.tema).isEqualTo(Tema().apply { value = "SYK" })
+        assertThat(kriterier.geografiskTilknytning.value).isEqualTo("2017")
+        assertThat(kriterier.tema.value).isEqualTo("SYK")
     }
 
     @Test
@@ -77,11 +77,9 @@ class ArbeidsfordelingConsumerTest {
 
         val kriterier = captor.value.arbeidsfordelingKriterier
 
-        assertThat(kriterier.diskresjonskode).isEqualTo(Diskresjonskoder().apply { value = "SPSF" })
-        assertThat(kriterier.behandlingstema).isEqualTo(Behandlingstema().apply {
-            value = BEHANDLINGSTEMA_OPPHOLD_UTLAND
-        })
-        assertThat(kriterier.geografiskTilknytning).isEqualTo(Geografi().apply { value = "2017" })
-        assertThat(kriterier.tema).isEqualTo(Tema().apply { value = "SYK" })
+        assertThat(kriterier.diskresjonskode.value).isEqualTo("SPSF")
+        assertThat(kriterier.behandlingstema.value).isEqualTo(BEHANDLINGSTEMA_OPPHOLD_UTLAND)
+        assertThat(kriterier.geografiskTilknytning.value).isEqualTo("2017")
+        assertThat(kriterier.tema.value).isEqualTo("SYK")
     }
 }
