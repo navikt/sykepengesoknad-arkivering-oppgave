@@ -66,7 +66,6 @@ class SaksbehandlingsServiceTest {
     @Before
     fun setup() {
         val defaultSykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
-        val defaultSoknad = Soknad.lagSoknad(defaultSykepengesoknad, "12345678901", "Personnavn")
         given(aktorConsumer.finnFnr(any())).willReturn("12345678901")
         given(personConsumer.finnBrukerPersonnavnByFnr(any())).willReturn("Personnavn")
         given(sakConsumer.opprettSak(any())).willReturn("ny-sak-fra-gsak")

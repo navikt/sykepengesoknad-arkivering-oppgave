@@ -12,6 +12,6 @@ class RestTemplateConfig {
         @Value("\${srvsyfogsak.username}") username: String,
         @Value("\${srvsyfogsak.password}") password: String
     ) = RestTemplateBuilder()
-        .basicAuthorization(username, password)
+        .basicAuthentication(username, password)
         .build()
 }
