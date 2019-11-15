@@ -1,7 +1,7 @@
 package no.nav.syfo.config.ws
 
 import no.nav.syfo.consumer.util.ws.LogErrorHandler
-import no.nav.syfo.consumer.util.ws.WsClient
+import no.nav.syfo.consumer.util.ws.createPort
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.BehandleJournalV2
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -15,6 +15,6 @@ class BehandleJournalConfig {
     @ConditionalOnProperty(value = ["mockWS"], havingValue = "false", matchIfMissing = true)
     @Primary
     fun behandleJournalV2(@Value("\${behandleJournal.v2.endpointurl}") serviceUrl: String): BehandleJournalV2 {
-        return WsClient<BehandleJournalV2>().createPort(serviceUrl, BehandleJournalV2::class.java, listOf(LogErrorHandler()))
+        return createPort(serviceUrl, listOf(LogErrorHandler()))
     }
 }
