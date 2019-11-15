@@ -65,7 +65,7 @@ class SaksbehandlingsService(
         val requestBody = OppgaveConsumer.lagRequestBody(aktorId, behandlendeEnhet, saksId, journalpostId, soknad)
         val oppgaveId = oppgaveConsumer.opprettOppgave(requestBody).id.toString()
 
-        innsendingDAO.oppdaterOppgaveId(oppgaveId, innsendingId)
+        innsendingDAO.oppdaterOppgaveId(uuid = innsendingId, oppgaveId = oppgaveId)
         innsendingDAO.settBehandlet(innsendingId)
 
         tellInnsendingBehandlet(soknad.soknadstype)
