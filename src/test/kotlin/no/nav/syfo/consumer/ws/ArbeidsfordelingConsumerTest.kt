@@ -1,11 +1,16 @@
 package no.nav.syfo.consumer.ws
 
 import no.nav.syfo.domain.dto.Soknadstype
-import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.ArbeidsfordelingV1
-import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.FinnBehandlendeEnhetListeUgyldigInput
-import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.*
-import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.meldinger.WSFinnBehandlendeEnhetListeRequest
-import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.meldinger.WSFinnBehandlendeEnhetListeResponse
+import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.ArbeidsfordelingV1
+import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.FinnBehandlendeEnhetListeUgyldigInput
+import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.Behandlingstema
+import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.Diskresjonskoder
+import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.Enhetsstatus
+import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.Geografi
+import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.Organisasjonsenhet
+import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.Tema
+import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.meldinger.FinnBehandlendeEnhetListeRequest
+import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.meldinger.FinnBehandlendeEnhetListeResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -32,9 +37,12 @@ class ArbeidsfordelingConsumerTest {
     @Throws(FinnBehandlendeEnhetListeUgyldigInput::class)
     fun setup() {
         `when`(arbeidsfordelingV1!!.finnBehandlendeEnhetListe(any()))
-                .thenReturn(WSFinnBehandlendeEnhetListeResponse().withBehandlendeEnhetListe(listOf(WSOrganisasjonsenhet()
-                        .withStatus(WSEnhetsstatus.AKTIV)
-                        .withEnhetId("enhetsId"))))
+            .thenReturn(FinnBehandlendeEnhetListeResponse().apply {
+                behandlendeEnhetListe.add(Organisasjonsenhet().apply {
+                    status = Enhetsstatus.AKTIV
+                    enhetId = "enhetsId"
+                })
+            })
     }
 
     @Test
@@ -44,7 +52,7 @@ class ArbeidsfordelingConsumerTest {
 
         arbeidsfordelingConsumer!!.finnBehandlendeEnhet(geografiskTilknytning, Soknadstype.SELVSTENDIGE_OG_FRILANSERE)
 
-        val captor = ArgumentCaptor.forClass(WSFinnBehandlendeEnhetListeRequest::class.java)
+        val captor = ArgumentCaptor.forClass(FinnBehandlendeEnhetListeRequest::class.java)
 
         verify<ArbeidsfordelingV1>(arbeidsfordelingV1).finnBehandlendeEnhetListe(captor.capture())
 
@@ -52,8 +60,8 @@ class ArbeidsfordelingConsumerTest {
 
         assertThat(kriterier.diskresjonskode).isNull()
         assertThat(kriterier.behandlingstema).isNull()
-        assertThat(kriterier.geografiskTilknytning).isEqualTo(WSGeografi().withValue("2017"))
-        assertThat(kriterier.tema).isEqualTo(WSTema().withValue("SYK"))
+        assertThat(kriterier.geografiskTilknytning.value).isEqualTo("2017")
+        assertThat(kriterier.tema.value).isEqualTo("SYK")
     }
 
     @Test
@@ -63,15 +71,15 @@ class ArbeidsfordelingConsumerTest {
 
         arbeidsfordelingConsumer!!.finnBehandlendeEnhet(geografiskTilknytning, Soknadstype.OPPHOLD_UTLAND)
 
-        val captor = ArgumentCaptor.forClass(WSFinnBehandlendeEnhetListeRequest::class.java)
+        val captor = ArgumentCaptor.forClass(FinnBehandlendeEnhetListeRequest::class.java)
 
         verify<ArbeidsfordelingV1>(arbeidsfordelingV1).finnBehandlendeEnhetListe(captor.capture())
 
         val kriterier = captor.value.arbeidsfordelingKriterier
 
-        assertThat(kriterier.diskresjonskode).isEqualTo(WSDiskresjonskoder().withValue("SPSF"))
-        assertThat(kriterier.behandlingstema).isEqualTo(WSBehandlingstema().withValue(BEHANDLINGSTEMA_OPPHOLD_UTLAND))
-        assertThat(kriterier.geografiskTilknytning).isEqualTo(WSGeografi().withValue("2017"))
-        assertThat(kriterier.tema).isEqualTo(WSTema().withValue("SYK"))
+        assertThat(kriterier.diskresjonskode.value).isEqualTo("SPSF")
+        assertThat(kriterier.behandlingstema.value).isEqualTo(BEHANDLINGSTEMA_OPPHOLD_UTLAND)
+        assertThat(kriterier.geografiskTilknytning.value).isEqualTo("2017")
+        assertThat(kriterier.tema.value).isEqualTo("SYK")
     }
 }

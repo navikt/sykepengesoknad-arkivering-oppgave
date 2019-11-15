@@ -12,7 +12,7 @@ import org.apache.cxf.ws.security.trust.STSClient
 import org.apache.neethi.Policy
 import java.util.*
 
-internal object STSClientConfig {
+object STSClientConfig {
     val STS_URL_KEY = "SECURITYTOKENSERVICE_URL"
     val SERVICEUSER_USERNAME = "SRVSYFOGSAK_USERNAME"
     val SERVICEUSER_PASSWORD = "SRVSYFOGSAK_PASSWORD"

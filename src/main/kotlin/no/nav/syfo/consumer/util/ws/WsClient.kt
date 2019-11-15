@@ -9,19 +9,15 @@ import org.apache.cxf.ws.addressing.WSAddressingFeature
 import javax.xml.ws.BindingProvider
 import javax.xml.ws.handler.Handler
 
-class WsClient<T> {
-
-    fun createPort(serviceUrl: String, portType: Class<*>, handlers: List<Handler<*>>, vararg interceptors: PhaseInterceptor<out Message>): T {
-        val jaxWsProxyFactoryBean = JaxWsProxyFactoryBean()
-        jaxWsProxyFactoryBean.serviceClass = portType
-        jaxWsProxyFactoryBean.address = serviceUrl
-        jaxWsProxyFactoryBean.features.add(WSAddressingFeature())
-        val port: T = jaxWsProxyFactoryBean.create() as T
-        (port as BindingProvider).binding.handlerChain = handlers
-        val client = ClientProxy.getClient(port)
-        interceptors.map { client.outInterceptors.add(it) }
-        STSClientConfig.configureRequestSamlToken<T>(port)
-        return port
-    }
-
+inline fun <reified T> createPort(serviceUrl: String, handlers: List<Handler<*>>, vararg interceptors: PhaseInterceptor<out Message>): T {
+    val jaxWsProxyFactoryBean = JaxWsProxyFactoryBean()
+    jaxWsProxyFactoryBean.serviceClass = T::class.java
+    jaxWsProxyFactoryBean.address = serviceUrl
+    jaxWsProxyFactoryBean.features.add(WSAddressingFeature())
+    val port: T = jaxWsProxyFactoryBean.create() as T
+    (port as BindingProvider).binding.handlerChain = handlers
+    val client = ClientProxy.getClient(port)
+    interceptors.map { client.outInterceptors.add(it) }
+    STSClientConfig.configureRequestSamlToken(port)
+    return port
 }

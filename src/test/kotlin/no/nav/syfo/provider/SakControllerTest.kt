@@ -4,7 +4,7 @@ import buildClaimSet
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import no.nav.security.spring.oidc.test.JwtTokenGenerator
+import no.nav.security.oidc.test.support.JwtTokenGenerator
 import no.nav.syfo.AZUREAD
 import no.nav.syfo.TestApplication
 import no.nav.syfo.consumer.repository.TidligereInnsending
@@ -18,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
+import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
@@ -27,6 +28,7 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 @RunWith(SpringRunner::class)
+@EmbeddedKafka
 @SpringBootTest(classes = [TestApplication::class])
 @AutoConfigureMockMvc
 @DirtiesContext
@@ -44,7 +46,14 @@ class SakControllerTest {
         .registerModule(JavaTimeModule())
         .registerModule(KotlinModule())
 
-    private val jwt = JwtTokenGenerator.createSignedJWT(buildClaimSet(subject = "syfoinntektsmelding", issuer = AZUREAD, appId = "syfoinntektsmelding_clientid", audience = "syfogsak_clientid")).serialize()
+    private val jwt = JwtTokenGenerator.createSignedJWT(
+        buildClaimSet(
+            subject = "syfoinntektsmelding",
+            issuer = AZUREAD,
+            appId = "syfoinntektsmelding_clientid",
+            audience = "syfogsak_clientid"
+        )
+    ).serialize()
 
     @After
     fun cleanup() {
@@ -78,7 +87,8 @@ class SakControllerTest {
                     .contentType(MediaType.APPLICATION_JSON)
             ).andExpect(status().isOk).andReturn()
 
-        val response = objectMapper.readValue(result.response.contentAsString, SakController.SisteSakRespons::class.java)
+        val response =
+            objectMapper.readValue(result.response.contentAsString, SakController.SisteSakRespons::class.java)
         assertThat(response.sisteSak).isEqualTo("sak2")
     }
 
@@ -115,7 +125,8 @@ class SakControllerTest {
                     .contentType(MediaType.APPLICATION_JSON)
             ).andExpect(status().isOk).andReturn()
 
-        val response = objectMapper.readValue(result.response.contentAsString, SakController.SisteSakRespons::class.java)
+        val response =
+            objectMapper.readValue(result.response.contentAsString, SakController.SisteSakRespons::class.java)
         assertThat(response.sisteSak).isEqualTo("sak2")
     }
 

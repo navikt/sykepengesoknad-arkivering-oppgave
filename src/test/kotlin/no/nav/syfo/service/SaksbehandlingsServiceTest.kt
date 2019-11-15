@@ -65,8 +65,6 @@ class SaksbehandlingsServiceTest {
 
     @Before
     fun setup() {
-        val defaultSykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
-        val defaultSoknad = Soknad.lagSoknad(defaultSykepengesoknad, "12345678901", "Personnavn")
         given(aktorConsumer.finnFnr(any())).willReturn("12345678901")
         given(personConsumer.finnBrukerPersonnavnByFnr(any())).willReturn("Personnavn")
         given(sakConsumer.opprettSak(any())).willReturn("ny-sak-fra-gsak")
@@ -165,7 +163,7 @@ class SaksbehandlingsServiceTest {
         val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
                 .copy(fom = LocalDate.of(2019, 3, 11), tom = LocalDate.of(2019, 3, 20))
 
-        given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019, 3, 1),LocalDate.of(2019, 3, 10))))
+        given(innsendingDAO.finnTidligereInnsendinger(aktorId)).willReturn(listOf(TidligereInnsending(aktorId, "sak1", LocalDate.now(), LocalDate.of(2019, 3, 1),LocalDate.of(2019, 3, 10))))
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
         verify(sakConsumer, never()).opprettSak(ArgumentMatchers.anyString())
@@ -178,7 +176,7 @@ class SaksbehandlingsServiceTest {
         val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
                 .copy(fom = LocalDate.of(2019, 3, 11), tom = LocalDate.of(2019, 3, 20))
 
-        given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019, 3, 1),LocalDate.of(2019, 3, 6))))
+        given(innsendingDAO.finnTidligereInnsendinger(aktorId)).willReturn(listOf(TidligereInnsending(aktorId, "sak1", LocalDate.now(), LocalDate.of(2019, 3, 1),LocalDate.of(2019, 3, 6))))
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
         verify(sakConsumer).opprettSak(ArgumentMatchers.anyString())
@@ -191,7 +189,7 @@ class SaksbehandlingsServiceTest {
         val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
                 .copy(fom = LocalDate.of(2019, 3, 11), tom = LocalDate.of(2019, 3, 20))
 
-        given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019, 3, 1),LocalDate.of(2019, 3, 8))))
+        given(innsendingDAO.finnTidligereInnsendinger(aktorId)).willReturn(listOf(TidligereInnsending(aktorId, "sak1", LocalDate.now(), LocalDate.of(2019, 3, 1),LocalDate.of(2019, 3, 8))))
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
         verify(sakConsumer, never()).opprettSak(ArgumentMatchers.anyString())
@@ -204,7 +202,7 @@ class SaksbehandlingsServiceTest {
         val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
                 .copy(fom = LocalDate.of(2019, 3, 12), tom = LocalDate.of(2019, 3, 21))
 
-        given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019, 3, 1),LocalDate.of(2019, 3, 10))))
+        given(innsendingDAO.finnTidligereInnsendinger(aktorId)).willReturn(listOf(TidligereInnsending(aktorId, "sak1", LocalDate.now(), LocalDate.of(2019, 3, 1),LocalDate.of(2019, 3, 10))))
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
         verify(sakConsumer).opprettSak(ArgumentMatchers.anyString())
@@ -217,7 +215,7 @@ class SaksbehandlingsServiceTest {
         val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
                 .copy(fom = LocalDate.of(2019, 3, 12), tom = LocalDate.of(2019, 3, 21))
 
-        given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(emptyList())
+        given(innsendingDAO.finnTidligereInnsendinger(aktorId)).willReturn(emptyList())
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
         verify(sakConsumer).opprettSak(ArgumentMatchers.anyString())
@@ -230,7 +228,7 @@ class SaksbehandlingsServiceTest {
         val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
                 .copy(fom = LocalDate.of(2019, 2, 11), tom = LocalDate.of(2019, 2, 21))
 
-        given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019, 3, 1),LocalDate.of(2019, 3, 10))))
+        given(innsendingDAO.finnTidligereInnsendinger(aktorId)).willReturn(listOf(TidligereInnsending(aktorId, "sak1", LocalDate.now(), LocalDate.of(2019, 3, 1),LocalDate.of(2019, 3, 10))))
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
         verify(sakConsumer).opprettSak(ArgumentMatchers.anyString())
@@ -243,10 +241,10 @@ class SaksbehandlingsServiceTest {
         val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
                 .copy(fom = LocalDate.of(2019, 3, 11), tom = LocalDate.of(2019, 3, 20))
 
-        given(innsendingDAO.finnTidligereInnsendinger("aktorId-745463060")).willReturn(listOf(
-                TidligereInnsending("aktorId-745463060", "sak1", LocalDate.now(), LocalDate.of(2019, 2, 1),LocalDate.of(2019, 2, 8)),
-                TidligereInnsending("aktorId-745463060", "sak2", LocalDate.now(), LocalDate.of(2019, 3, 1),LocalDate.of(2019, 3, 8)),
-                TidligereInnsending("aktorId-745463060", "sak3", LocalDate.now(), LocalDate.of(2018, 3, 1),LocalDate.of(2018, 3, 8))))
+        given(innsendingDAO.finnTidligereInnsendinger(aktorId)).willReturn(listOf(
+                TidligereInnsending(aktorId, "sak1", LocalDate.now(), LocalDate.of(2019, 2, 1),LocalDate.of(2019, 2, 8)),
+                TidligereInnsending(aktorId, "sak2", LocalDate.now(), LocalDate.of(2019, 3, 1),LocalDate.of(2019, 3, 8)),
+                TidligereInnsending(aktorId, "sak3", LocalDate.now(), LocalDate.of(2018, 3, 1),LocalDate.of(2018, 3, 8))))
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
         verify(sakConsumer, never()).opprettSak(ArgumentMatchers.anyString())

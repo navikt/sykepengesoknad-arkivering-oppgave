@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service
 @Service
 @ConditionalOnProperty(value = ["mockWS"], havingValue = "true")
 class PersonMock : PersonV3 {
+    override fun hentPersonhistorikk(p0: HentPersonhistorikkRequest?): HentPersonhistorikkResponse {
+        throw RuntimeException("Ikke implementert i mock")
+    }
 
     @Throws(HentPersonPersonIkkeFunnet::class, HentPersonSikkerhetsbegrensning::class)
     override fun hentPerson(hentPersonRequest: HentPersonRequest): HentPersonResponse {

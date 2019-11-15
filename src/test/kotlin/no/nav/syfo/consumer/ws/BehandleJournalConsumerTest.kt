@@ -8,8 +8,8 @@ import no.nav.syfo.controller.PDFRestController
 import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.BehandleJournalV2
-import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.WSJournalfoerInngaaendeHenvendelseRequest
-import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.WSJournalfoerInngaaendeHenvendelseResponse
+import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.JournalfoerInngaaendeHenvendelseRequest
+import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.JournalfoerInngaaendeHenvendelseResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -40,8 +40,8 @@ class BehandleJournalConsumerTest {
     @Test
     @Throws(IOException::class)
     fun opprettJournalpost() {
-        `when`(behandleJournalV2!!.journalfoerInngaaendeHenvendelse(any<WSJournalfoerInngaaendeHenvendelseRequest>()))
-                .thenReturn(WSJournalfoerInngaaendeHenvendelseResponse().withJournalpostId("id"))
+        `when`(behandleJournalV2!!.journalfoerInngaaendeHenvendelse(any<JournalfoerInngaaendeHenvendelseRequest>()))
+                .thenReturn(JournalfoerInngaaendeHenvendelseResponse().withJournalpostId("id"))
 
         val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
         val soknad = Soknad.lagSoknad(sykepengesoknad, "22026900623", "Kjersti Glad")
@@ -53,7 +53,7 @@ class BehandleJournalConsumerTest {
     @Test
     @Throws(IOException::class)
     fun opprettJournalpostTaklerFeil() {
-        `when`(behandleJournalV2!!.journalfoerInngaaendeHenvendelse(any<WSJournalfoerInngaaendeHenvendelseRequest>())).thenThrow(RuntimeException("test"))
+        `when`(behandleJournalV2!!.journalfoerInngaaendeHenvendelse(any<JournalfoerInngaaendeHenvendelseRequest>())).thenThrow(RuntimeException("test"))
 
         val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
         val soknad = Soknad.lagSoknad(sykepengesoknad, "22026900623", "Kjersti Glad")

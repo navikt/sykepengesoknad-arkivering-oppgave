@@ -11,12 +11,12 @@ import no.nav.syfo.log
 import no.nav.syfo.util.DatoUtil.norskDato
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.BehandleJournalV2
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal.*
-import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.journalfoerinngaaendehenvendelse.WSDokumentinfoRelasjon
-import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.journalfoerinngaaendehenvendelse.WSJournalfoertDokumentInfo
-import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.journalfoerinngaaendehenvendelse.WSJournalpost
-import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.WSJournalfoerInngaaendeHenvendelseRequest
+import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.journalfoerinngaaendehenvendelse.DokumentinfoRelasjon
+import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.journalfoerinngaaendehenvendelse.JournalfoertDokumentInfo
+import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.journalfoerinngaaendehenvendelse.Journalpost
+import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.JournalfoerInngaaendeHenvendelseRequest
+import org.joda.time.DateTime
 import org.springframework.stereotype.Component
-import java.time.LocalDateTime
 import javax.inject.Inject
 
 @Component
@@ -43,37 +43,37 @@ constructor(
     private fun journalforSoknad(soknad: Soknad, saksId: String, pdf: ByteArray?): String {
         try {
             return behandleJournalV2.journalfoerInngaaendeHenvendelse(
-                    WSJournalfoerInngaaendeHenvendelseRequest()
+                    JournalfoerInngaaendeHenvendelseRequest()
                             .withApplikasjonsID("SYFOGSAK")
-                            .withJournalpost(WSJournalpost()
-                                    .withDokumentDato(LocalDateTime.now())
+                            .withJournalpost(Journalpost()
+                                    .withDokumentDato(DateTime.now())
                                     .withJournalfoerendeEnhetREF(JOURNALFORENDE_ENHET)
-                                    .withKanal(WSKommunikasjonskanaler().withValue("NAV_NO"))
-                                    .withSignatur(WSSignatur().withSignert(true))
-                                    .withArkivtema(WSArkivtemaer().withValue("SYK"))
-                                    .withForBruker(WSPerson().withIdent(WSNorskIdent().withIdent(soknad.fnr)))
+                                    .withKanal(Kommunikasjonskanaler().withValue("NAV_NO"))
+                                    .withSignatur(Signatur().withSignert(true))
+                                    .withArkivtema(Arkivtemaer().withValue("SYK"))
+                                    .withForBruker(Person().withIdent(NorskIdent().withIdent(soknad.fnr)))
                                     .withOpprettetAvNavn("Syfogsak")
                                     .withInnhold(getJournalPostInnholdNavn(soknad.soknadstype!!))
-                                    .withEksternPart(WSEksternPart()
+                                    .withEksternPart(EksternPart()
                                             .withNavn(personConsumer.finnBrukerPersonnavnByFnr(soknad.fnr!!))
-                                            .withEksternAktoer(WSPerson().withIdent(WSNorskIdent().withIdent(soknad.fnr))))
-                                    .withGjelderSak(WSSak().withSaksId(saksId).withFagsystemkode(GOSYS))
-                                    .withMottattDato(LocalDateTime.now())
+                                            .withEksternAktoer(Person().withIdent(NorskIdent().withIdent(soknad.fnr))))
+                                    .withGjelderSak(Sak().withSaksId(saksId).withFagsystemkode(GOSYS))
+                                    .withMottattDato(DateTime.now())
                                     .withDokumentinfoRelasjon(
-                                            WSDokumentinfoRelasjon()
+                                            DokumentinfoRelasjon()
                                                     .withTillknyttetJournalpostSomKode("HOVEDDOKUMENT")
-                                                    .withJournalfoertDokument(WSJournalfoertDokumentInfo()
+                                                    .withJournalfoertDokument(JournalfoertDokumentInfo()
                                                             .withBegrensetPartsInnsyn(false)
-                                                            .withDokumentType(WSDokumenttyper().withValue(getBrevkode(soknad)))
+                                                            .withDokumentType(Dokumenttyper().withValue(getBrevkode(soknad)))
                                                             .withSensitivitet(true)
                                                             .withTittel(getJornalfoertDokumentTittel(soknad))
                                                             .withKategorikode("ES")
                                                             .withBeskriverInnhold(
-                                                                    WSStrukturertInnhold()
-                                                                            .withFilnavn(getWSStruktureltInnholdFilnavn(soknad))
-                                                                            .withFiltype(WSArkivfiltyper().withValue("PDF"))
+                                                                    StrukturertInnhold()
+                                                                            .withFilnavn(getStruktureltInnholdFilnavn(soknad))
+                                                                            .withFiltype(Arkivfiltyper().withValue("PDF"))
                                                                             .withInnhold(pdf)
-                                                                            .withVariantformat(WSVariantformater().withValue("ARKIV"))
+                                                                            .withVariantformat(Variantformater().withValue("ARKIV"))
                                                             ))
                                     ))
             ).journalpostId
@@ -102,7 +102,7 @@ constructor(
         }
     }
 
-    private fun getWSStruktureltInnholdFilnavn(soknad: Soknad): String {
+    private fun getStruktureltInnholdFilnavn(soknad: Soknad): String {
         return when (soknad.soknadstype) {
             OPPHOLD_UTLAND -> "soknad-" + soknad.innsendtDato!!.format(norskDato)
             SELVSTENDIGE_OG_FRILANSERE -> "Søknad om sykepenger fra Selvstendig/Frilanser for periode: " + soknad.fom!!.format(norskDato) + " til " + soknad.tom!!.format(norskDato)
