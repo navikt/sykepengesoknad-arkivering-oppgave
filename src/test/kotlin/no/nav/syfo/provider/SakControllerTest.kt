@@ -18,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
+import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
@@ -27,6 +28,7 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 @RunWith(SpringRunner::class)
+@EmbeddedKafka
 @SpringBootTest(classes = [TestApplication::class])
 @AutoConfigureMockMvc
 @DirtiesContext

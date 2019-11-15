@@ -47,7 +47,7 @@ spring:
       log-base-dir: transaction-logs/test
 
   kafka:
-    bootstrap-servers: 'localhost:9092'
+    bootstrap-servers: ${spring.embedded.kafka.brokers}
     consumer:
       group-id: syfogsak-local
       max-poll-records: 1
