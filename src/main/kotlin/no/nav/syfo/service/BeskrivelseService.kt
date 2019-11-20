@@ -44,6 +44,7 @@ fun lagBeskrivelse(soknad: Soknad): String {
             tittel + (soknad.korrigerer?.let { " KORRIGERING" } ?: "") + "\n" +
             beskrivArbeidsgiver(soknad) +
             (soknad.soknadPerioder?.let { beskrivPerioder(it) } ?: "") +
+            beskrivFaktiskGradFrilansere(soknad) +
 
             soknad.sporsmal
                     .asSequence()
@@ -61,6 +62,24 @@ private fun beskrivPerioder(perioder: List<SoknadPeriode>): String {
                 "Grad: " + grad + "\n" +
                 (faktiskGrad?.let { "Oppgitt faktisk arbeidsgrad: $it\n" } ?: "")
         }.joinToString("")
+}
+
+private fun beskrivFaktiskGradFrilansere(soknad: Soknad): String {
+    if (soknad.soknadstype === SELVSTENDIGE_OG_FRILANSERE) {
+        val harJobbetMerEnnGradert = soknad.sporsmal.asSequence()
+                .filter { it.tag.startsWith("JOBBET_DU_GRADERT") }
+                .any { it.svar?.asSequence()?.any { svar -> svar.verdi == "JA" } ?: false }
+
+        if (harJobbetMerEnnGradert) {
+            return """
+                
+                OBS! Brukeren har jobbet mer enn gradert sykemelding
+                Se oppgitt arbeidsgrad lengre ned i oppgaven
+                
+                """.trimIndent()
+        }
+    }
+    return ""
 }
 
 private fun beskrivArbeidsgiver(soknad: Soknad): String {
