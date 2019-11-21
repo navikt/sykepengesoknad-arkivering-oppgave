@@ -67,13 +67,13 @@ private fun beskrivPerioder(perioder: List<SoknadPeriode>): String {
 private fun beskrivFaktiskGradFrilansere(soknad: Soknad): String {
     if (soknad.soknadstype === SELVSTENDIGE_OG_FRILANSERE) {
         val harJobbetMerEnnGradert = soknad.sporsmal.asSequence()
-                .filter { it.tag.startsWith("JOBBET_DU_GRADERT") }
+                .filter { it.tag.startsWith("JOBBET_DU_GRADERT_") || it.tag.startsWith("JOBBET_DU_100_PROSENT_") }
                 .any { it.svar?.asSequence()?.any { svar -> svar.verdi == "JA" } ?: false }
 
         if (harJobbetMerEnnGradert) {
             return """
                 
-                OBS! Brukeren har jobbet mer enn gradert sykemelding
+                OBS! Brukeren har jobbet mer enn uføregraden i sykmeldingen.
                 Se oppgitt arbeidsgrad lengre ned i oppgaven
                 
                 """.trimIndent()

@@ -53,7 +53,7 @@ const val beskrivelseSelvstendigMangeSvar = "Søknad om sykepenger fra frilanser
         "25.05.2018 - 28.05.2018\n" +
         "Grad: 40\n" +
         "\n" +
-        "OBS! Brukeren har jobbet mer enn gradert sykemelding\n" +
+        "OBS! Brukeren har jobbet mer enn uføregraden i sykmeldingen.\n" +
         "Se oppgitt arbeidsgrad lengre ned i oppgaven\n" +
         "\n" +
         "Var du tilbake i fullt arbeid som frilanser før sykmeldingsperioden utløp 28.05.2018?\n" +
