@@ -1,10 +1,10 @@
 package no.nav.syfo.kafka.consumer
 
 import no.nav.syfo.BEHANDLINGSTIDSPUNKT
-import no.nav.syfo.config.CALL_ID
 import no.nav.syfo.consumer.repository.InnsendingDAO
 import no.nav.syfo.domain.dto.Sykepengesoknad
-import no.nav.syfo.kafka.getLastHeaderByKeyAsString
+import no.nav.syfo.kafka.NAV_CALLID
+import no.nav.syfo.kafka.getSafeNavCallIdHeaderAsString
 import no.nav.syfo.kafka.producer.RebehandlingProducer
 import no.nav.syfo.log
 import no.nav.syfo.service.BehandleFeiledeSoknaderService
@@ -30,7 +30,7 @@ constructor(private val behandleFeiledeSoknaderService: BehandleFeiledeSoknaderS
     @KafkaListener(topics = ["syfogsak-rebehandle-soknad-v1"], id = "syfogsak-rebehandling", idIsGroup = false, containerFactory = "rebehandlingContainerFactory")
     fun listen(cr: ConsumerRecord<String, Sykepengesoknad>, acknowledgment: Acknowledgment) {
         try {
-            MDC.put(CALL_ID, getLastHeaderByKeyAsString(cr.headers(), CALL_ID) ?: (UUID.randomUUID().toString()))
+            MDC.put(NAV_CALLID, getSafeNavCallIdHeaderAsString(cr.headers()))
             cr.headers().lastHeader(BEHANDLINGSTIDSPUNKT)
                 ?.value()
                 ?.let { String(it, StandardCharsets.UTF_8) }
@@ -55,7 +55,7 @@ constructor(private val behandleFeiledeSoknaderService: BehandleFeiledeSoknaderS
             rebehandlingProducer.leggPaRebehandlingTopic(sykepengesoknad, now().plusMinutes(10))
             acknowledgment.acknowledge()
         } finally {
-            MDC.remove(CALL_ID)
+            MDC.remove(NAV_CALLID)
         }
     }
 }

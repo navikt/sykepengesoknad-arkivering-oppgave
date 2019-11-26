@@ -11,8 +11,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement
 import org.springframework.transaction.jta.JtaTransactionManager
 import org.springframework.web.client.RestTemplate
 
-const val CALL_ID = "callId"
-
 @Configuration
 @EnableTransactionManagement
 @EnableKafka

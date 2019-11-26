@@ -1,8 +1,8 @@
 package no.nav.syfo.kafka.consumer
 
-import no.nav.syfo.config.CALL_ID
+import no.nav.syfo.kafka.NAV_CALLID
+import no.nav.syfo.kafka.getSafeNavCallIdHeaderAsString
 import no.nav.syfo.domain.dto.Sykepengesoknad
-import no.nav.syfo.kafka.getLastHeaderByKeyAsString
 import no.nav.syfo.kafka.mapper.toSykepengesoknad
 import no.nav.syfo.kafka.sykepengesoknadarbeidsledig.dto.SykepengesoknadArbeidsledigDTO
 import no.nav.syfo.log
@@ -25,7 +25,7 @@ constructor(private val saksbehandlingsService: SaksbehandlingsService) {
         log.debug("Melding om søknad for arbeidsledig er mottatt på topic: {}, partisjon: {} med offset: {}", cr.topic(), cr.partition(), cr.offset())
 
         try {
-            MDC.put(CALL_ID, getLastHeaderByKeyAsString(cr.headers(), CALL_ID) ?: randomUUID().toString() )
+            MDC.put(NAV_CALLID, getSafeNavCallIdHeaderAsString(cr.headers()))
 
             val soknad = cr.value()
             val sykepengesoknad: Sykepengesoknad = soknad.toSykepengesoknad()
@@ -37,7 +37,7 @@ constructor(private val saksbehandlingsService: SaksbehandlingsService) {
             log.error("Uventet feil ved behandling av arbeidsledig søknad", e)
             throw RuntimeException("Uventet feil ved behandling av arbeidsledig søknad")
         } finally {
-            MDC.remove(CALL_ID)
+            MDC.remove(NAV_CALLID)
         }
     }
 }

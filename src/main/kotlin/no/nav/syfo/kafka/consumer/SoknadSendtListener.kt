@@ -1,7 +1,7 @@
 package no.nav.syfo.kafka.consumer
 
-import no.nav.syfo.config.CALL_ID
-import no.nav.syfo.kafka.getLastHeaderByKeyAsString
+import no.nav.syfo.kafka.NAV_CALLID
+import no.nav.syfo.kafka.getSafeNavCallIdHeaderAsString
 import no.nav.syfo.kafka.interfaces.Soknad
 import no.nav.syfo.kafka.mapper.toSykepengesoknad
 import no.nav.syfo.kafka.soknad.dto.SoknadDTO
@@ -27,7 +27,7 @@ constructor(private val saksbehandlingsService: SaksbehandlingsService) {
     )
     fun listen(cr: ConsumerRecord<String, Soknad>, acknowledgment: Acknowledgment) {
         try {
-            MDC.put(CALL_ID, getLastHeaderByKeyAsString(cr.headers(), CALL_ID) ?: randomUUID().toString() )
+            MDC.put(NAV_CALLID, getSafeNavCallIdHeaderAsString(cr.headers()))
 
             when (val soknad = cr.value()) {
                 is SoknadDTO -> saksbehandlingsService.behandleSoknad(soknad.toSykepengesoknad())
@@ -36,7 +36,7 @@ constructor(private val saksbehandlingsService: SaksbehandlingsService) {
 
             acknowledgment.acknowledge()
         } finally {
-            MDC.remove(CALL_ID)
+            MDC.remove(NAV_CALLID)
         }
     }
 }
