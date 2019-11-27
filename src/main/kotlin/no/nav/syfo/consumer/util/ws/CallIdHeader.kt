@@ -1,6 +1,6 @@
 package no.nav.syfo.consumer.util.ws
 
-import no.nav.syfo.config.CALL_ID
+import no.nav.syfo.kafka.NAV_CALLID
 import no.nav.syfo.log
 import org.apache.cxf.binding.soap.SoapHeader
 import org.apache.cxf.binding.soap.SoapMessage
@@ -27,7 +27,7 @@ class CallIdHeader : AbstractPhaseInterceptor<Message>(Phase.PRE_STREAM) {
 
     }
 
-    private fun callId() = MDC.get(CALL_ID) ?: randomUUID().toString()
+    private fun callId() = MDC.get(NAV_CALLID) ?: randomUUID().toString()
 
     companion object {
         private val log = CallIdHeader::class.java.log()

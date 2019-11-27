@@ -1,10 +1,10 @@
 package no.nav.syfo.consumer.oppgave
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import no.nav.syfo.config.CALL_ID
 import no.nav.syfo.consumer.token.TokenConsumer
 import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.Soknadstype
+import no.nav.syfo.kafka.NAV_CALLID
 import no.nav.syfo.log
 import no.nav.syfo.service.lagBeskrivelse
 import org.slf4j.MDC
@@ -97,7 +97,7 @@ class OppgaveConsumer(
     }
 
     private fun callId(): String {
-        val callId = MDC.get(CALL_ID)
+        val callId = MDC.get(NAV_CALLID)
         return if (callId.isNullOrEmpty()) {
             UUID.randomUUID().toString()
         } else {
