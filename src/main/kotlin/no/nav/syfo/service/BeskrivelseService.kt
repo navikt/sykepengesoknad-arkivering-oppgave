@@ -91,7 +91,7 @@ private fun beskrivArbeidsgiver(soknad: Soknad): String {
 
 private fun sporsmalSkalVises(sporsmal: Sporsmal): Boolean {
     return when (sporsmal.tag) {
-        "ANSVARSERKLARING", "BEKREFT_OPPLYSNINGER" -> false
+        "ANSVARSERKLARING", "BEKREFT_OPPLYSNINGER", "EGENMELDINGER" -> false
         "ARBEIDSGIVER" -> true
         else -> "NEI" != getForsteSvarverdi(sporsmal)
     }

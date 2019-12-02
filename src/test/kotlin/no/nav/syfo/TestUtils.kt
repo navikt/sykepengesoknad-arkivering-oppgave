@@ -141,11 +141,6 @@ const val beskrivelseArbeidstakerMangeSvar = "Søknad om sykepenger for perioden
         "Grad: 40\n" +
         "Oppgitt faktisk arbeidsgrad: 440\n" +
         "\n" +
-        "Vi har registrert at du ble sykmeldt tirsdag 16. oktober 2018. Brukte du egenmeldinger og/eller var du sykmeldt i perioden 30. september - 15. oktober 2018?\n" +
-        "Ja\n" +
-        "    Hvilke dager før 16. oktober 2018 var du borte fra jobb?\n" +
-        "    08.10.2018 - 10.10.2018\n" +
-        "\n" +
         "Var du tilbake i fullt arbeid hos ARBEIDSGIVER A/S før 25. oktober 2018?\n" +
         "Ja\n" +
         "    Fra hvilken dato ble arbeidet gjenopptatt?\n" +
