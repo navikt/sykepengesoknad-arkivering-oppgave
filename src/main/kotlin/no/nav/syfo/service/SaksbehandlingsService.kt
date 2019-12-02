@@ -36,21 +36,17 @@ class SaksbehandlingsService(
     private val log = log()
 
     fun behandleSoknad(sykepengesoknad: Sykepengesoknad) {
-        val sykepengesoknadId = sykepengesoknad.id
-        val aktorId = sykepengesoknad.aktorId
-        if (ikkeSendtTilNav(sykepengesoknad) || ettersendtTilArbeidsgiver(sykepengesoknad)) return
-
-        val eksisterendeInnsendingId = finnEksisterendeInnsendingId(sykepengesoknadId)
+        if (sykepengesoknad.status != "SENDT" || ettersendtTilArbeidsgiver(sykepengesoknad)) return
+        val eksisterendeInnsendingId = finnEksisterendeInnsendingId(sykepengesoknad.id)
         if (eksisterendeInnsendingId != null) {
             log.warn(
                 "Innsending for sykepengesøknad {} allerede opprettet med id {}.",
-                sykepengesoknadId,
+                sykepengesoknad.id,
                 eksisterendeInnsendingId
             )
             return
         }
-
-        lagOppgaver(sykepengesoknadId, aktorId, sykepengesoknad)
+        lagJournalSak(sykepengesoknad)
     }
 
     fun opprettOppgave(
@@ -89,8 +85,8 @@ class SaksbehandlingsService(
             }
             ?: opprettSak(aktorId, innsendingId)
 
-    private fun ikkeSendtTilNav(sykepengesoknad: Sykepengesoknad) =
-        sykepengesoknad.status != "SENDT" || sykepengesoknad.sendtNav == null
+    private fun skalBehandlesAvNav(sykepengesoknad: Sykepengesoknad) =
+        sykepengesoknad.sendtNav != null
 
     private fun ettersendtTilArbeidsgiver(sykepengesoknad: Sykepengesoknad) = sykepengesoknad.sendtArbeidsgiver != null
             && sykepengesoknad.sendtNav?.isBefore(sykepengesoknad.sendtArbeidsgiver) ?: false
@@ -98,18 +94,20 @@ class SaksbehandlingsService(
     private fun finnEksisterendeInnsendingId(sykepengesoknadId: String) =
         innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknadId)?.innsendingsId
 
-    private fun lagOppgaver(sykepengesoknadId: String, aktorId: String, sykepengesoknad: Sykepengesoknad) {
+    private fun lagJournalSak(sykepengesoknad: Sykepengesoknad) {
         val innsendingId =
-            innsendingDAO.opprettInnsending(sykepengesoknadId, aktorId, sykepengesoknad.fom, sykepengesoknad.tom)
+            innsendingDAO.opprettInnsending(sykepengesoknad.id, sykepengesoknad.aktorId, sykepengesoknad.fom, sykepengesoknad.tom)
 
         try {
-            val fnr = aktorConsumer.finnFnr(aktorId)
+            val fnr = aktorConsumer.finnFnr(sykepengesoknad.aktorId)
             val soknad = opprettSoknad(sykepengesoknad, fnr)
 
-            val saksId = finnEllerOpprettSak(innsendingId, aktorId, soknad.fom)
+            val saksId = finnEllerOpprettSak(innsendingId, sykepengesoknad.aktorId, soknad.fom)
             val journalpostId = opprettJournalpost(innsendingId, soknad, saksId)
 
-            opprettOppgave(innsendingId, fnr, aktorId, soknad, saksId, journalpostId)
+            if (skalBehandlesAvNav(sykepengesoknad)) {
+                opprettOppgave(innsendingId, fnr, sykepengesoknad.aktorId, soknad, saksId, journalpostId)
+            }
         } catch (e: Exception) {
             innsendingFeilet(sykepengesoknad, innsendingId, e)
         }
