@@ -87,13 +87,14 @@ class SaksbehandlingsServiceTest {
     }
 
     @Test
-    fun behandlerIkkeSoknaderSomIkkeErSendtTilNav() {
+    fun oppretterIkkeOppgaverForSoknaderSomIkkeErSendtTilNav() {
         val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
                 .copy(sendtNav = null)
 
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
-        verify<InnsendingDAO>(innsendingDAO, never()).finnInnsendingForSykepengesoknad(any())
+        verify<BehandleJournalConsumer>(behandleJournalConsumer, times(1)).opprettJournalpost(any(), any())
+        verify<OppgaveConsumer>(oppgaveConsumer, never()).opprettOppgave(any())
     }
 
     @Test
