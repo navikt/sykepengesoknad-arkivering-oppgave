@@ -14,6 +14,7 @@ import no.nav.syfo.kafka.soknad.dto.SoknadDTO
 import no.nav.syfo.kafka.soknad.serializer.FunctionSerializer
 import no.nav.syfo.kafka.sykepengesoknad.dto.SykepengesoknadDTO
 import no.nav.syfo.kafka.sykepengesoknadarbeidsledig.dto.SykepengesoknadArbeidsledigDTO
+import no.nav.syfo.kafka.sykepengesoknadbehandlingsdager.dto.SykepengesoknadBehandlingsdagerDTO
 import org.apache.kafka.common.serialization.Deserializer
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.kafka.common.serialization.StringSerializer
@@ -33,31 +34,35 @@ class KafkaConfig(private val kafkaErrorHandler: KafkaErrorHandler, private val 
 
     private companion object {
         private val objectMapper = ObjectMapper()
-            .registerModule(JavaTimeModule())
-            .registerKotlinModule()
-            .configure(READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE, true)
-            .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .registerModule(JavaTimeModule())
+                .registerKotlinModule()
+                .configure(READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE, true)
+                .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
     }
 
     @Bean
     fun soknadContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, Soknad> =
-        containerFactory(soknadDeserializer())
+            containerFactory(soknadDeserializer())
 
     @Bean
     fun arbeidsledigContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, SykepengesoknadArbeidsledigDTO> =
-        containerFactory(deserializer())
+            containerFactory(deserializer())
+
+    @Bean
+    fun behandlingsdagerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, SykepengesoknadBehandlingsdagerDTO> =
+            containerFactory(deserializer())
 
     @Bean
     fun rebehandlingContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, Sykepengesoknad> =
-        containerFactory(deserializer())
+            containerFactory(deserializer())
 
     @Bean
     fun kafkaTemplate(): KafkaTemplate<String, Sykepengesoknad> = KafkaTemplate(
-        DefaultKafkaProducerFactory(
-            properties.buildProducerProperties(),
-            StringSerializer(),
-            FunctionSerializer<Sykepengesoknad>(objectMapper::writeValueAsBytes)
-        )
+            DefaultKafkaProducerFactory(
+                    properties.buildProducerProperties(),
+                    StringSerializer(),
+                    FunctionSerializer<Sykepengesoknad>(objectMapper::writeValueAsBytes)
+            )
     )
 
     private inline fun <reified T> containerFactory(deserializer: Deserializer<T>) =

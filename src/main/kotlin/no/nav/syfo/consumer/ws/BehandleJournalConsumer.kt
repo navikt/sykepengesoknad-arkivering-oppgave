@@ -32,7 +32,7 @@ constructor(
         try {
             pdf = pdfRestController.getPDF(soknad, hentPDFTemplateEtterSoknadstype(soknad.soknadstype!!))
         } catch (e: RuntimeException) {
-            val feilmelding = "Kunne ikke generere PDF for søknad med id: " + soknad.soknadsId + " og saks id: " + saksId
+            val feilmelding = "Kunne ikke generere PDF for søknad med id: ${soknad.soknadsId} og saks id: $saksId"
             log().error(feilmelding, e)
             throw RuntimeException(feilmelding, e)
         }
@@ -78,7 +78,7 @@ constructor(
                                     ))
             ).journalpostId
         } catch (e: RuntimeException) {
-            val feilmelding = "Kunne ikke behandle journalpost for søknad med id " + soknad.soknadsId + " og saks id: " + saksId
+            val feilmelding = "Kunne ikke behandle journalpost for søknad med id ${soknad.soknadsId} og saks id: $saksId"
             log().error(feilmelding, e)
             throw RuntimeException(feilmelding, e)
         }
@@ -87,28 +87,30 @@ constructor(
     private fun getBrevkode(soknad: Soknad): String {
         return when (soknad.soknadstype) {
             OPPHOLD_UTLAND -> "NAV 08-07.09"
-            SELVSTENDIGE_OG_FRILANSERE, ARBEIDSTAKERE, ARBEIDSLEDIG -> "NAV 08-07.04 D"
-            else -> throw RuntimeException("Har ikke implementert brevkode for søknad av typen: " + soknad.soknadstype)
+            SELVSTENDIGE_OG_FRILANSERE, ARBEIDSTAKERE, ARBEIDSLEDIG, BEHANDLINGSDAGER -> "NAV 08-07.04 D"
+            else -> throw RuntimeException("Har ikke implementert brevkode for søknad av typen: ${soknad.soknadstype}")
         }
     }
 
     private fun getJornalfoertDokumentTittel(soknad: Soknad): String {
         return when (soknad.soknadstype) {
             OPPHOLD_UTLAND -> "Søknad om å beholde sykepenger utenfor EØS"
-            SELVSTENDIGE_OG_FRILANSERE -> "Søknad om sykepenger fra Selvstendig/Frilanser for periode: " + soknad.fom!!.format(norskDato) + " til " + soknad.tom!!.format(norskDato)
-            ARBEIDSTAKERE -> "Søknad om sykepenger " + soknad.fom!!.format(norskDato) + " - " + soknad.tom!!.format(norskDato)
-            ARBEIDSLEDIG -> "Søknad om sykepenger fra arbeidsledig for periode: " + soknad.fom!!.format(norskDato) + " til " + soknad.tom!!.format(norskDato)
-            else -> throw RuntimeException("Har ikke implementert journalført dokumenttittel for søknad av typen: " + soknad.soknadstype!!)
+            SELVSTENDIGE_OG_FRILANSERE -> "Søknad om sykepenger fra Selvstendig/Frilanser for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
+            ARBEIDSTAKERE -> "Søknad om sykepenger ${soknad.fom!!.format(norskDato)} - ${soknad.tom!!.format(norskDato)}"
+            ARBEIDSLEDIG -> "Søknad om sykepenger fra arbeidsledig for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
+            BEHANDLINGSDAGER -> "Søknad om enkeltstående behandlingsdager fra ${soknad.arbeidssituasjon} for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
+            else -> throw RuntimeException("Har ikke implementert journalført dokumenttittel for søknad av typen: ${soknad.soknadstype!!}")
         }
     }
 
     private fun getStruktureltInnholdFilnavn(soknad: Soknad): String {
         return when (soknad.soknadstype) {
-            OPPHOLD_UTLAND -> "soknad-" + soknad.innsendtDato!!.format(norskDato)
-            SELVSTENDIGE_OG_FRILANSERE -> "Søknad om sykepenger fra Selvstendig/Frilanser for periode: " + soknad.fom!!.format(norskDato) + " til " + soknad.tom!!.format(norskDato)
-            ARBEIDSTAKERE -> "Søknad om sykepenger " + soknad.fom!!.format(norskDato) + " - " + soknad.tom!!.format(norskDato)
-            ARBEIDSLEDIG -> "Søknad om sykepenger fra arbeidsledig for periode: " + soknad.fom!!.format(norskDato) + " til " + soknad.tom!!.format(norskDato)
-            else -> throw RuntimeException("Har ikke implementert strukturert innhold-filnavn for søknad av typen: " + soknad.soknadstype!!)
+            OPPHOLD_UTLAND -> "soknad-${soknad.innsendtDato!!.format(norskDato)}"
+            SELVSTENDIGE_OG_FRILANSERE -> "Søknad om sykepenger fra Selvstendig/Frilanser for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
+            ARBEIDSTAKERE -> "Søknad om sykepenger ${soknad.fom!!.format(norskDato)} - ${soknad.tom!!.format(norskDato)}"
+            ARBEIDSLEDIG -> "Søknad om sykepenger fra arbeidsledig for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
+            BEHANDLINGSDAGER -> "Søknad om enkeltstående behandlingsdager fra ${soknad.arbeidssituasjon} for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
+            else -> throw RuntimeException("Har ikke implementert strukturert innhold-filnavn for søknad av typen: ${soknad.soknadstype!!}")
         }
     }
 
@@ -116,6 +118,7 @@ constructor(
         return when (soknadstype) {
             OPPHOLD_UTLAND -> "Søknad om å beholde sykepenger utenfor EØS"
             SELVSTENDIGE_OG_FRILANSERE, ARBEIDSTAKERE, ARBEIDSLEDIG -> "Søknad om sykepenger"
+            BEHANDLINGSDAGER -> "Søknad om enkeltstående behandlingsdager"
             else -> throw RuntimeException("Har ikke implementert strukturert innhold-filnavn for søknad av typen: $soknadstype")
         }
     }
@@ -126,6 +129,7 @@ constructor(
             SELVSTENDIGE_OG_FRILANSERE -> SELVSTENDIGNAERINGSDRIVENDE
             ARBEIDSTAKERE -> PDFTemplate.ARBEIDSTAKERE
             ARBEIDSLEDIG -> PDFTemplate.ARBEIDSLEDIG
+            BEHANDLINGSDAGER -> PDFTemplate.BEHANDLINGSDAGER
             else -> throw RuntimeException("Har ikke implementert PDF-template for søknad av typen: $soknadstype")
         }
     }

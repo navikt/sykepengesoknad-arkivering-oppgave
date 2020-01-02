@@ -1,27 +1,11 @@
 package no.nav.syfo.service
 
 import no.nav.syfo.domain.Soknad
+import no.nav.syfo.domain.dto.Arbeidssituasjon.ARBEIDSTAKER
 import no.nav.syfo.domain.dto.Avsendertype.SYSTEM
-import no.nav.syfo.domain.dto.SoknadPeriode
-import no.nav.syfo.domain.dto.Soknadstype.ARBEIDSLEDIG
-import no.nav.syfo.domain.dto.Soknadstype.ARBEIDSTAKERE
-import no.nav.syfo.domain.dto.Soknadstype.OPPHOLD_UTLAND
-import no.nav.syfo.domain.dto.Soknadstype.SELVSTENDIGE_OG_FRILANSERE
+import no.nav.syfo.domain.dto.Soknadstype.*
 import no.nav.syfo.domain.dto.Sporsmal
-import no.nav.syfo.domain.dto.Svartype.CHECKBOX
-import no.nav.syfo.domain.dto.Svartype.CHECKBOX_GRUPPE
-import no.nav.syfo.domain.dto.Svartype.DATO
-import no.nav.syfo.domain.dto.Svartype.FRITEKST
-import no.nav.syfo.domain.dto.Svartype.JA_NEI
-import no.nav.syfo.domain.dto.Svartype.LAND
-import no.nav.syfo.domain.dto.Svartype.PERIODE
-import no.nav.syfo.domain.dto.Svartype.PERIODER
-import no.nav.syfo.domain.dto.Svartype.PROSENT
-import no.nav.syfo.domain.dto.Svartype.RADIO
-import no.nav.syfo.domain.dto.Svartype.RADIO_GRUPPE
-import no.nav.syfo.domain.dto.Svartype.RADIO_GRUPPE_TIMER_PROSENT
-import no.nav.syfo.domain.dto.Svartype.TALL
-import no.nav.syfo.domain.dto.Svartype.TIMER
+import no.nav.syfo.domain.dto.Svartype.*
 import no.nav.syfo.util.DatoUtil.norskDato
 import no.nav.syfo.util.PeriodeMapper.jsonTilPeriode
 import java.time.LocalDate
@@ -35,7 +19,6 @@ fun lagBeskrivelse(soknad: Soknad): String {
             soknad.beskrivPerioder() +
             soknad.beskrivFaktiskGradFrilansere() +
             soknad.sporsmal
-                    .asSequence()
                     .filter { it.skalVises() }
                     .map { sporsmal -> beskrivSporsmal(sporsmal, 0) }
                     .filter { it.isNotBlank() }
@@ -58,6 +41,7 @@ private fun Soknad.lagTittel() =
             }
             OPPHOLD_UTLAND -> "Søknad om å beholde sykepenger utenfor EØS"
             ARBEIDSLEDIG -> "Søknad om sykepenger for arbeidsledig"
+            BEHANDLINGSDAGER -> "Søknad med enkeltstående behandlingsdager"
             null -> error("Mangler søknadstype for $soknadsId")
         }
 
@@ -65,7 +49,7 @@ private fun Soknad.erKorrigert() =
         korrigerer?.let { " KORRIGERING" } ?: ""
 
 private fun Soknad.beskrivArbeidsgiver() =
-        if (soknadstype === ARBEIDSTAKERE)
+        if (arbeidssituasjon === ARBEIDSTAKER)
             "\nArbeidsgiver: $arbeidsgiver\n"
         else
             ""
@@ -74,7 +58,9 @@ private fun Soknad.beskrivPerioder() =
         soknadPerioder?.mapIndexed { index, periode ->
             "\nPeriode ${index + 1}:\n" +
                     "${periode.fom!!.format(norskDato)} - ${periode.tom!!.format(norskDato)}\n" +
-                    "Grad: ${periode.grad}\n" +
+                    (periode.grad?.let { grad ->
+                        "Grad: ${grad}\n"
+                    } ?: "") +
                     (periode.faktiskGrad?.let { faktiskGrad ->
                         "Oppgitt faktisk arbeidsgrad: $faktiskGrad\n"
                     } ?: "")
@@ -101,17 +87,24 @@ private fun Soknad.beskrivFaktiskGradFrilansere(): String {
 }
 
 private fun Sporsmal.skalVises() =
-        when (tag) {
-            "ANSVARSERKLARING", "BEKREFT_OPPLYSNINGER", "EGENMELDINGER" -> false
-            "ARBEIDSGIVER" -> true
-            else -> "NEI" != forsteSvarverdi()
+        if (tag.contains("ENKELTSTAENDE_BEHANDLINGSDAGER")) true
+        else {
+            when (tag) {
+                "ANSVARSERKLARING", "BEKREFT_OPPLYSNINGER", "EGENMELDINGER", "FRAVER_FOR_BEHANDLING" -> false
+                "ARBEIDSGIVER" -> true
+                else -> "NEI" != forsteSvarverdi()
+            }
         }
 
 private fun beskrivSporsmal(sporsmal: Sporsmal, dybde: Int): String {
     val innrykk = "\n" + nCopies(dybde, "    ").joinToString("")
     val svarverdier = sporsmal.svarverdier()
 
-    return if (svarverdier.isEmpty() && sporsmal.svartype !in listOf(CHECKBOX_GRUPPE, RADIO_GRUPPE, RADIO_GRUPPE_TIMER_PROSENT)) {
+    return if (svarverdier.isEmpty() && sporsmal.svartype !in listOf(CHECKBOX_GRUPPE, RADIO_GRUPPE, RADIO_GRUPPE_TIMER_PROSENT) && !sporsmal.tag.contains("ENKELTSTAENDE_BEHANDLINGSDAGER")) {
+        ""
+    } else if (sporsmal.tag.contains("ENKELTSTAENDE_BEHANDLINGSDAGER_UKE")) {
+        ""
+    } else if (sporsmal.tag.contains("ENKELTSTAENDE_BEHANDLINGSDAGER_DAG_NAR")) {
         ""
     } else {
         sporsmal.formatterSporsmalOgSvar().joinToString("") { sporsmalOgSvar ->
@@ -134,7 +127,7 @@ private fun getNesteDybde(sporsmal: Sporsmal, dybde: Int): Int {
 }
 
 private fun Sporsmal.undersporsmalIgnorerRadioIGruppeTimerProsent(): List<Sporsmal>? {
-    return if (RADIO_GRUPPE_TIMER_PROSENT === svartype)
+    return if (svartype === RADIO_GRUPPE_TIMER_PROSENT)
         undersporsmal!!
                 .map { it.undersporsmal }
                 .flatMap { it!! }
@@ -147,6 +140,7 @@ private fun Sporsmal.formatterSporsmalOgSvar(): List<String> {
     return when (svartype) {
         CHECKBOX, CHECKBOX_GRUPPE, RADIO, RADIO_GRUPPE, RADIO_GRUPPE_TIMER_PROSENT ->
             listOfNotNull(sporsmalstekst)
+        IKKE_RELEVANT -> if (tag.contains("ENKELTSTAENDE_BEHANDLINGSDAGER")) listOfNotNull(formaterUkekalender(this)) else emptyList()
         JA_NEI -> listOfNotNull(sporsmalstekst, if ("JA" == forsteSvarverdi()) "Ja" else "Nei")
         DATO -> listOfNotNull(sporsmalstekst, formatterDato(forsteSvarverdi()))
         PERIODE -> listOfNotNull(sporsmalstekst, formatterPeriode(forsteSvarverdi()))
@@ -158,6 +152,25 @@ private fun Sporsmal.formatterSporsmalOgSvar(): List<String> {
         FRITEKST -> listOfNotNull(sporsmalstekst, forsteSvarverdi())
         else -> emptyList()
     }
+}
+
+private fun formaterUkekalender(periodeSporsmal: Sporsmal): String? {
+    val sporsmalstekst = periodeSporsmal.sporsmalstekst
+    val svar = periodeSporsmal.undersporsmal
+            ?.mapNotNull { ukeSporsmal ->
+                ukeSporsmal.undersporsmal?.filter { dagSporsmal ->
+                    !dagSporsmal.svar.isNullOrEmpty()
+                }?.map { dagSporsmal ->
+                    formatterDato(dagSporsmal.sporsmalstekst)
+                }?.firstOrNull()
+            }
+            ?.joinToString("\n")
+            .run {
+                if (this.isNullOrBlank()) "Ingen dager valgt\n"
+                else this
+            }
+
+    return sporsmalstekst + "\n" + svar
 }
 
 private fun Sporsmal.svarverdier(): List<String> {
