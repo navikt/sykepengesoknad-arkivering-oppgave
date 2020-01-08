@@ -32,6 +32,11 @@ constructor(
         try {
             pdf = pdfRestController.getPDF(soknad, hentPDFTemplateEtterSoknadstype(soknad.soknadstype!!))
         } catch (e: RuntimeException) {
+            if (soknad.soknadstype == BEHANDLINGSDAGER) {    // TODO: Fjern denne, når pdfgen er satt opp
+                log().warn("syfopdfgen har ikke implementert behandlingsdager")
+                return journalforSoknad(soknad, saksId, ByteArray(1))
+            }
+
             val feilmelding = "Kunne ikke generere PDF for søknad med id: ${soknad.soknadsId} og saks id: $saksId"
             log().error(feilmelding, e)
             throw RuntimeException(feilmelding, e)

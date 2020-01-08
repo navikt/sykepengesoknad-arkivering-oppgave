@@ -66,7 +66,7 @@ private fun Soknad.beskrivPerioder() =
                     } ?: "")
         }?.joinToString("") ?: ""
 
-// TODO: Tror det er laget en egen beskrivelse for frilanser siden søknaden fungerer annerledes enn arbeidstaker, dette blir kanskje fikset når arbeidstakersøknaden og frilanser oppretter søknadene likt...
+// Er egen beskrivelse for selvstendig/frilanser fordi SoknadDTO Periode ikke inneholder feltet faktiskPeriode, slik som arbeidstakere
 private fun Soknad.beskrivFaktiskGradFrilansere(): String {
     if (soknadstype === SELVSTENDIGE_OG_FRILANSERE) {
         val harJobbetMerEnnGradert = sporsmal
