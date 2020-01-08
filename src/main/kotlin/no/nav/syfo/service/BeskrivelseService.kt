@@ -158,10 +158,14 @@ private fun formaterUkekalender(periodeSporsmal: Sporsmal): String? {
     val sporsmalstekst = periodeSporsmal.sporsmalstekst
     val svar = periodeSporsmal.undersporsmal
             ?.mapNotNull { ukeSporsmal ->
-                ukeSporsmal.undersporsmal?.filter { dagSporsmal ->
-                    !dagSporsmal.svar.isNullOrEmpty()
-                }?.map { dagSporsmal ->
-                    formatterDato(dagSporsmal.sporsmalstekst)
+                ukeSporsmal.undersporsmal?.filterNot { dagSporsmal ->
+                    dagSporsmal.svar.isNullOrEmpty()
+                }?.mapNotNull { dagSporsmal ->
+                    return@mapNotNull try {
+                        formatterDato(dagSporsmal.sporsmalstekst)
+                    } catch (e: Exception) {
+                        null
+                    }
                 }?.firstOrNull()
             }
             ?.joinToString("\n")
