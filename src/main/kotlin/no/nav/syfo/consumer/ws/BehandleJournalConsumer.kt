@@ -103,7 +103,7 @@ constructor(
             SELVSTENDIGE_OG_FRILANSERE -> "Søknad om sykepenger fra Selvstendig/Frilanser for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
             ARBEIDSTAKERE -> "Søknad om sykepenger ${soknad.fom!!.format(norskDato)} - ${soknad.tom!!.format(norskDato)}"
             ARBEIDSLEDIG -> "Søknad om sykepenger fra arbeidsledig for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
-            BEHANDLINGSDAGER -> "Søknad om enkeltstående behandlingsdager fra ${soknad.arbeidssituasjon} for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
+            BEHANDLINGSDAGER -> "Søknad om enkeltstående behandlingsdager fra ${soknad.arbeidssituasjon.toString().toLowerCase()} for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
             else -> throw RuntimeException("Har ikke implementert journalført dokumenttittel for søknad av typen: ${soknad.soknadstype!!}")
         }
     }
@@ -114,7 +114,7 @@ constructor(
             SELVSTENDIGE_OG_FRILANSERE -> "Søknad om sykepenger fra Selvstendig/Frilanser for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
             ARBEIDSTAKERE -> "Søknad om sykepenger ${soknad.fom!!.format(norskDato)} - ${soknad.tom!!.format(norskDato)}"
             ARBEIDSLEDIG -> "Søknad om sykepenger fra arbeidsledig for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
-            BEHANDLINGSDAGER -> "Søknad om enkeltstående behandlingsdager fra ${soknad.arbeidssituasjon} for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
+            BEHANDLINGSDAGER -> "Søknad om enkeltstående behandlingsdager fra ${soknad.arbeidssituasjon.toString().toLowerCase()} for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
             else -> throw RuntimeException("Har ikke implementert strukturert innhold-filnavn for søknad av typen: ${soknad.soknadstype!!}")
         }
     }
