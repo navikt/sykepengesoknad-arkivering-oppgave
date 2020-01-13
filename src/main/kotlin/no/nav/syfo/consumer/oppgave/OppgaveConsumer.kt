@@ -82,7 +82,7 @@ class OppgaveConsumer(
                 behandlingstema = when (soknad.soknadstype) {
                     Soknadstype.OPPHOLD_UTLAND -> "ab0314"
                     Soknadstype.BEHANDLINGSDAGER -> "ab0351"
-                    //Soknadstype.ARBEIDSLEDIG -> "ab0426"    gosys godtar ikke denne koden
+                    Soknadstype.ARBEIDSLEDIG -> "ab0426"
                     else -> "ab0061"
                 },
                 oppgavetype = "SOK",
