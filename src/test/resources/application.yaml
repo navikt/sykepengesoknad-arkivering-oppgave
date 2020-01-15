@@ -1,4 +1,4 @@
-app.name: syfogsak
+nais.app.name: syfogsak
 fasit.environment.name: local
 server.port: 8081
 
@@ -19,7 +19,7 @@ javax.net.ssl:
 
 servicegateway.url: http://servicegateway.url
 securitytokenservice.url: http://sts.url
-security-token-service-token.url: http://sts.new.url
+security.token.service.token.url: http://sts.new.url
 
 behandleJournal.v2.endpointurl: "http://behandleJournalv2.url"
 aktoerregister.api.v1.url: "http://aktoerregister.api.v1.url"
@@ -54,7 +54,7 @@ spring:
       auto-offset-reset: latest
       enable-auto-commit: false
 
-unleash-api:
+unleash.api:
   url: http://unleash-api/api/
 
 toggle:
@@ -67,4 +67,4 @@ toggle:
 
 aad_syfoinntektsmelding_clientid_username: syfoinntektsmelding_clientid
 no.nav.security.oidc.issuer.azuread.acceptedaudience: syfogsak_clientid
-syfo-jwt-issuer.url: azuread
+syfo.jwt.issuer.url: azuread

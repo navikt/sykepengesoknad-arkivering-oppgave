@@ -11,6 +11,7 @@
 
     <scm>
         <developerConnection>scm:git:https://github.com/navikt/syfogsak.git</developerConnection>
+        <connection>scm:git:https://github.com/navikt/syfogsak.git</connection>
         <url>https://github.com/navikt/syfogsak</url>
         <tag>HEAD</tag>
     </scm>
@@ -253,8 +254,6 @@
     </dependencies>
 
     <build>
-        <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
-        <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
         <plugins>
             <plugin>
                 <artifactId>kotlin-maven-plugin</artifactId>
@@ -275,12 +274,22 @@
                         <goals>
                             <goal>compile</goal>
                         </goals>
+                        <configuration>
+                            <sourceDirs>
+                                <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
+                            </sourceDirs>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>test-compile</id>
                         <goals>
                             <goal>test-compile</goal>
                         </goals>
+                        <configuration>
+                            <sourceDirs>
+                                <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
+                            </sourceDirs>
+                        </configuration>
                     </execution>
                 </executions>
                 <dependencies>
