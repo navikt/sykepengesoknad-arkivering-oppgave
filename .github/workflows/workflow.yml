@@ -1,16 +1,11 @@
-name: Deploy on dev
-on:
-  push:
-    branches:
-      - '*'
-      - '!master'
-
+name: Bygg, publish og deploy
+on: push
 env:
   IMAGE: docker.pkg.github.com/${{ github.repository }}/syfogsak:${{ github.sha }}
 
 jobs:
   build-and-publish:
-    name: Checkout code and create docker tag
+    name: Bygg, test og push Docker image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -22,9 +17,9 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - name: Build application
+      - name: Bygg og test
         run: mvn clean install
-      - name: Build and publish Docker image
+      - name: Bygg og push Docker image
         env:
           NAME: syfogsak
           GITHUB_TOKEN: ${{ secrets.GITHUB_ACCESS_TOKEN }}
@@ -40,8 +35,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v1
-      - name: Deploy to preprod-fss
-        uses: nais/deploy/actions/deploy@master
+      - uses: nais/deploy/actions/deploy@v1
+        name: Deploy til dev-fss
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-fss
@@ -56,7 +51,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v1
       - uses: nais/deploy/actions/deploy@v1
-        name: Deploy to prod-fss
+        name: Deploy til prod-fss
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: prod-fss
