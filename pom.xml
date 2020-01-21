@@ -45,7 +45,7 @@
         <h2.version>1.4.196</h2.version>
         <flyway-core.version>5.1.4</flyway-core.version>
         <maven-enforcer-plugin.version>3.0.0-M2</maven-enforcer-plugin.version>
-        <syfokafka.version>0b2a259676f7a78da70d65838851b05925d6de6f</syfokafka.version>
+        <syfokafka.version>256cbe427388c99f6bef4d5d332d851eee57c7aa</syfokafka.version>
         <tjenestespesifikasjoner.version>1.2019.08.16-13.46-35cbdfd492d4</tjenestespesifikasjoner.version>
         <cxf.version>3.2.10</cxf.version>
         <jackson.version>2.9.9</jackson.version>
@@ -113,6 +113,11 @@
         <dependency>
             <groupId>no.nav.syfo.kafka</groupId>
             <artifactId>sykepengesoknadarbeidsledig</artifactId>
+            <version>${syfokafka.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.syfo.kafka</groupId>
+            <artifactId>sykepengesoknadbehandlingsdager</artifactId>
             <version>${syfokafka.version}</version>
         </dependency>
 

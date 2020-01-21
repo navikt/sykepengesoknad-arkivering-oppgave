@@ -1,6 +1,6 @@
 package no.nav.syfo
 
-const val beskrivelseUtland =  "Søknad om å beholde sykepenger utenfor EØS\n" +
+const val beskrivelseUtland = "Søknad om å beholde sykepenger utenfor EØS\n" +
         "\n" +
         "Når skal du reise?\n" +
         "10.12.2018 - 18.12.2018\n" +
@@ -213,3 +213,31 @@ const val beskrivelseArbeidstakerMedNeisvarKorrigert = "Søknad om sykepenger fo
         "\n" +
         "Betaler arbeidsgiveren lønnen din når du er syk?\n" +
         "Vet ikke"
+
+const val beskrivelseBehandlingsdagerMedNeisvar = "Søknad med enkeltstående behandlingsdager\n" +
+        "\n" +
+        "Arbeidsgiver: LØNNS- OG REGNSKAPSSENTERET\n" +
+        "\n" +
+        "Periode 1:\n" +
+        "11.12.2019 - 17.12.2019\n" +
+        "\n" +
+        "Hvilke dager måtte du være helt borte fra jobben på grunn av behandling mellom 11. - 17. desember 2019?\n" +
+        "Ingen dager valgt\n"
+
+const val beskrivelseBehandlingsdagerMedMangeSvar = "Søknad med enkeltstående behandlingsdager\n" +
+        "\n" +
+        "Arbeidsgiver: LØNNS- OG REGNSKAPSSENTERET\n" +
+        "\n" +
+        "Periode 1:\n" +
+        "12.12.2019 - 18.12.2019\n" +
+        "\n" +
+        "Hvilke dager måtte du være helt borte fra jobben på grunn av behandling mellom 12. - 18. desember 2019?\n" +
+        "12.12.2019\n" +
+        "16.12.2019\n" +
+        "\n" +
+        "Har du andre inntektskilder enn LØNNS- OG REGNSKAPSSENTERET?\n" +
+        "Ja\n" +
+        "    Hvilke andre inntektskilder har du?\n" +
+        "        andre arbeidsforhold\n" +
+        "            Er du sykmeldt fra dette?\n" +
+        "            Ja"

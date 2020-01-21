@@ -3,15 +3,10 @@ package no.nav.syfo.service
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import no.nav.syfo.TestApplication
-import no.nav.syfo.beskrivelseArbeidstakerMangeSvar
-import no.nav.syfo.beskrivelseArbeidstakerMedNeisvar
-import no.nav.syfo.beskrivelseArbeidstakerMedNeisvarKorrigert
-import no.nav.syfo.beskrivelseSelvstendigMangeSvar
-import no.nav.syfo.beskrivelseSoknadSelvstendigMedNeisvar
-import no.nav.syfo.beskrivelseUtland
-import no.nav.syfo.beskrivelseUtlandMedSvartypeLand
+import no.nav.syfo.*
 import no.nav.syfo.domain.Soknad
+import no.nav.syfo.domain.dto.Avsendertype.BRUKER
+import no.nav.syfo.domain.dto.Avsendertype.SYSTEM
 import no.nav.syfo.domain.dto.Soknadstype
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import org.assertj.core.api.Assertions.assertThat
@@ -89,11 +84,41 @@ class BeskrivelseServiceTest {
     fun talerAtArbeidssituasjonIkkeErSatt() {
         val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
         val soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn").copy(
-            arbeidssituasjon = null,
-            soknadstype = Soknadstype.SELVSTENDIGE_OG_FRILANSERE
+                arbeidssituasjon = null,
+                soknadstype = Soknadstype.SELVSTENDIGE_OG_FRILANSERE
         )
         val beskrivelse = lagBeskrivelse(soknad)
 
         assertThat(beskrivelse).isNotEmpty()
+    }
+
+    @Test
+    fun leggerTilMeldingForAvsendertypeSystem() {
+        val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadArbeidstakerMangeSvar.json"), Sykepengesoknad::class.java)
+        val soknad = Soknad.lagSoknad(sykepengesoknad.copy(avsendertype = null), "fnr", "navn")
+        val soknadBruker = Soknad.lagSoknad(sykepengesoknad.copy(avsendertype = BRUKER), "fnr", "navn")
+        val soknadSystem = Soknad.lagSoknad(sykepengesoknad.copy(avsendertype = SYSTEM), "fnr", "navn")
+
+        assertThat(lagBeskrivelse(soknad)).isEqualTo(beskrivelseArbeidstakerMangeSvar)
+        assertThat(lagBeskrivelse(soknadBruker)).isEqualTo(beskrivelseArbeidstakerMangeSvar)
+        assertThat(lagBeskrivelse(soknadSystem)).isEqualTo("Denne søknaden er autogenerert på grunn av et registrert dødsfall\n" + beskrivelseArbeidstakerMangeSvar)
+    }
+
+    @Test
+    fun soknadForBehandlingsdagerMedNeiSvar() {
+        val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadBehandlingsdagerMedNeisvar.json"), Sykepengesoknad::class.java)
+        val soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn")
+        val beskrivelse = lagBeskrivelse(soknad)
+
+        assertThat(beskrivelse).isEqualTo(beskrivelseBehandlingsdagerMedNeisvar)
+    }
+
+    @Test
+    fun soknadForBehandlingsdagerMedMangeSvar() {
+        val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadBehandlingsdagerMedMangeSvar.json"), Sykepengesoknad::class.java)
+        val soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn")
+        val beskrivelse = lagBeskrivelse(soknad)
+
+        assertThat(beskrivelse).isEqualTo(beskrivelseBehandlingsdagerMedMangeSvar)
     }
 }

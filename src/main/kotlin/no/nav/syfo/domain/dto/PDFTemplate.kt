@@ -4,5 +4,6 @@ enum class PDFTemplate(val endpoint: String) {
     ARBEIDSTAKERE("arbeidstakere"),
     SELVSTENDIGNAERINGSDRIVENDE("selvstendignaeringsdrivende"),
     SYKEPENGERUTLAND("sykepengerutland"),
-    ARBEIDSLEDIG("arbeidsledig");
+    ARBEIDSLEDIG("arbeidsledig"),
+    BEHANDLINGSDAGER("behandlingsdager");
 }
