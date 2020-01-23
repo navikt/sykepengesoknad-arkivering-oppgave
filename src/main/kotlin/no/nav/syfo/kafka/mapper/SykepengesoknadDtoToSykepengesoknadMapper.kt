@@ -4,9 +4,10 @@ import no.nav.syfo.domain.dto.SoknadPeriode
 import no.nav.syfo.domain.dto.Sporsmal
 import no.nav.syfo.domain.dto.Svar
 import no.nav.syfo.domain.dto.Sykepengesoknad
-import no.nav.syfo.kafka.sykepengesoknad.dto.SoknadsperiodeDTO
-import no.nav.syfo.kafka.sykepengesoknad.dto.SporsmalDTO
-import no.nav.syfo.kafka.sykepengesoknad.dto.SvarDTO
+import no.nav.syfo.kafka.felles.SoknadsperiodeDTO
+import no.nav.syfo.kafka.felles.SporsmalDTO
+import no.nav.syfo.kafka.felles.SvarDTO
+
 import no.nav.syfo.kafka.sykepengesoknad.dto.SykepengesoknadDTO
 
 
@@ -26,7 +27,7 @@ private fun SporsmalDTO.toSporsmal(): Sporsmal =
                 svartype = svartype.enumValueOrNull(),
                 min = min,
                 max = max,
-                kriterieForVisningAvUndersporsmal = kriteriumForVisningAvUndersporsmal.enumValueOrNull(),
+                kriterieForVisningAvUndersporsmal = kriterieForVisningAvUndersporsmal.enumValueOrNull(),
                 svar = svar!!.map { it.toSvar() },
                 undersporsmal = undersporsmal!!.map { it.toSporsmal() }
         )

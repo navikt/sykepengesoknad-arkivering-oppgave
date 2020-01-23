@@ -1,9 +1,9 @@
 package no.nav.syfo.kafka.mapper
 
 import no.nav.syfo.domain.dto.*
-import no.nav.syfo.kafka.sykepengesoknadbehandlingsdager.dto.SoknadsperiodeDTO
-import no.nav.syfo.kafka.sykepengesoknadbehandlingsdager.dto.SporsmalDTO
-import no.nav.syfo.kafka.sykepengesoknadbehandlingsdager.dto.SvarDTO
+import no.nav.syfo.kafka.felles.SoknadsperiodeDTO
+import no.nav.syfo.kafka.felles.SporsmalDTO
+import no.nav.syfo.kafka.felles.SvarDTO
 import no.nav.syfo.kafka.sykepengesoknadbehandlingsdager.dto.SykepengesoknadBehandlingsdagerDTO
 
 
@@ -23,7 +23,7 @@ private fun SporsmalDTO.toSporsmal(): Sporsmal =
                 svartype = svartype.enumValueOrNull(),
                 min = min,
                 max = max,
-                kriterieForVisningAvUndersporsmal = kriteriumForVisningAvUndersporsmal.enumValueOrNull(),
+                kriterieForVisningAvUndersporsmal = kriterieForVisningAvUndersporsmal.enumValueOrNull(),
                 svar = svar!!.map { it.toSvar() },
                 undersporsmal = undersporsmal!!.map { it.toSporsmal() }
         )
@@ -38,26 +38,26 @@ private fun SoknadsperiodeDTO.toSoknadPeriode(): SoknadPeriode =
 
 fun SykepengesoknadBehandlingsdagerDTO.toSykepengesoknad(): Sykepengesoknad {
     return Sykepengesoknad(
-            id = id,
-            sykmeldingId = sykmeldingId,
-            aktorId = aktorId,
+            id = soknadFelles.id,
+            sykmeldingId = sykepengesoknadFelles.sykmeldingId,
+            aktorId = soknadFelles.aktorId,
             soknadstype = Soknadstype.BEHANDLINGSDAGER,
-            status = status.name,
-            fom = fom,
-            tom = tom,
-            opprettet = opprettet,
-            sendtNav = sendtNav,
-            sendtArbeidsgiver = sendtArbeidsgiver,
-            arbeidsgiver = arbeidsgiver?.navn,
-            arbeidssituasjon = arbeidssituasjon.enumValueOrNull(),
-            startSykeforlop = startSyketilfelle,
-            sykmeldingSkrevet = sykmeldingSkrevet,
-            korrigertAv = korrigertAv,
-            korrigerer = korrigerer,
-            soknadPerioder = soknadsperioder.map { it.toSoknadPeriode() },
-            sporsmal = sporsmal.map { it.toSporsmal() },
-            avsendertype = avsendertype.enumValueOrNull(),
-            ettersending = ettersending
+            status = soknadFelles.status.name,
+            fom = sykepengesoknadFelles.fom,
+            tom = sykepengesoknadFelles.tom,
+            opprettet = soknadFelles.opprettet,
+            sendtNav = soknadFelles.sendtNav,
+            sendtArbeidsgiver = soknadFelles.sendtArbeidsgiver,
+            arbeidsgiver = soknadFelles.arbeidsgiver?.navn,
+            arbeidssituasjon = soknadFelles.arbeidssituasjon.enumValueOrNull(),
+            startSykeforlop = sykepengesoknadFelles.startSyketilfelle,
+            sykmeldingSkrevet = sykepengesoknadFelles.sykmeldingSkrevet,
+            korrigertAv = soknadFelles.korrigertAv,
+            korrigerer = soknadFelles.korrigerer,
+            soknadPerioder = sykepengesoknadFelles.soknadsperioder.map { it.toSoknadPeriode() },
+            sporsmal = soknadFelles.sporsmal.map { it.toSporsmal() },
+            avsendertype = soknadFelles.avsendertype.enumValueOrNull(),
+            ettersending = soknadFelles.ettersending
     )
 }
 
