@@ -4,14 +4,18 @@ import no.nav.syfo.domain.dto.SoknadPeriode
 import no.nav.syfo.domain.dto.Sporsmal
 import no.nav.syfo.domain.dto.Svar
 import no.nav.syfo.domain.dto.Sykepengesoknad
+import no.nav.syfo.kafka.felles.SoknadsperiodeDTO
+import no.nav.syfo.kafka.felles.SporsmalDTO
+import no.nav.syfo.kafka.felles.SvarDTO
 import no.nav.syfo.kafka.soknad.dto.SoknadDTO
-import no.nav.syfo.kafka.soknad.dto.SoknadPeriodeDTO
-import no.nav.syfo.kafka.soknad.dto.SporsmalDTO
-import no.nav.syfo.kafka.soknad.dto.SvarDTO
 
 
-private inline fun <reified U : Enum<*>> String?.enumValueOrNull(): U? =
+private inline fun <reified U : Enum<*>> String?.stringEnumValueOrNull(): U? =
         U::class.java.enumConstants.firstOrNull { it.name == this }
+
+
+private inline fun <T : Enum<*>, reified U : Enum<*>> T?.enumValueOrNull(): U? =
+        U::class.java.enumConstants.firstOrNull { it.name == this?.name }
 
 private fun SporsmalDTO.toSporsmal(): Sporsmal =
         Sporsmal(
@@ -30,7 +34,7 @@ private fun SporsmalDTO.toSporsmal(): Sporsmal =
 private fun SvarDTO.toSvar(): Svar =
         Svar(verdi)
 
-private fun SoknadPeriodeDTO.toSoknadPeriode(): SoknadPeriode =
+private fun SoknadsperiodeDTO.toSoknadPeriode(): SoknadPeriode =
         SoknadPeriode(
                 fom = fom,
                 tom = tom,
@@ -41,21 +45,21 @@ fun SoknadDTO.toSykepengesoknad(): Sykepengesoknad =
                 id = id!!,
                 sykmeldingId = sykmeldingId,
                 aktorId = aktorId!!,
-                soknadstype = soknadstype.enumValueOrNull(),
+                soknadstype = soknadstype.stringEnumValueOrNull(),
                 status = status!!,
                 fom = fom,
                 tom = tom,
                 opprettet = opprettetDato!!.atStartOfDay(),
                 sendtNav = innsendtDato?.atStartOfDay(),
                 arbeidsgiver = arbeidsgiver,
-                arbeidssituasjon = arbeidssituasjon.enumValueOrNull(),
+                arbeidssituasjon = arbeidssituasjon.stringEnumValueOrNull(),
                 startSykeforlop = startSykeforlop,
                 sykmeldingSkrevet = sykmeldingUtskrevet?.atStartOfDay(),
                 korrigertAv = korrigertAv,
                 korrigerer = korrigerer,
                 soknadPerioder = soknadPerioder?.map { it.toSoknadPeriode() },
                 sporsmal = sporsmal!!.map { it.toSporsmal() },
-                avsendertype = avsendertype?.name?.enumValueOrNull()
+                avsendertype = avsendertype?.name?.stringEnumValueOrNull()
         )
 
 

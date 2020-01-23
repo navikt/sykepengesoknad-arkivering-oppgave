@@ -1,9 +1,10 @@
 package no.nav.syfo.kafka.mapper
 
 import no.nav.syfo.domain.dto.*
-import no.nav.syfo.kafka.sykepengesoknadarbeidsledig.dto.SoknadsperiodeDTO
-import no.nav.syfo.kafka.sykepengesoknadarbeidsledig.dto.SporsmalDTO
-import no.nav.syfo.kafka.sykepengesoknadarbeidsledig.dto.SvarDTO
+import no.nav.syfo.kafka.felles.SoknadsperiodeDTO
+import no.nav.syfo.kafka.felles.SporsmalDTO
+import no.nav.syfo.kafka.felles.SvarDTO
+
 import no.nav.syfo.kafka.sykepengesoknadarbeidsledig.dto.SykepengesoknadArbeidsledigDTO
 
 private inline fun <T : Enum<*>, reified U : Enum<*>> T?.enumValueOrNull(): U? =
@@ -12,16 +13,16 @@ private inline fun <T : Enum<*>, reified U : Enum<*>> T?.enumValueOrNull(): U? =
 
 private fun SporsmalDTO.toSporsmal(): Sporsmal =
     Sporsmal(
-        id = id,
-        tag = tag,
+        id = id!!,
+        tag = tag!!,
         sporsmalstekst = sporsmalstekst,
         undertekst = undertekst,
         svartype = svartype?.enumValueOrNull(),
         min = min,
         max = max,
-        kriterieForVisningAvUndersporsmal = kriteriumForVisningAvUndersporsmal?.enumValueOrNull(),
-        svar = svar.map { it.toSvar() },
-        undersporsmal = undersporsmal.map { it.toSporsmal() }
+        kriterieForVisningAvUndersporsmal = kriterieForVisningAvUndersporsmal?.enumValueOrNull(),
+        svar = svar?.map { it.toSvar() },
+        undersporsmal = undersporsmal?.map { it.toSporsmal() }
     )
 
 private fun SvarDTO.toSvar(): Svar =
