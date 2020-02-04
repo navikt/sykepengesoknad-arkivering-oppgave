@@ -123,7 +123,7 @@
       "tag": "ENKELTSTAENDE_BEHANDLINGSDAGER_0",
       "sporsmalstekst": "Hvilke dager måtte du være helt borte fra jobben på grunn av behandling mellom 11. - 17. desember 2019?",
       "undertekst": null,
-      "svartype": "IKKE_RELEVANT",
+      "svartype": "INFO_BEHANDLINGSDAGER",
       "min": null,
       "max": null,
       "kriterieForVisningAvUndersporsmal": null,
@@ -132,112 +132,30 @@
         {
           "id": "633328",
           "tag": "ENKELTSTAENDE_BEHANDLINGSDAGER_UKE_0",
-          "sporsmalstekst": null,
+          "sporsmalstekst": "2019-12-11 - 2019-12-13",
           "undertekst": null,
           "svartype": "RADIO_GRUPPE_UKEKALENDER",
-          "min": null,
-          "max": null,
+          "min": "2019-12-11",
+          "max": "2019-12-13",
           "kriterieForVisningAvUndersporsmal": null,
-          "svar": [],
-          "undersporsmal": [
+          "svar": [
             {
-              "id": "633329",
-              "tag": "ENKELTSTAENDE_BEHANDLINGSDAGER_DAG_NAR_0_0",
-              "sporsmalstekst": "2019-12-11",
-              "undertekst": null,
-              "svartype": "RADIO",
-              "min": null,
-              "max": null,
-              "kriterieForVisningAvUndersporsmal": null,
-              "svar": [],
-              "undersporsmal": []
-            },
-            {
-              "id": "633330",
-              "tag": "ENKELTSTAENDE_BEHANDLINGSDAGER_DAG_NAR_0_1",
-              "sporsmalstekst": "2019-12-12",
-              "undertekst": null,
-              "svartype": "RADIO",
-              "min": null,
-              "max": null,
-              "kriterieForVisningAvUndersporsmal": null,
-              "svar": [],
-              "undersporsmal": []
-            },
-            {
-              "id": "633331",
-              "tag": "ENKELTSTAENDE_BEHANDLINGSDAGER_DAG_NAR_0_2",
-              "sporsmalstekst": "2019-12-13",
-              "undertekst": null,
-              "svartype": "RADIO",
-              "min": null,
-              "max": null,
-              "kriterieForVisningAvUndersporsmal": null,
-              "svar": [],
-              "undersporsmal": []
-            },
-            {
-              "id": "633332",
-              "tag": "ENKELTSTAENDE_BEHANDLINGSDAGER_DAG_NAR_0_5",
-              "sporsmalstekst": "Ikke til behandling",
-              "undertekst": null,
-              "svartype": "RADIO",
-              "min": null,
-              "max": null,
-              "kriterieForVisningAvUndersporsmal": null,
-              "svar": [],
-              "undersporsmal": []
+              "verdi": "Ikke til behandling"
             }
-          ]
+          ],
+          "undersporsmal": []
         },
         {
           "id": "633333",
           "tag": "ENKELTSTAENDE_BEHANDLINGSDAGER_UKE_1",
-          "sporsmalstekst": null,
+          "sporsmalstekst": "2019-12-16 - 2019-12-17",
           "undertekst": null,
           "svartype": "RADIO_GRUPPE_UKEKALENDER",
-          "min": null,
-          "max": null,
+          "min": "2019-12-16",
+          "max": "2019-12-17",
           "kriterieForVisningAvUndersporsmal": null,
           "svar": [],
-          "undersporsmal": [
-            {
-              "id": "633334",
-              "tag": "ENKELTSTAENDE_BEHANDLINGSDAGER_DAG_NAR_1_0",
-              "sporsmalstekst": "2019-12-16",
-              "undertekst": null,
-              "svartype": "RADIO",
-              "min": null,
-              "max": null,
-              "kriterieForVisningAvUndersporsmal": null,
-              "svar": [],
-              "undersporsmal": []
-            },
-            {
-              "id": "633335",
-              "tag": "ENKELTSTAENDE_BEHANDLINGSDAGER_DAG_NAR_1_1",
-              "sporsmalstekst": "2019-12-17",
-              "undertekst": null,
-              "svartype": "RADIO",
-              "min": null,
-              "max": null,
-              "kriterieForVisningAvUndersporsmal": null,
-              "svar": [],
-              "undersporsmal": []
-            },
-            {
-              "id": "633336",
-              "tag": "ENKELTSTAENDE_BEHANDLINGSDAGER_DAG_NAR_1_2",
-              "sporsmalstekst": "Ikke til behandling",
-              "undertekst": null,
-              "svartype": "RADIO",
-              "min": null,
-              "max": null,
-              "kriterieForVisningAvUndersporsmal": null,
-              "svar": [],
-              "undersporsmal": []
-            }
-          ]
+          "undersporsmal": []
         }
       ]
     },

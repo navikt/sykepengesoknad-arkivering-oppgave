@@ -222,7 +222,7 @@ const val beskrivelseBehandlingsdagerMedNeisvar = "Søknad med enkeltstående be
         "11.12.2019 - 17.12.2019\n" +
         "\n" +
         "Hvilke dager måtte du være helt borte fra jobben på grunn av behandling mellom 11. - 17. desember 2019?\n" +
-        "Ingen dager valgt\n"
+        "    Ikke til behandling"
 
 const val beskrivelseBehandlingsdagerMedMangeSvar = "Søknad med enkeltstående behandlingsdager\n" +
         "\n" +
@@ -232,8 +232,9 @@ const val beskrivelseBehandlingsdagerMedMangeSvar = "Søknad med enkeltstående 
         "12.12.2019 - 18.12.2019\n" +
         "\n" +
         "Hvilke dager måtte du være helt borte fra jobben på grunn av behandling mellom 12. - 18. desember 2019?\n" +
-        "12.12.2019\n" +
-        "16.12.2019\n" +
+        "    12.12.2019\n" +
+        "\n" +
+        "    16.12.2019\n" +
         "\n" +
         "Har du andre inntektskilder enn LØNNS- OG REGNSKAPSSENTERET?\n" +
         "Ja\n" +

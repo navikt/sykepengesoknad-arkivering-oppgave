@@ -87,24 +87,17 @@ private fun Soknad.beskrivFaktiskGradFrilansere(): String {
 }
 
 private fun Sporsmal.skalVises() =
-        if (tag.contains("ENKELTSTAENDE_BEHANDLINGSDAGER")) true
-        else {
-            when (tag) {
-                "ANSVARSERKLARING", "BEKREFT_OPPLYSNINGER", "EGENMELDINGER", "FRAVER_FOR_BEHANDLING" -> false
-                "ARBEIDSGIVER" -> true
-                else -> "NEI" != forsteSvarverdi()
-            }
+        when (tag) {
+            "ANSVARSERKLARING", "BEKREFT_OPPLYSNINGER", "EGENMELDINGER", "FRAVER_FOR_BEHANDLING" -> false
+            "ARBEIDSGIVER" -> true
+            else -> "NEI" != forsteSvarverdi()
         }
 
 private fun beskrivSporsmal(sporsmal: Sporsmal, dybde: Int): String {
     val innrykk = "\n" + nCopies(dybde, "    ").joinToString("")
     val svarverdier = sporsmal.svarverdier()
 
-    return if (svarverdier.isEmpty() && sporsmal.svartype !in listOf(CHECKBOX_GRUPPE, RADIO_GRUPPE, RADIO_GRUPPE_TIMER_PROSENT) && !sporsmal.tag.contains("ENKELTSTAENDE_BEHANDLINGSDAGER")) {
-        ""
-    } else if (sporsmal.tag.contains("ENKELTSTAENDE_BEHANDLINGSDAGER_UKE")) {
-        ""
-    } else if (sporsmal.tag.contains("ENKELTSTAENDE_BEHANDLINGSDAGER_DAG_NAR")) {
+    return if (svarverdier.isEmpty() && sporsmal.svartype !in listOf(CHECKBOX_GRUPPE, RADIO_GRUPPE, RADIO_GRUPPE_TIMER_PROSENT, INFO_BEHANDLINGSDAGER)) {
         ""
     } else {
         sporsmal.formatterSporsmalOgSvar().joinToString("") { sporsmalOgSvar ->
@@ -138,9 +131,9 @@ private fun Sporsmal.undersporsmalIgnorerRadioIGruppeTimerProsent(): List<Sporsm
 
 private fun Sporsmal.formatterSporsmalOgSvar(): List<String> {
     return when (svartype) {
-        CHECKBOX, CHECKBOX_GRUPPE, RADIO, RADIO_GRUPPE, RADIO_GRUPPE_TIMER_PROSENT ->
+        CHECKBOX, CHECKBOX_GRUPPE, RADIO, RADIO_GRUPPE, RADIO_GRUPPE_TIMER_PROSENT, INFO_BEHANDLINGSDAGER ->
             listOfNotNull(sporsmalstekst)
-        IKKE_RELEVANT -> if (tag.contains("ENKELTSTAENDE_BEHANDLINGSDAGER")) listOfNotNull(formaterUkekalender(this)) else emptyList()
+        IKKE_RELEVANT -> emptyList()
         JA_NEI -> listOfNotNull(sporsmalstekst, if ("JA" == forsteSvarverdi()) "Ja" else "Nei")
         DATO -> listOfNotNull(sporsmalstekst, formatterDato(forsteSvarverdi()))
         PERIODE -> listOfNotNull(sporsmalstekst, formatterPeriode(forsteSvarverdi()))
@@ -150,31 +143,9 @@ private fun Sporsmal.formatterSporsmalOgSvar(): List<String> {
         TIMER -> listOfNotNull(sporsmalstekst, forsteSvarverdi() + " timer")
         PROSENT -> listOfNotNull(sporsmalstekst, forsteSvarverdi() + " prosent")
         FRITEKST -> listOfNotNull(sporsmalstekst, forsteSvarverdi())
+        RADIO_GRUPPE_UKEKALENDER -> listOfNotNull(formatterBehandlingsdato(forsteSvarverdi()))
         else -> emptyList()
     }
-}
-
-private fun formaterUkekalender(periodeSporsmal: Sporsmal): String? {
-    val sporsmalstekst = periodeSporsmal.sporsmalstekst
-    val svar = periodeSporsmal.undersporsmal
-            ?.mapNotNull { ukeSporsmal ->
-                ukeSporsmal.undersporsmal?.filterNot { dagSporsmal ->
-                    dagSporsmal.svar.isNullOrEmpty()
-                }?.mapNotNull { dagSporsmal ->
-                    return@mapNotNull try {
-                        formatterDato(dagSporsmal.sporsmalstekst)
-                    } catch (e: Exception) {
-                        null
-                    }
-                }?.firstOrNull()
-            }
-            ?.joinToString("\n")
-            .run {
-                if (this.isNullOrBlank()) "Ingen dager valgt\n"
-                else this
-            }
-
-    return sporsmalstekst + "\n" + svar
 }
 
 private fun Sporsmal.svarverdier(): List<String> {
@@ -197,4 +168,12 @@ private fun formatterPeriode(svarverdi: String?): String {
 
 private fun formatterLand(svarverdi: String): String {
     return "- $svarverdi"
+}
+
+private fun formatterBehandlingsdato(svarverdi: String): String {
+    return try {
+        formatterDato(svarverdi)
+    } catch (e: Exception) {
+        "Ikke til behandling"
+    }
 }

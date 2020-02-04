@@ -131,7 +131,7 @@
       "tag": "ENKELTSTAENDE_BEHANDLINGSDAGER_0",
       "sporsmalstekst": "Hvilke dager måtte du være helt borte fra jobben på grunn av behandling mellom 12. - 18. desember 2019?",
       "undertekst": null,
-      "svartype": "IKKE_RELEVANT",
+      "svartype": "INFO_BEHANDLINGSDAGER",
       "min": null,
       "max": null,
       "kriterieForVisningAvUndersporsmal": null,
@@ -140,120 +140,34 @@
         {
           "id": "632677",
           "tag": "ENKELTSTAENDE_BEHANDLINGSDAGER_UKE_0",
-          "sporsmalstekst": null,
+          "sporsmalstekst": "2019-12-12 - 2019-12-13",
           "undertekst": null,
           "svartype": "RADIO_GRUPPE_UKEKALENDER",
-          "min": null,
-          "max": null,
+          "min": "2019-12-12",
+          "max": "2019-12-13",
           "kriterieForVisningAvUndersporsmal": null,
-          "svar": [],
-          "undersporsmal": [
+          "svar": [
             {
-              "id": "632678",
-              "tag": "ENKELTSTAENDE_BEHANDLINGSDAGER_DAG_NAR_0_0",
-              "sporsmalstekst": "2019-12-12",
-              "undertekst": null,
-              "svartype": "RADIO",
-              "min": null,
-              "max": null,
-              "kriterieForVisningAvUndersporsmal": null,
-              "svar": [
-                {
-                  "verdi": "CHECKED"
-                }
-              ],
-              "undersporsmal": []
-            },
-            {
-              "id": "632679",
-              "tag": "ENKELTSTAENDE_BEHANDLINGSDAGER_DAG_NAR_0_1",
-              "sporsmalstekst": "2019-12-13",
-              "undertekst": null,
-              "svartype": "RADIO",
-              "min": null,
-              "max": null,
-              "kriterieForVisningAvUndersporsmal": null,
-              "svar": [],
-              "undersporsmal": []
-            },
-            {
-              "id": "632680",
-              "tag": "ENKELTSTAENDE_BEHANDLINGSDAGER_DAG_NAR_0_4",
-              "sporsmalstekst": "INGEN",
-              "undertekst": null,
-              "svartype": "RADIO",
-              "min": null,
-              "max": null,
-              "kriterieForVisningAvUndersporsmal": null,
-              "svar": [],
-              "undersporsmal": []
+              "verdi": "2019-12-12"
             }
-          ]
+          ],
+          "undersporsmal": []
         },
         {
           "id": "632681",
           "tag": "ENKELTSTAENDE_BEHANDLINGSDAGER_UKE_1",
-          "sporsmalstekst": null,
+          "sporsmalstekst": "2019-12-16 - 2019-12-18",
           "undertekst": null,
           "svartype": "RADIO_GRUPPE_UKEKALENDER",
-          "min": null,
-          "max": null,
+          "min": "2019-12-16",
+          "max": "2019-12-18",
           "kriterieForVisningAvUndersporsmal": null,
-          "svar": [],
-          "undersporsmal": [
+          "svar": [
             {
-              "id": "632682",
-              "tag": "ENKELTSTAENDE_BEHANDLINGSDAGER_DAG_NAR_1_0",
-              "sporsmalstekst": "2019-12-16",
-              "undertekst": null,
-              "svartype": "RADIO",
-              "min": null,
-              "max": null,
-              "kriterieForVisningAvUndersporsmal": null,
-              "svar": [
-                {
-                  "verdi": "CHECKED"
-                }
-              ],
-              "undersporsmal": []
-            },
-            {
-              "id": "632683",
-              "tag": "ENKELTSTAENDE_BEHANDLINGSDAGER_DAG_NAR_1_1",
-              "sporsmalstekst": "2019-12-17",
-              "undertekst": null,
-              "svartype": "RADIO",
-              "min": null,
-              "max": null,
-              "kriterieForVisningAvUndersporsmal": null,
-              "svar": [],
-              "undersporsmal": []
-            },
-            {
-              "id": "632684",
-              "tag": "ENKELTSTAENDE_BEHANDLINGSDAGER_DAG_NAR_1_2",
-              "sporsmalstekst": "2019-12-18",
-              "undertekst": null,
-              "svartype": "RADIO",
-              "min": null,
-              "max": null,
-              "kriterieForVisningAvUndersporsmal": null,
-              "svar": [],
-              "undersporsmal": []
-            },
-            {
-              "id": "632685",
-              "tag": "ENKELTSTAENDE_BEHANDLINGSDAGER_DAG_NAR_1_3",
-              "sporsmalstekst": "INGEN",
-              "undertekst": null,
-              "svartype": "RADIO",
-              "min": null,
-              "max": null,
-              "kriterieForVisningAvUndersporsmal": null,
-              "svar": [],
-              "undersporsmal": []
+              "verdi": "2019-12-16"
             }
-          ]
+          ],
+          "undersporsmal": []
         }
       ]
     },
