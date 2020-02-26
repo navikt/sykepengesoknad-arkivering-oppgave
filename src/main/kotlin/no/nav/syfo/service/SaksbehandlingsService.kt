@@ -8,6 +8,7 @@ import no.nav.syfo.consumer.repository.InnsendingDAO
 import no.nav.syfo.consumer.sak.SakConsumer
 import no.nav.syfo.consumer.ws.BehandleJournalConsumer
 import no.nav.syfo.consumer.ws.PersonConsumer
+import no.nav.syfo.domain.Innsending
 import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.Soknadstype
 import no.nav.syfo.domain.dto.Sykepengesoknad
@@ -36,17 +37,36 @@ class SaksbehandlingsService(
     private val log = log()
 
     fun behandleSoknad(sykepengesoknad: Sykepengesoknad) {
-        if (sykepengesoknad.status != "SENDT" || ettersendtTilArbeidsgiver(sykepengesoknad)) return
-        val eksisterendeInnsendingId = finnEksisterendeInnsendingId(sykepengesoknad.id)
-        if (eksisterendeInnsendingId != null) {
-            log.warn(
-                "Innsending for sykepengesøknad {} allerede opprettet med id {}.",
-                sykepengesoknad.id,
-                eksisterendeInnsendingId
-            )
-            return
+        var feilmeldingsInnsendingId = ""
+
+        if (sykepengesoknad.status == "SENDT" && !ettersendtTilArbeidsgiver(sykepengesoknad)) {
+            try {
+                val eksisterendeInnsending = finnEksisterendeInnsending(sykepengesoknad.id)
+                if (eksisterendeInnsending == null || ettersendingTilNAVSomManglerOppgave(eksisterendeInnsending)) {
+                    val innsendingId = eksisterendeInnsending?.innsendingsId
+                            ?: innsendingDAO.opprettInnsending(sykepengesoknad.id, sykepengesoknad.aktorId, sykepengesoknad.fom, sykepengesoknad.tom)
+                    feilmeldingsInnsendingId = innsendingId
+                    val fnr = aktorConsumer.finnFnr(sykepengesoknad.aktorId)
+                    val soknad = opprettSoknad(sykepengesoknad, fnr)
+                    val saksId = eksisterendeInnsending?.saksId
+                            ?: finnEllerOpprettSak(innsendingId, sykepengesoknad.aktorId, soknad.fom)
+                    val journalpostId = eksisterendeInnsending?.journalpostId
+                            ?: opprettJournalpost(innsendingId, soknad, saksId)
+                    if (skalBehandlesAvNav(sykepengesoknad)) {
+                        opprettOppgave(innsendingId, fnr, sykepengesoknad.aktorId, soknad, saksId, journalpostId)
+                    }
+                }
+                else {
+                    log.warn(
+                            "Innsending for sykepengesøknad {} allerede opprettet med id {}.",
+                            sykepengesoknad.id,
+                            eksisterendeInnsending.innsendingsId
+                    )
+                }
+            } catch (e: Exception) {
+                innsendingFeilet(sykepengesoknad, feilmeldingsInnsendingId, e)
+            }
         }
-        lagJournalSak(sykepengesoknad)
     }
 
     fun opprettOppgave(
@@ -91,27 +111,11 @@ class SaksbehandlingsService(
     private fun ettersendtTilArbeidsgiver(sykepengesoknad: Sykepengesoknad) = sykepengesoknad.sendtArbeidsgiver != null
             && sykepengesoknad.sendtNav?.isBefore(sykepengesoknad.sendtArbeidsgiver) ?: false
 
-    private fun finnEksisterendeInnsendingId(sykepengesoknadId: String) =
-        innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknadId)?.innsendingsId
+    private fun finnEksisterendeInnsending(sykepengesoknadId: String) =
+        innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknadId)
 
-    private fun lagJournalSak(sykepengesoknad: Sykepengesoknad) {
-        val innsendingId =
-            innsendingDAO.opprettInnsending(sykepengesoknad.id, sykepengesoknad.aktorId, sykepengesoknad.fom, sykepengesoknad.tom)
-
-        try {
-            val fnr = aktorConsumer.finnFnr(sykepengesoknad.aktorId)
-            val soknad = opprettSoknad(sykepengesoknad, fnr)
-
-            val saksId = finnEllerOpprettSak(innsendingId, sykepengesoknad.aktorId, soknad.fom)
-            val journalpostId = opprettJournalpost(innsendingId, soknad, saksId)
-
-            if (skalBehandlesAvNav(sykepengesoknad)) {
-                opprettOppgave(innsendingId, fnr, sykepengesoknad.aktorId, soknad, saksId, journalpostId)
-            }
-        } catch (e: Exception) {
-            innsendingFeilet(sykepengesoknad, innsendingId, e)
-        }
-    }
+    private fun ettersendingTilNAVSomManglerOppgave(innsending: Innsending) =
+            innsending.oppgaveId == null
 
     private fun innsendingFeilet(sykepengesoknad: Sykepengesoknad, innsendingId: String, e: Exception) {
         tellInnsendingFeilet(sykepengesoknad.soknadstype)

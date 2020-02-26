@@ -15,7 +15,7 @@ import no.nav.syfo.consumer.repository.TidligereInnsending
 import no.nav.syfo.consumer.sak.SakConsumer
 import no.nav.syfo.consumer.ws.BehandleJournalConsumer
 import no.nav.syfo.consumer.ws.PersonConsumer
-import no.nav.syfo.domain.Soknad
+import no.nav.syfo.domain.Innsending
 import no.nav.syfo.domain.dto.Soknadstype.ARBEIDSTAKERE
 import no.nav.syfo.domain.dto.Soknadstype.SELVSTENDIGE_OG_FRILANSERE
 import no.nav.syfo.domain.dto.Sykepengesoknad
@@ -117,6 +117,34 @@ class SaksbehandlingsServiceTest {
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
         verify<InnsendingDAO>(innsendingDAO).settBehandlet(any())
+    }
+
+    @Test
+    fun behandlerSoknaderSomEttersendesTilNavDerDetManglerOppgave() {
+        val now = LocalDateTime.now()
+        val sykepengesoknadUtenOppgave = objectMapper.readValue(TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
+                .copy(sendtNav = null, sendtArbeidsgiver = now)
+        val sykepengesoknadEttersendingTilNAV = objectMapper.readValue(TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
+                .copy(sendtNav = now, sendtArbeidsgiver = now)
+
+        saksbehandlingsService.behandleSoknad(sykepengesoknadUtenOppgave)
+        verify(behandleJournalConsumer, times(1)).opprettJournalpost(any(), any())
+        verify(oppgaveConsumer, never()).opprettOppgave(any())
+        given(innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknadUtenOppgave.id)).willReturn(Innsending(
+                innsendingsId = "innsending-guid",
+                ressursId = sykepengesoknadUtenOppgave.id,
+                aktorId = sykepengesoknadUtenOppgave.aktorId,
+                saksId = "ny-sak-fra-gsak",
+                journalpostId = "journalpostId",
+                oppgaveId = null,
+                behandlet = now.toLocalDate(),
+                soknadFom = sykepengesoknadUtenOppgave.fom,
+                soknadTom = sykepengesoknadUtenOppgave.tom
+        ))
+
+        saksbehandlingsService.behandleSoknad(sykepengesoknadEttersendingTilNAV)
+        verify(behandleJournalConsumer, times(1)).opprettJournalpost(any(), any())
+        verify(oppgaveConsumer, times(1)).opprettOppgave(any())
     }
 
     @Test
