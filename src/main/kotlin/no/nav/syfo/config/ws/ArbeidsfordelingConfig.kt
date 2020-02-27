@@ -14,7 +14,8 @@ class ArbeidsfordelingConfig {
     @Bean
     @ConditionalOnProperty(value = ["mockWS"], havingValue = "false", matchIfMissing = true)
     @Primary
-    fun arbeidsfordelingV1(@Value("\${virksomhet.arbeidsfordeling.v1.endpointurl}") serviceUrl: String): ArbeidsfordelingV1 {
-        return createPort(serviceUrl, listOf(LogErrorHandler()))
+    fun arbeidsfordelingV1(@Value("\${virksomhet.arbeidsfordeling.v1.endpointurl}") serviceUrl: String,
+                           @Value("\${ws.sts.enabled:true}") wsStsEnabled: Boolean): ArbeidsfordelingV1 {
+        return createPort(serviceUrl, listOf(LogErrorHandler()), wsStsEnabled)
     }
 }

@@ -31,6 +31,7 @@ virksomhet:
   person.v3.endpointurl: "person.url"
 
 mockWS: true
+pdfgen.url: "http://pdf"
 
 spring:
   jackson.serialization.WRITE_DATES_AS_TIMESTAMPS: false

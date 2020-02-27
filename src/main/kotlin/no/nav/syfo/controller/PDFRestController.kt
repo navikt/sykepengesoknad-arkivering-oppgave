@@ -2,6 +2,7 @@ package no.nav.syfo.controller
 
 import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.PDFTemplate
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -11,10 +12,11 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.client.RestTemplate
 
 @Controller
-class PDFRestController(private val restTemplate: RestTemplate) {
+class PDFRestController(private val restTemplate: RestTemplate,
+                        @Value("\${pdfgen.url}") private val pdfgenUrl: String) {
 
     fun getPDF(soknad: Soknad, template: PDFTemplate): ByteArray? {
-        val url = "http://syfopdfgen/api/v1/genpdf/syfosoknader/" + template.endpoint
+        val url = "$pdfgenUrl/api/v1/genpdf/syfosoknader/" + template.endpoint
 
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
