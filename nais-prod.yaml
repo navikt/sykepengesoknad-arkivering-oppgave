@@ -47,6 +47,8 @@ spec:
     - "https://syfogsak.nais.adeo.no"
   webproxy: false
   env:
+    - name: PDFGEN_URL
+      value: http://syfopdfgen
     - name: FASIT_ENVIRONMENT_NAME
       value: p
     - name: SPRING_KAFKA_BOOTSTRAP_SERVERS

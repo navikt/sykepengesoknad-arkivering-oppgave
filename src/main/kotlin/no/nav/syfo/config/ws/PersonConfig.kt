@@ -15,8 +15,9 @@ class PersonConfig {
     @Bean
     @ConditionalOnProperty(value = ["mockWS"], havingValue = "false", matchIfMissing = true)
     @Primary
-    fun personV3(@Value("\${virksomhet.person.v3.endpointurl}") serviceUrl: String): PersonV3 {
-        return createPort(serviceUrl, listOf(LogErrorHandler()))
+    fun personV3(@Value("\${virksomhet.person.v3.endpointurl}") serviceUrl: String,
+                 @Value("\${ws.sts.enabled:true}") wsStsEnabled: Boolean): PersonV3 {
+        return createPort(serviceUrl, listOf(LogErrorHandler()), wsStsEnabled)
     }
 
 }
