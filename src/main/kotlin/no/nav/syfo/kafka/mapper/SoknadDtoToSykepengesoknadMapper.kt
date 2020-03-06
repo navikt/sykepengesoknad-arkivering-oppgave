@@ -38,7 +38,8 @@ private fun SoknadsperiodeDTO.toSoknadPeriode(): SoknadPeriode =
         SoknadPeriode(
                 fom = fom,
                 tom = tom,
-                grad = grad)
+                grad = grad,
+                faktiskGrad = faktiskGrad)
 
 fun SoknadDTO.toSykepengesoknad(): Sykepengesoknad =
         Sykepengesoknad(

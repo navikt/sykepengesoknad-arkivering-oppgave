@@ -32,8 +32,7 @@ private fun SporsmalDTO.toSporsmal(): Sporsmal =
 private fun SoknadsperiodeDTO.toSoknadPeriode(): SoknadPeriode =
         SoknadPeriode(
                 fom = fom,
-                tom = tom,
-                sykmeldingstype = sykmeldingstype.toString())
+                tom = tom)
 
 
 fun SykepengesoknadBehandlingsdagerDTO.toSykepengesoknad(): Sykepengesoknad {
