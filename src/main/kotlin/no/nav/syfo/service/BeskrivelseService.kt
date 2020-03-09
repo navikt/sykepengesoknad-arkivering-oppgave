@@ -66,7 +66,7 @@ private fun Soknad.beskrivPerioder() =
                     } ?: "")
         }?.joinToString("") ?: ""
 
-// Er egen beskrivelse for selvstendig/frilanser fordi SoknadDTO Periode ikke inneholder feltet faktiskPeriode, slik som arbeidstakere
+// Er egen beskrivelse for selvstendig/frilanser fordi SoknadDTO Periode ikke inneholder feltet faktiskGrad før Mars 2020, slik som arbeidstakere
 private fun Soknad.beskrivFaktiskGradFrilansere(): String {
     if (soknadstype === SELVSTENDIGE_OG_FRILANSERE) {
         val harJobbetMerEnnGradert = sporsmal
@@ -74,7 +74,9 @@ private fun Soknad.beskrivFaktiskGradFrilansere(): String {
                 .filter { it.tag.startsWith("JOBBET_DU_GRADERT_") || it.tag.startsWith("JOBBET_DU_100_PROSENT_") }
                 .any { it.svar?.asSequence()?.any { svar -> svar.verdi == "JA" } ?: false }
 
-        if (harJobbetMerEnnGradert) {
+        val periodeMedFaktiskGrad = soknadPerioder?.any { it.faktiskGrad != null } ?: false
+
+        if (harJobbetMerEnnGradert && !periodeMedFaktiskGrad) {
             return """
                 
                 OBS! Brukeren har jobbet mer enn uføregraden i sykmeldingen.

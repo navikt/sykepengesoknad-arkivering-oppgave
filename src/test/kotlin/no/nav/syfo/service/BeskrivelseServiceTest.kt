@@ -1,5 +1,6 @@
 package no.nav.syfo.service
 
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
@@ -14,7 +15,7 @@ import org.junit.Test
 
 class BeskrivelseServiceTest {
 
-    private val objectMapper = ObjectMapper().registerModules(JavaTimeModule(), KotlinModule())
+    private val objectMapper = ObjectMapper().registerModules(JavaTimeModule(), KotlinModule()).configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
     @Test
     fun soknadForUtlandsopphold() {
