@@ -5,5 +5,6 @@ enum class PDFTemplate(val endpoint: String) {
     SELVSTENDIGNAERINGSDRIVENDE("selvstendignaeringsdrivende"),
     SYKEPENGERUTLAND("sykepengerutland"),
     ARBEIDSLEDIG("arbeidsledig"),
-    BEHANDLINGSDAGER("behandlingsdager");
+    BEHANDLINGSDAGER("behandlingsdager"),
+    ANNETARBEIDSFORHOLD("annetarbeidsforhold");
 }

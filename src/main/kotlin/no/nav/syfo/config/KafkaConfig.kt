@@ -53,6 +53,10 @@ class KafkaConfig(private val kafkaErrorHandler: KafkaErrorHandler, private val 
             containerFactory(deserializer())
 
     @Bean
+    fun sykepengesoknadContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, SykepengesoknadDTO> =
+            containerFactory(deserializer())
+
+    @Bean
     fun rebehandlingContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, Sykepengesoknad> =
             containerFactory(deserializer())
 

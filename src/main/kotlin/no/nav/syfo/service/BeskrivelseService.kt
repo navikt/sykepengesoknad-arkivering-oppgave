@@ -42,6 +42,7 @@ private fun Soknad.lagTittel() =
             OPPHOLD_UTLAND -> "Søknad om å beholde sykepenger utenfor EØS"
             ARBEIDSLEDIG -> "Søknad om sykepenger for arbeidsledig"
             BEHANDLINGSDAGER -> "Søknad med enkeltstående behandlingsdager"
+            ANNET_ARBEIDSFORHOLD -> "Søknad om sykepenger med ukjent status"
             null -> error("Mangler søknadstype for $soknadsId")
         }
 
@@ -92,6 +93,7 @@ private fun Sporsmal.skalVises() =
         when (tag) {
             "ANSVARSERKLARING", "BEKREFT_OPPLYSNINGER", "EGENMELDINGER", "FRAVER_FOR_BEHANDLING" -> false
             "ARBEIDSGIVER" -> true
+            "FRISKMELDT" -> "NEI" == forsteSvarverdi()
             else -> "NEI" != forsteSvarverdi()
         }
 
