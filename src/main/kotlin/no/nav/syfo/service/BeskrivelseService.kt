@@ -42,7 +42,7 @@ private fun Soknad.lagTittel() =
             OPPHOLD_UTLAND -> "Søknad om å beholde sykepenger utenfor EØS"
             ARBEIDSLEDIG -> "Søknad om sykepenger for arbeidsledig"
             BEHANDLINGSDAGER -> "Søknad med enkeltstående behandlingsdager"
-            ANNET_ARBEIDSFORHOLD -> "Søknad om sykepenger med ukjent status"
+            ANNET_ARBEIDSFORHOLD -> "Søknad om sykepenger med uavklart arbeidssituasjon"
             null -> error("Mangler søknadstype for $soknadsId")
         }
 
