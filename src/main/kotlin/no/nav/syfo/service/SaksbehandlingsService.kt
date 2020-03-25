@@ -85,7 +85,7 @@ class SaksbehandlingsService(
         innsendingDAO.settBehandlet(innsendingId)
 
         tellInnsendingBehandlet(soknad.soknadstype)
-        log.info("Søknad er behandlet i innsending med id {}", innsendingId)
+        log.info("Oppretter oppgave $innsendingId for ${soknad.soknadstype?.name?.toLowerCase()} søknad: ${soknad.soknadsId}")
     }
 
     fun opprettJournalpost(innsendingId: String, soknad: Soknad, saksId: String): String {
