@@ -24,5 +24,6 @@ data class Sykepengesoknad(
     val soknadPerioder: List<SoknadPeriode>? = null,
     val sporsmal: List<Sporsmal>,
     val avsendertype: Avsendertype? = null,
-    val ettersending: Boolean? = null
+    val ettersending: Boolean? = null,
+    val egenmeldtSykmelding: Boolean? = null
 )

@@ -21,7 +21,9 @@ data class Soknad(
     var arbeidssituasjon: Arbeidssituasjon? = null,
     var soknadPerioder: List<SoknadPeriode>? = null,
     var sporsmal: List<Sporsmal>,
-    var avsendertype: Avsendertype? = null) {
+    var avsendertype: Avsendertype? = null,
+    var egenmeldtSykmelding: Boolean? = null
+) {
 
     companion object {
         fun lagSoknad(sykepengesoknad: Sykepengesoknad, fnr: String, navn: String): Soknad =
@@ -43,7 +45,8 @@ data class Soknad(
                 arbeidssituasjon = sykepengesoknad.arbeidssituasjon,
                 soknadPerioder = sykepengesoknad.soknadPerioder,
                 sporsmal = endreRekkefolgePaSporsmalForPDF(sykepengesoknad.sporsmal),
-                avsendertype = sykepengesoknad.avsendertype
+                avsendertype = sykepengesoknad.avsendertype,
+                egenmeldtSykmelding = sykepengesoknad.egenmeldtSykmelding
                 )
 
         private fun endreRekkefolgePaSporsmalForPDF(sporsmal: List<Sporsmal>) =

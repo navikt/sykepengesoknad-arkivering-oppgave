@@ -60,7 +60,8 @@ fun SoknadDTO.toSykepengesoknad(): Sykepengesoknad =
                 korrigerer = korrigerer,
                 soknadPerioder = soknadPerioder?.map { it.toSoknadPeriode() },
                 sporsmal = sporsmal!!.map { it.toSporsmal() },
-                avsendertype = avsendertype?.name?.stringEnumValueOrNull()
+                avsendertype = avsendertype?.name?.stringEnumValueOrNull(),
+                egenmeldtSykmelding = egenmeldtSykmelding
         )
 
 

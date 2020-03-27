@@ -106,6 +106,14 @@ class BeskrivelseServiceTest {
     }
 
     @Test
+    fun leggerTilMeldingForEgenmeldtSykmelding() {
+        val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadArbeidstakerMangeSvar.json"), Sykepengesoknad::class.java)
+        val soknad = Soknad.lagSoknad(sykepengesoknad.copy(egenmeldtSykmelding = true), "fnr", "navn")
+
+        assertThat(lagBeskrivelse(soknad)).isEqualTo("Denne søknaden hører til en egenmeldt sykmelding\n" + beskrivelseArbeidstakerMangeSvar)
+    }
+
+    @Test
     fun soknadForBehandlingsdagerMedNeiSvar() {
         val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadBehandlingsdagerMedNeisvar.json"), Sykepengesoknad::class.java)
         val soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn")

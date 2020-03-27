@@ -56,7 +56,8 @@ fun SykepengesoknadBehandlingsdagerDTO.toSykepengesoknad(): Sykepengesoknad {
             soknadPerioder = sykepengesoknadFelles.soknadsperioder.map { it.toSoknadPeriode() },
             sporsmal = soknadFelles.sporsmal.map { it.toSporsmal() },
             avsendertype = soknadFelles.avsendertype.enumValueOrNull(),
-            ettersending = soknadFelles.ettersending
+            ettersending = soknadFelles.ettersending,
+            egenmeldtSykmelding = soknadFelles.egenmeldtSykmelding
     )
 }
 

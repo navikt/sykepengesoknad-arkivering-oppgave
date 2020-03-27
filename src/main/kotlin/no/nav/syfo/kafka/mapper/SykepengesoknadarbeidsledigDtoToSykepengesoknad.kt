@@ -52,4 +52,6 @@ fun SykepengesoknadArbeidsledigDTO.toSykepengesoknad(): Sykepengesoknad =
         korrigerer = korrigerer,
         soknadPerioder = soknadsperioder!!.map { it.toSoknadPeriode() },
         sporsmal = sporsmal!!.map { it.toSporsmal() },
-        avsendertype = avsendertype.enumValueOrNull() )
+        avsendertype = avsendertype.enumValueOrNull(),
+        egenmeldtSykmelding = egenmeldtSykmelding
+    )

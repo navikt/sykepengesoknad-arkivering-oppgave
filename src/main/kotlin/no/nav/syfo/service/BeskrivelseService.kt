@@ -12,7 +12,8 @@ import java.time.LocalDate
 import java.util.Collections.nCopies
 
 fun lagBeskrivelse(soknad: Soknad): String {
-    return soknad.meldingDersomAvsendertypeErSystem() +
+    return soknad.meldingDersomEgenmeldtSykmelding() +
+            soknad.meldingDersomAvsendertypeErSystem() +
             soknad.lagTittel() +
             soknad.erKorrigert() + "\n" +
             soknad.beskrivArbeidsgiver() +
@@ -24,6 +25,12 @@ fun lagBeskrivelse(soknad: Soknad): String {
                     .filter { it.isNotBlank() }
                     .joinToString("\n")
 }
+
+private fun Soknad.meldingDersomEgenmeldtSykmelding() =
+        if (egenmeldtSykmelding == true)
+            "Denne søknaden hører til en egenmeldt sykmelding\n"
+        else
+        ""
 
 private fun Soknad.meldingDersomAvsendertypeErSystem() =
         if (avsendertype == SYSTEM)

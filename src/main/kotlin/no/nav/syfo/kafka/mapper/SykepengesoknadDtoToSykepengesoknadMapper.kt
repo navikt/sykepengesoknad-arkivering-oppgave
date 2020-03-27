@@ -62,7 +62,8 @@ fun SykepengesoknadDTO.toSykepengesoknad(): Sykepengesoknad {
             soknadPerioder = soknadsperioder!!.map { it.toSoknadPeriode() },
             sporsmal = sporsmal!!.map { it.toSporsmal()},
             avsendertype = avsendertype.enumValueOrNull(),
-            ettersending = ettersending
+            ettersending = ettersending,
+            egenmeldtSykmelding = egenmeldtSykmelding
     )
 }
 
