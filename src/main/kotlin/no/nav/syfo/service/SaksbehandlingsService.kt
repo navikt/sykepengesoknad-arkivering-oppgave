@@ -53,7 +53,7 @@ class SaksbehandlingsService(
                     val journalpostId = eksisterendeInnsending?.journalpostId
                             ?: opprettJournalpost(innsendingId, soknad, saksId)
                     if (skalBehandlesAvNav(sykepengesoknad)) {
-                        opprettOppgave(innsendingId, fnr, sykepengesoknad.aktorId, soknad, saksId, journalpostId)
+                        opprettOppgave(innsendingId, fnr, sykepengesoknad, soknad, saksId, journalpostId)
                     }
                 }
                 else {
@@ -72,13 +72,13 @@ class SaksbehandlingsService(
     fun opprettOppgave(
         innsendingId: String,
         fnr: String,
-        aktorId: String,
+        sykepengesoknad: Sykepengesoknad,
         soknad: Soknad,
         saksId: String,
         journalpostId: String
     ) {
         val behandlendeEnhet = behandlendeEnhetService.hentBehandlendeEnhet(fnr, soknad.soknadstype)
-        val requestBody = OppgaveConsumer.lagRequestBody(aktorId, behandlendeEnhet, saksId, journalpostId, soknad)
+        val requestBody = OppgaveConsumer.lagRequestBody(sykepengesoknad.aktorId, behandlendeEnhet, saksId, journalpostId, soknad, sykepengesoknad.harRedusertVenteperiode)
         val oppgaveId = oppgaveConsumer.opprettOppgave(requestBody).id.toString()
 
         innsendingDAO.oppdaterOppgaveId(uuid = innsendingId, oppgaveId = oppgaveId)

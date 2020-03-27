@@ -128,10 +128,18 @@ class OppgaveConsumerTest {
     }
 
     @Test
-    fun lagRequestBodySetterRiktigBehandlingstemaForUtland() {
-        val body = OppgaveConsumer.lagRequestBody(aktorId, behandlendeEnhet, saksId, journalpostId, lagSoknad(Soknadstype.OPPHOLD_UTLAND))
+    fun lagRequestBodySetterRiktigBehandlingstema() {
+        val utland = OppgaveConsumer.lagRequestBody(aktorId, behandlendeEnhet, saksId, journalpostId, lagSoknad(Soknadstype.OPPHOLD_UTLAND))
+        val arbeidstaker = OppgaveConsumer.lagRequestBody(aktorId, behandlendeEnhet, saksId, journalpostId, lagSoknad(Soknadstype.ARBEIDSTAKERE))
+        val arbeidsledig = OppgaveConsumer.lagRequestBody(aktorId, behandlendeEnhet, saksId, journalpostId, lagSoknad(Soknadstype.ARBEIDSLEDIG))
+        val behandlingsdager = OppgaveConsumer.lagRequestBody(aktorId, behandlendeEnhet, saksId, journalpostId, lagSoknad(Soknadstype.BEHANDLINGSDAGER))
+        val redusertVenteperiode = OppgaveConsumer.lagRequestBody(aktorId, behandlendeEnhet, saksId, journalpostId, lagSoknad(Soknadstype.SELVSTENDIGE_OG_FRILANSERE), harRedusertVenteperiode = true)
 
-        assertThat(body.behandlingstema).isEqualTo("ab0314")
+        assertThat(utland.behandlingstema).isEqualTo("ab0314")
+        assertThat(arbeidstaker.behandlingstema).isEqualTo("ab0061")
+        assertThat(arbeidsledig.behandlingstema).isEqualTo("ab0426")
+        assertThat(behandlingsdager.behandlingstema).isEqualTo("ab0351")
+        assertThat(redusertVenteperiode.behandlingstema).isEqualTo("ae0247")
     }
 
     private fun lagSoknad(soknadstype: Soknadstype): Soknad {

@@ -4,7 +4,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 data class Sykepengesoknad(
-
     val id: String,
     val sykmeldingId: String? = null,
     val aktorId: String,
@@ -25,5 +24,6 @@ data class Sykepengesoknad(
     val sporsmal: List<Sporsmal>,
     val avsendertype: Avsendertype? = null,
     val ettersending: Boolean? = null,
-    val egenmeldtSykmelding: Boolean? = null
+    val egenmeldtSykmelding: Boolean? = null,
+    val harRedusertVenteperiode: Boolean = false
 )

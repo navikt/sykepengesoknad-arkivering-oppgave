@@ -69,7 +69,8 @@ class OppgaveConsumer(
             behandlendeEnhet: String,
             saksId: String,
             journalpostId: String,
-            soknad: Soknad
+            soknad: Soknad,
+            harRedusertVenteperiode: Boolean = false
         ): OppgaveRequest =
             OppgaveRequest(
                 tildeltEnhetsnr = behandlendeEnhet,
@@ -79,12 +80,16 @@ class OppgaveConsumer(
                 saksreferanse = saksId,
                 beskrivelse = lagBeskrivelse(soknad),
                 tema = "SYK",
-                behandlingstema = when (soknad.soknadstype) {
-                    Soknadstype.OPPHOLD_UTLAND -> "ab0314"
-                    Soknadstype.BEHANDLINGSDAGER -> "ab0351"
-                    Soknadstype.ARBEIDSLEDIG -> "ab0426"
-                    else -> "ab0061"
-                },
+                behandlingstema =
+                    if(harRedusertVenteperiode) { "ae0247" }
+                    else {
+                        when (soknad.soknadstype) {
+                            Soknadstype.OPPHOLD_UTLAND -> "ab0314"
+                            Soknadstype.BEHANDLINGSDAGER -> "ab0351"
+                            Soknadstype.ARBEIDSLEDIG -> "ab0426"
+                            else -> "ab0061"
+                        }
+                    },
                 oppgavetype = "SOK",
                 aktivDato = now().format(oppgaveDato),
                 fristFerdigstillelse = omTreUkedager(now()).format(oppgaveDato),
