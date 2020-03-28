@@ -53,13 +53,12 @@ constructor(
         journalpostId: String,
         sykepengesoknad: Sykepengesoknad
     ) {
-        val aktorId = sykepengesoknad.aktorId
-        val fnr = aktorConsumer.finnFnr(aktorId)
+        val fnr = aktorConsumer.finnFnr(sykepengesoknad.aktorId)
 
         saksbehandlingsService.opprettOppgave(
             innsendingsId,
             fnr,
-            aktorId,
+            sykepengesoknad,
             saksbehandlingsService.opprettSoknad(sykepengesoknad, fnr),
             saksId,
             journalpostId

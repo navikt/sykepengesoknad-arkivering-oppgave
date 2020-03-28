@@ -69,7 +69,8 @@ class OppgaveConsumer(
             behandlendeEnhet: String,
             saksId: String,
             journalpostId: String,
-            soknad: Soknad
+            soknad: Soknad,
+            harRedusertVenteperiode: Boolean = false
         ): OppgaveRequest =
             OppgaveRequest(
                 tildeltEnhetsnr = behandlendeEnhet,
@@ -79,17 +80,19 @@ class OppgaveConsumer(
                 saksreferanse = saksId,
                 beskrivelse = lagBeskrivelse(soknad),
                 tema = "SYK",
-                behandlingstema = when (soknad.soknadstype) {
-                    Soknadstype.OPPHOLD_UTLAND -> "ab0314"
-                    Soknadstype.BEHANDLINGSDAGER -> "ab0351"
-                    Soknadstype.ARBEIDSLEDIG -> "ab0426"
-                    else -> "ab0061"
-                },
                 oppgavetype = "SOK",
                 aktivDato = now().format(oppgaveDato),
                 fristFerdigstillelse = omTreUkedager(now()).format(oppgaveDato),
                 prioritet = "NORM"
-            )
+            ).apply {
+                if(harRedusertVenteperiode) { this.behandlingstype = "ae0247" }
+                else { this.behandlingstema = when (soknad.soknadstype) {
+                    Soknadstype.OPPHOLD_UTLAND -> "ab0314"
+                    Soknadstype.BEHANDLINGSDAGER -> "ab0351"
+                    Soknadstype.ARBEIDSLEDIG -> "ab0426"
+                    else -> "ab0061"
+                }}
+            }
 
         fun omTreUkedager(idag: LocalDate) = when (idag.dayOfWeek) {
             DayOfWeek.SUNDAY -> idag.plusDays(4)
@@ -116,7 +119,8 @@ data class OppgaveRequest(
     val saksreferanse: String,
     val beskrivelse: String,
     val tema: String,
-    val behandlingstema: String,
+    var behandlingstype: String? = null,
+    var behandlingstema: String? = null,
     val oppgavetype: String,
     val aktivDato: String?,
     val fristFerdigstillelse: String?,
