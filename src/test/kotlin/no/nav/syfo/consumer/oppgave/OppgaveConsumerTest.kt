@@ -139,7 +139,7 @@ class OppgaveConsumerTest {
         assertThat(arbeidstaker.behandlingstema).isEqualTo("ab0061")
         assertThat(arbeidsledig.behandlingstema).isEqualTo("ab0426")
         assertThat(behandlingsdager.behandlingstema).isEqualTo("ab0351")
-        assertThat(redusertVenteperiode.behandlingstema).isEqualTo("ae0247")
+        assertThat(redusertVenteperiode.behandlingstype).isEqualTo("ae0247")
     }
 
     private fun lagSoknad(soknadstype: Soknadstype): Soknad {
