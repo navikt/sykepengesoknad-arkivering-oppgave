@@ -53,7 +53,7 @@ fun SykepengesoknadDTO.toSykepengesoknad(): Sykepengesoknad {
             opprettet = opprettet!!,
             sendtNav = sendtNav,
             sendtArbeidsgiver = sendtArbeidsgiver,
-            arbeidsgiver = arbeidsgiver!!.navn,
+            arbeidsgiver = arbeidsgiver?.navn,
             arbeidssituasjon = arbeidssituasjon.enumValueOrNull(),
             startSykeforlop = startSyketilfelle,
             sykmeldingSkrevet = sykmeldingSkrevet,
