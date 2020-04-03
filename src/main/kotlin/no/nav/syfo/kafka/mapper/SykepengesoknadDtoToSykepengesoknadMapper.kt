@@ -29,7 +29,7 @@ private fun SporsmalDTO.toSporsmal(): Sporsmal =
                 max = max,
                 kriterieForVisningAvUndersporsmal = kriterieForVisningAvUndersporsmal.enumValueOrNull(),
                 svar = svar!!.map { it.toSvar() },
-                undersporsmal = undersporsmal!!.map { it.toSporsmal() }
+                undersporsmal = undersporsmal?.map { it.toSporsmal() }
         )
 
 
@@ -59,7 +59,7 @@ fun SykepengesoknadDTO.toSykepengesoknad(): Sykepengesoknad {
             sykmeldingSkrevet = sykmeldingSkrevet,
             korrigertAv = korrigertAv,
             korrigerer = korrigerer,
-            soknadPerioder = soknadsperioder!!.map { it.toSoknadPeriode() },
+            soknadPerioder = soknadsperioder?.map { it.toSoknadPeriode() },
             sporsmal = sporsmal!!.map { it.toSporsmal()},
             avsendertype = avsendertype.enumValueOrNull(),
             ettersending = ettersending,
