@@ -4,11 +4,11 @@ import no.nav.syfo.domain.dto.SoknadPeriode
 import no.nav.syfo.domain.dto.Sporsmal
 import no.nav.syfo.domain.dto.Svar
 import no.nav.syfo.domain.dto.Sykepengesoknad
+
 import no.nav.syfo.kafka.felles.SoknadsperiodeDTO
 import no.nav.syfo.kafka.felles.SporsmalDTO
 import no.nav.syfo.kafka.felles.SvarDTO
-
-import no.nav.syfo.kafka.sykepengesoknad.dto.SykepengesoknadDTO
+import no.nav.syfo.kafka.felles.SykepengesoknadDTO
 
 
 private inline fun <T : Enum<*>, reified U : Enum<*>> T?.enumValueOrNull(): U? =

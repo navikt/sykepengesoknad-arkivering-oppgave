@@ -1,6 +1,6 @@
 package no.nav.syfo.config
 
-import no.nav.syfo.kafka.soknad.dto.SoknadDTO
+import no.nav.syfo.kafka.felles.SykepengesoknadDTO
 import no.nav.syfo.kafka.soknad.serializer.FunctionSerializer
 import org.apache.kafka.common.serialization.StringSerializer
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties
@@ -18,15 +18,15 @@ import org.springframework.kafka.core.ProducerFactory
 class KafkaTestConfig {
 
     @Bean
-    fun producerFactory(kafkaProperties: KafkaProperties): ProducerFactory<String, SoknadDTO> {
+    fun producerFactory(kafkaProperties: KafkaProperties): ProducerFactory<String, SykepengesoknadDTO> {
         return DefaultKafkaProducerFactory(
                 kafkaProperties.buildProducerProperties(),
                 StringSerializer(),
-                FunctionSerializer { _ -> byteArrayOf(1) })
+                FunctionSerializer { byteArrayOf(1) })
     }
 
     @Bean
-    fun kafkaTemplate(producerFactory: ProducerFactory<String, SoknadDTO>): KafkaTemplate<String, SoknadDTO> {
+    fun kafkaTemplate(producerFactory: ProducerFactory<String, SykepengesoknadDTO>): KafkaTemplate<String, SykepengesoknadDTO> {
         return KafkaTemplate(producerFactory)
     }
 }
