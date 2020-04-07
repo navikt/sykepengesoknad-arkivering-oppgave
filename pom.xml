@@ -124,7 +124,10 @@
             <artifactId>sykepengesoknadbehandlingsdager</artifactId>
             <version>${syfokafka.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-spring-boot-starter-jaxws</artifactId>

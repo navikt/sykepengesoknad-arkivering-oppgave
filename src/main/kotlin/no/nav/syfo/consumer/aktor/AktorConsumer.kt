@@ -3,6 +3,7 @@ package no.nav.syfo.consumer.aktor
 import no.nav.syfo.consumer.token.TokenConsumer
 import no.nav.syfo.kafka.NAV_CALLID
 import no.nav.syfo.log
+import no.nav.syfo.util.callId
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
@@ -30,15 +31,6 @@ class AktorConsumer(private val tokenConsumer: TokenConsumer,
 
     fun finnFnr(aktorId: String): String {
         return getIdent(aktorId, "NorskIdent")
-    }
-
-    private fun callId(): String {
-        val callId = MDC.get(NAV_CALLID)
-        return if (callId.isNullOrEmpty()) {
-            UUID.randomUUID().toString()
-        } else {
-            callId
-        }
     }
 
     private fun getIdent(sokeIdent: String, identgruppe: String): String {

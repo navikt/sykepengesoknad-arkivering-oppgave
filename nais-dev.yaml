@@ -43,10 +43,14 @@ spec:
         mountPath: /secrets/syfogsak/config
       - kvPath: kv/preprod/fss/syfogsak/default
         mountPath: /var/run/secrets/nais.io/vault
+      - kvPath: /azuread/data/dev/creds/syfogsak
+        mountPath: /var/run/secrets/nais.io/azuread
   ingresses:
     - "https://syfogsak.nais.preprod.local"
   webproxy: false
   env:
+    - name: SYFOSOKNAD_URL
+      value: https://syfosoknad.nais.preprod.local
     - name: PDFGEN_URL
       value: http://syfopdfgen
     - name: FASIT_ENVIRONMENT_NAME
@@ -67,6 +71,10 @@ spec:
       value: https://oppgave.nais.preprod.local/api/v1/oppgaver
     - name: SERVICEGATEWAY_URL
       value: https://service-gw-q1.preprod.local/
+    - name: AAD_ACCESSTOKEN_URL
+      value: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/token
+    - name: AAD_SYFOSOKNAD_CLIENTID
+      value: 281ba984-745f-48b8-a79c-9444b8688361
 
     - name: JOURNAL_V2_ENDPOINTURL
       value: https://wasapp-q1.adeo.no/joark/Journal/v2
