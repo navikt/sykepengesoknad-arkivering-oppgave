@@ -3,6 +3,8 @@ package no.nav.syfo.mock
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.FinnAlleBehandlendeEnheterListeUgyldigInput
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.FinnBehandlendeEnhetListeUgyldigInput
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.ArbeidsfordelingV1
+import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.Enhetsstatus
+import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.Organisasjonsenhet
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.meldinger.FinnAlleBehandlendeEnheterListeRequest
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.meldinger.FinnAlleBehandlendeEnheterListeResponse
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.meldinger.FinnBehandlendeEnhetListeRequest
@@ -16,16 +18,23 @@ class ArbeidsfordelingMock : ArbeidsfordelingV1 {
 
     @Throws(FinnAlleBehandlendeEnheterListeUgyldigInput::class)
     override fun finnAlleBehandlendeEnheterListe(
-        wsFinnAlleBehandlendeEnheterListeRequest: FinnAlleBehandlendeEnheterListeRequest
+            wsFinnAlleBehandlendeEnheterListeRequest: FinnAlleBehandlendeEnheterListeRequest
     ): FinnAlleBehandlendeEnheterListeResponse {
         throw RuntimeException("Ikke implementert i mock")
     }
 
     @Throws(FinnBehandlendeEnhetListeUgyldigInput::class)
     override fun finnBehandlendeEnhetListe(
-        wsFinnBehandlendeEnhetListeRequest: FinnBehandlendeEnhetListeRequest
+            wsFinnBehandlendeEnhetListeRequest: FinnBehandlendeEnhetListeRequest
     ): FinnBehandlendeEnhetListeResponse {
-        throw RuntimeException("Ikke implementert i mock")
+        val finnBehandlendeEnhetListeResponse = FinnBehandlendeEnhetListeResponse()
+        val organisasjonsenhet = Organisasjonsenhet()
+                .also {
+                    it.enhetId = "enhet123"
+                    it.status = Enhetsstatus.AKTIV
+                }
+        finnBehandlendeEnhetListeResponse.behandlendeEnhetListe.add(organisasjonsenhet)
+        return finnBehandlendeEnhetListeResponse
     }
 
     override fun ping() {}

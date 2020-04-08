@@ -46,7 +46,7 @@ class BehandleJournalMock : BehandleJournalV2 {
     override fun journalfoerInngaaendeHenvendelse(
         wsJournalfoerInngaaendeHenvendelseRequest: JournalfoerInngaaendeHenvendelseRequest
     ): JournalfoerInngaaendeHenvendelseResponse {
-        throw RuntimeException("Ikke implementert i mock")
+        return JournalfoerInngaaendeHenvendelseResponse().withJournalpostId("journalpostId")
     }
 
     override fun ping() {}
