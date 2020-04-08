@@ -75,3 +75,8 @@ aad_accesstoken_url: http://azure
 aad_syfogsak_client_id: syfogsak
 aad_syfogsak_client_secret: min-hemmelighet
 aad_syfosoknad_clientid: syfosoknad-yo
+
+
+behandle.oppgave:
+  deploy: "3000000"
+  intervall: "3000000"

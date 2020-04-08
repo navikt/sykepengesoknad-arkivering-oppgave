@@ -4,6 +4,7 @@ import no.nav.syfo.kafka.NAV_CALLID
 import no.nav.syfo.kafka.felles.SykepengesoknadDTO
 import no.nav.syfo.kafka.getSafeNavCallIdHeaderAsString
 import no.nav.syfo.kafka.mapper.toSykepengesoknad
+import no.nav.syfo.log
 import no.nav.syfo.service.SaksbehandlingsService
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.MDC
@@ -15,6 +16,7 @@ import javax.inject.Inject
 @Component
 class SoknadSendtListener @Inject
 constructor(private val saksbehandlingsService: SaksbehandlingsService) {
+    private val log = log()
 
     @KafkaListener(
             topics = ["syfo-soknad-v2", "syfo-soknad-v3"],
@@ -29,6 +31,9 @@ constructor(private val saksbehandlingsService: SaksbehandlingsService) {
             saksbehandlingsService.behandleSoknad(value.toSykepengesoknad())
 
             acknowledgment.acknowledge()
+        } catch (e: Exception) {
+            log.error("Uventet feil ved behandling av søknad", e)
+            throw RuntimeException("Uventet feil ved behandling av søknad")
         } finally {
             MDC.remove(NAV_CALLID)
         }
