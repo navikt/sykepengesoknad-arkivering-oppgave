@@ -2,7 +2,8 @@ package no.nav.syfo.consumer.syfosoknad
 
 import no.nav.syfo.consumer.azure.AzureAdTokenConsumer
 import no.nav.syfo.kafka.NAV_CALLID
-import no.nav.syfo.kafka.sykepengesoknad.dto.SykepengesoknadDTO
+import no.nav.syfo.kafka.felles.SykepengesoknadDTO
+
 import no.nav.syfo.log
 import no.nav.syfo.util.callId
 import org.springframework.beans.factory.annotation.Value

@@ -1,20 +1,15 @@
 package no.nav.syfo.config
 
-import com.fasterxml.jackson.databind.DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE
 import com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
+import com.fasterxml.jackson.databind.DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.syfo.kafka.KafkaErrorHandler
-import no.nav.syfo.kafka.LegacyMultiFunctionDeserializer
-import no.nav.syfo.kafka.interfaces.Soknad
-import no.nav.syfo.kafka.soknad.dto.SoknadDTO
+import no.nav.syfo.kafka.felles.SykepengesoknadDTO
+import no.nav.syfo.kafka.soknad.deserializer.FunctionDeserializer
 import no.nav.syfo.kafka.soknad.serializer.FunctionSerializer
-import no.nav.syfo.kafka.sykepengesoknad.dto.SykepengesoknadDTO
-import no.nav.syfo.kafka.sykepengesoknadarbeidsledig.dto.SykepengesoknadArbeidsledigDTO
-import no.nav.syfo.kafka.sykepengesoknadbehandlingsdager.dto.SykepengesoknadBehandlingsdagerDTO
 import org.apache.kafka.common.serialization.Deserializer
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.kafka.common.serialization.StringSerializer
@@ -23,6 +18,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.kafka.annotation.EnableKafka
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
+import org.springframework.kafka.core.ConsumerFactory
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory
 import org.springframework.kafka.core.DefaultKafkaProducerFactory
 import org.springframework.kafka.core.KafkaTemplate
@@ -32,33 +28,47 @@ import org.springframework.kafka.listener.ContainerProperties
 @EnableKafka
 class KafkaConfig(private val kafkaErrorHandler: KafkaErrorHandler, private val properties: KafkaProperties) {
 
-    private companion object {
-        private val objectMapper = ObjectMapper()
-                .registerModule(JavaTimeModule())
-                .registerKotlinModule()
-                .configure(READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE, true)
-                .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
+    private val objectMapper = ObjectMapper()
+            .registerModule(JavaTimeModule())
+            .registerModule(KotlinModule())
+            .configure(READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE, true)
+            .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
+
+
+    @Bean
+    fun kafkaListenerContainerFactory(consumerFactory: ConsumerFactory<String, SykepengesoknadDTO>): ConcurrentKafkaListenerContainerFactory<String, SykepengesoknadDTO> =
+            ConcurrentKafkaListenerContainerFactory<String, SykepengesoknadDTO>().apply {
+                containerProperties.ackMode = ContainerProperties.AckMode.MANUAL_IMMEDIATE
+                setErrorHandler(kafkaErrorHandler)
+                this.consumerFactory = consumerFactory
+            }
+
+
+    @Bean
+    fun consumerFactory(properties: KafkaProperties): ConsumerFactory<String, SykepengesoknadDTO> {
+        return DefaultKafkaConsumerFactory(
+                properties.buildConsumerProperties(),
+                StringDeserializer(),
+                FunctionDeserializer { bytes -> objectMapper.readValue(bytes, SykepengesoknadDTO::class.java) }
+        )
     }
 
     @Bean
-    fun soknadContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, Soknad> =
-            containerFactory(soknadDeserializer())
+    fun rebehandlingConsumerFactory(properties: KafkaProperties): ConsumerFactory<String, Sykepengesoknad> {
+        return DefaultKafkaConsumerFactory(
+                properties.buildConsumerProperties(),
+                StringDeserializer(),
+                FunctionDeserializer { bytes -> objectMapper.readValue(bytes, Sykepengesoknad::class.java) }
+        )
+    }
 
     @Bean
-    fun arbeidsledigContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, SykepengesoknadArbeidsledigDTO> =
-            containerFactory(deserializer())
-
-    @Bean
-    fun behandlingsdagerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, SykepengesoknadBehandlingsdagerDTO> =
-            containerFactory(deserializer())
-
-    @Bean
-    fun sykepengesoknadContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, SykepengesoknadDTO> =
-            containerFactory(deserializer())
-
-    @Bean
-    fun rebehandlingContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, Sykepengesoknad> =
-            containerFactory(deserializer())
+    fun rebehandlingContainerFactory(consumerFactory: ConsumerFactory<String, Sykepengesoknad>): ConcurrentKafkaListenerContainerFactory<String, Sykepengesoknad> =
+            ConcurrentKafkaListenerContainerFactory<String, Sykepengesoknad>().apply {
+                containerProperties.ackMode = ContainerProperties.AckMode.MANUAL_IMMEDIATE
+                setErrorHandler(kafkaErrorHandler)
+                this.consumerFactory = consumerFactory
+            }
 
     @Bean
     fun kafkaTemplate(): KafkaTemplate<String, Sykepengesoknad> = KafkaTemplate(
@@ -69,26 +79,6 @@ class KafkaConfig(private val kafkaErrorHandler: KafkaErrorHandler, private val 
             )
     )
 
-    private inline fun <reified T> containerFactory(deserializer: Deserializer<T>) =
-        ConcurrentKafkaListenerContainerFactory<String, T>().apply {
-            containerProperties.ackMode = ContainerProperties.AckMode.MANUAL_IMMEDIATE
-            setErrorHandler(kafkaErrorHandler)
-            consumerFactory = consumerFactory(deserializer)
-        }
-
-    private inline fun <reified T> consumerFactory(valueDeserializer: Deserializer<T>) =
-        DefaultKafkaConsumerFactory(
-            properties.buildConsumerProperties(),
-            StringDeserializer(),
-            valueDeserializer
-        )
-
-    private inline fun <reified T> deserializer() = LegacyMultiFunctionDeserializer(emptyMap()) { bytes -> bytes?.let { objectMapper.readValue<T>(it) } ?: throw RuntimeException("Feiler ved deserializering")}
-
-    fun soknadDeserializer() = LegacyMultiFunctionDeserializer<Soknad>(
-        mapOf(
-            "SYKEPENGESOKNAD" to { _, bytes -> bytes?.let { objectMapper.readValue<SykepengesoknadDTO>(it) } as Soknad },
-            "SOKNAD" to { _, bytes -> bytes?.let { objectMapper.readValue<SoknadDTO>(it) } as Soknad }
-        )
-    )
 }
+
+
