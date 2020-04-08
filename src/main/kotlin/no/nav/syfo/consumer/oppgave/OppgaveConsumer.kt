@@ -7,6 +7,7 @@ import no.nav.syfo.domain.dto.Soknadstype
 import no.nav.syfo.kafka.NAV_CALLID
 import no.nav.syfo.log
 import no.nav.syfo.service.lagBeskrivelse
+import no.nav.syfo.util.callId
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
@@ -98,15 +99,6 @@ class OppgaveConsumer(
             DayOfWeek.SUNDAY -> idag.plusDays(4)
             DayOfWeek.MONDAY, DayOfWeek.TUESDAY -> idag.plusDays(3)
             else -> idag.plusDays(5)
-        }
-    }
-
-    private fun callId(): String {
-        val callId = MDC.get(NAV_CALLID)
-        return if (callId.isNullOrEmpty()) {
-            UUID.randomUUID().toString()
-        } else {
-            callId
         }
     }
 }
