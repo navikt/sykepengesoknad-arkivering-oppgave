@@ -75,6 +75,10 @@ spec:
       value: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/token
     - name: AAD_SYFOSOKNAD_CLIENTID
       value: 281ba984-745f-48b8-a79c-9444b8688361
+    - name: BEHANDLE_OPPGAVE_DEPLOY
+      value: "600000"
+    - name: BEHANDLE_OPPGAVE_INTERVALL
+      value: "600000"
 
     - name: JOURNAL_V2_ENDPOINTURL
       value: https://wasapp-q1.adeo.no/joark/Journal/v2
