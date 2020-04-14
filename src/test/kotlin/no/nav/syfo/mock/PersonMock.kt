@@ -1,6 +1,9 @@
 package no.nav.syfo.mock
 
 import no.nav.tjeneste.virksomhet.person.v3.binding.*
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.AktoerHarNavn
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bydel
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.*
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
@@ -18,7 +21,7 @@ class PersonMock : PersonV3 {
     }
 
     override fun hentPersonnavnBolk(hentPersonnavnBolkRequest: HentPersonnavnBolkRequest): HentPersonnavnBolkResponse {
-        throw RuntimeException("Ikke implementert i mock")
+        return HentPersonnavnBolkResponse().withAktoerHarNavnListe(AktoerHarNavn().withPersonnavn(Personnavn().withFornavn("Tom").withEtternavn("Eke")))
     }
 
     @Throws(HentSikkerhetstiltakPersonIkkeFunnet::class)
@@ -28,7 +31,7 @@ class PersonMock : PersonV3 {
 
     @Throws(HentGeografiskTilknytningPersonIkkeFunnet::class, HentGeografiskTilknytningSikkerhetsbegrensing::class)
     override fun hentGeografiskTilknytning(hentGeografiskTilknytningRequest: HentGeografiskTilknytningRequest): HentGeografiskTilknytningResponse {
-        throw RuntimeException("Ikke implementert i mock")
+        return HentGeografiskTilknytningResponse().withGeografiskTilknytning(Bydel().withGeografiskTilknytning("Grorud"))
     }
 
     @Throws(HentVergePersonIkkeFunnet::class, HentVergeSikkerhetsbegrensning::class)
