@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature.READ_UNKNOWN_ENUM_V
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import no.nav.syfo.domain.OppgaveDTO
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.syfo.kafka.KafkaErrorHandler
 import no.nav.syfo.kafka.felles.SykepengesoknadDTO
@@ -69,6 +70,23 @@ class KafkaConfig(private val kafkaErrorHandler: KafkaErrorHandler, private val 
                 setErrorHandler(kafkaErrorHandler)
                 this.consumerFactory = consumerFactory
             }
+
+    @Bean
+    fun spreOppgaverConsumerFactory(properties: KafkaProperties): ConsumerFactory<String, OppgaveDTO> {
+        return DefaultKafkaConsumerFactory(
+            properties.buildConsumerProperties(),
+            StringDeserializer(),
+            FunctionDeserializer { bytes -> objectMapper.readValue(bytes, OppgaveDTO::class.java) }
+        )
+    }
+
+    @Bean
+    fun spreOppgaverContainerFactory(consumerFactory: ConsumerFactory<String, OppgaveDTO>): ConcurrentKafkaListenerContainerFactory<String, OppgaveDTO> =
+        ConcurrentKafkaListenerContainerFactory<String, OppgaveDTO>().apply {
+            containerProperties.ackMode = ContainerProperties.AckMode.MANUAL_IMMEDIATE
+            setErrorHandler(kafkaErrorHandler)
+            this.consumerFactory = consumerFactory
+        }
 
     @Bean
     fun kafkaTemplate(): KafkaTemplate<String, Sykepengesoknad> = KafkaTemplate(

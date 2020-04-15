@@ -4,8 +4,8 @@ import no.nav.syfo.kafka.NAV_CALLID
 import no.nav.syfo.kafka.felles.SykepengesoknadDTO
 import no.nav.syfo.kafka.getSafeNavCallIdHeaderAsString
 import no.nav.syfo.kafka.mapper.toSykepengesoknad
+import no.nav.syfo.service.SpreOppgaverService
 import no.nav.syfo.log
-import no.nav.syfo.service.SaksbehandlingsService
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.MDC
 import org.springframework.kafka.annotation.KafkaListener
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @Component
 class SoknadSendtListener @Inject
-constructor(private val saksbehandlingsService: SaksbehandlingsService) {
+constructor(private val spreOppgaverService: SpreOppgaverService) {
     private val log = log()
 
     @KafkaListener(
@@ -27,8 +27,9 @@ constructor(private val saksbehandlingsService: SaksbehandlingsService) {
     fun listen(cr: ConsumerRecord<String, SykepengesoknadDTO>, acknowledgment: Acknowledgment) {
         try {
             MDC.put(NAV_CALLID, getSafeNavCallIdHeaderAsString(cr.headers()))
+
             val value = cr.value()
-            saksbehandlingsService.behandleSoknad(value.toSykepengesoknad())
+            spreOppgaverService.soknadSendt(value.toSykepengesoknad())
 
             acknowledgment.acknowledge()
         } catch (e: Exception) {

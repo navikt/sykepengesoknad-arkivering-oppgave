@@ -11,16 +11,25 @@ import org.springframework.stereotype.Service
 @Primary
 class ToggleImpl(private val unleash: Unleash,
                  @Value("\${fasit.environment.name:p}") fasitEnvironmentName: String) : Toggle {
-    private val isProd: Boolean
-
-    init {
-        this.isProd = (fasitEnvironmentName == "p")
-    }
+    private val isProd: Boolean = (fasitEnvironmentName == "p")
+    private val isQ: Boolean = (fasitEnvironmentName == "q1")
 
     override fun isEnabled(toggle: FeatureToggle): Boolean {
-        return  if (this.isProd && !toggle.isAvailableInProd)
+        return  if (isProd && !toggle.isAvailableInProd)
                     false
                 else
                     unleash.isEnabled(toggle.toggleName)
+    }
+
+    override fun isNotProduction(): Boolean {
+        return !isProd
+    }
+
+    override fun isProduction(): Boolean {
+        return isProd
+    }
+
+    override fun isQ(): Boolean {
+        return isQ
     }
 }

@@ -79,6 +79,8 @@ spec:
       value: "600000"
     - name: BEHANDLE_OPPGAVE_INTERVALL
       value: "3600000"
+    - name: DEFAULT_TIMEOUT_TIMER
+      value: "24"
 
     - name: JOURNAL_V2_ENDPOINTURL
       value: https://wasapp.adeo.no/joark/Journal/v2

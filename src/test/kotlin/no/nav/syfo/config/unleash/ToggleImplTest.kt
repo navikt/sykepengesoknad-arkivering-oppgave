@@ -31,4 +31,16 @@ class ToggleImplTest {
         assertThat(toggle.isEnabled(SKAL_LESE_SOKNADER_FRA_KOE)).isFalse()
         verify(unleash).isEnabled(anyString())
     }
+
+    @Test
+    fun isTestEnvironmentFalseForProd() {
+        val toggle = ToggleImpl(unleash!!, "p")
+        assertThat(toggle.isNotProduction()).isFalse()
+    }
+
+    @Test
+    fun isTestEnvironmentTrueForTest() {
+        val toggle = ToggleImpl(unleash!!, "q1")
+        assertThat(toggle.isNotProduction()).isTrue()
+    }
 }

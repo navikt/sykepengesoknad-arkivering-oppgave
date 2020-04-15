@@ -80,3 +80,4 @@ aad_syfosoknad_clientid: syfosoknad-yo
 behandle.oppgave:
   deploy: "3000000"
   intervall: "3000000"
+default.timeout.timer: "24"
