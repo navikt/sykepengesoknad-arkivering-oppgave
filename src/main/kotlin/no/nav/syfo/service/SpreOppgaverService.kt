@@ -1,7 +1,11 @@
 package no.nav.syfo.service
 
 import no.nav.syfo.config.unleash.ToggleImpl
+import no.nav.syfo.consumer.repository.OppgavestyringLogDAO
 import no.nav.syfo.consumer.syfosoknad.SyfosoknadConsumer
+import no.nav.syfo.domain.DokumentTypeDTO
+import no.nav.syfo.domain.OppdateringstypeDTO
+import no.nav.syfo.domain.OppgaveDTO
 import no.nav.syfo.domain.dto.Soknadstype.ARBEIDSTAKERE
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.syfo.kafka.mapper.toSykepengesoknad
@@ -15,9 +19,22 @@ import java.time.LocalDateTime
 class SpreOppgaverService(@Value("\${default.timeout.timer}") private val defaultTimeoutTimer: String,
                         private val syfosoknadConsumer: SyfosoknadConsumer,
                         private val toggle: ToggleImpl,
-                        private val saksbehandlingsService: SaksbehandlingsService) {
+                        private val saksbehandlingsService: SaksbehandlingsService,
+                        private val oppgavestyringLogDAO: OppgavestyringLogDAO) {
     private val log = log()
     private val timeout = defaultTimeoutTimer.toLong()
+
+    fun prosesserOppgave(oppgave: OppgaveDTO) {
+        if(oppgave.dokumentType == DokumentTypeDTO.Søknad) {
+            val id = oppgavestyringLogDAO.loggEvent(oppgave)
+            log.info("Gjelder ${oppgave.oppdateringstype.name} for søknad ${oppgave.dokumentId}, databaseindeks $id")
+            when(oppgave.oppdateringstype) {
+                OppdateringstypeDTO.Utsett -> utsettOppgave(oppgave.dokumentId.toString(), oppgave.timeout!!)
+                OppdateringstypeDTO.Opprett -> opprettOppgave(id = oppgave.dokumentId.toString())
+                OppdateringstypeDTO.Ferdigbehandlet -> viBehandlerIkkeOppgaven(oppgave.dokumentId.toString())
+            }
+        }
+    }
 
     fun soknadSendt(sykepengesoknad: Sykepengesoknad) {
         try {

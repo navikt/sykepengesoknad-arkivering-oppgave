@@ -24,18 +24,7 @@ class SpreOppgaverListener(private val spreOppgaverService: SpreOppgaverService,
     fun listen(cr: ConsumerRecord<String, OppgaveDTO>, acknowledgment: Acknowledgment) {
         try {
             MDC.put(NAV_CALLID, getSafeNavCallIdHeaderAsString(cr.headers()))
-
-            val oppgave = cr.value()
-
-            if(oppgave.dokumentType == Søknad) {
-                log.info("Gjelder ${oppgave.oppdateringstype.name} for søknad ${oppgave.dokumentId}")
-                when(oppgave.oppdateringstype) {
-                    OppdateringstypeDTO.Utsett -> spreOppgaverService.utsettOppgave(oppgave.dokumentId.toString(), oppgave.timeout!!)
-                    OppdateringstypeDTO.Opprett -> spreOppgaverService.opprettOppgave(id = oppgave.dokumentId.toString())
-                    OppdateringstypeDTO.Ferdigbehandlet -> spreOppgaverService.viBehandlerIkkeOppgaven(oppgave.dokumentId.toString())
-                }
-            }
-
+            spreOppgaverService.prosesserOppgave(cr.value())
             acknowledgment.acknowledge()
         } catch(e: HttpClientErrorException) {
             if (toggle.isQ() && e.rawStatusCode == 404) {
