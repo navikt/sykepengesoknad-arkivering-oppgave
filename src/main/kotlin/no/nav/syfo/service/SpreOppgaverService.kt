@@ -12,7 +12,6 @@ import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.syfo.kafka.mapper.toSykepengesoknad
 import no.nav.syfo.log
 import org.springframework.stereotype.Component
-import no.nav.syfo.util.DatoUtil.tidTil
 import org.springframework.beans.factory.annotation.Value
 import java.time.LocalDateTime
 
@@ -29,7 +28,7 @@ class SpreOppgaverService(@Value("\${default.timeout.timer}") private val defaul
     fun prosesserOppgave(oppgave: OppgaveDTO) {
         if(oppgave.dokumentType == DokumentTypeDTO.Søknad) {
             val id = oppgavestyringLogDAO.loggEvent(oppgave)
-            log.info("Gjelder ${oppgave.oppdateringstype.name} for søknad ${oppgave.dokumentId}, databaseindeks $id")
+            log.info("Gjelder ${oppgave.oppdateringstype.name} for søknad ${oppgave.dokumentId}, loggtabellindeks $id")
             when(oppgave.oppdateringstype) {
                 OppdateringstypeDTO.Utsett -> utsettOppgave(oppgave.dokumentId.toString(), oppgave.timeout!!)
                 OppdateringstypeDTO.Opprett -> opprettOppgave(id = oppgave.dokumentId.toString())
@@ -57,8 +56,15 @@ class SpreOppgaverService(@Value("\${default.timeout.timer}") private val defaul
 
     fun utsettOppgave(id: String, behandles: LocalDateTime) {
         if(toggle.isNotProduction()) {
-            log.info("TEST: oppgave opprettelse utsettes med ${behandles.tidTil()} for søknad $id")
-            //TODO: Sjekk om "behandles" er senere enn eksistrende utsettelse, og oppdater denne
+            val oppgavestyring = oppgavestyringDAO.hentSpreOppgave(id)
+
+            if (oppgavestyring != null) {
+                if (oppgavestyring.timeout.isAfter(behandles)) {
+                    oppgavestyringDAO.oppdaterTimeout(id, behandles)
+                }
+            } else {
+                oppgavestyringDAO.nySpreOppgave(id, behandles)
+            }
         }
     }
 
@@ -79,9 +85,8 @@ class SpreOppgaverService(@Value("\${default.timeout.timer}") private val defaul
 
     fun viBehandlerIkkeOppgaven(id: String) {
         if(toggle.isNotProduction()) {
-            log.info("TEST: syfogsak skal ikke opprette oppgaven")
-            oppgavestyringDAO.hentSøknad(id)?.let {
-                oppgavestyringDAO.fjernSøknad(it.søknadsId)
+            oppgavestyringDAO.hentSpreOppgave(id)?.let {
+                oppgavestyringDAO.fjernSpreOppgave(id)
             }
         }
     }

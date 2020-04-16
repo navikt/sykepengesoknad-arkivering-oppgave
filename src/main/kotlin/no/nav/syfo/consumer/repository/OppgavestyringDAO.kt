@@ -1,5 +1,7 @@
 package no.nav.syfo.consumer.repository
 
+
+import no.nav.syfo.log
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.stereotype.Repository
@@ -13,7 +15,10 @@ import java.time.LocalDateTime
 @Repository
 class OppgavestyringDAO(private val namedParameterJdbcTemplate: NamedParameterJdbcTemplate) {
 
-    fun nySøknad(søknadsId: String, timeout: LocalDateTime) {
+    val log = log()
+
+    fun nySpreOppgave(søknadsId: String, timeout: LocalDateTime) {
+        log.info("Oppretter ny SpreOppgave for id $søknadsId og timeout $timeout")
         namedParameterJdbcTemplate.update(
             "INSERT INTO OPPGAVESTYRING (SYKEPENGESOKNAD_ID, TIMEOUT) values (:soknadsId, :timeout)",
             MapSqlParameterSource()
@@ -22,7 +27,8 @@ class OppgavestyringDAO(private val namedParameterJdbcTemplate: NamedParameterJd
         )
     }
 
-    fun fjernSøknad(søknadsId: String) {
+    fun fjernSpreOppgave(søknadsId: String) {
+        log.info("Fjerner SpreOppgave for id $søknadsId")
         namedParameterJdbcTemplate.update(
             "DELETE FROM OPPGAVESTYRING WHERE SYKEPENGESOKNAD_ID = :soknadsId",
             MapSqlParameterSource()
@@ -30,7 +36,7 @@ class OppgavestyringDAO(private val namedParameterJdbcTemplate: NamedParameterJd
         )
     }
 
-    fun hentSøknad(søknadsId: String): Oppgavestyring? {
+    fun hentSpreOppgave(søknadsId: String): SpreOppgave? {
         return namedParameterJdbcTemplate.query(
             "SELECT * FROM OPPGAVESTYRING WHERE SYKEPENGESOKNAD_ID = :soknadsId",
             MapSqlParameterSource()
@@ -40,6 +46,7 @@ class OppgavestyringDAO(private val namedParameterJdbcTemplate: NamedParameterJd
     }
 
     fun oppdaterTimeout(søknadsId: String, timeout: LocalDateTime) {
+        log.info("Endrer timeout til $timeout for id $søknadsId")
         namedParameterJdbcTemplate.update(
             "UPDATE OPPGAVESTYRING SET TIMEOUT = :timeout WHERE SYKEPENGESOKNAD_ID = :soknadsId",
             MapSqlParameterSource()
@@ -49,13 +56,13 @@ class OppgavestyringDAO(private val namedParameterJdbcTemplate: NamedParameterJd
     }
 }
 
-data class Oppgavestyring(
+data class SpreOppgave(
     val søknadsId: String,
     val timeout: LocalDateTime
 )
 
-val oppgavestyringRowMapper: (ResultSet, Int) -> Oppgavestyring = { resultSet, _ ->
-    Oppgavestyring(
+val oppgavestyringRowMapper: (ResultSet, Int) -> SpreOppgave = { resultSet, _ ->
+    SpreOppgave(
         søknadsId = resultSet.getString("SYKEPENGESOKNAD_ID"),
         timeout = resultSet.getObject("TIMEOUT", LocalDateTime::class.java)
     )
