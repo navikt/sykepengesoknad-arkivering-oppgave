@@ -59,7 +59,7 @@ class SpreOppgaverService(@Value("\${default.timeout.timer}") private val defaul
             val oppgavestyring = oppgavestyringDAO.hentSpreOppgave(id)
 
             if (oppgavestyring != null) {
-                if (oppgavestyring.timeout.isAfter(behandles)) {
+                if (oppgavestyring.timeout.isBefore(behandles)) {
                     oppgavestyringDAO.oppdaterTimeout(id, behandles)
                 }
             } else {
