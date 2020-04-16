@@ -1,6 +1,7 @@
 package no.nav.syfo.service
 
 import no.nav.syfo.config.unleash.ToggleImpl
+import no.nav.syfo.consumer.repository.OppgavestyringDAO
 import no.nav.syfo.consumer.repository.OppgavestyringLogDAO
 import no.nav.syfo.consumer.syfosoknad.SyfosoknadConsumer
 import no.nav.syfo.domain.DokumentTypeDTO
@@ -20,7 +21,8 @@ class SpreOppgaverService(@Value("\${default.timeout.timer}") private val defaul
                         private val syfosoknadConsumer: SyfosoknadConsumer,
                         private val toggle: ToggleImpl,
                         private val saksbehandlingsService: SaksbehandlingsService,
-                        private val oppgavestyringLogDAO: OppgavestyringLogDAO) {
+                        private val oppgavestyringLogDAO: OppgavestyringLogDAO,
+                        private val oppgavestyringDAO: OppgavestyringDAO) {
     private val log = log()
     private val timeout = defaultTimeoutTimer.toLong()
 
@@ -78,7 +80,9 @@ class SpreOppgaverService(@Value("\${default.timeout.timer}") private val defaul
     fun viBehandlerIkkeOppgaven(id: String) {
         if(toggle.isNotProduction()) {
             log.info("TEST: syfogsak skal ikke opprette oppgaven")
-            //TODO: Rydd opp så syfogsakjob ikke oppretter oppgave
+            oppgavestyringDAO.hentSøknad(id)?.let {
+                oppgavestyringDAO.fjernSøknad(it.søknadsId)
+            }
         }
     }
 

@@ -7,6 +7,7 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.syfo.TestApplication
 import no.nav.syfo.config.unleash.ToggleImpl
+import no.nav.syfo.consumer.repository.OppgavestyringDAO
 import no.nav.syfo.consumer.repository.OppgavestyringLogDAO
 import no.nav.syfo.consumer.syfosoknad.SyfosoknadConsumer
 import no.nav.syfo.domain.dto.Arbeidssituasjon
@@ -37,13 +38,16 @@ class SpreOppgaverServiceTest {
     @Mock
     lateinit var oppgavestyringLogDAO: OppgavestyringLogDAO
 
+    @Mock
+    lateinit var oppgavestyringDAO: OppgavestyringDAO
+
     private val objectMapper = ObjectMapper().registerModules(JavaTimeModule(), KotlinModule())
     private val sok = objectMapper.readValue(TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
     private val now = LocalDateTime.now()
 
     @Before
     fun setup() {
-        spreOppgaverService = SpreOppgaverService("1", syfosoknadConsumer, toggle, saksbehandlingsService, oppgavestyringLogDAO)
+        spreOppgaverService = SpreOppgaverService("1", syfosoknadConsumer, toggle, saksbehandlingsService, oppgavestyringLogDAO, oppgavestyringDAO)
         whenever(toggle.isNotProduction()).thenReturn(false)
     }
 
