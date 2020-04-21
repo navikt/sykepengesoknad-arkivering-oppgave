@@ -35,8 +35,6 @@ class TestApplication{
 
     @Bean
     fun toggleMock(): ToggleImpl {
-        val toggle = Mockito.mock(ToggleImpl::class.java)
-        whenever(toggle.isNotProduction()).thenReturn(true)
-        return toggle
+        return Mockito.mock(ToggleImpl::class.java)
     }
 }

@@ -2,7 +2,9 @@ package no.nav.syfo.kafka.consumer
 
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.whenever
 import no.nav.syfo.TestApplication
+import no.nav.syfo.config.unleash.ToggleImpl
 import no.nav.syfo.consumer.repository.OppgavestyringDAO
 import no.nav.syfo.consumer.repository.OppgavestyringLogDAO
 import no.nav.syfo.consumer.repository.SpreOppgave
@@ -11,10 +13,12 @@ import no.nav.syfo.domain.OppdateringstypeDTO
 import no.nav.syfo.domain.OppgaveDTO
 import no.nav.syfo.skapConsumerRecord
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.runner.RunWith
 
 import org.junit.Test
 import org.mockito.*
+import org.mockito.Mockito.reset
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.kafka.test.context.EmbeddedKafka
@@ -40,6 +44,15 @@ class SpreOppgaverListenerTest {
 
     @Inject
     lateinit var oppgavestyringDAO: OppgavestyringDAO
+
+    @Inject
+    lateinit var toggle: ToggleImpl
+
+    @Before
+    fun setup() {
+        reset(toggle)
+        whenever(toggle.isNotProduction()).thenReturn(true)
+    }
 
     @Test
     fun `oppgave blir opprettet på utsett og slettet på ferdigbehandlet`() {
