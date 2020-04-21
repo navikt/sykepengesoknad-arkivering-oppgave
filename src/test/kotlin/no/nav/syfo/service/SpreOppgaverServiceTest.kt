@@ -139,7 +139,7 @@ class SpreOppgaverServiceTest {
     fun opprettOppgave() {
         val arbeidstaker = objectMapper.readValue(TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
 
-        spreOppgaverService.opprettOppgave(arbeidstaker.id)
+        spreOppgaverService.soknadSendt(arbeidstaker)
         verify(saksbehandlingsService, times(1)).opprettOppgave(any())
     }
 
