@@ -1,5 +1,6 @@
 package no.nav.syfo
 
+import com.nhaarman.mockitokotlin2.whenever
 import no.finn.unleash.Unleash
 import no.nav.syfo.config.unleash.ToggleImpl
 import org.h2.tools.Server
@@ -34,6 +35,8 @@ class TestApplication{
 
     @Bean
     fun toggleMock(): ToggleImpl {
-        return Mockito.mock(ToggleImpl::class.java)
+        val toggle = Mockito.mock(ToggleImpl::class.java)
+        whenever(toggle.isNotProduction()).thenReturn(true)
+        return toggle
     }
 }
