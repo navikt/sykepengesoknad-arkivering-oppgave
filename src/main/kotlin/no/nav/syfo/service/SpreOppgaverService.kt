@@ -1,14 +1,15 @@
 package no.nav.syfo.service
 
 import no.nav.syfo.config.unleash.ToggleImpl
+import no.nav.syfo.consumer.repository.OppgaveStatus
 import no.nav.syfo.consumer.repository.OppgavestyringDAO
-import no.nav.syfo.consumer.repository.OppgavestyringLogDAO
 import no.nav.syfo.consumer.syfosoknad.SyfosoknadConsumer
 import no.nav.syfo.domain.DokumentTypeDTO
 import no.nav.syfo.domain.OppdateringstypeDTO
 import no.nav.syfo.domain.OppgaveDTO
 import no.nav.syfo.domain.dto.Soknadstype.ARBEIDSTAKERE
 import no.nav.syfo.domain.dto.Sykepengesoknad
+import no.nav.syfo.kafka.felles.SykepengesoknadDTO
 import no.nav.syfo.kafka.mapper.toSykepengesoknad
 import no.nav.syfo.log
 import org.springframework.stereotype.Component
@@ -20,18 +21,16 @@ class SpreOppgaverService(@Value("\${default.timeout.timer}") private val defaul
                         private val syfosoknadConsumer: SyfosoknadConsumer,
                         private val toggle: ToggleImpl,
                         private val saksbehandlingsService: SaksbehandlingsService,
-                        private val oppgavestyringLogDAO: OppgavestyringLogDAO,
                         private val oppgavestyringDAO: OppgavestyringDAO) {
     private val log = log()
     private val timeout = defaultTimeoutTimer.toLong()
 
     fun prosesserOppgave(oppgave: OppgaveDTO) {
         if(oppgave.dokumentType == DokumentTypeDTO.Søknad) {
-            val id = oppgavestyringLogDAO.loggEvent(oppgave)
-            log.info("Gjelder ${oppgave.oppdateringstype.name} for søknad ${oppgave.dokumentId}, loggtabellindeks $id")
+            log.info("Gjelder ${oppgave.oppdateringstype.name} for søknad ${oppgave.dokumentId}")
             when(oppgave.oppdateringstype) {
                 OppdateringstypeDTO.Utsett -> utsettOppgave(oppgave.dokumentId.toString(), oppgave.timeout!!)
-                OppdateringstypeDTO.Opprett -> opprettOppgave(id = oppgave.dokumentId.toString())
+                OppdateringstypeDTO.Opprett -> opprettOppgave(søknadsId = oppgave.dokumentId.toString())
                 OppdateringstypeDTO.Ferdigbehandlet -> viBehandlerIkkeOppgaven(oppgave.dokumentId.toString())
             }
         }
@@ -40,13 +39,14 @@ class SpreOppgaverService(@Value("\${default.timeout.timer}") private val defaul
     fun soknadSendt(sykepengesoknad: Sykepengesoknad) {
         try {
             if(sykepengesoknad.status == "SENDT" && !ettersendtTilArbeidsgiver(sykepengesoknad)) {
+                saksbehandlingsService.behandleSoknad(sykepengesoknad)
                 if(sykepengesoknad.soknadstype == ARBEIDSTAKERE && toggle.isNotProduction()) {
                     utsettOppgave(sykepengesoknad.id, sykepengesoknad.sendtNav?.plusHours(timeout) ?: LocalDateTime.now().plusHours(timeout))
-                    saksbehandlingsService.behandleSoknad(sykepengesoknad)
                 }
                 else  {
-                    saksbehandlingsService.behandleSoknad(sykepengesoknad)
-                    opprettOppgave(sok = sykepengesoknad)
+                    if (skalBehandlesAvNav(sykepengesoknad)) {
+                        saksbehandlingsService.opprettOppgave(sykepengesoknad)
+                    }
                 }
             }
         } catch (e: Exception) {
@@ -54,39 +54,37 @@ class SpreOppgaverService(@Value("\${default.timeout.timer}") private val defaul
         }
     }
 
-    fun utsettOppgave(id: String, behandles: LocalDateTime) {
+    fun utsettOppgave(id: String, nyTimeout: LocalDateTime) {
         if(toggle.isNotProduction()) {
             val oppgavestyring = oppgavestyringDAO.hentSpreOppgave(id)
 
             if (oppgavestyring != null) {
-                if (oppgavestyring.timeout.isBefore(behandles)) {
-                    oppgavestyringDAO.oppdaterTimeout(id, behandles)
+                if (nyTimeout.isAfter(oppgavestyring.timeout)) {
+                    oppgavestyringDAO.settTimeout(id, nyTimeout)
                 }
             } else {
-                oppgavestyringDAO.nySpreOppgave(id, behandles)
+                oppgavestyringDAO.nySpreOppgave(id, nyTimeout, OppgaveStatus.Utsett)
             }
         }
     }
 
-    fun opprettOppgave(sok: Sykepengesoknad? = null, id: String? = null) {
-        val sykepengesoknad = sok ?: syfosoknadConsumer.hentSoknad(id!!).toSykepengesoknad()
-        if(id != null) {
-            if (skalBehandlesAvNav(sykepengesoknad) && toggle.isNotProduction()) {
-                saksbehandlingsService.opprettOppgave(sykepengesoknad)
-                //TODO: Gjør alltid else, da aapen-helse-spre-oppgaver kan bestemme om oppgaver skal opprettes
-            }
-        }
-        else {
-            if (skalBehandlesAvNav(sykepengesoknad)) {
-                saksbehandlingsService.opprettOppgave(sykepengesoknad)
-            }
+    fun opprettOppgave(søknadsId: String) {
+        if (oppgavestyringDAO.hentSpreOppgave(søknadsId) != null) {
+            oppgavestyringDAO.settTimeout(søknadsId, null)
+            oppgavestyringDAO.settStatus(søknadsId, OppgaveStatus.Opprett)
+        } else {
+            oppgavestyringDAO.nySpreOppgave(søknadsId, null, OppgaveStatus.Opprett)
         }
     }
 
     fun viBehandlerIkkeOppgaven(id: String) {
         if(toggle.isNotProduction()) {
-            oppgavestyringDAO.hentSpreOppgave(id)?.let {
-                oppgavestyringDAO.fjernSpreOppgave(id)
+            val oppgavestyring = oppgavestyringDAO.hentSpreOppgave(id)
+            if (oppgavestyring != null) {
+                oppgavestyringDAO.settTimeout(id, null)
+                oppgavestyringDAO.settStatus(id, OppgaveStatus.IkkeOpprett)
+            } else {
+                oppgavestyringDAO.nySpreOppgave(id, null, OppgaveStatus.IkkeOpprett)
             }
         }
     }
