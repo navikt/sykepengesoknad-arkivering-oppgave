@@ -85,22 +85,30 @@ class SaksbehandlingsServiceTest {
         saksbehandlingsService.behandleSoknad(sykepengesoknadUtenOppgave)
         verify(behandleJournalConsumer, times(1)).opprettJournalpost(any(), any())
         verify(oppgaveConsumer, never()).opprettOppgave(any())
-        given(innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknadUtenOppgave.id)).willReturn(Innsending(
-                innsendingsId = "innsending-guid",
-                ressursId = sykepengesoknadUtenOppgave.id,
-                aktorId = sykepengesoknadUtenOppgave.aktorId,
-                saksId = "ny-sak-fra-gsak",
-                journalpostId = "journalpostId",
-                oppgaveId = null,
-                behandlet = now.toLocalDate(),
-                soknadFom = sykepengesoknadUtenOppgave.fom,
-                soknadTom = sykepengesoknadUtenOppgave.tom
-        ))
+        given(innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknadUtenOppgave.id)).willReturn(
+            innsending(sykepengesoknadUtenOppgave)
+        )
 
         saksbehandlingsService.behandleSoknad(sykepengesoknadEttersendingTilNAV)
-        saksbehandlingsService.opprettOppgave(sykepengesoknadEttersendingTilNAV)
+        saksbehandlingsService.opprettOppgave(sykepengesoknadEttersendingTilNAV, innsending(sykepengesoknadEttersendingTilNAV))
         verify(behandleJournalConsumer, times(1)).opprettJournalpost(any(), any())
         verify(oppgaveConsumer, times(1)).opprettOppgave(any())
+    }
+
+    private fun innsending(
+        sykepengesoknadUtenOppgave: Sykepengesoknad
+    ): Innsending {
+        return Innsending(
+            innsendingsId = "innsending-guid",
+            ressursId = sykepengesoknadUtenOppgave.id,
+            aktorId = sykepengesoknadUtenOppgave.aktorId,
+            saksId = "ny-sak-fra-gsak",
+            journalpostId = "journalpostId",
+            oppgaveId = null,
+            behandlet = LocalDate.now(),
+            soknadFom = sykepengesoknadUtenOppgave.fom,
+            soknadTom = sykepengesoknadUtenOppgave.tom
+        )
     }
 
     @Test
