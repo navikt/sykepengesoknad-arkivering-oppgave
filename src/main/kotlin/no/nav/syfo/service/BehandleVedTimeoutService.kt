@@ -18,8 +18,8 @@ class BehandleVedTimeoutService(
 
     @Scheduled(fixedDelayString = "\${behandle.oppgave.intervall}", initialDelayString = "\${behandle.oppgave.deploy}")
     fun behandleTimeout() {
-        log.info("Behandler oppgaver som har passert timeout")
         val oppgaver = oppgavestyringDAO.hentOppgaverTilOpprettelse()
+        log.info("Behandler ${oppgaver.size} oppgaver som har passert timeout")
         oppgaver.forEach {
             try {
                 val innsending = saksbehandlingsService.finnEksisterendeInnsending(it.søknadsId)
