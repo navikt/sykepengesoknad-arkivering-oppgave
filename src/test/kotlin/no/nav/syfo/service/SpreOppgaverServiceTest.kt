@@ -34,9 +34,6 @@ class SpreOppgaverServiceTest {
     @Mock
     lateinit var toggle: ToggleImpl
 
-    @Mock
-    lateinit var syfosoknadConsumer: SyfosoknadConsumer
-
     lateinit var spreOppgaverService: SpreOppgaverService
 
     @Mock
@@ -48,7 +45,7 @@ class SpreOppgaverServiceTest {
 
     @Before
     fun setup() {
-        spreOppgaverService = SpreOppgaverService("1", syfosoknadConsumer, toggle, saksbehandlingsService, oppgavestyringDAO)
+        spreOppgaverService = SpreOppgaverService("1", toggle, saksbehandlingsService, oppgavestyringDAO)
         whenever(toggle.isNotProduction()).thenReturn(false)
     }
 

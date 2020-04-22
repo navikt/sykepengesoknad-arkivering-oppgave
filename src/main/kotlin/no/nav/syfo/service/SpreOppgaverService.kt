@@ -3,7 +3,7 @@ package no.nav.syfo.service
 import no.nav.syfo.config.unleash.ToggleImpl
 import no.nav.syfo.consumer.repository.OppgaveStatus
 import no.nav.syfo.consumer.repository.OppgavestyringDAO
-import no.nav.syfo.consumer.syfosoknad.SyfosoknadConsumer
+import no.nav.syfo.consumer.repository.SpreOppgave
 import no.nav.syfo.domain.DokumentTypeDTO
 import no.nav.syfo.domain.OppdateringstypeDTO
 import no.nav.syfo.domain.OppgaveDTO
@@ -17,7 +17,6 @@ import java.util.*
 
 @Component
 class SpreOppgaverService(@Value("\${default.timeout.timer}") private val defaultTimeoutTimer: String,
-                          private val syfosoknadConsumer: SyfosoknadConsumer,
                           private val toggle: ToggleImpl,
                           private val saksbehandlingsService: SaksbehandlingsService,
                           private val oppgavestyringDAO: OppgavestyringDAO) {
@@ -34,11 +33,11 @@ class SpreOppgaverService(@Value("\${default.timeout.timer}") private val defaul
 
             when (oppgavestyring?.status to oppgave.oppdateringstype) {
                 null to OppdateringstypeDTO.Utsett,
-                OppgaveStatus.Utsett to OppdateringstypeDTO.Utsett -> utsettOppgave(oppgave.dokumentId.toString(), oppgave.timeout!!)
+                OppgaveStatus.Utsett to OppdateringstypeDTO.Utsett -> utsettOppgave(oppgave.dokumentId.toString(), oppgave.timeout!!, oppgavestyring)
                 null to OppdateringstypeDTO.Opprett,
-                OppgaveStatus.Utsett to OppdateringstypeDTO.Opprett -> opprettOppgave(oppgave.dokumentId.toString())
+                OppgaveStatus.Utsett to OppdateringstypeDTO.Opprett -> opprettOppgave(oppgave.dokumentId.toString(), oppgavestyring)
                 null to OppdateringstypeDTO.Ferdigbehandlet,
-                OppgaveStatus.Utsett to OppdateringstypeDTO.Ferdigbehandlet -> viBehandlerIkkeOppgaven(oppgave.dokumentId.toString())
+                OppgaveStatus.Utsett to OppdateringstypeDTO.Ferdigbehandlet -> viBehandlerIkkeOppgaven(oppgave.dokumentId.toString(), oppgavestyring)
                 else -> log.info("Gjør ikke ${oppgave.oppdateringstype.name} for søknad ${oppgave.dokumentId} fordi status er ${oppgavestyring!!.status.name}")
             }
         }
@@ -57,7 +56,9 @@ class SpreOppgaverService(@Value("\${default.timeout.timer}") private val defaul
                     ))
                 } else {
                     if (skalBehandlesAvNav(sykepengesoknad)) {
-                        saksbehandlingsService.opprettOppgave(sykepengesoknad)
+                        val innsending = saksbehandlingsService.finnEksisterendeInnsending(sykepengesoknad.id)
+                            ?: throw RuntimeException("Fant ikke eksisterende innsending")
+                        saksbehandlingsService.opprettOppgave(sykepengesoknad, innsending)
                     }
                 }
             }
@@ -66,23 +67,21 @@ class SpreOppgaverService(@Value("\${default.timeout.timer}") private val defaul
         }
     }
 
-    fun utsettOppgave(id: String, nyTimeout: LocalDateTime) {
+    fun utsettOppgave(søknadsId: String, nyTimeout: LocalDateTime, oppgavestyring: SpreOppgave?) {
         if (toggle.isNotProduction()) {
-            val oppgavestyring = oppgavestyringDAO.hentSpreOppgave(id)
-
             if (oppgavestyring != null) {
                 if (nyTimeout.isAfter(oppgavestyring.timeout)) {
-                    oppgavestyringDAO.settTimeout(id, nyTimeout)
+                    oppgavestyringDAO.settTimeout(søknadsId, nyTimeout)
                 }
             } else {
-                oppgavestyringDAO.nySpreOppgave(id, nyTimeout, OppgaveStatus.Utsett)
+                oppgavestyringDAO.nySpreOppgave(søknadsId, nyTimeout, OppgaveStatus.Utsett)
             }
         }
     }
 
-    fun opprettOppgave(søknadsId: String) {
+    fun opprettOppgave(søknadsId: String, oppgavestyring: SpreOppgave?) {
         if (toggle.isNotProduction()) {
-            if (oppgavestyringDAO.hentSpreOppgave(søknadsId) != null) {
+            if (oppgavestyring != null) {
                 oppgavestyringDAO.settTimeout(søknadsId, null)
                 oppgavestyringDAO.settStatus(søknadsId, OppgaveStatus.Opprett)
             } else {
@@ -91,14 +90,13 @@ class SpreOppgaverService(@Value("\${default.timeout.timer}") private val defaul
         }
     }
 
-    fun viBehandlerIkkeOppgaven(id: String) {
+    fun viBehandlerIkkeOppgaven(søknadsId: String, oppgavestyring: SpreOppgave?) {
         if (toggle.isNotProduction()) {
-            val oppgavestyring = oppgavestyringDAO.hentSpreOppgave(id)
             if (oppgavestyring != null) {
-                oppgavestyringDAO.settTimeout(id, null)
-                oppgavestyringDAO.settStatus(id, OppgaveStatus.IkkeOpprett)
+                oppgavestyringDAO.settTimeout(søknadsId, null)
+                oppgavestyringDAO.settStatus(søknadsId, OppgaveStatus.IkkeOpprett)
             } else {
-                oppgavestyringDAO.nySpreOppgave(id, null, OppgaveStatus.IkkeOpprett)
+                oppgavestyringDAO.nySpreOppgave(søknadsId, null, OppgaveStatus.IkkeOpprett)
             }
         }
     }

@@ -8,6 +8,7 @@ import no.nav.syfo.consumer.repository.InnsendingDAO
 import no.nav.syfo.consumer.sak.SakConsumer
 import no.nav.syfo.consumer.ws.BehandleJournalConsumer
 import no.nav.syfo.consumer.ws.PersonConsumer
+import no.nav.syfo.domain.Innsending
 import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.Soknadstype
 import no.nav.syfo.domain.dto.Sykepengesoknad
@@ -46,8 +47,7 @@ class SaksbehandlingsService(
         eksisterendeInnsending?.journalpostId ?: opprettJournalpost(innsendingId, soknad, saksId)
     }
 
-    fun opprettOppgave(sykepengesoknad: Sykepengesoknad) {
-        val innsending = finnEksisterendeInnsending(sykepengesoknad.id)
+    fun opprettOppgave(sykepengesoknad: Sykepengesoknad, innsending: Innsending) {
         val fnr = aktorConsumer.finnFnr(sykepengesoknad.aktorId)
         val soknad = opprettSoknad(sykepengesoknad, fnr)
 

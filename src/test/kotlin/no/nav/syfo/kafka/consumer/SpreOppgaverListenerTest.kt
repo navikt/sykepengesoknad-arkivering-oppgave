@@ -157,15 +157,4 @@ class SpreOppgaverListenerTest {
         assertEquals(id.toString(), oppgaveIDb.søknadsId)
         assertEquals(null, oppgaveIDb.timeout)
     }
-
-    @Test
-    fun `race condition`() {
-        val id = UUID.randomUUID()
-        val oppgave = OppgaveDTO(
-            dokumentId = id,
-            dokumentType = DokumentTypeDTO.Søknad,
-            oppdateringstype = OppdateringstypeDTO.Utsett,
-            timeout = LocalDateTime.now()
-        )
-    }
 }

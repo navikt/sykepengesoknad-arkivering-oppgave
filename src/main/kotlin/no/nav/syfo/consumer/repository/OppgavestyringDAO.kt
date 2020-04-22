@@ -51,6 +51,15 @@ class OppgavestyringDAO(private val namedParameterJdbcTemplate: NamedParameterJd
         ).firstOrNull()
     }
 
+    fun hentOppgaverTilOpprettelse(): List<SpreOppgave> {
+        return namedParameterJdbcTemplate.query(
+            "SELECT * FROM OPPGAVESTYRING WHERE STATUS = 'OPPRETT' OR (STATUS = 'UTSETT' AND TIMEOUT < :now)",
+            MapSqlParameterSource()
+                .addValue("now", LocalDateTime.now()),
+            oppgavestyringRowMapper
+        )
+    }
+
     fun settTimeout(søknadsId: String, timeout: LocalDateTime?) {
         log.info("Endrer timeout til $timeout for id $søknadsId")
         namedParameterJdbcTemplate.update(
