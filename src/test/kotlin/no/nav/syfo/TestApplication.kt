@@ -1,6 +1,5 @@
 package no.nav.syfo
 
-import com.nhaarman.mockitokotlin2.whenever
 import no.finn.unleash.Unleash
 import no.nav.syfo.config.unleash.ToggleImpl
 import org.h2.tools.Server

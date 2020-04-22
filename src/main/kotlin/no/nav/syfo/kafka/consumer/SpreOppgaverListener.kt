@@ -1,8 +1,6 @@
 package no.nav.syfo.kafka.consumer
 
 import no.nav.syfo.config.unleash.ToggleImpl
-import no.nav.syfo.domain.DokumentTypeDTO.Søknad
-import no.nav.syfo.domain.OppdateringstypeDTO
 import no.nav.syfo.domain.OppgaveDTO
 import no.nav.syfo.kafka.NAV_CALLID
 import no.nav.syfo.kafka.getSafeNavCallIdHeaderAsString

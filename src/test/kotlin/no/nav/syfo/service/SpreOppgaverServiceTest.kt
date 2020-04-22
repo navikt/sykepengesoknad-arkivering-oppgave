@@ -13,10 +13,9 @@ import no.nav.syfo.domain.dto.Arbeidssituasjon
 import no.nav.syfo.domain.dto.Soknadstype
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import org.junit.Before
-import org.junit.runner.RunWith
-
 import org.junit.Test
-import org.mockito.*
+import org.junit.runner.RunWith
+import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.junit.MockitoJUnitRunner
 import java.time.LocalDateTime
