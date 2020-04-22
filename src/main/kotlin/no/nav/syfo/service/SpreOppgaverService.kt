@@ -13,6 +13,7 @@ import no.nav.syfo.log
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
+import java.util.*
 
 @Component
 class SpreOppgaverService(@Value("\${default.timeout.timer}") private val defaultTimeoutTimer: String,
@@ -23,13 +24,22 @@ class SpreOppgaverService(@Value("\${default.timeout.timer}") private val defaul
     private val log = log()
     private val timeout = defaultTimeoutTimer.toLong()
 
+    // Er Synchronized pga. race condition mellom saksbehandling i vårt system og saksbehandling i Bømlo's system
+    @Synchronized
     fun prosesserOppgave(oppgave: OppgaveDTO) {
         if (oppgave.dokumentType == DokumentTypeDTO.Søknad) {
             log.info("Gjelder ${oppgave.oppdateringstype.name} for søknad ${oppgave.dokumentId}")
-            when (oppgave.oppdateringstype) {
-                OppdateringstypeDTO.Utsett -> utsettOppgave(oppgave.dokumentId.toString(), oppgave.timeout!!)
-                OppdateringstypeDTO.Opprett -> opprettOppgave(søknadsId = oppgave.dokumentId.toString())
-                OppdateringstypeDTO.Ferdigbehandlet -> viBehandlerIkkeOppgaven(oppgave.dokumentId.toString())
+
+            val oppgavestyring = oppgavestyringDAO.hentSpreOppgave(oppgave.dokumentId.toString())
+
+            when (oppgavestyring?.status to oppgave.oppdateringstype) {
+                null to OppdateringstypeDTO.Utsett,
+                OppgaveStatus.Utsett to OppdateringstypeDTO.Utsett -> utsettOppgave(oppgave.dokumentId.toString(), oppgave.timeout!!)
+                null to OppdateringstypeDTO.Opprett,
+                OppgaveStatus.Utsett to OppdateringstypeDTO.Opprett -> opprettOppgave(oppgave.dokumentId.toString())
+                null to OppdateringstypeDTO.Ferdigbehandlet,
+                OppgaveStatus.Utsett to OppdateringstypeDTO.Ferdigbehandlet -> viBehandlerIkkeOppgaven(oppgave.dokumentId.toString())
+                else -> log.info("Gjør ikke ${oppgave.oppdateringstype.name} for søknad ${oppgave.dokumentId} fordi status er ${oppgavestyring!!.status.name}")
             }
         }
     }
@@ -38,8 +48,13 @@ class SpreOppgaverService(@Value("\${default.timeout.timer}") private val defaul
         try {
             if (sykepengesoknad.status == "SENDT" && !ettersendtTilArbeidsgiver(sykepengesoknad)) {
                 saksbehandlingsService.behandleSoknad(sykepengesoknad)
-                if (sykepengesoknad.soknadstype == ARBEIDSTAKERE && toggle.isNotProduction()) {
-                    utsettOppgave(sykepengesoknad.id, sykepengesoknad.sendtNav?.plusHours(timeout) ?: LocalDateTime.now().plusHours(timeout))
+                if (sykepengesoknad.soknadstype == ARBEIDSTAKERE && skalBehandlesAvNav(sykepengesoknad) && toggle.isNotProduction()) {
+                    prosesserOppgave(OppgaveDTO(
+                        dokumentId = UUID.fromString(sykepengesoknad.id),
+                        dokumentType = DokumentTypeDTO.Søknad,
+                        oppdateringstype = OppdateringstypeDTO.Utsett,
+                        timeout = sykepengesoknad.sendtNav?.plusHours(timeout) ?: LocalDateTime.now().plusHours(timeout)
+                    ))
                 } else {
                     if (skalBehandlesAvNav(sykepengesoknad)) {
                         saksbehandlingsService.opprettOppgave(sykepengesoknad)

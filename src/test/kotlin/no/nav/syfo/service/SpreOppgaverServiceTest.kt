@@ -7,8 +7,13 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.syfo.TestApplication
 import no.nav.syfo.config.unleash.ToggleImpl
+import no.nav.syfo.consumer.repository.OppgaveStatus
 import no.nav.syfo.consumer.repository.OppgavestyringDAO
+import no.nav.syfo.consumer.repository.SpreOppgave
 import no.nav.syfo.consumer.syfosoknad.SyfosoknadConsumer
+import no.nav.syfo.domain.DokumentTypeDTO
+import no.nav.syfo.domain.OppdateringstypeDTO
+import no.nav.syfo.domain.OppgaveDTO
 import no.nav.syfo.domain.dto.Arbeidssituasjon
 import no.nav.syfo.domain.dto.Soknadstype
 import no.nav.syfo.domain.dto.Sykepengesoknad
@@ -19,6 +24,7 @@ import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.junit.MockitoJUnitRunner
 import java.time.LocalDateTime
+import java.util.*
 
 @RunWith(MockitoJUnitRunner::class)
 class SpreOppgaverServiceTest {
@@ -44,6 +50,19 @@ class SpreOppgaverServiceTest {
     fun setup() {
         spreOppgaverService = SpreOppgaverService("1", syfosoknadConsumer, toggle, saksbehandlingsService, oppgavestyringDAO)
         whenever(toggle.isNotProduction()).thenReturn(false)
+    }
+
+    fun settTestMiljø(status: OppgaveStatus, timeout: LocalDateTime?) {
+        whenever(toggle.isNotProduction()).thenReturn(true)
+        whenever(oppgavestyringDAO.hentSpreOppgave(anyString())).thenAnswer {
+            SpreOppgave(
+                søknadsId = it.arguments[0].toString(),
+                timeout = timeout,
+                status = status,
+                opprettet = LocalDateTime.now(),
+                modifisert = LocalDateTime.now()
+            )
+        }
     }
 
     @Test
@@ -142,5 +161,127 @@ class SpreOppgaverServiceTest {
         verify(saksbehandlingsService, times(1)).opprettOppgave(any())
     }
 
+    @Test
+    fun `status null og oppdatering utsett skal kalle nySpreOppgave med status utsett`() {
+        whenever(toggle.isNotProduction()).thenReturn(true)
+        val id = UUID.randomUUID()
+        val timeout = LocalDateTime.now()
+        val oppgave = OppgaveDTO(
+            dokumentId = id,
+            dokumentType = DokumentTypeDTO.Søknad,
+            oppdateringstype = OppdateringstypeDTO.Utsett,
+            timeout = timeout
+        )
+        spreOppgaverService.prosesserOppgave(oppgave)
+        verify(oppgavestyringDAO, times(1)).nySpreOppgave(id.toString(), timeout, OppgaveStatus.Utsett)
+    }
 
+    @Test
+    fun `status null og oppdatering opprett skal kalle nySpreOppgave med status opprett`() {
+        whenever(toggle.isNotProduction()).thenReturn(true)
+        val id = UUID.randomUUID()
+        val oppgave = OppgaveDTO(
+            dokumentId = id,
+            dokumentType = DokumentTypeDTO.Søknad,
+            oppdateringstype = OppdateringstypeDTO.Opprett,
+            timeout = null
+        )
+        spreOppgaverService.prosesserOppgave(oppgave)
+        verify(oppgavestyringDAO, times(1)).nySpreOppgave(id.toString(), null, OppgaveStatus.Opprett)
+    }
+
+    @Test
+    fun `status null og oppdatering ferdigbehandlet skal kalle nySpreOppgave med status ikkeopprett`() {
+        whenever(toggle.isNotProduction()).thenReturn(true)
+        val id = UUID.randomUUID()
+        val oppgave = OppgaveDTO(
+            dokumentId = id,
+            dokumentType = DokumentTypeDTO.Søknad,
+            oppdateringstype = OppdateringstypeDTO.Ferdigbehandlet,
+            timeout = null
+        )
+        spreOppgaverService.prosesserOppgave(oppgave)
+        verify(oppgavestyringDAO, times(1)).nySpreOppgave(id.toString(), null, OppgaveStatus.IkkeOpprett)
+    }
+
+    @Test
+    fun `status Utsett og oppdatering utsett skal kalle settTimeout med ny timeout`() {
+        val timeout = LocalDateTime.now()
+        settTestMiljø(OppgaveStatus.Utsett, timeout.minusHours(1))
+
+        val id = UUID.randomUUID()
+        val oppgave = OppgaveDTO(
+            dokumentId = id,
+            dokumentType = DokumentTypeDTO.Søknad,
+            oppdateringstype = OppdateringstypeDTO.Utsett,
+            timeout = timeout
+        )
+        spreOppgaverService.prosesserOppgave(oppgave)
+        verify(oppgavestyringDAO, times(1)).settTimeout(id.toString(), timeout)
+    }
+
+    @Test
+    fun `status Utsett og oppdatering utsett skal ikke kalle settTimeout når timeout er før eksisterende timeout`() {
+        val timeout = LocalDateTime.now()
+        settTestMiljø(OppgaveStatus.Utsett, timeout)
+
+        val id = UUID.randomUUID()
+        val oppgave = OppgaveDTO(
+            dokumentId = id,
+            dokumentType = DokumentTypeDTO.Søknad,
+            oppdateringstype = OppdateringstypeDTO.Utsett,
+            timeout = timeout.minusHours(1)
+        )
+        spreOppgaverService.prosesserOppgave(oppgave)
+        verify(oppgavestyringDAO, never()).settTimeout(id.toString(), timeout)
+    }
+
+    @Test
+    fun `status Utsett og oppdatering Opprett skal sette timeout til null, og status til Opprett`() {
+        settTestMiljø(OppgaveStatus.Utsett, LocalDateTime.now())
+        val id = UUID.randomUUID()
+        val oppgave = OppgaveDTO(
+            dokumentId = id,
+            dokumentType = DokumentTypeDTO.Søknad,
+            oppdateringstype = OppdateringstypeDTO.Opprett,
+            timeout = null
+        )
+
+        spreOppgaverService.prosesserOppgave(oppgave)
+        verify(oppgavestyringDAO, times(1)).settTimeout(id.toString(), null)
+        verify(oppgavestyringDAO, times(1)).settStatus(id.toString(), OppgaveStatus.Opprett)
+    }
+
+    @Test
+    fun `status Utsett og oppdatering Ferdigbehandlet skal sette timeout til null, og status til IkkeOpprett`() {
+        settTestMiljø(OppgaveStatus.Utsett, LocalDateTime.now())
+        val id = UUID.randomUUID()
+        val oppgave = OppgaveDTO(
+            dokumentId = id,
+            dokumentType = DokumentTypeDTO.Søknad,
+            oppdateringstype = OppdateringstypeDTO.Ferdigbehandlet,
+            timeout = null
+        )
+
+        spreOppgaverService.prosesserOppgave(oppgave)
+        verify(oppgavestyringDAO, times(1)).settTimeout(id.toString(), null)
+        verify(oppgavestyringDAO, times(1)).settStatus(id.toString(), OppgaveStatus.IkkeOpprett)
+    }
+
+    @Test
+    fun `status Opprett og oppdatering Utsett skal ikke kalle noen oppgavestyringsfunksjoner`() {
+        settTestMiljø(OppgaveStatus.Opprett, LocalDateTime.now())
+        val id = UUID.randomUUID()
+        val oppgave = OppgaveDTO(
+            dokumentId = id,
+            dokumentType = DokumentTypeDTO.Søknad,
+            oppdateringstype = OppdateringstypeDTO.Utsett,
+            timeout = LocalDateTime.MAX
+        )
+
+        spreOppgaverService.prosesserOppgave(oppgave)
+        verify(oppgavestyringDAO, never()).settTimeout(any(), any())
+        verify(oppgavestyringDAO, never()).settStatus(any(), any())
+        verify(oppgavestyringDAO, never()).nySpreOppgave(any(), any(), any())
+    }
 }
