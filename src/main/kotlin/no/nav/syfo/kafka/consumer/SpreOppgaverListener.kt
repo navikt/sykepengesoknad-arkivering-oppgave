@@ -11,7 +11,6 @@ import org.slf4j.MDC
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
-import org.springframework.web.client.HttpClientErrorException
 
 @Component
 class SpreOppgaverListener(private val spreOppgaverService: SpreOppgaverService,
@@ -24,15 +23,7 @@ class SpreOppgaverListener(private val spreOppgaverService: SpreOppgaverService,
             MDC.put(NAV_CALLID, getSafeNavCallIdHeaderAsString(cr.headers()))
             spreOppgaverService.prosesserOppgave(cr.value())
             acknowledgment.acknowledge()
-        } catch(e: HttpClientErrorException) {
-            if (toggle.isQ() && e.rawStatusCode == 404) {
-                log.warn("Søknaden er slettet fra Q, hopper over og fortsetter")
-            }
-            else {
-                log.error("Rest kall feiler", e)
-                throw RuntimeException("Rest kall feiler", e)
-            }
-        } catch (e: Exception) {
+        }  catch (e: Exception) {
             log.error("Uventet feil ved lesing fra ${cr.topic()}", e)
             throw RuntimeException("Uventet feil ved lesing fra ${cr.topic()}")
         } finally {

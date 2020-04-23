@@ -5,6 +5,7 @@ import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import no.nav.syfo.config.unleash.ToggleImpl
 import no.nav.syfo.consumer.repository.OppgaveStatus
 import no.nav.syfo.consumer.repository.OppgavestyringDAO
 import no.nav.syfo.consumer.repository.SpreOppgave
@@ -38,6 +39,9 @@ class BehandleVedTimeoutServiceTest {
 
     @Mock
     lateinit var syfosoknadConsumer: SyfosoknadConsumer
+
+    @Mock
+    lateinit var toggle: ToggleImpl
 
     @InjectMocks
     lateinit var behandleVedTimeoutService: BehandleVedTimeoutService
