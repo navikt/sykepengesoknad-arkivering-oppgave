@@ -37,6 +37,8 @@ class BehandleVedTimeoutService(
             } catch(e: HttpClientErrorException) {
                 if (toggle.isQ() && e.rawStatusCode == 404) {
                     log.warn("Søknaden ${it.søknadsId} er slettet fra Q, hopper over oppgaveopprettelse og fortsetter")
+                    oppgavestyringDAO.settTimeout(it.søknadsId, null)
+                    oppgavestyringDAO.settStatus(it.søknadsId, OppgaveStatus.IkkeOpprett)
                 }
                 else {
                     log.error("Rest kall feiler", e)

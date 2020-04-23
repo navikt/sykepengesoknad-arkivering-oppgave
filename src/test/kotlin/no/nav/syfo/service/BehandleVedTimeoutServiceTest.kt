@@ -24,6 +24,8 @@ import org.junit.runner.RunWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+import org.springframework.http.HttpStatus
+import org.springframework.web.client.HttpClientErrorException
 import java.lang.RuntimeException
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -164,5 +166,63 @@ class BehandleVedTimeoutServiceTest {
         verify(saksbehandlingsService, times(2)).opprettOppgave(any(), any())
         verify(oppgavestyringDAO, times(1)).settStatus("sid", OppgaveStatus.Opprettet)
         verify(oppgavestyringDAO, times(1)).settStatus("sid2", OppgaveStatus.Opprettet)
+    }
+
+    @Test
+    fun `Finner ikke søknad, skippes i Q`() {
+        whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
+            listOf(
+                SpreOppgave(
+                    søknadsId = "sid",
+                    timeout = LocalDateTime.now().minusHours(1),
+                    status = OppgaveStatus.Utsett,
+                    opprettet = LocalDateTime.now().minusHours(2),
+                    modifisert = LocalDateTime.now().minusHours(1)
+                )
+            )
+        )
+        whenever(saksbehandlingsService.finnEksisterendeInnsending("sid")).thenReturn(
+            Innsending(
+                innsendingsId = "iid",
+                ressursId = "sid",
+                aktorId = "aktor",
+                saksId = "saksId",
+                journalpostId = "journalpost"
+            )
+        )
+        whenever(toggle.isQ()).thenReturn(true)
+        whenever(syfosoknadConsumer.hentSoknad("sid")).thenThrow(HttpClientErrorException(HttpStatus.NOT_FOUND , "finner ikke", null, null, null))
+        behandleVedTimeoutService.behandleTimeout()
+        verify(oppgavestyringDAO, times(1)).settStatus("sid", OppgaveStatus.IkkeOpprett)
+        verify(oppgavestyringDAO, times(1)).settTimeout("sid", null)
+    }
+
+    @Test
+    fun `Finner ikke søknad, skippes ikke i P`() {
+        whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
+            listOf(
+                SpreOppgave(
+                    søknadsId = "sid",
+                    timeout = LocalDateTime.now().minusHours(1),
+                    status = OppgaveStatus.Utsett,
+                    opprettet = LocalDateTime.now().minusHours(2),
+                    modifisert = LocalDateTime.now().minusHours(1)
+                )
+            )
+        )
+        whenever(saksbehandlingsService.finnEksisterendeInnsending("sid")).thenReturn(
+            Innsending(
+                innsendingsId = "iid",
+                ressursId = "sid",
+                aktorId = "aktor",
+                saksId = "saksId",
+                journalpostId = "journalpost"
+            )
+        )
+        whenever(toggle.isQ()).thenReturn(false)
+        whenever(syfosoknadConsumer.hentSoknad("sid")).thenThrow(HttpClientErrorException(HttpStatus.NOT_FOUND , "finner ikke", null, null, null))
+        behandleVedTimeoutService.behandleTimeout()
+        verify(oppgavestyringDAO, never()).settStatus(any(), any())
+        verify(oppgavestyringDAO, never()).settTimeout(any(), any())
     }
 }
