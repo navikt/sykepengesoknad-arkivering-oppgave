@@ -27,8 +27,6 @@ class SpreOppgaverService(@Value("\${default.timeout.timer}") private val defaul
     @Synchronized
     fun prosesserOppgave(oppgave: OppgaveDTO) {
         if (oppgave.dokumentType == DokumentTypeDTO.Søknad) {
-            log.info("Gjelder ${oppgave.oppdateringstype.name} for søknad ${oppgave.dokumentId}")
-
             val oppgavestyring = oppgavestyringDAO.hentSpreOppgave(oppgave.dokumentId.toString())
 
             when (oppgavestyring?.status to oppgave.oppdateringstype) {

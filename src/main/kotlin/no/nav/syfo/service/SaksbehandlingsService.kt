@@ -45,6 +45,7 @@ class SaksbehandlingsService(
         val saksId = eksisterendeInnsending?.saksId
             ?: finnEllerOpprettSak(innsendingId, sykepengesoknad.aktorId, soknad.fom)
         eksisterendeInnsending?.journalpostId ?: opprettJournalpost(innsendingId, soknad, saksId)
+        log.info("Journalført søknad: ${sykepengesoknad.id}")
     }
 
     fun opprettOppgave(sykepengesoknad: Sykepengesoknad, innsending: Innsending) {
