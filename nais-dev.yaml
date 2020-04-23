@@ -78,7 +78,7 @@ spec:
     - name: BEHANDLE_OPPGAVE_DEPLOY
       value: "100000"
     - name: BEHANDLE_OPPGAVE_INTERVALL
-      value: "100000"
+      value: "120000"
     - name: DEFAULT_TIMEOUT_TIMER
       value: "1"
 
