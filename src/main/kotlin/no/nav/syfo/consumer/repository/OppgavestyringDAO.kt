@@ -42,6 +42,22 @@ class OppgavestyringDAO(private val namedParameterJdbcTemplate: NamedParameterJd
         )
     }
 
+    fun slettSpreOppgave(søknadsId: String) {
+        namedParameterJdbcTemplate.update(
+            "DELETE FROM OPPGAVESTYRING WHERE SYKEPENGESOKNAD_ID = :soknadsId",
+            MapSqlParameterSource()
+                .addValue("soknadsId", søknadsId)
+        )
+    }
+
+    fun slettGamleSpreOppgaver() {
+        namedParameterJdbcTemplate.update(
+            "DELETE FROM OPPGAVESTYRING WHERE OPPRETTET < :foreldet",
+            MapSqlParameterSource()
+                .addValue("foreldet", LocalDateTime.now().minusMonths(3))
+        )
+    }
+
     fun hentSpreOppgave(søknadsId: String): SpreOppgave? {
         return namedParameterJdbcTemplate.query(
             "SELECT * FROM OPPGAVESTYRING WHERE SYKEPENGESOKNAD_ID = :soknadsId",

@@ -10,6 +10,7 @@ import no.nav.syfo.consumer.repository.OppgaveStatus
 import no.nav.syfo.consumer.repository.OppgavestyringDAO
 import no.nav.syfo.consumer.repository.SpreOppgave
 import no.nav.syfo.consumer.syfosoknad.SyfosoknadConsumer
+import no.nav.syfo.consumer.syfosoknad.SøknadIkkeFunnetException
 import no.nav.syfo.domain.Innsending
 import no.nav.syfo.kafka.felles.SkjultVerdi
 import no.nav.syfo.kafka.felles.SoknadsstatusDTO
@@ -24,8 +25,6 @@ import org.junit.runner.RunWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
-import org.springframework.http.HttpStatus
-import org.springframework.web.client.HttpClientErrorException
 import java.lang.RuntimeException
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -96,6 +95,43 @@ class BehandleVedTimeoutServiceTest {
         )
         behandleVedTimeoutService.behandleTimeout()
         verify(saksbehandlingsService, never()).opprettOppgave(any(), any())
+    }
+
+    @Test
+    fun `sletter ikke oppgave(i test) om vi mangler innsending og den er fersk`() {
+        whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
+            listOf(
+                SpreOppgave(
+                    søknadsId = "sid",
+                    timeout = LocalDateTime.now().minusHours(1),
+                    status = OppgaveStatus.Utsett,
+                    opprettet = LocalDateTime.now().minusHours(2),
+                    modifisert = LocalDateTime.now().minusHours(1)
+                )
+            )
+        )
+        behandleVedTimeoutService.behandleTimeout()
+        verify(saksbehandlingsService, never()).opprettOppgave(any(), any())
+        verify(oppgavestyringDAO, never()).slettSpreOppgave(any())
+    }
+
+    @Test
+    fun `sletter oppgave(i test) om vi mangler innsending og den er gammel`() {
+        whenever(toggle.isQ()).thenReturn(true)
+        whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
+            listOf(
+                SpreOppgave(
+                    søknadsId = "sid",
+                    timeout = LocalDateTime.now().minusHours(1),
+                    status = OppgaveStatus.Utsett,
+                    opprettet = LocalDateTime.now().minusDays(2),
+                    modifisert = LocalDateTime.now().minusHours(1)
+                )
+            )
+        )
+        behandleVedTimeoutService.behandleTimeout()
+        verify(saksbehandlingsService, never()).opprettOppgave(any(), any())
+        verify(oppgavestyringDAO, times(1)).slettSpreOppgave(any())
     }
 
     @Test
@@ -191,7 +227,7 @@ class BehandleVedTimeoutServiceTest {
             )
         )
         whenever(toggle.isQ()).thenReturn(true)
-        whenever(syfosoknadConsumer.hentSoknad("sid")).thenThrow(HttpClientErrorException(HttpStatus.NOT_FOUND , "finner ikke", null, null, null))
+        whenever(syfosoknadConsumer.hentSoknad("sid")).thenThrow(SøknadIkkeFunnetException("finner ikke"))
         behandleVedTimeoutService.behandleTimeout()
         verify(oppgavestyringDAO, times(1)).settStatus("sid", OppgaveStatus.IkkeOpprett)
         verify(oppgavestyringDAO, times(1)).settTimeout("sid", null)
@@ -220,7 +256,7 @@ class BehandleVedTimeoutServiceTest {
             )
         )
         whenever(toggle.isQ()).thenReturn(false)
-        whenever(syfosoknadConsumer.hentSoknad("sid")).thenThrow(HttpClientErrorException(HttpStatus.NOT_FOUND , "finner ikke", null, null, null))
+        whenever(syfosoknadConsumer.hentSoknad("sid")).thenThrow(SøknadIkkeFunnetException("msg"))
         behandleVedTimeoutService.behandleTimeout()
         verify(oppgavestyringDAO, never()).settStatus(any(), any())
         verify(oppgavestyringDAO, never()).settTimeout(any(), any())

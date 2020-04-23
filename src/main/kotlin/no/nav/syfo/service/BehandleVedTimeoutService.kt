@@ -4,11 +4,12 @@ import no.nav.syfo.config.unleash.ToggleImpl
 import no.nav.syfo.consumer.repository.OppgaveStatus
 import no.nav.syfo.consumer.repository.OppgavestyringDAO
 import no.nav.syfo.consumer.syfosoknad.SyfosoknadConsumer
+import no.nav.syfo.consumer.syfosoknad.SøknadIkkeFunnetException
 import no.nav.syfo.kafka.mapper.toSykepengesoknad
 import no.nav.syfo.log
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
-import org.springframework.web.client.HttpClientErrorException
+import java.time.LocalDateTime
 
 @Component
 class BehandleVedTimeoutService(
@@ -33,20 +34,27 @@ class BehandleVedTimeoutService(
                     oppgavestyringDAO.settStatus(it.søknadsId, OppgaveStatus.Opprettet)
                 } else {
                     log.info("Fant ikke eksisterende innsending, ignorerer søknad med id ${it.søknadsId}")
+                    if (toggle.isQ() && it.opprettet < LocalDateTime.now().minusDays(1)) {
+                        // Dette skjer hvis bømlo selv mocker opp søknader som ikke går gjennom syfosoknad
+                        log.info("Sletter oppgave fra ${it.opprettet} som ikke har en tilhørende søknad")
+                        oppgavestyringDAO.slettSpreOppgave(it.søknadsId)
+                    }
                 }
-            } catch(e: HttpClientErrorException) {
-                if (toggle.isQ() && e.rawStatusCode == 404) {
-                    log.warn("Søknaden ${it.søknadsId} er slettet fra Q, hopper over oppgaveopprettelse og fortsetter")
+            } catch(e: SøknadIkkeFunnetException) {
+                if (toggle.isQ()) {
+                    log.warn("Søknaden ${it.søknadsId} finnes ikke i Q, hopper over oppgaveopprettelse og fortsetter")
                     oppgavestyringDAO.settTimeout(it.søknadsId, null)
                     oppgavestyringDAO.settStatus(it.søknadsId, OppgaveStatus.IkkeOpprett)
-                }
-                else {
-                    log.error("Rest kall feiler", e)
                 }
             } catch (error: RuntimeException) {
                 log.error("Runtime-feil ved opprettelse av oppgave ${it.søknadsId}", error)
             }
         }
+    }
 
+    @Scheduled(cron = "0 6 * * * *")
+    fun slettGamleOppgaver() {
+        val antall = oppgavestyringDAO.slettGamleSpreOppgaver()
+        log.info("Slettet $antall innslag på utgåtte oppgaver")
     }
 }

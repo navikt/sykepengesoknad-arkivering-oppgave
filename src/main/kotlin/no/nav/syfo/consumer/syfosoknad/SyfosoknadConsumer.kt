@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.HttpStatus.OK
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
@@ -42,9 +43,14 @@ class SyfosoknadConsumer(private val restTemplate: RestTemplate,
                 )
 
         if (result.statusCode != OK) {
-            val message = "Kall mot syfosoknad feiler med HTTP-" + result.statusCode
-            log.error(message)
-            throw RuntimeException(message)
+            when(result.statusCode) {
+                NOT_FOUND -> { throw SøknadIkkeFunnetException("Fant ikke søknad: $soknadId") }
+                else -> {
+                    val message = "Kall mot syfosoknad feiler med HTTP-" + result.statusCode
+                    log.error(message)
+                    throw RuntimeException(message)
+                }
+            }
         }
 
         result.body?.let { return it }
@@ -54,3 +60,5 @@ class SyfosoknadConsumer(private val restTemplate: RestTemplate,
         throw RuntimeException(message)
     }
 }
+
+class SøknadIkkeFunnetException(msg: String) : RuntimeException(msg)
