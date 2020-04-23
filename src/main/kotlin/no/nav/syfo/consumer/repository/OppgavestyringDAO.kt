@@ -50,8 +50,8 @@ class OppgavestyringDAO(private val namedParameterJdbcTemplate: NamedParameterJd
         )
     }
 
-    fun slettGamleSpreOppgaver() {
-        namedParameterJdbcTemplate.update(
+    fun slettGamleSpreOppgaver(): Int {
+        return namedParameterJdbcTemplate.update(
             "DELETE FROM OPPGAVESTYRING WHERE OPPRETTET < :foreldet",
             MapSqlParameterSource()
                 .addValue("foreldet", LocalDateTime.now().minusMonths(3))
