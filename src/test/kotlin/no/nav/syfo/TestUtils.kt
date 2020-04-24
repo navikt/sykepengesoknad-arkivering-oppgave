@@ -114,6 +114,8 @@ const val beskrivelseArbeidstakerMedNeisvar = "Søknad om sykepenger for periode
         "\n" +
         "Arbeidsgiver: ARBEIDSGIVER A/S" +
         "\n" +
+        "Organisasjonsnummer: 1257358" +
+        "\n" +
         "\n" +
         "Periode 1:\n" +
         "16.10.2018 - 20.10.2018\n" +
@@ -129,6 +131,8 @@ const val beskrivelseArbeidstakerMedNeisvar = "Søknad om sykepenger for periode
 const val beskrivelseArbeidstakerMangeSvar = "Søknad om sykepenger for perioden 16.10.2018 - 24.10.2018\n" +
         "\n" +
         "Arbeidsgiver: ARBEIDSGIVER A/S" +
+        "\n" +
+        "Organisasjonsnummer: 1257358" +
         "\n" +
         "\n" +
         "Periode 1:\n" +
@@ -202,6 +206,8 @@ const val beskrivelseArbeidstakerMedNeisvarKorrigert = "Søknad om sykepenger fo
         "\n" +
         "Arbeidsgiver: ARBEIDSGIVER A/S" +
         "\n" +
+        "Organisasjonsnummer: 1257358" +
+        "\n" +
         "\n" +
         "Periode 1:\n" +
         "16.10.2018 - 20.10.2018\n" +
@@ -216,7 +222,10 @@ const val beskrivelseArbeidstakerMedNeisvarKorrigert = "Søknad om sykepenger fo
 
 const val beskrivelseBehandlingsdagerMedNeisvar = "Søknad med enkeltstående behandlingsdager\n" +
         "\n" +
-        "Arbeidsgiver: LØNNS- OG REGNSKAPSSENTERET\n" +
+        "Arbeidsgiver: LØNNS- OG REGNSKAPSSENTERET" +
+        "\n" +
+        "Organisasjonsnummer: 1257358" +
+        "\n" +
         "\n" +
         "Periode 1:\n" +
         "11.12.2019 - 17.12.2019\n" +
@@ -226,7 +235,10 @@ const val beskrivelseBehandlingsdagerMedNeisvar = "Søknad med enkeltstående be
 
 const val beskrivelseBehandlingsdagerMedMangeSvar = "Søknad med enkeltstående behandlingsdager\n" +
         "\n" +
-        "Arbeidsgiver: LØNNS- OG REGNSKAPSSENTERET\n" +
+        "Arbeidsgiver: LØNNS- OG REGNSKAPSSENTERET" +
+        "\n" +
+        "Organisasjonsnummer: 1257358" +
+        "\n" +
         "\n" +
         "Periode 1:\n" +
         "12.12.2019 - 18.12.2019\n" +
