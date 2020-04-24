@@ -58,7 +58,8 @@ private fun Soknad.erKorrigert() =
 
 private fun Soknad.beskrivArbeidsgiver() =
         if (arbeidssituasjon === ARBEIDSTAKER)
-            "\nArbeidsgiver: $arbeidsgiver\n"
+            "\nArbeidsgiver: $arbeidsgiver" +
+            "\nOrganisasjonsnummer: $orgNummer\n"
         else
             ""
 

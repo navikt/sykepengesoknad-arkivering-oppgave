@@ -63,7 +63,8 @@ fun SykepengesoknadDTO.toSykepengesoknad(): Sykepengesoknad {
             sporsmal = sporsmal!!.map { it.toSporsmal()},
             avsendertype = avsendertype.enumValueOrNull(),
             ettersending = ettersending,
-            egenmeldtSykmelding = egenmeldtSykmelding
+            egenmeldtSykmelding = egenmeldtSykmelding,
+            orgNummer = arbeidsgiver?.orgnummer
     )
 }
 

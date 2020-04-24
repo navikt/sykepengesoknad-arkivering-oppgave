@@ -22,7 +22,8 @@ data class Soknad(
     var soknadPerioder: List<SoknadPeriode>? = null,
     var sporsmal: List<Sporsmal>,
     var avsendertype: Avsendertype? = null,
-    var egenmeldtSykmelding: Boolean? = null
+    var egenmeldtSykmelding: Boolean? = null,
+    var orgNummer: String? = null
 ) {
 
     companion object {
@@ -46,7 +47,8 @@ data class Soknad(
                 soknadPerioder = sykepengesoknad.soknadPerioder,
                 sporsmal = endreRekkefolgePaSporsmalForPDF(sykepengesoknad.sporsmal),
                 avsendertype = sykepengesoknad.avsendertype,
-                egenmeldtSykmelding = sykepengesoknad.egenmeldtSykmelding
+                egenmeldtSykmelding = sykepengesoknad.egenmeldtSykmelding,
+                orgNummer = sykepengesoknad.orgNummer
                 )
 
         private fun endreRekkefolgePaSporsmalForPDF(sporsmal: List<Sporsmal>) =
