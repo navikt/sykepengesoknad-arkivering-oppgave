@@ -6,7 +6,6 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.syfo.TestApplication
-import no.nav.syfo.config.unleash.ToggleImpl
 import no.nav.syfo.consumer.repository.OppgaveStatus
 import no.nav.syfo.consumer.repository.OppgavestyringDAO
 import no.nav.syfo.consumer.repository.SpreOppgave
@@ -34,9 +33,6 @@ class SpreOppgaverServiceTest {
     @Mock
     lateinit var saksbehandlingsService: SaksbehandlingsService
 
-    @Mock
-    lateinit var toggle: ToggleImpl
-
     lateinit var spreOppgaverService: SpreOppgaverService
 
     @Mock
@@ -63,13 +59,11 @@ class SpreOppgaverServiceTest {
 
     @Before
     fun setup() {
-        spreOppgaverService = SpreOppgaverService("1", toggle, saksbehandlingsService, oppgavestyringDAO)
+        spreOppgaverService = SpreOppgaverService("1", saksbehandlingsService, oppgavestyringDAO)
         whenever(saksbehandlingsService.finnEksisterendeInnsending(any())).thenAnswer { innsending(it.arguments[0].toString()) }
-        whenever(toggle.isNotProduction()).thenReturn(false)
     }
 
     fun settTestMiljø(status: OppgaveStatus, timeout: LocalDateTime?) {
-        whenever(toggle.isNotProduction()).thenReturn(true)
         whenever(oppgavestyringDAO.hentSpreOppgave(anyString())).thenAnswer {
             SpreOppgave(
                 søknadsId = it.arguments[0].toString(),
@@ -126,7 +120,7 @@ class SpreOppgaverServiceTest {
 
         spreOppgaverService.soknadSendt(sykepengesoknad)
         verify(saksbehandlingsService, times(1)).behandleSoknad(sykepengesoknad)
-        verify(saksbehandlingsService, times(1)).opprettOppgave(sykepengesoknad, innsending(sykepengesoknad.id))
+        verify(saksbehandlingsService, never()).opprettOppgave(sykepengesoknad, innsending(sykepengesoknad.id))
     }
 
     @Test
@@ -136,7 +130,7 @@ class SpreOppgaverServiceTest {
 
         spreOppgaverService.soknadSendt(sykepengesoknad)
         verify(saksbehandlingsService, times(1)).behandleSoknad(sykepengesoknad)
-        verify(saksbehandlingsService, times(1)).opprettOppgave(sykepengesoknad, innsending(sykepengesoknad.id))
+        verify(saksbehandlingsService, never()).opprettOppgave(sykepengesoknad, innsending(sykepengesoknad.id))
     }
 
     @Test
@@ -172,8 +166,7 @@ class SpreOppgaverServiceTest {
         var hit = 0
 
         spreOppgaverService.soknadSendt(arbeidstaker)
-        // TODO: verify(saksbehandlingsService, never()).opprettOppgave(any())
-        verify(saksbehandlingsService, times(++hit)).opprettOppgave(any(), any())
+        verify(saksbehandlingsService, never()).opprettOppgave(any(), any())
 
         spreOppgaverService.soknadSendt(frilanser)
         verify(saksbehandlingsService, times(++hit)).opprettOppgave(any(), any())
@@ -192,19 +185,7 @@ class SpreOppgaverServiceTest {
     }
 
     @Test
-    fun opprettOppgave() {
-        val arbeidstaker = objectMapper.readValue(
-            TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"),
-            Sykepengesoknad::class.java
-        )
-
-        spreOppgaverService.soknadSendt(arbeidstaker)
-        verify(saksbehandlingsService, times(1)).opprettOppgave(any(), any())
-    }
-
-    @Test
     fun `status null og oppdatering utsett skal kalle nySpreOppgave med status utsett`() {
-        whenever(toggle.isNotProduction()).thenReturn(true)
         val id = UUID.randomUUID()
         val timeout = LocalDateTime.now()
         val oppgave = OppgaveDTO(
@@ -219,7 +200,6 @@ class SpreOppgaverServiceTest {
 
     @Test
     fun `status null og oppdatering opprett skal kalle nySpreOppgave med status opprett`() {
-        whenever(toggle.isNotProduction()).thenReturn(true)
         val id = UUID.randomUUID()
         val oppgave = OppgaveDTO(
             dokumentId = id,
@@ -233,7 +213,6 @@ class SpreOppgaverServiceTest {
 
     @Test
     fun `status null og oppdatering ferdigbehandlet skal kalle nySpreOppgave med status ikkeopprett`() {
-        whenever(toggle.isNotProduction()).thenReturn(true)
         val id = UUID.randomUUID()
         val oppgave = OppgaveDTO(
             dokumentId = id,

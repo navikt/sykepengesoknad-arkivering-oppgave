@@ -3,6 +3,7 @@ package no.nav.syfo.rebehandling
 import com.nhaarman.mockitokotlin2.KArgumentCaptor
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.argumentCaptor
+import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.syfo.TestApplication
@@ -155,22 +156,11 @@ class RebehandlingIntegrationTest {
         verify(acknowledgmentRebehandling).acknowledge()
 
         val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
-        verify(oppgaveConsumer).opprettOppgave(captor.capture())
-
-        val oppgaveRequest = captor.firstValue
-        assertThat(oppgaveRequest.aktoerId).isEqualTo(aktorId)
-        assertThat(oppgaveRequest.journalpostId).isEqualTo("journalpostId")
-        assertThat(oppgaveRequest.saksreferanse).isEqualTo(saksId)
-        assertThat(oppgaveRequest.beskrivelse).isEqualTo(
-                """
-Søknad om sykepenger for perioden 04.05.2019 - 08.05.2019
-
-Fungerer rebehandlinga?
-Ja""".trimIndent())
+        verify(oppgaveConsumer, never()).opprettOppgave(captor.capture())
 
         val innsendingIDatabaseEtterRebehandling = innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id!!)!!
         assertThat(innsendingIDatabaseEtterRebehandling.ressursId).isEqualTo(soknad.id)
-        assertThat(innsendingIDatabaseEtterRebehandling.oppgaveId).isEqualTo(oppgaveID.toString())
+        assertThat(innsendingIDatabaseEtterRebehandling.oppgaveId).isNull()
         assertThat(innsendingIDatabaseEtterRebehandling.behandlet).isNotNull()
 
         assertThat(innsendingIDatabaseEtterRebehandling.innsendingsId).isEqualTo(innsendingIDatabaseEtterFeiling.innsendingsId)

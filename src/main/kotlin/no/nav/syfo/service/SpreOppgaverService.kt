@@ -17,7 +17,6 @@ import java.util.*
 
 @Component
 class SpreOppgaverService(@Value("\${default.timeout.timer}") private val defaultTimeoutTimer: String,
-                          private val toggle: ToggleImpl,
                           private val saksbehandlingsService: SaksbehandlingsService,
                           private val oppgavestyringDAO: OppgavestyringDAO) {
     private val log = log()
@@ -44,8 +43,8 @@ class SpreOppgaverService(@Value("\${default.timeout.timer}") private val defaul
     fun soknadSendt(sykepengesoknad: Sykepengesoknad) {
         try {
             if (sykepengesoknad.status == "SENDT" && !ettersendtTilArbeidsgiver(sykepengesoknad)) {
-                saksbehandlingsService.behandleSoknad(sykepengesoknad)
-                if (sykepengesoknad.soknadstype == ARBEIDSTAKERE && skalBehandlesAvNav(sykepengesoknad) && toggle.isNotProduction()) {
+                val innsendingsId = saksbehandlingsService.behandleSoknad(sykepengesoknad)
+                if (sykepengesoknad.soknadstype == ARBEIDSTAKERE && skalBehandlesAvNav(sykepengesoknad)) {
                     prosesserOppgave(OppgaveDTO(
                         dokumentId = UUID.fromString(sykepengesoknad.id),
                         dokumentType = DokumentTypeDTO.Søknad,
@@ -59,6 +58,7 @@ class SpreOppgaverService(@Value("\${default.timeout.timer}") private val defaul
                         saksbehandlingsService.opprettOppgave(sykepengesoknad, innsending)
                     }
                 }
+                saksbehandlingsService.settFerdigbehandlet(innsendingsId)
             }
         } catch (e: Exception) {
             saksbehandlingsService.innsendingFeilet(sykepengesoknad, e)
@@ -66,36 +66,30 @@ class SpreOppgaverService(@Value("\${default.timeout.timer}") private val defaul
     }
 
     fun utsettOppgave(søknadsId: String, nyTimeout: LocalDateTime, oppgavestyring: SpreOppgave?) {
-        if (toggle.isNotProduction()) {
-            if (oppgavestyring != null) {
-                if (nyTimeout.isAfter(oppgavestyring.timeout)) {
-                    oppgavestyringDAO.settTimeout(søknadsId, nyTimeout)
-                }
-            } else {
-                oppgavestyringDAO.nySpreOppgave(søknadsId, nyTimeout, OppgaveStatus.Utsett)
+        if (oppgavestyring != null) {
+            if (nyTimeout.isAfter(oppgavestyring.timeout)) {
+                oppgavestyringDAO.settTimeout(søknadsId, nyTimeout)
             }
+        } else {
+            oppgavestyringDAO.nySpreOppgave(søknadsId, nyTimeout, OppgaveStatus.Utsett)
         }
     }
 
     fun opprettOppgave(søknadsId: String, oppgavestyring: SpreOppgave?) {
-        if (toggle.isNotProduction()) {
-            if (oppgavestyring != null) {
-                oppgavestyringDAO.settTimeout(søknadsId, null)
-                oppgavestyringDAO.settStatus(søknadsId, OppgaveStatus.Opprett)
-            } else {
-                oppgavestyringDAO.nySpreOppgave(søknadsId, null, OppgaveStatus.Opprett)
-            }
+        if (oppgavestyring != null) {
+            oppgavestyringDAO.settTimeout(søknadsId, null)
+            oppgavestyringDAO.settStatus(søknadsId, OppgaveStatus.Opprett)
+        } else {
+            oppgavestyringDAO.nySpreOppgave(søknadsId, null, OppgaveStatus.Opprett)
         }
     }
 
     fun viBehandlerIkkeOppgaven(søknadsId: String, oppgavestyring: SpreOppgave?) {
-        if (toggle.isNotProduction()) {
-            if (oppgavestyring != null) {
-                oppgavestyringDAO.settTimeout(søknadsId, null)
-                oppgavestyringDAO.settStatus(søknadsId, OppgaveStatus.IkkeOpprett)
-            } else {
-                oppgavestyringDAO.nySpreOppgave(søknadsId, null, OppgaveStatus.IkkeOpprett)
-            }
+        if (oppgavestyring != null) {
+            oppgavestyringDAO.settTimeout(søknadsId, null)
+            oppgavestyringDAO.settStatus(søknadsId, OppgaveStatus.IkkeOpprett)
+        } else {
+            oppgavestyringDAO.nySpreOppgave(søknadsId, null, OppgaveStatus.IkkeOpprett)
         }
     }
 

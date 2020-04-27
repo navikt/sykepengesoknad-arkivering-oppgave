@@ -1,20 +1,16 @@
 package no.nav.syfo.kafka.consumer
 
-import com.nhaarman.mockitokotlin2.whenever
 import junit.framework.TestCase.assertEquals
 import no.nav.syfo.TestApplication
-import no.nav.syfo.config.unleash.ToggleImpl
 import no.nav.syfo.consumer.repository.OppgaveStatus
 import no.nav.syfo.consumer.repository.OppgavestyringDAO
 import no.nav.syfo.domain.DokumentTypeDTO
 import no.nav.syfo.domain.OppdateringstypeDTO
 import no.nav.syfo.domain.OppgaveDTO
 import no.nav.syfo.skapConsumerRecord
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.Mockito.reset
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.kafka.test.context.EmbeddedKafka
@@ -38,14 +34,6 @@ class SpreOppgaverListenerTest {
     @Inject
     lateinit var oppgavestyringDAO: OppgavestyringDAO
 
-    @Inject
-    lateinit var toggle: ToggleImpl
-
-    @Before
-    fun setup() {
-        reset(toggle)
-        whenever(toggle.isNotProduction()).thenReturn(true)
-    }
 
     @Test
     fun `bømlo sier opprett før vi har lagret oppgave`() {

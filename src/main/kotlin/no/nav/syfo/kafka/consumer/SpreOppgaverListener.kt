@@ -1,6 +1,5 @@
 package no.nav.syfo.kafka.consumer
 
-import no.nav.syfo.config.unleash.ToggleImpl
 import no.nav.syfo.domain.OppgaveDTO
 import no.nav.syfo.kafka.NAV_CALLID
 import no.nav.syfo.kafka.getSafeNavCallIdHeaderAsString
@@ -13,8 +12,7 @@ import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
 
 @Component
-class SpreOppgaverListener(private val spreOppgaverService: SpreOppgaverService,
-                        private val toggle: ToggleImpl) {
+class SpreOppgaverListener(private val spreOppgaverService: SpreOppgaverService) {
     private val log = log()
 
     @KafkaListener(topics = ["aapen-helse-spre-oppgaver"], id = "syfogsakListener", idIsGroup = false, containerFactory = "spreOppgaverContainerFactory")

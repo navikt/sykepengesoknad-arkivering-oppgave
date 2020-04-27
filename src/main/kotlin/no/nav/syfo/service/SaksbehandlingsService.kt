@@ -36,7 +36,7 @@ class SaksbehandlingsService(
 
     private val log = log()
 
-    fun behandleSoknad(sykepengesoknad: Sykepengesoknad) {
+    fun behandleSoknad(sykepengesoknad: Sykepengesoknad): String {
         val eksisterendeInnsending = finnEksisterendeInnsending(sykepengesoknad.id)
         val innsendingId = eksisterendeInnsending?.innsendingsId
             ?: innsendingDAO.opprettInnsending(sykepengesoknad.id, sykepengesoknad.aktorId, sykepengesoknad.fom, sykepengesoknad.tom)
@@ -46,6 +46,7 @@ class SaksbehandlingsService(
             ?: finnEllerOpprettSak(innsendingId, sykepengesoknad.aktorId, soknad.fom)
         eksisterendeInnsending?.journalpostId ?: opprettJournalpost(innsendingId, soknad, saksId)
         log.info("Journalført søknad: ${sykepengesoknad.id}")
+        return innsendingId
     }
 
     fun opprettOppgave(sykepengesoknad: Sykepengesoknad, innsending: Innsending) {
@@ -53,14 +54,17 @@ class SaksbehandlingsService(
         val soknad = opprettSoknad(sykepengesoknad, fnr)
 
         val behandlendeEnhet = behandlendeEnhetService.hentBehandlendeEnhet(fnr, soknad.soknadstype)
-        val requestBody = OppgaveConsumer.lagRequestBody(sykepengesoknad.aktorId, behandlendeEnhet, innsending!!.saksId!!, innsending.journalpostId!!, soknad, sykepengesoknad.harRedusertVenteperiode)
+        val requestBody = OppgaveConsumer.lagRequestBody(sykepengesoknad.aktorId, behandlendeEnhet, innsending.saksId!!, innsending.journalpostId!!, soknad, sykepengesoknad.harRedusertVenteperiode)
         val oppgaveId = oppgaveConsumer.opprettOppgave(requestBody).id.toString()
 
         innsendingDAO.oppdaterOppgaveId(uuid = innsending.innsendingsId, oppgaveId = oppgaveId)
-        innsendingDAO.settBehandlet(innsending.innsendingsId)
 
         tellInnsendingBehandlet(soknad.soknadstype)
         log.info("Oppretter oppgave ${innsending.innsendingsId} for ${soknad.soknadstype?.name?.toLowerCase()} søknad: ${soknad.soknadsId}")
+    }
+
+    fun settFerdigbehandlet(innsendingsId: String) {
+        innsendingDAO.settBehandlet(innsendingsId)
     }
 
     fun opprettJournalpost(innsendingId: String, soknad: Soknad, saksId: String): String {
