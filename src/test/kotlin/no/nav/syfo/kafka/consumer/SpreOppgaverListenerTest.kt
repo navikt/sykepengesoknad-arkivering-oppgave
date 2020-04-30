@@ -89,7 +89,7 @@ class SpreOppgaverListenerTest {
     fun `bømlo sier opprett etter vi har lagret oppgave`() {
         val id = UUID.randomUUID()
 
-        oppgavestyringDAO.nySpreOppgave(id.toString(), LocalDateTime.now().plusHours(24), OppgaveStatus.Utsett)
+        oppgavestyringDAO.nySpreOppgave(id, LocalDateTime.now().plusHours(24), OppgaveStatus.Utsett)
 
         val oppgave1 = OppgaveDTO(
             dokumentType = DokumentTypeDTO.Søknad,
@@ -109,7 +109,7 @@ class SpreOppgaverListenerTest {
     fun `bømlo sier utsett etter vi har lagret oppgave`() {
         val id = UUID.randomUUID()
 
-        oppgavestyringDAO.nySpreOppgave(id.toString(), LocalDateTime.now().plusHours(24), OppgaveStatus.Utsett)
+        oppgavestyringDAO.nySpreOppgave(id, LocalDateTime.now().plusHours(24), OppgaveStatus.Utsett)
 
         val timeout = LocalDateTime.now().plusHours(48)
         val oppgave1 = OppgaveDTO(
@@ -130,7 +130,7 @@ class SpreOppgaverListenerTest {
     fun `bømlo sier ferdigbehandlet etter vi har lagret oppgave`() {
         val id = UUID.randomUUID()
 
-        oppgavestyringDAO.nySpreOppgave(id.toString(), LocalDateTime.now().plusHours(24), OppgaveStatus.Utsett)
+        oppgavestyringDAO.nySpreOppgave(id, LocalDateTime.now().plusHours(24), OppgaveStatus.Utsett)
 
         val oppgave1 = OppgaveDTO(
             dokumentType = DokumentTypeDTO.Søknad,
@@ -144,5 +144,10 @@ class SpreOppgaverListenerTest {
         assertEquals(OppgaveStatus.IkkeOpprett, oppgaveIDb.status)
         assertEquals(id.toString(), oppgaveIDb.søknadsId)
         assertEquals(null, oppgaveIDb.timeout)
+    }
+
+    @Test
+    fun `Vi sender utsett før flex har journalført`() {
+
     }
 }

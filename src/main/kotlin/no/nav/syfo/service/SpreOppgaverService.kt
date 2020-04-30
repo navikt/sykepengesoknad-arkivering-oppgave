@@ -1,9 +1,7 @@
 package no.nav.syfo.service
 
-import no.nav.syfo.config.unleash.ToggleImpl
 import no.nav.syfo.consumer.repository.OppgaveStatus
 import no.nav.syfo.consumer.repository.OppgavestyringDAO
-import no.nav.syfo.consumer.repository.SpreOppgave
 import no.nav.syfo.domain.DokumentTypeDTO
 import no.nav.syfo.domain.OppdateringstypeDTO
 import no.nav.syfo.domain.OppgaveDTO
@@ -24,18 +22,29 @@ class SpreOppgaverService(@Value("\${default.timeout.timer}") private val defaul
 
     // Er Synchronized pga. race condition mellom saksbehandling i vårt system og saksbehandling i Bømlo's system
     @Synchronized
-    fun prosesserOppgave(oppgave: OppgaveDTO) {
+    fun prosesserOppgave(oppgave: OppgaveDTO, kilde: OppgaveKilde) {
         if (oppgave.dokumentType == DokumentTypeDTO.Søknad) {
-            val oppgavestyring = oppgavestyringDAO.hentSpreOppgave(oppgave.dokumentId.toString())
+            val eksisterendeOppgave = oppgavestyringDAO.hentSpreOppgave(oppgave.dokumentId.toString())
 
-            when (oppgavestyring?.status to oppgave.oppdateringstype) {
-                null to OppdateringstypeDTO.Utsett,
-                OppgaveStatus.Utsett to OppdateringstypeDTO.Utsett -> utsettOppgave(oppgave.dokumentId.toString(), oppgave.timeout!!, oppgavestyring)
-                null to OppdateringstypeDTO.Opprett,
-                OppgaveStatus.Utsett to OppdateringstypeDTO.Opprett -> opprettOppgave(oppgave.dokumentId.toString(), oppgavestyring)
-                null to OppdateringstypeDTO.Ferdigbehandlet,
-                OppgaveStatus.Utsett to OppdateringstypeDTO.Ferdigbehandlet -> viBehandlerIkkeOppgaven(oppgave.dokumentId.toString(), oppgavestyring)
-                else -> log.info("Gjør ikke ${oppgave.oppdateringstype.name} for søknad ${oppgave.dokumentId} fordi status er ${oppgavestyring!!.status.name}")
+            when(kilde) {
+                OppgaveKilde.Søknad -> {
+                    if (eksisterendeOppgave != null) {
+                        oppgavestyringDAO.avstem(eksisterendeOppgave.søknadsId)
+                    } else {
+                        oppgavestyringDAO.nySpreOppgave(oppgave.dokumentId, LocalDateTime.now().plusHours(1), OppgaveStatus.Utsett, avstemt = true)
+                    }
+                }
+                OppgaveKilde.Saksbehandling -> {
+                    when (eksisterendeOppgave?.status to oppgave.oppdateringstype) {
+                        null to OppdateringstypeDTO.Utsett -> oppgavestyringDAO.nySpreOppgave(oppgave.dokumentId, requireNotNull(oppgave.timeout), OppgaveStatus.Utsett)
+                        OppgaveStatus.Utsett to OppdateringstypeDTO.Utsett -> oppgavestyringDAO.oppdaterOppgave(oppgave.dokumentId, oppgave.timeout, OppgaveStatus.Utsett)
+                        null to OppdateringstypeDTO.Opprett -> oppgavestyringDAO.nySpreOppgave(oppgave.dokumentId, null, OppgaveStatus.Opprett)
+                        OppgaveStatus.Utsett to OppdateringstypeDTO.Opprett -> { oppgavestyringDAO.oppdaterOppgave(oppgave.dokumentId, null, OppgaveStatus.Opprett)}
+                        null to OppdateringstypeDTO.Ferdigbehandlet -> oppgavestyringDAO.nySpreOppgave(oppgave.dokumentId, null, OppgaveStatus.IkkeOpprett)
+                        OppgaveStatus.Utsett to OppdateringstypeDTO.Ferdigbehandlet -> oppgavestyringDAO.oppdaterOppgave(oppgave.dokumentId, null, OppgaveStatus.IkkeOpprett)
+                        else -> log.info("Gjør ikke ${oppgave.oppdateringstype.name} for søknad ${oppgave.dokumentId} fordi status er ${eksisterendeOppgave!!.status.name}")
+                    }
+                }
             }
         }
     }
@@ -50,7 +59,7 @@ class SpreOppgaverService(@Value("\${default.timeout.timer}") private val defaul
                         dokumentType = DokumentTypeDTO.Søknad,
                         oppdateringstype = OppdateringstypeDTO.Utsett,
                         timeout = sykepengesoknad.sendtNav?.plusHours(timeout) ?: LocalDateTime.now().plusHours(timeout)
-                    ))
+                    ), OppgaveKilde.Søknad)
                 } else {
                     if (skalBehandlesAvNav(sykepengesoknad)) {
                         val innsending = saksbehandlingsService.finnEksisterendeInnsending(sykepengesoknad.id)
@@ -65,37 +74,13 @@ class SpreOppgaverService(@Value("\${default.timeout.timer}") private val defaul
         }
     }
 
-    fun utsettOppgave(søknadsId: String, nyTimeout: LocalDateTime, oppgavestyring: SpreOppgave?) {
-        if (oppgavestyring != null) {
-            if (nyTimeout.isAfter(oppgavestyring.timeout)) {
-                oppgavestyringDAO.settTimeout(søknadsId, nyTimeout)
-            }
-        } else {
-            oppgavestyringDAO.nySpreOppgave(søknadsId, nyTimeout, OppgaveStatus.Utsett)
-        }
-    }
-
-    fun opprettOppgave(søknadsId: String, oppgavestyring: SpreOppgave?) {
-        if (oppgavestyring != null) {
-            oppgavestyringDAO.settTimeout(søknadsId, null)
-            oppgavestyringDAO.settStatus(søknadsId, OppgaveStatus.Opprett)
-        } else {
-            oppgavestyringDAO.nySpreOppgave(søknadsId, null, OppgaveStatus.Opprett)
-        }
-    }
-
-    fun viBehandlerIkkeOppgaven(søknadsId: String, oppgavestyring: SpreOppgave?) {
-        if (oppgavestyring != null) {
-            oppgavestyringDAO.settTimeout(søknadsId, null)
-            oppgavestyringDAO.settStatus(søknadsId, OppgaveStatus.IkkeOpprett)
-        } else {
-            oppgavestyringDAO.nySpreOppgave(søknadsId, null, OppgaveStatus.IkkeOpprett)
-        }
-    }
-
     private fun skalBehandlesAvNav(sykepengesoknad: Sykepengesoknad) =
         sykepengesoknad.sendtNav != null
 
     private fun ettersendtTilArbeidsgiver(sykepengesoknad: Sykepengesoknad) = sykepengesoknad.sendtArbeidsgiver != null
         && sykepengesoknad.sendtNav?.isBefore(sykepengesoknad.sendtArbeidsgiver) ?: false
+}
+
+enum class OppgaveKilde {
+    Søknad, Saksbehandling
 }

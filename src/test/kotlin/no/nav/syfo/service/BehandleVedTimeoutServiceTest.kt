@@ -85,11 +85,12 @@ class BehandleVedTimeoutServiceTest {
         whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
             listOf(
                 SpreOppgave(
-                    søknadsId = "sid",
+                    søknadsId = UUID.randomUUID().toString(),
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
                     opprettet = LocalDateTime.now().minusHours(2),
-                    modifisert = LocalDateTime.now().minusHours(1)
+                    modifisert = LocalDateTime.now().minusHours(1),
+                    avstemt = false
                 )
             )
         )
@@ -102,11 +103,12 @@ class BehandleVedTimeoutServiceTest {
         whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
             listOf(
                 SpreOppgave(
-                    søknadsId = "sid",
+                    søknadsId = UUID.randomUUID().toString(),
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
                     opprettet = LocalDateTime.now().minusHours(2),
-                    modifisert = LocalDateTime.now().minusHours(1)
+                    modifisert = LocalDateTime.now().minusHours(1),
+                    avstemt = false
                 )
             )
         )
@@ -121,11 +123,12 @@ class BehandleVedTimeoutServiceTest {
         whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
             listOf(
                 SpreOppgave(
-                    søknadsId = "sid",
+                    søknadsId = UUID.randomUUID().toString(),
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
                     opprettet = LocalDateTime.now().minusDays(2),
-                    modifisert = LocalDateTime.now().minusHours(1)
+                    modifisert = LocalDateTime.now().minusHours(1),
+                    avstemt = false
                 )
             )
         )
@@ -136,21 +139,23 @@ class BehandleVedTimeoutServiceTest {
 
     @Test
     fun `har noe å behandle og har innsending`() {
+        val søknadsId = UUID.randomUUID().toString()
         whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
             listOf(
                 SpreOppgave(
-                    søknadsId = "sid",
+                    søknadsId = søknadsId,
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
                     opprettet = LocalDateTime.now().minusHours(2),
-                    modifisert = LocalDateTime.now().minusHours(1)
+                    modifisert = LocalDateTime.now().minusHours(1),
+                    avstemt = true
                 )
             )
         )
-        whenever(saksbehandlingsService.finnEksisterendeInnsending("sid")).thenReturn(
+        whenever(saksbehandlingsService.finnEksisterendeInnsending(søknadsId)).thenReturn(
             Innsending(
                 innsendingsId = "iid",
-                ressursId = "sid",
+                ressursId = søknadsId,
                 aktorId = "aktor",
                 saksId = "saksId",
                 journalpostId = "journalpost"
@@ -158,107 +163,116 @@ class BehandleVedTimeoutServiceTest {
         )
         behandleVedTimeoutService.behandleTimeout()
         verify(saksbehandlingsService, times(1)).opprettOppgave(any(), any())
-        verify(oppgavestyringDAO, times(1)).settStatus("sid", OppgaveStatus.Opprettet)
+        verify(oppgavestyringDAO, times(1)).oppdaterOppgave(UUID.fromString(søknadsId), null, OppgaveStatus.Opprettet)
     }
 
     @Test
     fun `flere oppgaver hvor en tryner`() {
+        val søknadsId1 = UUID.randomUUID()
+        val søknadsId2 = UUID.randomUUID()
+        val søknadsId3 = UUID.randomUUID()
         whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
             listOf(
                 SpreOppgave(
-                    søknadsId = "sid",
+                    søknadsId = søknadsId1.toString(),
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
                     opprettet = LocalDateTime.now().minusHours(2),
-                    modifisert = LocalDateTime.now().minusHours(1)
+                    modifisert = LocalDateTime.now().minusHours(1),
+                    avstemt = true
                 ),
                 SpreOppgave(
-                    søknadsId = "sid1",
+                    søknadsId = søknadsId2.toString(),
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
                     opprettet = LocalDateTime.now().minusHours(2),
-                    modifisert = LocalDateTime.now().minusHours(1)
+                    modifisert = LocalDateTime.now().minusHours(1),
+                    avstemt = true
                 ),
                 SpreOppgave(
-                    søknadsId = "sid2",
+                    søknadsId = søknadsId3.toString(),
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
                     opprettet = LocalDateTime.now().minusHours(2),
-                    modifisert = LocalDateTime.now().minusHours(1)
+                    modifisert = LocalDateTime.now().minusHours(1),
+                    avstemt = true
                 )
             )
         )
-        whenever(saksbehandlingsService.finnEksisterendeInnsending(any())).thenReturn(
+        whenever(saksbehandlingsService.finnEksisterendeInnsending(any())).thenAnswer {
             Innsending(
                 innsendingsId = "iid",
-                ressursId = "sid",
+                ressursId = it.arguments[0].toString(),
                 aktorId = "aktor",
                 saksId = "saksId",
                 journalpostId = "journalpost"
             )
-        )
-        whenever(syfosoknadConsumer.hentSoknad("sid1")).thenThrow(RuntimeException("I AM ERROR"))
+        }
+        whenever(syfosoknadConsumer.hentSoknad(søknadsId2.toString())).thenThrow(RuntimeException("I AM ERROR"))
         behandleVedTimeoutService.behandleTimeout()
         verify(saksbehandlingsService, times(2)).opprettOppgave(any(), any())
-        verify(oppgavestyringDAO, times(1)).settStatus("sid", OppgaveStatus.Opprettet)
-        verify(oppgavestyringDAO, times(1)).settStatus("sid2", OppgaveStatus.Opprettet)
+        verify(oppgavestyringDAO, times(1)).oppdaterOppgave(søknadsId1, null, OppgaveStatus.Opprettet)
+        verify(oppgavestyringDAO, times(1)).oppdaterOppgave(søknadsId3, null, OppgaveStatus.Opprettet)
     }
 
     @Test
     fun `Finner ikke søknad, skippes i Q`() {
+        val søknadsId1 = UUID.randomUUID()
         whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
             listOf(
                 SpreOppgave(
-                    søknadsId = "sid",
+                    søknadsId = søknadsId1.toString(),
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
                     opprettet = LocalDateTime.now().minusHours(2),
-                    modifisert = LocalDateTime.now().minusHours(1)
+                    modifisert = LocalDateTime.now().minusHours(1),
+                    avstemt = true
                 )
             )
         )
-        whenever(saksbehandlingsService.finnEksisterendeInnsending("sid")).thenReturn(
+        whenever(saksbehandlingsService.finnEksisterendeInnsending(søknadsId1.toString())).thenReturn(
             Innsending(
                 innsendingsId = "iid",
-                ressursId = "sid",
+                ressursId = søknadsId1.toString(),
                 aktorId = "aktor",
                 saksId = "saksId",
                 journalpostId = "journalpost"
             )
         )
         whenever(toggle.isQ()).thenReturn(true)
-        whenever(syfosoknadConsumer.hentSoknad("sid")).thenThrow(SøknadIkkeFunnetException("finner ikke"))
+        whenever(syfosoknadConsumer.hentSoknad(søknadsId1.toString())).thenThrow(SøknadIkkeFunnetException("finner ikke"))
         behandleVedTimeoutService.behandleTimeout()
-        verify(oppgavestyringDAO, times(1)).settStatus("sid", OppgaveStatus.IkkeOpprett)
-        verify(oppgavestyringDAO, times(1)).settTimeout("sid", null)
+
+        verify(oppgavestyringDAO, times(1)).oppdaterOppgave(søknadsId1, null, OppgaveStatus.IkkeOpprett)
     }
 
     @Test
     fun `Finner ikke søknad, skippes ikke i P`() {
+        val søknadsId1 = UUID.randomUUID()
         whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
             listOf(
                 SpreOppgave(
-                    søknadsId = "sid",
+                    søknadsId = søknadsId1.toString(),
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
                     opprettet = LocalDateTime.now().minusHours(2),
-                    modifisert = LocalDateTime.now().minusHours(1)
+                    modifisert = LocalDateTime.now().minusHours(1),
+                    avstemt = true
                 )
             )
         )
-        whenever(saksbehandlingsService.finnEksisterendeInnsending("sid")).thenReturn(
+        whenever(saksbehandlingsService.finnEksisterendeInnsending(søknadsId1.toString())).thenReturn(
             Innsending(
                 innsendingsId = "iid",
-                ressursId = "sid",
+                ressursId = søknadsId1.toString(),
                 aktorId = "aktor",
                 saksId = "saksId",
                 journalpostId = "journalpost"
             )
         )
         whenever(toggle.isQ()).thenReturn(false)
-        whenever(syfosoknadConsumer.hentSoknad("sid")).thenThrow(SøknadIkkeFunnetException("msg"))
+        whenever(syfosoknadConsumer.hentSoknad(søknadsId1.toString())).thenThrow(SøknadIkkeFunnetException("msg"))
         behandleVedTimeoutService.behandleTimeout()
-        verify(oppgavestyringDAO, never()).settStatus(any(), any())
-        verify(oppgavestyringDAO, never()).settTimeout(any(), any())
+        verify(oppgavestyringDAO, never()).oppdaterOppgave(any(), any(), any())
     }
 }

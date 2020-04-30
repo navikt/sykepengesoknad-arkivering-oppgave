@@ -70,7 +70,8 @@ class SpreOppgaverServiceTest {
                 timeout = timeout,
                 status = status,
                 opprettet = LocalDateTime.now(),
-                modifisert = LocalDateTime.now()
+                modifisert = LocalDateTime.now(),
+                avstemt = false
             )
         }
     }
@@ -194,8 +195,8 @@ class SpreOppgaverServiceTest {
             oppdateringstype = OppdateringstypeDTO.Utsett,
             timeout = timeout
         )
-        spreOppgaverService.prosesserOppgave(oppgave)
-        verify(oppgavestyringDAO, times(1)).nySpreOppgave(id.toString(), timeout, OppgaveStatus.Utsett)
+        spreOppgaverService.prosesserOppgave(oppgave, OppgaveKilde.Saksbehandling)
+        verify(oppgavestyringDAO, times(1)).nySpreOppgave(id, timeout, OppgaveStatus.Utsett, false)
     }
 
     @Test
@@ -207,8 +208,8 @@ class SpreOppgaverServiceTest {
             oppdateringstype = OppdateringstypeDTO.Opprett,
             timeout = null
         )
-        spreOppgaverService.prosesserOppgave(oppgave)
-        verify(oppgavestyringDAO, times(1)).nySpreOppgave(id.toString(), null, OppgaveStatus.Opprett)
+        spreOppgaverService.prosesserOppgave(oppgave, OppgaveKilde.Saksbehandling)
+        verify(oppgavestyringDAO, times(1)).nySpreOppgave(id, null, OppgaveStatus.Opprett, false)
     }
 
     @Test
@@ -220,8 +221,8 @@ class SpreOppgaverServiceTest {
             oppdateringstype = OppdateringstypeDTO.Ferdigbehandlet,
             timeout = null
         )
-        spreOppgaverService.prosesserOppgave(oppgave)
-        verify(oppgavestyringDAO, times(1)).nySpreOppgave(id.toString(), null, OppgaveStatus.IkkeOpprett)
+        spreOppgaverService.prosesserOppgave(oppgave, OppgaveKilde.Saksbehandling)
+        verify(oppgavestyringDAO, times(1)).nySpreOppgave(id, null, OppgaveStatus.IkkeOpprett, false)
     }
 
     @Test
@@ -236,24 +237,8 @@ class SpreOppgaverServiceTest {
             oppdateringstype = OppdateringstypeDTO.Utsett,
             timeout = timeout
         )
-        spreOppgaverService.prosesserOppgave(oppgave)
-        verify(oppgavestyringDAO, times(1)).settTimeout(id.toString(), timeout)
-    }
-
-    @Test
-    fun `status Utsett og oppdatering utsett skal ikke kalle settTimeout når timeout er før eksisterende timeout`() {
-        val timeout = LocalDateTime.now()
-        settTestMiljø(OppgaveStatus.Utsett, timeout)
-
-        val id = UUID.randomUUID()
-        val oppgave = OppgaveDTO(
-            dokumentId = id,
-            dokumentType = DokumentTypeDTO.Søknad,
-            oppdateringstype = OppdateringstypeDTO.Utsett,
-            timeout = timeout.minusHours(1)
-        )
-        spreOppgaverService.prosesserOppgave(oppgave)
-        verify(oppgavestyringDAO, never()).settTimeout(id.toString(), timeout)
+        spreOppgaverService.prosesserOppgave(oppgave, OppgaveKilde.Saksbehandling)
+        verify(oppgavestyringDAO, times(1)).oppdaterOppgave(id, timeout, OppgaveStatus.Utsett)
     }
 
     @Test
@@ -267,9 +252,8 @@ class SpreOppgaverServiceTest {
             timeout = null
         )
 
-        spreOppgaverService.prosesserOppgave(oppgave)
-        verify(oppgavestyringDAO, times(1)).settTimeout(id.toString(), null)
-        verify(oppgavestyringDAO, times(1)).settStatus(id.toString(), OppgaveStatus.Opprett)
+        spreOppgaverService.prosesserOppgave(oppgave, OppgaveKilde.Saksbehandling)
+        verify(oppgavestyringDAO, times(1)).oppdaterOppgave(id, null, OppgaveStatus.Opprett)
     }
 
     @Test
@@ -283,9 +267,8 @@ class SpreOppgaverServiceTest {
             timeout = null
         )
 
-        spreOppgaverService.prosesserOppgave(oppgave)
-        verify(oppgavestyringDAO, times(1)).settTimeout(id.toString(), null)
-        verify(oppgavestyringDAO, times(1)).settStatus(id.toString(), OppgaveStatus.IkkeOpprett)
+        spreOppgaverService.prosesserOppgave(oppgave, OppgaveKilde.Saksbehandling)
+        verify(oppgavestyringDAO, times(1)).oppdaterOppgave(id, null, OppgaveStatus.IkkeOpprett)
     }
 
     @Test
@@ -299,9 +282,7 @@ class SpreOppgaverServiceTest {
             timeout = LocalDateTime.MAX
         )
 
-        spreOppgaverService.prosesserOppgave(oppgave)
-        verify(oppgavestyringDAO, never()).settTimeout(any(), any())
-        verify(oppgavestyringDAO, never()).settStatus(any(), any())
-        verify(oppgavestyringDAO, never()).nySpreOppgave(any(), any(), any())
+        spreOppgaverService.prosesserOppgave(oppgave, OppgaveKilde.Saksbehandling)
+        verify(oppgavestyringDAO, never()).oppdaterOppgave(any(), any(), any())
     }
 }

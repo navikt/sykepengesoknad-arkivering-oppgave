@@ -4,6 +4,7 @@ import no.nav.syfo.domain.OppgaveDTO
 import no.nav.syfo.kafka.NAV_CALLID
 import no.nav.syfo.kafka.getSafeNavCallIdHeaderAsString
 import no.nav.syfo.log
+import no.nav.syfo.service.OppgaveKilde
 import no.nav.syfo.service.SpreOppgaverService
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.MDC
@@ -19,7 +20,7 @@ class SpreOppgaverListener(private val spreOppgaverService: SpreOppgaverService)
     fun listen(cr: ConsumerRecord<String, OppgaveDTO>, acknowledgment: Acknowledgment) {
         try {
             MDC.put(NAV_CALLID, getSafeNavCallIdHeaderAsString(cr.headers()))
-            spreOppgaverService.prosesserOppgave(cr.value())
+            spreOppgaverService.prosesserOppgave(cr.value(), OppgaveKilde.Saksbehandling)
             acknowledgment.acknowledge()
         }  catch (e: Exception) {
             log.error("Uventet feil ved lesing fra ${cr.topic()}", e)

@@ -10,6 +10,7 @@ import no.nav.syfo.log
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
+import java.util.UUID
 
 @Component
 class BehandleVedTimeoutService(
@@ -30,8 +31,7 @@ class BehandleVedTimeoutService(
                 if (innsending != null) {
                     val søknad = syfosoknadConsumer.hentSoknad(it.søknadsId).toSykepengesoknad()
                     saksbehandlingsService.opprettOppgave(søknad, innsending)
-                    oppgavestyringDAO.settTimeout(it.søknadsId, null)
-                    oppgavestyringDAO.settStatus(it.søknadsId, OppgaveStatus.Opprettet)
+                    oppgavestyringDAO.oppdaterOppgave(UUID.fromString(it.søknadsId), null, OppgaveStatus.Opprettet)
                 } else {
                     log.info("Fant ikke eksisterende innsending, ignorerer søknad med id ${it.søknadsId}")
                     if (toggle.isQ() && it.opprettet < LocalDateTime.now().minusDays(1)) {
@@ -43,8 +43,7 @@ class BehandleVedTimeoutService(
             } catch(e: SøknadIkkeFunnetException) {
                 if (toggle.isQ()) {
                     log.warn("Søknaden ${it.søknadsId} finnes ikke i Q, hopper over oppgaveopprettelse og fortsetter")
-                    oppgavestyringDAO.settTimeout(it.søknadsId, null)
-                    oppgavestyringDAO.settStatus(it.søknadsId, OppgaveStatus.IkkeOpprett)
+                    oppgavestyringDAO.oppdaterOppgave(UUID.fromString(it.søknadsId), null, OppgaveStatus.IkkeOpprett)
                 }
             } catch (error: RuntimeException) {
                 log.error("Runtime-feil ved opprettelse av oppgave ${it.søknadsId}", error)

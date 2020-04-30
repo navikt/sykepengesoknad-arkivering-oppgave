@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.sql.ResultSet
 import java.time.LocalDateTime
+import java.util.UUID
 
 @Service
 @Transactional
@@ -17,28 +18,18 @@ class OppgavestyringDAO(private val namedParameterJdbcTemplate: NamedParameterJd
 
     val log = log()
 
-    fun nySpreOppgave(søknadsId: String, timeout: LocalDateTime?, status: OppgaveStatus) {
+    fun nySpreOppgave(søknadsId: UUID, timeout: LocalDateTime?, status: OppgaveStatus, avstemt: Boolean = false) {
         log.info("Oppretter ny SpreOppgave for id $søknadsId og timeout $timeout")
         val opprettet = LocalDateTime.now()
         namedParameterJdbcTemplate.update(
-            "INSERT INTO OPPGAVESTYRING (SYKEPENGESOKNAD_ID, TIMEOUT, STATUS, OPPRETTET, MODIFISERT) values (:soknadsId, :timeout, :status, :opprettet, :modifisert)",
+            "INSERT INTO OPPGAVESTYRING (SYKEPENGESOKNAD_ID, TIMEOUT, STATUS, OPPRETTET, MODIFISERT, AVSTEMT) values (:soknadsId, :timeout, :status, :opprettet, :modifisert, :avstemt)",
             MapSqlParameterSource()
-                .addValue("soknadsId", søknadsId)
+                .addValue("soknadsId", søknadsId.toString())
                 .addValue("timeout", timeout)
-                .addValue("status", status.toString())
+                .addValue("status", status.name)
                 .addValue("opprettet", opprettet)
                 .addValue("modifisert", opprettet)
-        )
-    }
-
-    fun settStatus(søknadsId: String, status: OppgaveStatus) {
-        log.info("Oppdaterer status for $søknadsId til $status")
-        namedParameterJdbcTemplate.update(
-            "UPDATE OPPGAVESTYRING SET STATUS = :status, MODIFISERT = :modifisert WHERE SYKEPENGESOKNAD_ID = :soknadsId",
-            MapSqlParameterSource()
-                .addValue("status", status.toString())
-                .addValue("soknadsId", søknadsId)
-                .addValue("modifisert", LocalDateTime.now())
+                .addValue("avstemt", if(avstemt) 1 else 0)
         )
     }
 
@@ -69,22 +60,31 @@ class OppgavestyringDAO(private val namedParameterJdbcTemplate: NamedParameterJd
 
     fun hentOppgaverTilOpprettelse(): List<SpreOppgave> {
         return namedParameterJdbcTemplate.query(
-            "SELECT * FROM OPPGAVESTYRING WHERE STATUS = 'Opprett' OR (STATUS = 'Utsett' AND TIMEOUT < :now)",
+            "SELECT * FROM OPPGAVESTYRING WHERE AVSTEMT = 1 AND (STATUS = 'Opprett' OR (STATUS = 'Utsett' AND TIMEOUT < :now))",
             MapSqlParameterSource()
                 .addValue("now", LocalDateTime.now()),
             oppgavestyringRowMapper
         )
     }
 
-    fun settTimeout(søknadsId: String, timeout: LocalDateTime?) {
-        log.info("Endrer timeout til $timeout for id $søknadsId")
+    fun oppdaterOppgave(søknadsId: UUID, timeout: LocalDateTime?, status: OppgaveStatus) {
         namedParameterJdbcTemplate.update(
-            "UPDATE OPPGAVESTYRING SET TIMEOUT = :timeout, MODIFISERT = :oppdatert WHERE SYKEPENGESOKNAD_ID = :soknadsId",
+            "UPDATE OPPGAVESTYRING SET STATUS = :status, MODIFISERT = :modifisert, timeout = :timeout WHERE SYKEPENGESOKNAD_ID = :soknadsId",
+            MapSqlParameterSource()
+                .addValue("status", status.name)
+                .addValue("timeout", timeout)
+                .addValue("soknadsId", søknadsId.toString())
+                .addValue("modifisert", LocalDateTime.now())
+        )
+    }
+
+    fun avstem(søknadsId: String) {
+        namedParameterJdbcTemplate.update(
+            "UPDATE OPPGAVESTYRING SET AVSTEMT = 1 WHERE SYKEPENGESOKNAD_ID = :soknadsId",
             MapSqlParameterSource()
                 .addValue("soknadsId", søknadsId)
-                .addValue("timeout", timeout)
-                .addValue("oppdatert", LocalDateTime.now())
         )
+        log.info("Avstemte oppgave på søknad: $søknadsId")
     }
 }
 
@@ -97,7 +97,8 @@ data class SpreOppgave(
     val timeout: LocalDateTime?,
     val status: OppgaveStatus,
     val opprettet: LocalDateTime,
-    val modifisert: LocalDateTime
+    val modifisert: LocalDateTime,
+    val avstemt: Boolean
 )
 
 val oppgavestyringRowMapper: (ResultSet, Int) -> SpreOppgave = { resultSet, _ ->
@@ -106,6 +107,7 @@ val oppgavestyringRowMapper: (ResultSet, Int) -> SpreOppgave = { resultSet, _ ->
         timeout = resultSet.getObject("TIMEOUT", LocalDateTime::class.java),
         status = OppgaveStatus.valueOf(resultSet.getString("STATUS")),
         opprettet = resultSet.getObject("OPPRETTET", LocalDateTime::class.java),
-        modifisert = resultSet.getObject("MODIFISERT", LocalDateTime::class.java)
+        modifisert = resultSet.getObject("MODIFISERT", LocalDateTime::class.java),
+        avstemt = resultSet.getInt("AVSTEMT") == 1
     )
 }
