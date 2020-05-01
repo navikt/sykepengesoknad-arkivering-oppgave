@@ -64,7 +64,8 @@ fun SykepengesoknadDTO.toSykepengesoknad(): Sykepengesoknad {
             avsendertype = avsendertype.enumValueOrNull(),
             ettersending = ettersending,
             egenmeldtSykmelding = egenmeldtSykmelding,
-            orgNummer = arbeidsgiver?.orgnummer
+            orgNummer = arbeidsgiver?.orgnummer,
+            harRedusertVenteperiode = harRedusertVenteperiode ?: false
     )
 }
 

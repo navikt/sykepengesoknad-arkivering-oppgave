@@ -120,4 +120,61 @@ Ja""".trimIndent())
         assertThat(innsendingIDatabase.oppgaveId).isEqualTo(oppgaveID.toString())
         assertThat(innsendingIDatabase.behandlet).isNotNull()
     }
+
+    @Test
+    fun `Kafkamelding med redusertVenteperiode setter riktig behandlingstema`() {
+        val aktorId = "aktor"
+        whenever(aktorConsumer.finnFnr(aktorId)).thenReturn("fnr")
+        val saksId = "saksId"
+        whenever(sakConsumer.opprettSak(aktorId)).thenReturn(saksId)
+        val oppgaveID = 1
+        whenever(oppgaveConsumer.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
+
+        val soknad = SykepengesoknadDTO(
+            aktorId = aktorId,
+            id = UUID.randomUUID().toString(),
+            opprettet = LocalDateTime.now(),
+            fom = LocalDate.of(2020, 5, 1),
+            tom = LocalDate.of(2020, 5, 5),
+            type = SoknadstypeDTO.SELVSTENDIGE_OG_FRILANSERE,
+            sporsmal = listOf(SporsmalDTO(
+                id = UUID.randomUUID().toString(),
+                tag = "TAGGEN",
+                sporsmalstekst = "Har systemet gode integrasjonstester?",
+                svartype = SvartypeDTO.JA_NEI,
+                svar = listOf(SvarDTO(verdi = "JA"))
+
+            )),
+            status = SoknadsstatusDTO.SENDT,
+            sendtNav = LocalDateTime.now(),
+            fodselsnummer = null,
+            harRedusertVenteperiode = true
+        )
+
+        soknadSendtListener.listen(skapConsumerRecord(soknad.id!!, soknad), acknowledgment)
+
+        val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
+        verify(oppgaveConsumer).opprettOppgave(captor.capture())
+
+        val oppgaveRequest = captor.firstValue
+        assertThat(oppgaveRequest.aktoerId).isEqualTo(aktorId)
+        assertThat(oppgaveRequest.journalpostId).isEqualTo("journalpostId")
+        assertThat(oppgaveRequest.saksreferanse).isEqualTo(saksId)
+        assertThat(oppgaveRequest.beskrivelse).isEqualTo(
+            """
+Søknad om sykepenger fra Selvstendig Næringsdrivende / Frilanser for perioden 01.05.2020 - 05.05.2020
+
+Har systemet gode integrasjonstester?
+Ja""".trimIndent())
+        assertThat(oppgaveRequest.tema).isEqualTo("SYK")
+        assertThat(oppgaveRequest.oppgavetype).isEqualTo("SOK")
+        assertThat(oppgaveRequest.prioritet).isEqualTo("NORM")
+        assertThat(oppgaveRequest.behandlingstema).isNull()
+        assertThat(oppgaveRequest.behandlingstype).isEqualTo("ae0247")
+
+        val innsendingIDatabase = innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id!!)!!
+        assertThat(innsendingIDatabase.ressursId).isEqualTo(soknad.id)
+        assertThat(innsendingIDatabase.oppgaveId).isEqualTo(oppgaveID.toString())
+        assertThat(innsendingIDatabase.behandlet).isNotNull()
+    }
 }
