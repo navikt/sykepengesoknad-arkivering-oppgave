@@ -68,6 +68,7 @@ class OppgavestyringDAO(private val namedParameterJdbcTemplate: NamedParameterJd
     }
 
     fun oppdaterOppgave(søknadsId: UUID, timeout: LocalDateTime?, status: OppgaveStatus) {
+        log.info("Oppdaterer SpreOppgave på søknad: $søknadsId med verdier: timeout: $timeout og status: ${status.name}")
         namedParameterJdbcTemplate.update(
             "UPDATE OPPGAVESTYRING SET STATUS = :status, MODIFISERT = :modifisert, timeout = :timeout WHERE SYKEPENGESOKNAD_ID = :soknadsId",
             MapSqlParameterSource()
