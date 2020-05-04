@@ -11,7 +11,7 @@ import no.nav.syfo.kafka.KafkaErrorHandler
 import no.nav.syfo.kafka.felles.SykepengesoknadDTO
 import no.nav.syfo.kafka.soknad.deserializer.FunctionDeserializer
 import no.nav.syfo.kafka.soknad.serializer.FunctionSerializer
-import org.apache.kafka.common.serialization.Deserializer
+import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.kafka.common.serialization.StringSerializer
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties
@@ -30,46 +30,46 @@ import org.springframework.kafka.listener.ContainerProperties
 class KafkaConfig(private val kafkaErrorHandler: KafkaErrorHandler, private val properties: KafkaProperties) {
 
     private val objectMapper = ObjectMapper()
-            .registerModule(JavaTimeModule())
-            .registerModule(KotlinModule())
-            .configure(READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE, true)
-            .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
+        .registerModule(JavaTimeModule())
+        .registerModule(KotlinModule())
+        .configure(READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE, true)
+        .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
 
 
     @Bean
     fun kafkaListenerContainerFactory(consumerFactory: ConsumerFactory<String, SykepengesoknadDTO>): ConcurrentKafkaListenerContainerFactory<String, SykepengesoknadDTO> =
-            ConcurrentKafkaListenerContainerFactory<String, SykepengesoknadDTO>().apply {
-                containerProperties.ackMode = ContainerProperties.AckMode.MANUAL_IMMEDIATE
-                setErrorHandler(kafkaErrorHandler)
-                this.consumerFactory = consumerFactory
-            }
+        ConcurrentKafkaListenerContainerFactory<String, SykepengesoknadDTO>().apply {
+            containerProperties.ackMode = ContainerProperties.AckMode.MANUAL_IMMEDIATE
+            setErrorHandler(kafkaErrorHandler)
+            this.consumerFactory = consumerFactory
+        }
 
 
     @Bean
     fun consumerFactory(properties: KafkaProperties): ConsumerFactory<String, SykepengesoknadDTO> {
         return DefaultKafkaConsumerFactory(
-                properties.buildConsumerProperties(),
-                StringDeserializer(),
-                FunctionDeserializer { bytes -> objectMapper.readValue(bytes, SykepengesoknadDTO::class.java) }
+            properties.buildConsumerProperties(),
+            StringDeserializer(),
+            FunctionDeserializer { bytes -> objectMapper.readValue(bytes, SykepengesoknadDTO::class.java) }
         )
     }
 
     @Bean
     fun rebehandlingConsumerFactory(properties: KafkaProperties): ConsumerFactory<String, Sykepengesoknad> {
         return DefaultKafkaConsumerFactory(
-                properties.buildConsumerProperties(),
-                StringDeserializer(),
-                FunctionDeserializer { bytes -> objectMapper.readValue(bytes, Sykepengesoknad::class.java) }
-        )
+            properties.buildConsumerProperties()
+                .plus(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "latest"),
+            StringDeserializer(),
+            FunctionDeserializer { bytes -> objectMapper.readValue(bytes, Sykepengesoknad::class.java) })
     }
 
     @Bean
     fun rebehandlingContainerFactory(consumerFactory: ConsumerFactory<String, Sykepengesoknad>): ConcurrentKafkaListenerContainerFactory<String, Sykepengesoknad> =
-            ConcurrentKafkaListenerContainerFactory<String, Sykepengesoknad>().apply {
-                containerProperties.ackMode = ContainerProperties.AckMode.MANUAL_IMMEDIATE
-                setErrorHandler(kafkaErrorHandler)
-                this.consumerFactory = consumerFactory
-            }
+        ConcurrentKafkaListenerContainerFactory<String, Sykepengesoknad>().apply {
+            containerProperties.ackMode = ContainerProperties.AckMode.MANUAL_IMMEDIATE
+            setErrorHandler(kafkaErrorHandler)
+            this.consumerFactory = consumerFactory
+        }
 
     @Bean
     fun spreOppgaverConsumerFactory(properties: KafkaProperties): ConsumerFactory<String, OppgaveDTO> {
@@ -90,11 +90,11 @@ class KafkaConfig(private val kafkaErrorHandler: KafkaErrorHandler, private val 
 
     @Bean
     fun kafkaTemplate(): KafkaTemplate<String, Sykepengesoknad> = KafkaTemplate(
-            DefaultKafkaProducerFactory(
-                    properties.buildProducerProperties(),
-                    StringSerializer(),
-                    FunctionSerializer<Sykepengesoknad>(objectMapper::writeValueAsBytes)
-            )
+        DefaultKafkaProducerFactory(
+            properties.buildProducerProperties(),
+            StringSerializer(),
+            FunctionSerializer<Sykepengesoknad>(objectMapper::writeValueAsBytes)
+        )
     )
 
 }
