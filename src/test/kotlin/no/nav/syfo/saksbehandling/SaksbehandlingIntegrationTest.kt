@@ -3,6 +3,7 @@ package no.nav.syfo.saksbehandling
 import com.nhaarman.mockitokotlin2.KArgumentCaptor
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.argumentCaptor
+import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.syfo.TestApplication
@@ -97,27 +98,11 @@ class SaksbehandlingIntegrationTest {
         soknadSendtListener.listen(skapConsumerRecord(soknad.id!!, soknad), acknowledgment)
 
         val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
-        verify(oppgaveConsumer).opprettOppgave(captor.capture())
-
-        val oppgaveRequest = captor.firstValue
-        assertThat(oppgaveRequest.aktoerId).isEqualTo(aktorId)
-        assertThat(oppgaveRequest.journalpostId).isEqualTo("journalpostId")
-        assertThat(oppgaveRequest.saksreferanse).isEqualTo(saksId)
-        assertThat(oppgaveRequest.beskrivelse).isEqualTo(
-                """
-Søknad om sykepenger for perioden 04.05.2019 - 08.05.2019
-
-Har systemet gode integrasjonstester?
-Ja""".trimIndent())
-        assertThat(oppgaveRequest.tema).isEqualTo("SYK")
-        assertThat(oppgaveRequest.oppgavetype).isEqualTo("SOK")
-        assertThat(oppgaveRequest.prioritet).isEqualTo("NORM")
-        assertThat(oppgaveRequest.behandlingstema).isEqualTo("ab0061")
-
+        verify(oppgaveConsumer, never()).opprettOppgave(captor.capture())
 
         val innsendingIDatabase = innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id!!)!!
         assertThat(innsendingIDatabase.ressursId).isEqualTo(soknad.id)
-        assertThat(innsendingIDatabase.oppgaveId).isEqualTo(oppgaveID.toString())
+        assertThat(innsendingIDatabase.oppgaveId).isNull()
         assertThat(innsendingIDatabase.behandlet).isNotNull()
     }
 

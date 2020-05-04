@@ -3,12 +3,15 @@ package no.nav.syfo.service
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.nhaarman.mockitokotlin2.KArgumentCaptor
+import com.nhaarman.mockitokotlin2.argumentCaptor
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.syfo.TestApplication
 import no.nav.syfo.any
 import no.nav.syfo.consumer.aktor.AktorConsumer
 import no.nav.syfo.consumer.oppgave.OppgaveConsumer
+import no.nav.syfo.consumer.oppgave.OppgaveRequest
 import no.nav.syfo.consumer.oppgave.OppgaveResponse
 import no.nav.syfo.consumer.repository.InnsendingDAO
 import no.nav.syfo.consumer.repository.TidligereInnsending
@@ -19,6 +22,7 @@ import no.nav.syfo.domain.Innsending
 import no.nav.syfo.domain.dto.Soknadstype.ARBEIDSTAKERE
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.syfo.kafka.producer.RebehandlingProducer
+import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -85,22 +89,30 @@ class SaksbehandlingsServiceTest {
         saksbehandlingsService.behandleSoknad(sykepengesoknadUtenOppgave)
         verify(behandleJournalConsumer, times(1)).opprettJournalpost(any(), any())
         verify(oppgaveConsumer, never()).opprettOppgave(any())
-        given(innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknadUtenOppgave.id)).willReturn(Innsending(
-                innsendingsId = "innsending-guid",
-                ressursId = sykepengesoknadUtenOppgave.id,
-                aktorId = sykepengesoknadUtenOppgave.aktorId,
-                saksId = "ny-sak-fra-gsak",
-                journalpostId = "journalpostId",
-                oppgaveId = null,
-                behandlet = now.toLocalDate(),
-                soknadFom = sykepengesoknadUtenOppgave.fom,
-                soknadTom = sykepengesoknadUtenOppgave.tom
-        ))
+        given(innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknadUtenOppgave.id)).willReturn(
+            innsending(sykepengesoknadUtenOppgave)
+        )
 
         saksbehandlingsService.behandleSoknad(sykepengesoknadEttersendingTilNAV)
-        saksbehandlingsService.opprettOppgave(sykepengesoknadEttersendingTilNAV)
+        saksbehandlingsService.opprettOppgave(sykepengesoknadEttersendingTilNAV, innsending(sykepengesoknadEttersendingTilNAV))
         verify(behandleJournalConsumer, times(1)).opprettJournalpost(any(), any())
         verify(oppgaveConsumer, times(1)).opprettOppgave(any())
+    }
+
+    private fun innsending(
+        sykepengesoknadUtenOppgave: Sykepengesoknad
+    ): Innsending {
+        return Innsending(
+            innsendingsId = "innsending-guid",
+            ressursId = sykepengesoknadUtenOppgave.id,
+            aktorId = sykepengesoknadUtenOppgave.aktorId,
+            saksId = "ny-sak-fra-gsak",
+            journalpostId = "journalpostId",
+            oppgaveId = null,
+            behandlet = LocalDate.now(),
+            soknadFom = sykepengesoknadUtenOppgave.fom,
+            soknadTom = sykepengesoknadUtenOppgave.tom
+        )
     }
 
     @Test
@@ -188,5 +200,38 @@ class SaksbehandlingsServiceTest {
 
         verify(sakConsumer, never()).opprettSak(ArgumentMatchers.anyString())
         verify(innsendingDAO).oppdaterSaksId("innsending-guid", "sak2")
+    }
+
+    @Test
+    fun `oppretter oppgave med korrekte felter` () {
+        val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
+        val søknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
+        saksbehandlingsService.opprettOppgave(søknad, innsending(søknad))
+        verify(oppgaveConsumer).opprettOppgave(captor.capture())
+        val oppgaveRequest = captor.firstValue
+        Assertions.assertThat(oppgaveRequest.aktoerId).isEqualTo(aktorId)
+        Assertions.assertThat(oppgaveRequest.journalpostId).isEqualTo("journalpostId")
+        Assertions.assertThat(oppgaveRequest.saksreferanse).isEqualTo("ny-sak-fra-gsak")
+        Assertions.assertThat(oppgaveRequest.beskrivelse).isEqualTo(
+            """
+Søknad om sykepenger for perioden 16.10.2018 - 24.10.2018
+
+Arbeidsgiver: ARBEIDSGIVER A/S
+Organisasjonsnummer: 1257358
+
+Periode 1:
+16.10.2018 - 20.10.2018
+Grad: 100
+
+Periode 2:
+21.10.2018 - 24.10.2018
+Grad: 40
+
+Betaler arbeidsgiveren lønnen din når du er syk?
+Vet ikke""".trimIndent())
+        Assertions.assertThat(oppgaveRequest.tema).isEqualTo("SYK")
+        Assertions.assertThat(oppgaveRequest.oppgavetype).isEqualTo("SOK")
+        Assertions.assertThat(oppgaveRequest.prioritet).isEqualTo("NORM")
+        Assertions.assertThat(oppgaveRequest.behandlingstema).isEqualTo("ab0061")
     }
 }
