@@ -1,5 +1,6 @@
 package no.nav.syfo.kafka.consumer
 
+import no.nav.syfo.domain.DokumentTypeDTO
 import no.nav.syfo.domain.OppgaveDTO
 import no.nav.syfo.kafka.NAV_CALLID
 import no.nav.syfo.kafka.getSafeNavCallIdHeaderAsString
@@ -20,7 +21,10 @@ class SpreOppgaverListener(private val spreOppgaverService: SpreOppgaverService)
     fun listen(cr: ConsumerRecord<String, OppgaveDTO>, acknowledgment: Acknowledgment) {
         try {
             MDC.put(NAV_CALLID, getSafeNavCallIdHeaderAsString(cr.headers()))
-            spreOppgaverService.prosesserOppgave(cr.value(), OppgaveKilde.Saksbehandling)
+            val oppgave = cr.value()
+            if (oppgave.dokumentType == DokumentTypeDTO.Søknad) {
+                spreOppgaverService.prosesserOppgave(cr.value(), OppgaveKilde.Saksbehandling)
+            }
             acknowledgment.acknowledge()
         }  catch (e: Exception) {
             log.error("Uventet feil ved lesing fra ${cr.topic()}", e)
