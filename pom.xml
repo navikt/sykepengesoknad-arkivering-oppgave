@@ -49,7 +49,7 @@
         <h2.version>1.4.196</h2.version>
         <flyway-core.version>5.1.4</flyway-core.version>
         <maven-enforcer-plugin.version>3.0.0-M2</maven-enforcer-plugin.version>
-        <syfokafka.version>2020.04.08-08.07-31f7b451</syfokafka.version>
+        <syfokafka.version>2020.05.26-10.39-3723902c</syfokafka.version>
         <tjenestespesifikasjoner.version>1.2019.08.16-13.46-35cbdfd492d4</tjenestespesifikasjoner.version>
         <cxf.version>3.2.10</cxf.version>
         <jackson.version>2.9.9</jackson.version>
