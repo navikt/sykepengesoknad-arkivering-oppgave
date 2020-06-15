@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.HttpStatus.OK
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 
@@ -26,38 +27,38 @@ class SyfosoknadConsumer(private val restTemplate: RestTemplate,
     val log = log()
 
     fun hentSoknad(soknadId: String): SykepengesoknadDTO {
-        val uriBuilder = UriComponentsBuilder.fromHttpUrl("$url/api/soknader/$soknadId/kafkaformat")
+        try {
+            val uriBuilder = UriComponentsBuilder.fromHttpUrl("$url/api/soknader/$soknadId/kafkaformat")
 
 
-        val headers = HttpHeaders()
-        headers.contentType = MediaType.APPLICATION_JSON
-        headers.set("Authorization", "Bearer ${azureAdTokenConsumer.getAccessToken(resource)}")
-        headers.set(NAV_CALLID, callId())
+            val headers = HttpHeaders()
+            headers.contentType = MediaType.APPLICATION_JSON
+            headers.set("Authorization", "Bearer ${azureAdTokenConsumer.getAccessToken(resource)}")
+            headers.set(NAV_CALLID, callId())
 
-        val result = restTemplate
-                .exchange(
-                        uriBuilder.toUriString(),
-                        HttpMethod.GET,
-                        HttpEntity<Any>(headers),
-                        SykepengesoknadDTO::class.java
-                )
+            val result = restTemplate
+                    .exchange(
+                            uriBuilder.toUriString(),
+                            HttpMethod.GET,
+                            HttpEntity<Any>(headers),
+                            SykepengesoknadDTO::class.java
+                    )
 
-        if (result.statusCode != OK) {
-            when(result.statusCode) {
-                NOT_FOUND -> { throw SøknadIkkeFunnetException("Fant ikke søknad: $soknadId") }
-                else -> {
-                    val message = "Kall mot syfosoknad feiler med HTTP-" + result.statusCode
-                    log.error(message)
-                    throw RuntimeException(message)
-                }
+            if (result.statusCode != OK) {
+                val message = "Kall mot syfosoknad feiler med HTTP-" + result.statusCode
+                log.error(message)
+                throw RuntimeException(message)
             }
+
+
+            result.body?.let { return it }
+
+            val message = "Kall mot syfosoknad returnerer ikke data"
+            log.error(message)
+            throw RuntimeException(message)
+        } catch (ex: HttpClientErrorException.NotFound) {
+            throw SøknadIkkeFunnetException("Fant ikke søknad: $soknadId")
         }
-
-        result.body?.let { return it }
-
-        val message = "Kall mot syfosoknad returnerer ikke data"
-        log.error(message)
-        throw RuntimeException(message)
     }
 }
 
