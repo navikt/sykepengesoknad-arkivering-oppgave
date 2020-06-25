@@ -44,7 +44,7 @@ constructor(private val behandleFeiledeSoknaderService: BehandleFeiledeSoknaderS
                 }
 
             val sykepengesoknad = cr.value() as Sykepengesoknad
-            val innsending = innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknad.id)!!
+            val innsending = innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknad.id)
             behandleFeiledeSoknaderService.behandleFeiletSoknad(innsending, sykepengesoknad)
             acknowledgment.acknowledge()
             log.info("Søknad med id: ${sykepengesoknad.id} fullførte rebehandling")
