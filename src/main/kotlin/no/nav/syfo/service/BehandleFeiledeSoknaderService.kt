@@ -9,9 +9,9 @@ import javax.inject.Inject
 @Component
 class BehandleFeiledeSoknaderService @Inject
 constructor(private val spreOppgaverService: SpreOppgaverService) {
-    fun behandleFeiletSoknad(innsending: Innsending, sykepengesoknad: Sykepengesoknad) {
+    fun behandleFeiletSoknad(innsending: Innsending?, sykepengesoknad: Sykepengesoknad) {
         try {
-            if (innsending.behandlet != null) {
+            if (innsending?.behandlet != null) {
                 log().warn(
                     "Forsøkte å rebehandle ferdigbehandlet søknad med innsendingid: {} og søknadsid: {}",
                     innsending.innsendingsId, sykepengesoknad.id

@@ -23,6 +23,7 @@ import no.nav.syfo.kafka.felles.SporsmalDTO
 import no.nav.syfo.kafka.felles.SvarDTO
 import no.nav.syfo.kafka.felles.SvartypeDTO
 import no.nav.syfo.kafka.felles.SykepengesoknadDTO
+import no.nav.syfo.kafka.mapper.toSykepengesoknad
 import no.nav.syfo.skapConsumerRecord
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
@@ -164,5 +165,47 @@ class RebehandlingIntegrationTest {
         assertThat(innsendingIDatabaseEtterRebehandling.behandlet).isNotNull()
 
         assertThat(innsendingIDatabaseEtterRebehandling.innsendingsId).isEqualTo(innsendingIDatabaseEtterFeiling.innsendingsId)
+    }
+
+    @Test
+    fun `Vi rebehandler en søknad der innsending ikke lagres`() {
+        val aktorId = "aktor"
+        whenever(aktorConsumer.finnFnr(aktorId)).thenReturn("fnr")
+        val saksId = "saksId"
+        whenever(sakConsumer.opprettSak(aktorId)).thenReturn(saksId)
+        val oppgaveID = 1
+        whenever(oppgaveConsumer.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
+        val soknad = SykepengesoknadDTO(
+                aktorId = aktorId,
+                id = UUID.randomUUID().toString(),
+                opprettet = LocalDateTime.now(),
+                fom = LocalDate.of(2019, 5, 4),
+                tom = LocalDate.of(2019, 5, 8),
+                type = SoknadstypeDTO.ARBEIDSTAKERE,
+                sporsmal = listOf(SporsmalDTO(
+                        id = UUID.randomUUID().toString(),
+                        tag = "TAGGEN",
+                        sporsmalstekst = "Fungerer rebehandlinga?",
+                        svartype = SvartypeDTO.JA_NEI,
+                        svar = listOf(SvarDTO(verdi = "JA"))
+
+                )),
+                status = SoknadsstatusDTO.SENDT,
+                sendtNav = LocalDateTime.now(),
+                fodselsnummer = null
+        ).toSykepengesoknad()
+
+        //Rebehandle uten innsending i database
+        rebehandlingProducerMock.leggPaRebehandlingTopic(soknad, LocalDateTime.now())
+        rebehandlingListener.listen(rebehandlingProducerMock.hentSisteSomConsumerRecord(), acknowledgmentRebehandling)
+        verify(acknowledgmentRebehandling).acknowledge()
+
+        val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
+        verify(oppgaveConsumer, never()).opprettOppgave(captor.capture())
+
+        val innsendingIDatabaseEtterRebehandling = innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id)!!
+        assertThat(innsendingIDatabaseEtterRebehandling.ressursId).isEqualTo(soknad.id)
+        assertThat(innsendingIDatabaseEtterRebehandling.oppgaveId).isNull()
+        assertThat(innsendingIDatabaseEtterRebehandling.behandlet).isNotNull()
     }
 }
