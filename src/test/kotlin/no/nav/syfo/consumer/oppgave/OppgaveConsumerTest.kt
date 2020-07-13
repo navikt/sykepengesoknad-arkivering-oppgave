@@ -148,6 +148,7 @@ class OppgaveConsumerTest {
                 "",
                 "fnr",
                 "Navn",
+                true,
                 soknadstype,
                 now().minusWeeks(3),
                 now().minusDays(3),
