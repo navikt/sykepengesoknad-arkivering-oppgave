@@ -12,12 +12,15 @@ import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentGeografiskTilknytningR
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonnavnBolkRequest
 import org.springframework.stereotype.Component
 import javax.inject.Inject
+import org.springframework.retry.annotation.Backoff
+import org.springframework.retry.annotation.Retryable
 
 @Component
 class PersonConsumer @Inject
 constructor(private val personV3: PersonV3) {
 
 
+    @Retryable(backoff = Backoff(delay = 5000))
     fun finnBrukerPersonnavnByFnr(fnr: String): String {
         return personV3.hentPersonnavnBolk(HentPersonnavnBolkRequest()
                 .withAktoerListe(PersonIdent().withIdent(NorskIdent().withIdent(fnr))))
@@ -27,6 +30,7 @@ constructor(private val personV3: PersonV3) {
                 .first()
     }
 
+    @Retryable(backoff = Backoff(delay = 5000))
     fun hentGeografiskTilknytning(fnr: String): GeografiskTilknytning {
         try {
             val response = personV3.hentGeografiskTilknytning(HentGeografiskTilknytningRequest()
