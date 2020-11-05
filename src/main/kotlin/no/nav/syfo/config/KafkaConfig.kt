@@ -58,7 +58,7 @@ class KafkaConfig(private val kafkaErrorHandler: KafkaErrorHandler, private val 
     fun rebehandlingConsumerFactory(properties: KafkaProperties): ConsumerFactory<String, Sykepengesoknad> {
         return DefaultKafkaConsumerFactory(
             properties.buildConsumerProperties()
-                .plus(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "latest"),
+                .plus(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "none"),
             StringDeserializer(),
             FunctionDeserializer { bytes -> objectMapper.readValue(bytes, Sykepengesoknad::class.java) })
     }
