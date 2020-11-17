@@ -55,6 +55,8 @@ spring:
       enable-auto-commit: false
   main:
     banner-mode: off
+  flyway:
+    enabled: true
 
 unleash.api:
   url: http://unleash-api/api/

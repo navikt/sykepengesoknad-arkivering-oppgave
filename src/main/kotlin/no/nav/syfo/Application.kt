@@ -2,14 +2,13 @@ package no.nav.syfo
 
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
 import org.springframework.retry.annotation.EnableRetry
 import org.springframework.transaction.annotation.EnableTransactionManagement
 
 const val AZUREAD = "azuread"
 const val BEHANDLINGSTIDSPUNKT = "behandlingstidspunkt"
 
-@SpringBootApplication(exclude = [FlywayAutoConfiguration::class])
+@SpringBootApplication
 @EnableTransactionManagement
 @EnableRetry
 class Application {

@@ -29,3 +29,5 @@ spring:
       max-poll-records: 1
       auto-offset-reset: none
       enable-auto-commit: false
+  flyway:
+    enabled: false # Prod databasen må oppgraderes før flyway kan kjøres igjen
