@@ -6,6 +6,7 @@ import no.nav.syfo.AZUREAD
 import no.nav.syfo.TestApplication
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.kafka.test.context.EmbeddedKafka
@@ -14,7 +15,6 @@ import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
-import javax.inject.Inject
 
 
 @RunWith(SpringRunner::class)
@@ -26,7 +26,7 @@ import javax.inject.Inject
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class AzureADTokenFilterTest {
 
-    @Inject
+    @Autowired
     private lateinit var mockMvc: MockMvc
 
     private val jwt = JwtTokenGenerator.createSignedJWT(buildClaimSet(subject = "syfoinntektsmelding", issuer = AZUREAD, appId = "syfoinntektsmelding_clientid", audience = "syfogsak_clientid")).serialize()

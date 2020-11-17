@@ -77,7 +77,7 @@ class SaksbehandlingsService(
         innsendingDAO.finnTidligereInnsendinger(aktorId)
             .filter { (it.soknadTom).isBefore(soknadFom ?: LocalDate.MIN) }
             .filter { erPaFolgendeInkludertHelg(it.soknadTom, soknadFom ?: LocalDate.MAX) }
-            .maxBy { it.soknadTom }
+            .maxByOrNull { it.soknadTom }
             ?.let {
                 innsendingDAO.oppdaterSaksId(innsendingId, it.saksId)
                 return it.saksId

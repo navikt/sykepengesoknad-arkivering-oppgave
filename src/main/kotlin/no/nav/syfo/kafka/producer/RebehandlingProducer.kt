@@ -3,7 +3,6 @@ package no.nav.syfo.kafka.producer
 import no.nav.syfo.BEHANDLINGSTIDSPUNKT
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.syfo.kafka.SyfoProducerRecord
-import no.nav.syfo.kafka.felles.SykepengesoknadDTO
 import no.nav.syfo.log
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Component

@@ -11,6 +11,7 @@ import org.junit.runner.RunWith
 import org.mockito.BDDMockito
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
@@ -25,7 +26,6 @@ import java.time.DayOfWeek.TUESDAY
 import java.time.DayOfWeek.WEDNESDAY
 import java.time.LocalDate.now
 import java.time.temporal.TemporalAdjusters.next
-import javax.inject.Inject
 
 @RunWith(MockitoJUnitRunner::class)
 class OppgaveConsumerTest {
@@ -39,7 +39,7 @@ class OppgaveConsumerTest {
     @Mock
     lateinit var restTemplate: RestTemplate
 
-    @Inject
+    @Autowired
     private lateinit var oppgaveConsumer: OppgaveConsumer
 
     @Before

@@ -9,10 +9,10 @@ import javax.sql.DataSource
 @Configuration
 class FlywayConfig {
     @Bean
-    fun flyway(dataSource: DataSource) = Flyway().apply {
-        setDataSource(dataSource)
-        isBaselineOnMigrate = true
-    }
+    fun flyway(dataSource: DataSource) = Flyway(Flyway.configure().apply {
+        dataSource(dataSource)
+        baselineOnMigrate(true)
+    })
 
     @Bean
     fun flywayMigrationInitializer(flyway: Flyway): FlywayMigrationInitializer =

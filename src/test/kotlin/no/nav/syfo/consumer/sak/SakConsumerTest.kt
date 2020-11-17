@@ -9,12 +9,12 @@ import org.junit.runner.RunWith
 import org.mockito.BDDMockito
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestTemplate
-import javax.inject.Inject
 
 @RunWith(MockitoJUnitRunner::class)
 class SakConsumerTest {
@@ -23,7 +23,7 @@ class SakConsumerTest {
     @Mock
     lateinit var restTemplate: RestTemplate
 
-    @Inject
+    @Autowired
     private lateinit var sakConsumer: SakConsumer
 
     @Before

@@ -6,6 +6,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
@@ -14,18 +15,17 @@ import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit4.SpringRunner
 import java.time.LocalDateTime
-import javax.inject.Inject
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [TestApplication::class])
 @EmbeddedKafka
 @DirtiesContext
 class OppgavestyringDAOTest {
-    @Inject
+    @Autowired
     private lateinit var oppgavestyringDAO: OppgavestyringDAO
-    @Inject
+    @Autowired
     private lateinit var namedParaJdbcTemplate: NamedParameterJdbcTemplate
-    @Inject
+    @Autowired
     private lateinit var jdbcTemplate: JdbcTemplate
 
     @Before

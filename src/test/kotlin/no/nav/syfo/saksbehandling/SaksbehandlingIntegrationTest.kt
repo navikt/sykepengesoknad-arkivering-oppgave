@@ -26,6 +26,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.kafka.support.Acknowledgment
@@ -35,7 +36,6 @@ import org.springframework.test.context.junit4.SpringRunner
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
-import javax.inject.Inject
 
 @RunWith(SpringRunner::class)
 @EmbeddedKafka
@@ -59,10 +59,10 @@ class SaksbehandlingIntegrationTest {
     @Mock
     private lateinit var acknowledgment: Acknowledgment
 
-    @Inject
+    @Autowired
     private lateinit var soknadSendtListener: SoknadSendtListener
 
-    @Inject
+    @Autowired
     private lateinit var innsendingDAO: InnsendingDAO
 
 

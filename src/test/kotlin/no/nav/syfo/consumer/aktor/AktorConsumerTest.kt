@@ -9,6 +9,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.BDDMockito.*
 import org.mockito.Mock
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
@@ -18,7 +19,6 @@ import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.web.client.RestTemplate
-import javax.inject.Inject
 
 @RunWith(SpringRunner::class)
 @EmbeddedKafka
@@ -31,7 +31,7 @@ class AktorConsumerTest {
     @Mock
     lateinit var restTemplate: RestTemplate
 
-    @Inject
+    @Autowired
     private lateinit var aktorConsumer: AktorConsumer
 
     @Before

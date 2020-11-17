@@ -11,9 +11,9 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentGeografiskTilknytningRequest
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonnavnBolkRequest
 import org.springframework.stereotype.Component
-import javax.inject.Inject
 import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
+import javax.inject.Inject
 
 @Component
 class PersonConsumer @Inject

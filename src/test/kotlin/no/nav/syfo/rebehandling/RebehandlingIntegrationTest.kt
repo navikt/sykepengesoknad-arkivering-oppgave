@@ -30,6 +30,7 @@ import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.kafka.support.Acknowledgment
@@ -39,7 +40,6 @@ import org.springframework.test.context.junit4.SpringRunner
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
-import javax.inject.Inject
 
 @RunWith(SpringRunner::class)
 @EmbeddedKafka
@@ -48,13 +48,13 @@ import javax.inject.Inject
 class RebehandlingIntegrationTest {
 
 
-    @Inject
+    @Autowired
     private lateinit var rebehandlingProducerMock: RebehandlingProducerMock
 
-    @Inject
+    @Autowired
     private lateinit var soknadSendtListener: SoknadSendtListener
 
-    @Inject
+    @Autowired
     private lateinit var rebehandlingListener: RebehandlingListener
 
     @Mock
@@ -75,7 +75,7 @@ class RebehandlingIntegrationTest {
     @MockBean
     private lateinit var oppgaveConsumer: OppgaveConsumer
 
-    @Inject
+    @Autowired
     private lateinit var innsendingDAO: InnsendingDAO
 
     @After

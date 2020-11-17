@@ -11,7 +11,6 @@ import no.nav.syfo.kafka.KafkaErrorHandler
 import no.nav.syfo.kafka.felles.SykepengesoknadDTO
 import no.nav.syfo.kafka.soknad.deserializer.FunctionDeserializer
 import no.nav.syfo.kafka.soknad.serializer.FunctionSerializer
-import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.kafka.common.serialization.StringSerializer
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties
@@ -57,8 +56,7 @@ class KafkaConfig(private val kafkaErrorHandler: KafkaErrorHandler, private val 
     @Bean
     fun rebehandlingConsumerFactory(properties: KafkaProperties): ConsumerFactory<String, Sykepengesoknad> {
         return DefaultKafkaConsumerFactory(
-            properties.buildConsumerProperties()
-                .plus(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "none"),
+            properties.buildConsumerProperties(),
             StringDeserializer(),
             FunctionDeserializer { bytes -> objectMapper.readValue(bytes, Sykepengesoknad::class.java) })
     }

@@ -6,6 +6,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
@@ -15,7 +16,6 @@ import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit4.SpringRunner
 import java.time.LocalDate
 import java.util.UUID
-import javax.inject.Inject
 
 @RunWith(SpringRunner::class)
 @EmbeddedKafka
@@ -23,11 +23,11 @@ import javax.inject.Inject
 @DirtiesContext
 class InnsendingDAOTest {
 
-    @Inject
+    @Autowired
     private lateinit var innsendingDAO: InnsendingDAO
-    @Inject
+    @Autowired
     private lateinit var jdbcTemplate: JdbcTemplate
-    @Inject
+    @Autowired
     private lateinit var namedParameterJdbcTemplate: NamedParameterJdbcTemplate
 
     @Before

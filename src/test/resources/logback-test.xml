@@ -15,4 +15,10 @@
 
 	<logger name="no.nav.syfo" level="INFO"/>
 
+	<logger name="org" level="ERROR"/>
+	<logger name="springfox" level="ERROR"/>
+	<logger name="com" level="ERROR"/>
+	<logger name="io" level="ERROR"/>
+	<logger name="kafka" level="ERROR"/>
+
 </configuration>

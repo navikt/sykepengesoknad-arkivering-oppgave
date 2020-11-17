@@ -1,10 +1,6 @@
 package no.nav.syfo.e2e
 
 import com.nhaarman.mockitokotlin2.whenever
-import junit.framework.Assert.assertEquals
-import junit.framework.Assert.assertFalse
-import junit.framework.Assert.assertNull
-import junit.framework.Assert.assertTrue
 import no.nav.syfo.TestApplication
 import no.nav.syfo.any
 import no.nav.syfo.consumer.repository.OppgaveStatus
@@ -25,9 +21,11 @@ import no.nav.syfo.kafka.felles.SykepengesoknadDTO
 import no.nav.syfo.service.BehandleVedTimeoutService
 import no.nav.syfo.service.SaksbehandlingsService
 import no.nav.syfo.skapConsumerRecord
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.kafka.support.Acknowledgment
@@ -37,7 +35,6 @@ import org.springframework.test.context.junit4.SpringRunner
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
-import javax.inject.Inject
 
 @RunWith(SpringRunner::class)
 @EmbeddedKafka
@@ -59,16 +56,16 @@ class E2ETest {
     @MockBean
     lateinit var syfosoknadConsumer: SyfosoknadConsumer
 
-    @Inject
+    @Autowired
     lateinit var spreOppgaverListener: SpreOppgaverListener
 
-    @Inject
+    @Autowired
     lateinit var soknadSendtListener: SoknadSendtListener
 
-    @Inject
+    @Autowired
     lateinit var spreOppgavestyringDAO: OppgavestyringDAO
 
-    @Inject
+    @Autowired
     lateinit var behandleVedTimeoutService: BehandleVedTimeoutService
 
     @Before
@@ -91,9 +88,9 @@ class E2ETest {
         leggOppgavePåKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, søknadsId, null))
 
         val oppgave = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
-        assertEquals(OppgaveStatus.Opprett, oppgave.status)
-        assertNull(oppgave.timeout)
-        assertFalse(oppgave.avstemt)
+        assertThat(OppgaveStatus.Opprett).isEqualTo(oppgave.status)
+        assertThat(oppgave.timeout).isNull()
+        assertThat(oppgave.avstemt).isFalse
     }
 
     @Test
@@ -102,9 +99,9 @@ class E2ETest {
         leggOppgavePåKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, omFireTimer))
 
         val oppgave = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
-        assertEquals(OppgaveStatus.Utsett, oppgave.status)
-        assertEquals(omFireTimer, oppgave.timeout)
-        assertFalse(oppgave.avstemt)
+        assertThat(OppgaveStatus.Utsett).isEqualTo(oppgave.status)
+        assertThat(omFireTimer).isEqualTo(oppgave.timeout)
+        assertThat(oppgave.avstemt).isFalse
     }
 
     @Test
@@ -113,9 +110,9 @@ class E2ETest {
         leggOppgavePåKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Ferdigbehandlet, søknadsId, null))
 
         val oppgave = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
-        assertEquals(OppgaveStatus.IkkeOpprett, oppgave.status)
-        assertNull(oppgave.timeout)
-        assertFalse(oppgave.avstemt)
+        assertThat(OppgaveStatus.IkkeOpprett).isEqualTo(oppgave.status)
+        assertThat(oppgave.timeout).isNull()
+        assertThat(oppgave.avstemt).isFalse
     }
 
     @Test
@@ -125,9 +122,9 @@ class E2ETest {
         leggOppgavePåKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, omFireTimer))
 
         val oppgave = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
-        assertEquals(OppgaveStatus.Utsett, oppgave.status)
-        assertEquals(omFireTimer, oppgave.timeout)
-        assertTrue(oppgave.avstemt)
+        assertThat(OppgaveStatus.Utsett).isEqualTo(oppgave.status)
+        assertThat(omFireTimer).isEqualTo(oppgave.timeout)
+        assertThat(oppgave.avstemt).isTrue
     }
 
     @Test
@@ -137,9 +134,9 @@ class E2ETest {
         leggOppgavePåKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, søknadsId))
 
         val oppgave = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
-        assertEquals(OppgaveStatus.Opprett, oppgave.status)
-        assertNull(oppgave.timeout)
-        assertTrue(oppgave.avstemt)
+        assertThat(OppgaveStatus.Opprett).isEqualTo(oppgave.status)
+        assertThat(oppgave.timeout).isNull()
+        assertThat(oppgave.avstemt).isTrue
     }
 
     @Test
@@ -149,9 +146,9 @@ class E2ETest {
         leggOppgavePåKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Ferdigbehandlet, søknadsId))
 
         val oppgave = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
-        assertEquals(OppgaveStatus.IkkeOpprett, oppgave.status)
-        assertNull(oppgave.timeout)
-        assertTrue(oppgave.avstemt)
+        assertThat(OppgaveStatus.IkkeOpprett).isEqualTo(oppgave.status)
+        assertThat(oppgave.timeout).isNull()
+        assertThat(oppgave.avstemt).isTrue
     }
 
     @Test
@@ -161,9 +158,9 @@ class E2ETest {
         leggSøknadPåKafka(søknad(søknadsId))
 
         val oppgave = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
-        assertEquals(OppgaveStatus.Utsett, oppgave.status)
-        assertEquals(omFireTimer, oppgave.timeout)
-        assertTrue(oppgave.avstemt)
+        assertThat(OppgaveStatus.Utsett).isEqualTo(oppgave.status)
+        assertThat(omFireTimer).isEqualTo(oppgave.timeout)
+        assertThat(oppgave.avstemt).isTrue
     }
 
     @Test
@@ -177,8 +174,8 @@ class E2ETest {
         leggOppgavePåKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, omFireTimer))
 
         val oppgave = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
-        assertEquals(OppgaveStatus.Opprettet, oppgave.status)
-        assertNull(oppgave.timeout)
+        assertThat(OppgaveStatus.Opprettet).isEqualTo(oppgave.status)
+        assertThat(oppgave.timeout).isNull()
     }
 
     @Test
@@ -189,8 +186,8 @@ class E2ETest {
         leggOppgavePåKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, omFireTimer))
 
         val oppgave = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
-        assertEquals(OppgaveStatus.IkkeOpprett, oppgave.status)
-        assertNull(oppgave.timeout)
+        assertThat(OppgaveStatus.IkkeOpprett).isEqualTo(oppgave.status)
+        assertThat(oppgave.timeout).isNull()
     }
 
     @Test
@@ -207,14 +204,15 @@ class E2ETest {
         leggSøknadPåKafka(søknad(søknadsId = søknadsId, sendtNav = null, sendtArbeidsgiver = LocalDateTime.now()))
 
         val oppgaveFørJob = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
-        assertEquals(OppgaveStatus.Utsett, oppgaveFørJob.status)
-        assertFalse(oppgaveFørJob.avstemt)
+        assertThat(OppgaveStatus.Utsett).isEqualTo(oppgaveFørJob.status)
+
+        assertThat(oppgaveFørJob.avstemt).isFalse
 
         behandleVedTimeoutService.behandleTimeout()
 
         val oppgaveEtterJob = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
-        assertEquals(OppgaveStatus.Utsett, oppgaveEtterJob.status)
-        assertFalse(oppgaveEtterJob.avstemt)
+        assertThat(OppgaveStatus.Utsett).isEqualTo(oppgaveEtterJob.status)
+        assertThat(oppgaveEtterJob.avstemt).isFalse
     }
 
     @Test
@@ -231,9 +229,9 @@ class E2ETest {
         )
 
         val oppgave = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
-        assertEquals(OppgaveStatus.Utsett, oppgave.status)
-        assertEquals(omFireTimer, oppgave.timeout)
-        assertFalse(oppgave.avstemt)
+        assertThat(OppgaveStatus.Utsett).isEqualTo(oppgave.status)
+        assertThat(omFireTimer).isEqualTo(oppgave.timeout)
+        assertThat(oppgave.avstemt).isFalse
     }
 
     private fun leggOppgavePåKafka(oppgave: OppgaveDTO) =
