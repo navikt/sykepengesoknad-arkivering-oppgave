@@ -6,6 +6,7 @@ import no.nav.syfo.domain.dto.Soknadstype
 import no.nav.syfo.kafka.felles.SykepengesoknadDTO
 import no.nav.syfo.kafka.mapper.toSykepengesoknad
 import no.nav.syfo.log
+import no.nav.syfo.service.SpreOppgaverService
 import no.nav.syfo.service.ettersendtTilArbeidsgiver
 import no.nav.syfo.service.skalBehandlesAvNav
 import org.springframework.stereotype.Service
@@ -13,7 +14,8 @@ import org.springframework.stereotype.Service
 @Service
 class SoknadSendtSjekkService(
     private val innsendingDAO: InnsendingDAO,
-    private val oppgavestyringDAO: OppgavestyringDAO
+    private val oppgavestyringDAO: OppgavestyringDAO,
+    private val spreOppgaverService: SpreOppgaverService
 ) {
     val log = log()
 
@@ -39,7 +41,14 @@ class SoknadSendtSjekkService(
                 eksisterendeInnsending.behandlet ?: throw Exception("'Behandlings tidspunkt'")
             }
         } catch (e: Exception) {
-            log.info("Mangler ${e.message} for ${soknad.id}")
+            val sykepengesoknad = soknad.toSykepengesoknad()
+
+            if (oppgavestyringDAO.hentSpreOppgave(sykepengesoknad.id) == null) {
+                spreOppgaverService.soknadSendt(sykepengesoknad)
+                log.info("Rebehandlet ${soknad.id} etter kafka incident")
+            } else {
+                log.info("Mangler ${e.message} for ${soknad.id}, og kan ikke sendes inn på nytt siden det finnes en spre oppgave")
+            }
             // Fortsett til neste
         }
     }
