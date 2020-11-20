@@ -130,4 +130,13 @@ class BeskrivelseServiceTest {
 
         assertThat(beskrivelse).isEqualTo(beskrivelseBehandlingsdagerMedMangeSvar)
     }
+
+    @Test
+    fun soknadForArbeidstakereMedTimerIkkeCheckedOgProsentChecked() {
+        val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadArbeidstakerMedTimerOgDeretterProsent.json"), Sykepengesoknad::class.java)
+        val soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn")
+        val beskrivelse = lagBeskrivelse(soknad)
+
+        assertThat(beskrivelse).isEqualTo(beskrivelseArbeidstakerMedTimerOgDeretterProsent)
+    }
 }

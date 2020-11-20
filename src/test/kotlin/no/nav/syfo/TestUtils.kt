@@ -254,3 +254,27 @@ const val beskrivelseBehandlingsdagerMedMangeSvar = "Søknad med enkeltstående 
         "        andre arbeidsforhold\n" +
         "            Er du sykmeldt fra dette?\n" +
         "            Ja"
+
+
+const val beskrivelseArbeidstakerMedTimerOgDeretterProsent = """Søknad om sykepenger for perioden 16.10.2018 - 24.10.2018
+
+Arbeidsgiver: ARBEIDSGIVER A/S
+Organisasjonsnummer: 1257358
+
+Periode 1:
+16.10.2018 - 20.10.2018
+Grad: 100
+Oppgitt faktisk arbeidsgrad: 79
+
+Periode 2:
+21.10.2018 - 24.10.2018
+Grad: 40
+Oppgitt faktisk arbeidsgrad: 440
+
+I perioden 16. - 20. oktober 2018 var du 100 % sykmeldt fra ARBEIDSGIVER A/S. Jobbet du noe i denne perioden?
+Ja
+    Hvor mange timer jobbet du per uke før du ble sykmeldt?
+    37,5 timer per uke
+
+    Hvor mye jobbet du totalt 16. - 20. oktober 2018 hos ARBEIDSGIVER A/S?
+    51 prosent"""

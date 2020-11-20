@@ -1,0 +1,146 @@
+{
+  "id": "27010c11-9200-44c7-b44c-6428bc6762d7",
+  "aktorId": "aktorId-745463060",
+  "sykmeldingId": "14e78e84-50a5-45bb-9919-191c54f99691",
+  "soknadstype": "ARBEIDSTAKERE",
+  "status": "SENDT",
+  "fom": "2018-10-16",
+  "tom": "2018-10-24",
+  "opprettet": "2018-11-16T00:00:00",
+  "sendtNav": "2018-11-16T00:00:00",
+  "startSykeforlop": "2018-10-16",
+  "sykmeldingSkrevet": null,
+  "arbeidsgiver": "ARBEIDSGIVER A/S",
+  "korrigerer": null,
+  "korrigertAv": null,
+  "arbeidssituasjon": "ARBEIDSTAKER",
+  "orgNummer": "1257358",
+  "soknadPerioder": [
+    {
+      "fom": "2018-10-16",
+      "tom": "2018-10-20",
+      "grad": 100,
+      "faktiskGrad": 79,
+      "avtaltTimer": 37.5,
+      "faktiskTimer": null
+    },
+    {
+      "fom": "2018-10-21",
+      "tom": "2018-10-24",
+      "grad": 40,
+      "faktiskGrad": 440,
+      "avtaltTimer": 37.5,
+      "faktiskTimer": 66
+    }
+  ],
+  "sporsmal": [
+    {
+      "id": "60",
+      "tag": "JOBBET_DU_100_PROSENT_0",
+      "sporsmalstekst": "I perioden 16. - 20. oktober 2018 var du 100 % sykmeldt fra ARBEIDSGIVER A/S. Jobbet du noe i denne perioden?",
+      "undertekst": null,
+      "svartype": "JA_NEI",
+      "min": null,
+      "max": null,
+      "kriterieForVisningAvUndersporsmal": "JA",
+      "svar": [
+        {
+          "verdi": "JA"
+        }
+      ],
+      "undersporsmal": [
+        {
+          "id": "61",
+          "tag": "HVOR_MANGE_TIMER_PER_UKE_0",
+          "sporsmalstekst": "Hvor mange timer jobbet du per uke før du ble sykmeldt?",
+          "undertekst": "timer per uke",
+          "svartype": "TALL",
+          "min": "1",
+          "max": "150",
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [
+            {
+              "verdi": "37,5"
+            }
+          ],
+          "undersporsmal": []
+        },
+        {
+          "id": "62",
+          "tag": "HVOR_MYE_HAR_DU_JOBBET_0",
+          "sporsmalstekst": "Hvor mye jobbet du totalt 16. - 20. oktober 2018 hos ARBEIDSGIVER A/S?",
+          "undertekst": null,
+          "svartype": "RADIO_GRUPPE_TIMER_PROSENT",
+          "min": null,
+          "max": null,
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [],
+          "undersporsmal": [
+            {
+              "id": "63",
+              "tag": "HVOR_MYE_PROSENT_0",
+              "sporsmalstekst": "prosent",
+              "undertekst": null,
+              "svartype": "RADIO",
+              "min": null,
+              "max": null,
+              "kriterieForVisningAvUndersporsmal": "CHECKED",
+              "svar": [
+                {
+                  "verdi": "CHECKED"
+                }
+              ],
+              "undersporsmal": [
+                {
+                  "id": "64",
+                  "tag": "HVOR_MYE_PROSENT_VERDI_0",
+                  "sporsmalstekst": null,
+                  "undertekst": "prosent",
+                  "svartype": "TALL",
+                  "min": "1",
+                  "max": "99",
+                  "kriterieForVisningAvUndersporsmal": null,
+                  "svar": [
+                    {
+                      "verdi": "51"
+                    }
+                  ],
+                  "undersporsmal": []
+                }
+              ]
+            },
+            {
+              "id": "65",
+              "tag": "HVOR_MYE_TIMER_0",
+              "sporsmalstekst": "timer",
+              "undertekst": null,
+              "svartype": "RADIO",
+              "min": null,
+              "max": null,
+              "kriterieForVisningAvUndersporsmal": "CHECKED",
+              "svar": [],
+              "undersporsmal": [
+                {
+                  "id": "66",
+                  "tag": "HVOR_MYE_TIMER_VERDI_0",
+                  "sporsmalstekst": null,
+                  "undertekst": "timer totalt",
+                  "svartype": "TALL",
+                  "min": "1",
+                  "max": "107",
+                  "kriterieForVisningAvUndersporsmal": null,
+                  "svar": [
+                    {
+                      "verdi": "12"
+                    }
+                  ],
+                  "undersporsmal": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

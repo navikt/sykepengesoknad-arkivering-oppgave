@@ -30,7 +30,7 @@ private fun Soknad.meldingDersomEgenmeldtSykmelding() =
         if (egenmeldtSykmelding == true)
             "Denne søknaden hører til en egenmeldt sykmelding\n"
         else
-        ""
+            ""
 
 private fun Soknad.meldingDersomAvsendertypeErSystem() =
         if (avsendertype == SYSTEM)
@@ -59,7 +59,7 @@ private fun Soknad.erKorrigert() =
 private fun Soknad.beskrivArbeidsgiver() =
         if (arbeidssituasjon === ARBEIDSTAKER)
             "\nArbeidsgiver: $arbeidsgiver" +
-            "\nOrganisasjonsnummer: $orgNummer\n"
+                    "\nOrganisasjonsnummer: $orgNummer\n"
         else
             ""
 
@@ -134,6 +134,7 @@ private fun getNesteDybde(sporsmal: Sporsmal, dybde: Int): Int {
 private fun Sporsmal.undersporsmalIgnorerRadioIGruppeTimerProsent(): List<Sporsmal>? {
     return if (svartype === RADIO_GRUPPE_TIMER_PROSENT)
         undersporsmal!!
+                .filter { it.kriterieForVisningAvUndersporsmal?.name == it.forsteSvarverdi() }
                 .map { it.undersporsmal }
                 .flatMap { it!! }
                 .toList()
