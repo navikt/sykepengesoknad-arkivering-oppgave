@@ -105,13 +105,13 @@ class SpreOppgaverService(
             saksbehandlingsService.innsendingFeilet(sykepengesoknad, e)
         }
     }
-}
 
-fun skalBehandlesAvNav(sykepengesoknad: Sykepengesoknad) =
+    private fun skalBehandlesAvNav(sykepengesoknad: Sykepengesoknad) =
         sykepengesoknad.sendtNav != null
 
-fun ettersendtTilArbeidsgiver(sykepengesoknad: Sykepengesoknad) = sykepengesoknad.sendtArbeidsgiver != null
-        && sykepengesoknad.sendtNav?.isBefore(sykepengesoknad.sendtArbeidsgiver) ?: false
+    private fun ettersendtTilArbeidsgiver(sykepengesoknad: Sykepengesoknad) = sykepengesoknad.sendtArbeidsgiver != null
+            && sykepengesoknad.sendtNav?.isBefore(sykepengesoknad.sendtArbeidsgiver) ?: false
+}
 
 fun OppdateringstypeDTO.tilOppgaveStatus() = when (this) {
     OppdateringstypeDTO.Utsett -> OppgaveStatus.Utsett
