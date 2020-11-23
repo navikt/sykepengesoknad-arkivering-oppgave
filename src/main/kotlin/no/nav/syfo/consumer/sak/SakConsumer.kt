@@ -2,17 +2,14 @@ package no.nav.syfo.consumer.sak
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import no.nav.syfo.consumer.token.TokenConsumer
-import no.nav.syfo.kafka.NAV_CALLID
 import no.nav.syfo.log
 import no.nav.syfo.util.callId
-import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.*
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
-import java.util.*
 @Component
 class SakConsumer(
     private val tokenConsumer: TokenConsumer,

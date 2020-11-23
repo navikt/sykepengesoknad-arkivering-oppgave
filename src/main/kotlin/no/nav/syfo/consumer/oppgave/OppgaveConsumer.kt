@@ -4,11 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import no.nav.syfo.consumer.token.TokenConsumer
 import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.Soknadstype
-import no.nav.syfo.kafka.NAV_CALLID
 import no.nav.syfo.log
 import no.nav.syfo.service.lagBeskrivelse
 import no.nav.syfo.util.callId
-import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -22,7 +20,6 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDate.now
 import java.time.format.DateTimeFormatter
-import java.util.*
 
 @Component
 class OppgaveConsumer(
