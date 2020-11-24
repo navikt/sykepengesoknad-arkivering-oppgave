@@ -25,6 +25,7 @@ spec:
   prometheus:
     enabled: true
     path: /internal/prometheus
+  leaderElection: true
   resources:
     limits:
       cpu: 500m
