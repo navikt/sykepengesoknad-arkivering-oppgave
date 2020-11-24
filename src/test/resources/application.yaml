@@ -74,6 +74,3 @@ behandle.oppgave:
   deploy: "3000000"
   intervall: "3000000"
 default.timeout.timer: "24"
-
-elector:
-  path: "dont_look_for_leader"
