@@ -5,7 +5,7 @@ import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import no.nav.syfo.config.unleash.ToggleImpl
+import no.nav.syfo.config.Toggle
 import no.nav.syfo.consumer.repository.OppgaveStatus
 import no.nav.syfo.consumer.repository.OppgavestyringDAO
 import no.nav.syfo.consumer.repository.SpreOppgave
@@ -42,7 +42,7 @@ class BehandleVedTimeoutServiceTest {
     lateinit var syfosoknadConsumer: SyfosoknadConsumer
 
     @Mock
-    lateinit var toggle: ToggleImpl
+    lateinit var toggle: Toggle
 
     @InjectMocks
     lateinit var behandleVedTimeoutService: BehandleVedTimeoutService
@@ -119,6 +119,7 @@ class BehandleVedTimeoutServiceTest {
 
     @Test
     fun `sletter oppgave(i test) om vi mangler innsending og den er gammel`() {
+
         whenever(toggle.isQ()).thenReturn(true)
         whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
             listOf(

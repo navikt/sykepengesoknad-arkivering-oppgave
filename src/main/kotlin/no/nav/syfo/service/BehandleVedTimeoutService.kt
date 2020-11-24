@@ -1,6 +1,6 @@
 package no.nav.syfo.service
 
-import no.nav.syfo.config.unleash.ToggleImpl
+import no.nav.syfo.config.Toggle
 import no.nav.syfo.consumer.repository.OppgaveStatus
 import no.nav.syfo.consumer.repository.OppgavestyringDAO
 import no.nav.syfo.consumer.syfosoknad.SyfosoknadConsumer
@@ -17,7 +17,7 @@ class BehandleVedTimeoutService(
     private val oppgavestyringDAO: OppgavestyringDAO,
     private val saksbehandlingsService: SaksbehandlingsService,
     private val syfosoknadConsumer: SyfosoknadConsumer,
-    private val toggle: ToggleImpl
+    private val toggle: Toggle
 ) {
     private val log = log()
 
