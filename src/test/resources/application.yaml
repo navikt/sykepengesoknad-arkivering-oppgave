@@ -57,15 +57,6 @@ spring:
   flyway:
     enabled: true
 
-unleash.api:
-  url: http://unleash-api/api/
-
-toggle:
-  config:
-    SKAL_LESE_SOKNADER_FRA_KOE:
-      enabled: true
-      byEnvironment:
-      - local
 syfosoknad_url: http://syfosoknad
 
 

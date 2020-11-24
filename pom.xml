@@ -232,12 +232,6 @@
         </dependency>
 
         <dependency>
-            <groupId>no.finn.unleash</groupId>
-            <artifactId>unleash-client-java</artifactId>
-            <version>3.1.0</version>
-        </dependency>
-
-        <dependency>
             <groupId>no.nav.security</groupId>
             <artifactId>oidc-spring-support</artifactId>
             <version>0.2.18</version>

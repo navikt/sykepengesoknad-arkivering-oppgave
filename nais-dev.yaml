@@ -59,8 +59,6 @@ spec:
       value: b27apvl00045.preprod.local:8443,b27apvl00046.preprod.local:8443,b27apvl00047.preprod.local:8443
     - name: AKTOERREGISTER_API_V1_URL
       value: https://app-q1.adeo.no/aktoerregister/api/v1
-    - name: UNLEASH_API_URL
-      value: https://unleash.nais.adeo.no/api/
     - name: SECURITYTOKENSERVICE_URL
       value: https://sts-q1.preprod.local/SecurityTokenServiceProvider/
     - name: SECURITY_TOKEN_SERVICE_TOKEN_URL

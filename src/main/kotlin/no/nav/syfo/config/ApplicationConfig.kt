@@ -15,7 +15,6 @@ import org.springframework.web.client.RestTemplate
 @EnableScheduling
 class ApplicationConfig {
 
-
     @Bean
     fun restTemplate(): RestTemplate = RestTemplate().apply {
         messageConverters

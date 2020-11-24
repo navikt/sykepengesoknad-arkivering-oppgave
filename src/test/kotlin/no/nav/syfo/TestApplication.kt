@@ -1,7 +1,5 @@
 package no.nav.syfo
 
-import no.finn.unleash.Unleash
-import no.nav.syfo.config.unleash.ToggleImpl
 import org.h2.tools.Server
 import org.mockito.Mockito
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -25,15 +23,5 @@ class TestApplication{
             throw RuntimeException("Klarte ikke starte databasekobling", e)
         }
 
-    }
-
-    @Bean
-    fun unleashMock(): Unleash {
-        return Mockito.mock(Unleash::class.java)
-    }
-
-    @Bean
-    fun toggleMock(): ToggleImpl {
-        return Mockito.mock(ToggleImpl::class.java)
     }
 }
