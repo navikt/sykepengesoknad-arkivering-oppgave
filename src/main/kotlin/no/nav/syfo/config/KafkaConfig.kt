@@ -23,6 +23,7 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory
 import org.springframework.kafka.core.DefaultKafkaProducerFactory
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.listener.ContainerProperties
+import java.time.Duration
 
 @Configuration
 @EnableKafka
@@ -40,6 +41,7 @@ class KafkaConfig(private val kafkaErrorHandler: KafkaErrorHandler, private val 
         ConcurrentKafkaListenerContainerFactory<String, SykepengesoknadDTO>().apply {
             containerProperties.ackMode = ContainerProperties.AckMode.MANUAL_IMMEDIATE
             setErrorHandler(kafkaErrorHandler)
+            this.containerProperties.authorizationExceptionRetryInterval = Duration.ofSeconds(2)
             this.consumerFactory = consumerFactory
         }
 
@@ -66,6 +68,7 @@ class KafkaConfig(private val kafkaErrorHandler: KafkaErrorHandler, private val 
         ConcurrentKafkaListenerContainerFactory<String, Sykepengesoknad>().apply {
             containerProperties.ackMode = ContainerProperties.AckMode.MANUAL_IMMEDIATE
             setErrorHandler(kafkaErrorHandler)
+            this.containerProperties.authorizationExceptionRetryInterval = Duration.ofSeconds(2)
             this.consumerFactory = consumerFactory
         }
 
@@ -83,6 +86,7 @@ class KafkaConfig(private val kafkaErrorHandler: KafkaErrorHandler, private val 
         ConcurrentKafkaListenerContainerFactory<String, OppgaveDTO>().apply {
             containerProperties.ackMode = ContainerProperties.AckMode.MANUAL_IMMEDIATE
             setErrorHandler(kafkaErrorHandler)
+            this.containerProperties.authorizationExceptionRetryInterval = Duration.ofSeconds(2)
             this.consumerFactory = consumerFactory
         }
 
