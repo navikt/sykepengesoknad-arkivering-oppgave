@@ -26,6 +26,9 @@ class SakController(
     ): SisteSakRespons {
         validerInput(fom, tom)
 
+
+        log.warn("Noen kaller sisteSak")
+
         return SisteSakRespons(
             innsendingDAO.finnTidligereInnsendinger(aktorId)
                 .filter { overlapperMedSoknad(it, fom, tom) }
