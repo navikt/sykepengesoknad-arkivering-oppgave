@@ -23,6 +23,7 @@ class SpreOppgaverListener(private val spreOppgaverService: SpreOppgaverService)
             MDC.put(NAV_CALLID, getSafeNavCallIdHeaderAsString(cr.headers()))
             val oppgave = cr.value()
             if (oppgave.dokumentType == DokumentTypeDTO.Søknad) {
+                log.info("Mottok spre oppgave: $oppgave")
                 spreOppgaverService.prosesserOppgave(cr.value(), OppgaveKilde.Saksbehandling)
             }
             acknowledgment.acknowledge()
