@@ -102,7 +102,7 @@ spec:
       value: http://maven.adeo.no/nexus/content/groups/public/no/nav/tjenester/nav-arbeidsfordeling-v1-tjenestespesifikasjon/1.1.0/nav-arbeidsfordeling-v1-tjenestespesifikasjon-1.1.0.zip
 
     - name: VIRKSOMHET_PERSON_V3_ENDPOINTURL
-      value: https://wasapp-q1.adeo.no/tpsws/ws/Person/v3
+      value: https://app-q1.adeo.no/tpsws-aura/ws/Person/v3
     - name: VIRKSOMHET_PERSON_V3_SECURITYTOKEN
       value: SAML
     - name: VIRKSOMHET_PERSON_V3_WSDLURL
