@@ -16,6 +16,6 @@ class ArbeidsfordelingConfig {
     @Primary
     fun arbeidsfordelingV1(@Value("\${virksomhet.arbeidsfordeling.v1.endpointurl}") serviceUrl: String,
                            @Value("\${ws.sts.enabled:true}") wsStsEnabled: Boolean): ArbeidsfordelingV1 {
-        return createPort(serviceUrl, listOf(LogErrorHandler()), wsStsEnabled)
+        return createPort(serviceUrl = serviceUrl, handlers = listOf(LogErrorHandler()), wsStsEnabled = wsStsEnabled)
     }
 }
