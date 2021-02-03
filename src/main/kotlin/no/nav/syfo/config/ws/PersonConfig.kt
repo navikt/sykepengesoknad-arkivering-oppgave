@@ -17,7 +17,7 @@ class PersonConfig {
     @Primary
     fun personV3(@Value("\${virksomhet.person.v3.endpointurl}") serviceUrl: String,
                  @Value("\${ws.sts.enabled:true}") wsStsEnabled: Boolean): PersonV3 {
-        return createPort(serviceUrl, listOf(LogErrorHandler()), wsStsEnabled)
+        return createPort(serviceUrl = serviceUrl, handlers = listOf(LogErrorHandler()), wsStsEnabled = wsStsEnabled, wsAddressingEnabled = false)
     }
 
 }
