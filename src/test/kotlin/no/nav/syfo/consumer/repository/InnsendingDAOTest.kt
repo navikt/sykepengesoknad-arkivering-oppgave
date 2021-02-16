@@ -2,10 +2,9 @@ package no.nav.syfo.consumer.repository
 
 import no.nav.syfo.TestApplication
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.jdbc.core.JdbcTemplate
@@ -13,11 +12,9 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
-import org.springframework.test.context.junit4.SpringRunner
 import java.time.LocalDate
 import java.util.UUID
 
-@RunWith(SpringRunner::class)
 @EmbeddedKafka
 @SpringBootTest(classes = [TestApplication::class])
 @DirtiesContext
@@ -30,12 +27,12 @@ class InnsendingDAOTest {
     @Autowired
     private lateinit var namedParameterJdbcTemplate: NamedParameterJdbcTemplate
 
-    @Before
+    @BeforeEach
     fun initDB() {
         cleanup()
     }
 
-    @After
+    @AfterEach
     fun cleanup() {
         jdbcTemplate.update("DELETE FROM INNSENDING")
     }
@@ -98,4 +95,3 @@ fun NamedParameterJdbcTemplate.insertBehandletSoknad(
             .addValue("soknadTom", soknadTom)
     )
 }
-

@@ -15,10 +15,12 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 
 @Component
-class AktorConsumer(private val tokenConsumer: TokenConsumer,
-                    @Value("\${srvsyfogsak.username}") private val username: String,
-                    @Value("\${aktoerregister.api.v1.url}") private val url: String,
-                    private val restTemplate: RestTemplate) {
+class AktorConsumer(
+    private val tokenConsumer: TokenConsumer,
+    @Value("\${srvsyfogsak.username}") private val username: String,
+    @Value("\${aktoerregister.api.v1.url}") private val url: String,
+    private val restTemplate: RestTemplate
+) {
 
     val log = log()
 
@@ -39,13 +41,13 @@ class AktorConsumer(private val tokenConsumer: TokenConsumer,
         headers.set("Nav-Personidenter", sokeIdent)
 
         val uriString = UriComponentsBuilder
-                .fromHttpUrl("$url/identer")
-                .queryParam("gjeldende", "true")
-                .queryParam("identgruppe", identgruppe)
-                .toUriString()
+            .fromHttpUrl("$url/identer")
+            .queryParam("gjeldende", "true")
+            .queryParam("identgruppe", identgruppe)
+            .toUriString()
         try {
             val result = restTemplate
-                    .exchange(uriString, GET, HttpEntity<Any>(headers), AktorResponse::class.java)
+                .exchange(uriString, GET, HttpEntity<Any>(headers), AktorResponse::class.java)
 
             if (result.statusCode != OK) {
                 val message = "Kall mot aktørregister feiler med HTTP-" + result.statusCode
@@ -54,21 +56,17 @@ class AktorConsumer(private val tokenConsumer: TokenConsumer,
             }
 
             return result
-                    .body
-                    ?.get(sokeIdent)
-                    .let { aktor ->
-                        aktor?.identer ?: throw RuntimeException("Fant ikke aktøren: " + aktor?.feilmelding)
-                    }
-                    .filter { ident -> ident.gjeldende }
-                    .map { ident -> ident.ident }
-                    .first()
-
-
+                .body
+                ?.get(sokeIdent)
+                .let { aktor ->
+                    aktor?.identer ?: throw RuntimeException("Fant ikke aktøren: " + aktor?.feilmelding)
+                }
+                .filter { ident -> ident.gjeldende }
+                .map { ident -> ident.ident }
+                .first()
         } catch (e: HttpClientErrorException) {
             log.error("Feil ved oppslag i aktørtjenesten", e)
             throw RuntimeException(e)
         }
-
     }
 }
-

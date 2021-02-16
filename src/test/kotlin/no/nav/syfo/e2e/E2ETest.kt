@@ -22,21 +22,18 @@ import no.nav.syfo.service.BehandleVedTimeoutService
 import no.nav.syfo.service.SaksbehandlingsService
 import no.nav.syfo.skapConsumerRecord
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
-import org.springframework.test.context.junit4.SpringRunner
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
 
-@RunWith(SpringRunner::class)
 @EmbeddedKafka
 @SpringBootTest(classes = [TestApplication::class])
 @DirtiesContext
@@ -68,7 +65,7 @@ class E2ETest {
     @Autowired
     lateinit var behandleVedTimeoutService: BehandleVedTimeoutService
 
-    @Before
+    @BeforeEach
     fun setup() {
         whenever(saksbehandlingsService.finnEksisterendeInnsending(any())).thenAnswer {
             Innsending(

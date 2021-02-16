@@ -24,7 +24,6 @@ class CallIdHeader : AbstractPhaseInterceptor<Message>(Phase.PRE_STREAM) {
         } catch (ex: JAXBException) {
             log.warn("Error while setting CallId header", ex)
         }
-
     }
 
     private fun callId() = MDC.get(NAV_CALLID) ?: randomUUID().toString()

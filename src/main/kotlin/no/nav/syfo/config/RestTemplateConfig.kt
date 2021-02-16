@@ -10,16 +10,16 @@ import org.springframework.web.client.RestTemplate
 class RestTemplateConfig {
     @Bean
     fun basicAuthRestTemplate(
-            @Value("\${srvsyfogsak.username}") username: String,
-            @Value("\${srvsyfogsak.password}") password: String
+        @Value("\${srvsyfogsak.username}") username: String,
+        @Value("\${srvsyfogsak.password}") password: String
     ) = RestTemplateBuilder()
-            .basicAuthentication(username, password)
-            .build()
+        .basicAuthentication(username, password)
+        .build()
 
     @Bean
     fun restTemplateMedProxy(): RestTemplate {
         return RestTemplateBuilder()
-                .additionalCustomizers(NaisProxyCustomizer())
-                .build()
+            .additionalCustomizers(NaisProxyCustomizer())
+            .build()
     }
 }

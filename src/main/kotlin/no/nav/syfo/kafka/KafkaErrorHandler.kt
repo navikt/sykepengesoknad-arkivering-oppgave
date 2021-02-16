@@ -19,10 +19,10 @@ class KafkaErrorHandler(private val registry: MeterRegistry, private val applica
     val log = log()
 
     override fun handle(
-            thrownException: Exception,
-            records: List<ConsumerRecord<*, *>>?,
-            consumer: Consumer<*, *>?,
-            container: MessageListenerContainer
+        thrownException: Exception,
+        records: List<ConsumerRecord<*, *>>?,
+        consumer: Consumer<*, *>?,
+        container: MessageListenerContainer
     ) {
         log.error("Feil i listener:", thrownException)
 
@@ -36,9 +36,9 @@ class KafkaErrorHandler(private val registry: MeterRegistry, private val applica
 
         records?.forEach { record ->
             log.error(
-                    "Feil i prossesseringen av record med offset:{} og innhold:{}",
-                    record.offset(),
-                    record.value()
+                "Feil i prossesseringen av record med offset:{} og innhold:{}",
+                record.offset(),
+                record.value()
             )
         }
 

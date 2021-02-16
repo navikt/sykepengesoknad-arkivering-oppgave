@@ -11,7 +11,6 @@ fun createSignedJWT(subject: String, issuer: String): String {
     return JwtTokenGenerator.createSignedJWT(jwtClaimsSet).serialize()
 }
 
-
 fun buildClaimSet(
     subject: String,
     issuer: String,

@@ -51,7 +51,7 @@ data class Soknad(
                 avsendertype = sykepengesoknad.avsendertype,
                 egenmeldtSykmelding = sykepengesoknad.egenmeldtSykmelding,
                 orgNummer = sykepengesoknad.orgNummer
-                )
+            )
 
         private fun endreRekkefolgePaSporsmalForPDF(sporsmal: List<Sporsmal>) =
             sporsmal.sortedBy { plasseringSporsmalPDF(it) }

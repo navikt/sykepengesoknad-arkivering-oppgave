@@ -19,18 +19,17 @@ import no.nav.syfo.kafka.felles.SporsmalDTO
 import no.nav.syfo.kafka.felles.SvarDTO
 import no.nav.syfo.kafka.felles.SvartypeDTO
 import no.nav.syfo.kafka.felles.SykepengesoknadDTO
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.junit.jupiter.MockitoExtension
 import java.lang.RuntimeException
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
 
-@RunWith(MockitoJUnitRunner::class)
+@ExtendWith(MockitoExtension::class)
 class BehandleVedTimeoutServiceTest {
     @Mock
     lateinit var saksbehandlingsService: SaksbehandlingsService
@@ -47,8 +46,7 @@ class BehandleVedTimeoutServiceTest {
     @InjectMocks
     lateinit var behandleVedTimeoutService: BehandleVedTimeoutService
 
-    @Before
-    fun setup() {
+    fun mockHenting() {
         whenever(syfosoknadConsumer.hentSoknad(any())).thenReturn(
             SykepengesoknadDTO(
                 aktorId = "aktor",
@@ -140,6 +138,7 @@ class BehandleVedTimeoutServiceTest {
 
     @Test
     fun `har noe å behandle og har innsending`() {
+        mockHenting()
         val søknadsId = UUID.randomUUID().toString()
         whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
             listOf(
@@ -169,6 +168,7 @@ class BehandleVedTimeoutServiceTest {
 
     @Test
     fun `flere oppgaver hvor en tryner`() {
+        mockHenting()
         val søknadsId1 = UUID.randomUUID()
         val søknadsId2 = UUID.randomUUID()
         val søknadsId3 = UUID.randomUUID()

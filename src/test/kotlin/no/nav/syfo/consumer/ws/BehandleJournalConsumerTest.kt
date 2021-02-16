@@ -11,16 +11,16 @@ import no.nav.tjeneste.virksomhet.behandlejournal.v2.BehandleJournalV2
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.JournalfoerInngaaendeHenvendelseRequest
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.meldinger.JournalfoerInngaaendeHenvendelseResponse
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers.any
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
-import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.junit.jupiter.MockitoExtension
 import java.io.IOException
 
-@RunWith(MockitoJUnitRunner::class)
+@ExtendWith(MockitoExtension::class)
 class BehandleJournalConsumerTest {
 
     @Mock
@@ -34,14 +34,14 @@ class BehandleJournalConsumerTest {
     private val behandleJournalConsumer: BehandleJournalConsumer? = null
 
     private val objectMapper = ObjectMapper()
-            .registerModule(JavaTimeModule())
-            .registerModule(KotlinModule())
+        .registerModule(JavaTimeModule())
+        .registerModule(KotlinModule())
 
     @Test
     @Throws(IOException::class)
     fun opprettJournalpost() {
         `when`(behandleJournalV2!!.journalfoerInngaaendeHenvendelse(any<JournalfoerInngaaendeHenvendelseRequest>()))
-                .thenReturn(JournalfoerInngaaendeHenvendelseResponse().withJournalpostId("id"))
+            .thenReturn(JournalfoerInngaaendeHenvendelseResponse().withJournalpostId("id"))
 
         val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
         val soknad = Soknad.lagSoknad(sykepengesoknad, "22026900623", "Kjersti Glad")
@@ -63,6 +63,5 @@ class BehandleJournalConsumerTest {
         } catch (e: RuntimeException) {
             assertThat(e).hasMessage("Kunne ikke behandle journalpost for søknad med id daa8b4b5-ece8-4e6d-ab7e-c7354958201a og saks id: saksid")
         }
-
     }
 }

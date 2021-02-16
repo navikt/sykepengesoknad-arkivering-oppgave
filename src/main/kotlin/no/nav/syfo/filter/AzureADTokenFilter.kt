@@ -15,38 +15,41 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 @Order(Ordered.LOWEST_PRECEDENCE)
-class AzureADTokenFilter(val syfogsakClientId: String, val authorizedConsumerClientIds: List<String>, val issuer:String) : HandlerInterceptor {
+class AzureADTokenFilter(val syfogsakClientId: String, val authorizedConsumerClientIds: List<String>, val issuer: String) : HandlerInterceptor {
 
     val mapper = ObjectMapper()
-            .registerModule(KotlinModule())
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        .registerModule(KotlinModule())
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
         if (handler is HandlerMethod) {
 
             (finnProtectedWithClaimsPaMetode(handler) ?: finnProtectedWithClaimsPaKlasse(handler))
-                    ?.issuer
-                    ?.takeIf { it.equals(AZUREAD) }
-                    ?.let {
-                        val auth: String? = request.getHeader("Authorization")?.substringAfter("Bearer")?.trim()
-                        val claimsJson = auth
-                                ?.let { JwtHelper.decode(it) }
-                                ?.claims
-                                ?: throw OIDCUnauthorizedException("Ugyldige credentials")
+                ?.issuer
+                ?.takeIf { it.equals(AZUREAD) }
+                ?.let {
+                    val auth: String? = request.getHeader("Authorization")?.substringAfter("Bearer")?.trim()
+                    val claimsJson = auth
+                        ?.let { JwtHelper.decode(it) }
+                        ?.claims
+                        ?: throw OIDCUnauthorizedException("Ugyldige credentials")
 
-                        val claims = mapper.readValue(claimsJson, Claims::class.java)
-                        if (!(claims.appid in authorizedConsumerClientIds
-                                && claims.aud == syfogsakClientId
-                                && claims.iss == issuer)) {
-                            throw OIDCUnauthorizedException("Ugyldige credentials")
-                        }
+                    val claims = mapper.readValue(claimsJson, Claims::class.java)
+                    if (!(
+                        claims.appid in authorizedConsumerClientIds &&
+                            claims.aud == syfogsakClientId &&
+                            claims.iss == issuer
+                        )
+                    ) {
+                        throw OIDCUnauthorizedException("Ugyldige credentials")
                     }
+                }
         }
         return super.preHandle(request, response, handler)
     }
 
     private fun finnProtectedWithClaimsPaMetode(handler: HandlerMethod) =
-            handler.getMethodAnnotation(ProtectedWithClaims::class.java)
+        handler.getMethodAnnotation(ProtectedWithClaims::class.java)
 
     fun finnProtectedWithClaimsPaKlasse(handlerMethod: HandlerMethod): ProtectedWithClaims? {
         val method = handlerMethod.method
@@ -61,7 +64,7 @@ class AzureADTokenFilter(val syfogsakClientId: String, val authorizedConsumerCli
 }
 
 data class Claims(
-        val aud: String,
-        val appid: String,
-        val iss: String // Azure AD NAV
+    val aud: String,
+    val appid: String,
+    val iss: String // Azure AD NAV
 )

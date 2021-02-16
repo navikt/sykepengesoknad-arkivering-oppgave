@@ -22,9 +22,10 @@ import javax.inject.Inject
 @Component
 class BehandleJournalConsumer @Inject
 constructor(
-        private val behandleJournalV2: BehandleJournalV2,
-        private val personConsumer: PersonConsumer,
-        private val pdfRestController: PDFRestController) {
+    private val behandleJournalV2: BehandleJournalV2,
+    private val personConsumer: PersonConsumer,
+    private val pdfRestController: PDFRestController
+) {
 
     fun opprettJournalpost(soknad: Soknad, saksId: String): String {
         val pdf: ByteArray?
@@ -43,39 +44,45 @@ constructor(
     private fun journalforSoknad(soknad: Soknad, saksId: String, pdf: ByteArray?): String {
         try {
             return behandleJournalV2.journalfoerInngaaendeHenvendelse(
-                    JournalfoerInngaaendeHenvendelseRequest()
-                            .withApplikasjonsID("SYFOGSAK")
-                            .withJournalpost(Journalpost()
-                                    .withDokumentDato(DateTime.now())
-                                    .withJournalfoerendeEnhetREF(JOURNALFORENDE_ENHET)
-                                    .withKanal(Kommunikasjonskanaler().withValue("NAV_NO"))
-                                    .withSignatur(Signatur().withSignert(true))
-                                    .withArkivtema(Arkivtemaer().withValue("SYK"))
-                                    .withForBruker(Person().withIdent(NorskIdent().withIdent(soknad.fnr)))
-                                    .withOpprettetAvNavn("Syfogsak")
-                                    .withInnhold(getJournalPostInnholdNavn(soknad.soknadstype!!))
-                                    .withEksternPart(EksternPart()
-                                            .withNavn(personConsumer.finnBrukerPersonnavnByFnr(soknad.fnr!!))
-                                            .withEksternAktoer(Person().withIdent(NorskIdent().withIdent(soknad.fnr))))
-                                    .withGjelderSak(Sak().withSaksId(saksId).withFagsystemkode(GOSYS))
-                                    .withMottattDato(DateTime.now())
-                                    .withDokumentinfoRelasjon(
-                                            DokumentinfoRelasjon()
-                                                    .withTillknyttetJournalpostSomKode("HOVEDDOKUMENT")
-                                                    .withJournalfoertDokument(JournalfoertDokumentInfo()
-                                                            .withBegrensetPartsInnsyn(false)
-                                                            .withDokumentType(Dokumenttyper().withValue(getBrevkode(soknad)))
-                                                            .withSensitivitet(true)
-                                                            .withTittel(getJornalfoertDokumentTittel(soknad))
-                                                            .withKategorikode("ES")
-                                                            .withBeskriverInnhold(
-                                                                    StrukturertInnhold()
-                                                                            .withFilnavn(getStruktureltInnholdFilnavn(soknad))
-                                                                            .withFiltype(Arkivfiltyper().withValue("PDF"))
-                                                                            .withInnhold(pdf)
-                                                                            .withVariantformat(Variantformater().withValue("ARKIV"))
-                                                            ))
-                                    ))
+                JournalfoerInngaaendeHenvendelseRequest()
+                    .withApplikasjonsID("SYFOGSAK")
+                    .withJournalpost(
+                        Journalpost()
+                            .withDokumentDato(DateTime.now())
+                            .withJournalfoerendeEnhetREF(JOURNALFORENDE_ENHET)
+                            .withKanal(Kommunikasjonskanaler().withValue("NAV_NO"))
+                            .withSignatur(Signatur().withSignert(true))
+                            .withArkivtema(Arkivtemaer().withValue("SYK"))
+                            .withForBruker(Person().withIdent(NorskIdent().withIdent(soknad.fnr)))
+                            .withOpprettetAvNavn("Syfogsak")
+                            .withInnhold(getJournalPostInnholdNavn(soknad.soknadstype!!))
+                            .withEksternPart(
+                                EksternPart()
+                                    .withNavn(personConsumer.finnBrukerPersonnavnByFnr(soknad.fnr!!))
+                                    .withEksternAktoer(Person().withIdent(NorskIdent().withIdent(soknad.fnr)))
+                            )
+                            .withGjelderSak(Sak().withSaksId(saksId).withFagsystemkode(GOSYS))
+                            .withMottattDato(DateTime.now())
+                            .withDokumentinfoRelasjon(
+                                DokumentinfoRelasjon()
+                                    .withTillknyttetJournalpostSomKode("HOVEDDOKUMENT")
+                                    .withJournalfoertDokument(
+                                        JournalfoertDokumentInfo()
+                                            .withBegrensetPartsInnsyn(false)
+                                            .withDokumentType(Dokumenttyper().withValue(getBrevkode(soknad)))
+                                            .withSensitivitet(true)
+                                            .withTittel(getJornalfoertDokumentTittel(soknad))
+                                            .withKategorikode("ES")
+                                            .withBeskriverInnhold(
+                                                StrukturertInnhold()
+                                                    .withFilnavn(getStruktureltInnholdFilnavn(soknad))
+                                                    .withFiltype(Arkivfiltyper().withValue("PDF"))
+                                                    .withInnhold(pdf)
+                                                    .withVariantformat(Variantformater().withValue("ARKIV"))
+                                            )
+                                    )
+                            )
+                    )
             ).journalpostId
         } catch (e: RuntimeException) {
             val feilmelding = "Kunne ikke behandle journalpost for søknad med id ${soknad.soknadsId} og saks id: $saksId"

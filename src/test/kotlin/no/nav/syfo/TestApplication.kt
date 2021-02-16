@@ -1,9 +1,7 @@
 package no.nav.syfo
 
 import org.h2.tools.Server
-import org.mockito.Mockito
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
 import org.springframework.transaction.annotation.EnableTransactionManagement
@@ -12,7 +10,7 @@ import java.sql.SQLException
 @SpringBootApplication
 @EnableTransactionManagement
 @Configuration
-class TestApplication{
+class TestApplication {
 
     @Profile("local")
     fun server(): Server {
@@ -22,6 +20,5 @@ class TestApplication{
             log().error("Klarte ikke starte databasekobling", e)
             throw RuntimeException("Klarte ikke starte databasekobling", e)
         }
-
     }
 }

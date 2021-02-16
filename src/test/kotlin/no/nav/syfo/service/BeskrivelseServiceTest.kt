@@ -11,7 +11,7 @@ import no.nav.syfo.domain.dto.Avsendertype.SYSTEM
 import no.nav.syfo.domain.dto.Soknadstype
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class BeskrivelseServiceTest {
 
@@ -85,8 +85,8 @@ class BeskrivelseServiceTest {
     fun talerAtArbeidssituasjonIkkeErSatt() {
         val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
         val soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn").copy(
-                arbeidssituasjon = null,
-                soknadstype = Soknadstype.SELVSTENDIGE_OG_FRILANSERE
+            arbeidssituasjon = null,
+            soknadstype = Soknadstype.SELVSTENDIGE_OG_FRILANSERE
         )
         val beskrivelse = lagBeskrivelse(soknad)
 

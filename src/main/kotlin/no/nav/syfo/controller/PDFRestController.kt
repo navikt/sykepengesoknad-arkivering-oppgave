@@ -14,8 +14,10 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.client.RestTemplate
 
 @Controller
-class PDFRestController(private val restTemplate: RestTemplate,
-                        @Value("\${pdfgen.url}") private val pdfgenUrl: String) {
+class PDFRestController(
+    private val restTemplate: RestTemplate,
+    @Value("\${pdfgen.url}") private val pdfgenUrl: String
+) {
 
     @Retryable(backoff = Backoff(delay = 5000))
     fun getPDF(soknad: Soknad, template: PDFTemplate): ByteArray? {

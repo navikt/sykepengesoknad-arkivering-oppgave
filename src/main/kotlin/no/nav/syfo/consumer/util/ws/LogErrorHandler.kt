@@ -33,7 +33,7 @@ class LogErrorHandler : SOAPHandler<SOAPMessageContext> {
         val beskrivelse = StringBuilder()
         beskrivelse.append("Det oppstod en feil i WS-kallet")
 
-        message.exchange.let {exchange ->
+        message.exchange.let { exchange ->
             exchange.get(Service::class.java).let { service ->
                 beskrivelse.append(" \'").append(service.name)
                 exchange.get(OperationInfo::class.java).let { operationInfo ->

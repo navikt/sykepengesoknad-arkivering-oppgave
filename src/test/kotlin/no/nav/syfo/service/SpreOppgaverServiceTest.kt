@@ -6,29 +6,20 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.syfo.TestApplication
-import no.nav.syfo.consumer.repository.OppgaveStatus
 import no.nav.syfo.consumer.repository.OppgavestyringDAO
-import no.nav.syfo.consumer.repository.SpreOppgave
-import no.nav.syfo.domain.DokumentTypeDTO
 import no.nav.syfo.domain.Innsending
-import no.nav.syfo.domain.OppdateringstypeDTO
-import no.nav.syfo.domain.OppgaveDTO
 import no.nav.syfo.domain.dto.Arbeidssituasjon
 import no.nav.syfo.domain.dto.Soknadstype
 import no.nav.syfo.domain.dto.Sykepengesoknad
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
-import org.mockito.Mockito.anyString
-import org.mockito.Mockito.never
-import org.mockito.Mockito.times
-import org.mockito.Mockito.verify
-import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.Mockito.*
+import org.mockito.junit.jupiter.MockitoExtension
 import java.time.LocalDateTime
-import java.util.UUID
 
-@RunWith(MockitoJUnitRunner::class)
+@ExtendWith(MockitoExtension::class)
 class SpreOppgaverServiceTest {
     @Mock
     lateinit var saksbehandlingsService: SaksbehandlingsService
@@ -56,24 +47,9 @@ class SpreOppgaverServiceTest {
         soknadTom = null
     )
 
-
-    @Before
+    @BeforeEach
     fun setup() {
         spreOppgaverService = SpreOppgaverService("1", saksbehandlingsService, oppgavestyringDAO)
-        whenever(saksbehandlingsService.finnEksisterendeInnsending(any())).thenAnswer { innsending(it.arguments[0].toString()) }
-    }
-
-    fun settTestMiljø(status: OppgaveStatus, timeout: LocalDateTime?) {
-        whenever(oppgavestyringDAO.hentSpreOppgave(anyString())).thenAnswer {
-            SpreOppgave(
-                søknadsId = it.arguments[0].toString(),
-                timeout = timeout,
-                status = status,
-                opprettet = LocalDateTime.now(),
-                modifisert = LocalDateTime.now(),
-                avstemt = false
-            )
-        }
     }
 
     @Test
@@ -136,6 +112,8 @@ class SpreOppgaverServiceTest {
 
     @Test
     fun utsetterBareArbeidstakerSoknader() {
+        whenever(saksbehandlingsService.finnEksisterendeInnsending(any())).thenAnswer { innsending(it.arguments[0].toString()) }
+
         val arbeidstaker = objectMapper.readValue(
             TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"),
             Sykepengesoknad::class.java

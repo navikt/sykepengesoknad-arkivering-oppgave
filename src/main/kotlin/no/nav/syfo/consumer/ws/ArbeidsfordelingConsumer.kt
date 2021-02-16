@@ -25,20 +25,22 @@ class ArbeidsfordelingConsumer(private val arbeidsfordelingV1: ArbeidsfordelingV
             return if ("NOR" == tilknytning.geografiskTilknytning)
                 "4474"
             else
-                arbeidsfordelingV1.finnBehandlendeEnhetListe(FinnBehandlendeEnhetListeRequest().apply {
-                    arbeidsfordelingKriterier = ArbeidsfordelingKriterier().apply {
-                        diskresjonskode = if (tilknytning.diskresjonskode == null) null else Diskresjonskoder().apply {
-                            value = tilknytning.diskresjonskode
+                arbeidsfordelingV1.finnBehandlendeEnhetListe(
+                    FinnBehandlendeEnhetListeRequest().apply {
+                        arbeidsfordelingKriterier = ArbeidsfordelingKriterier().apply {
+                            diskresjonskode = if (tilknytning.diskresjonskode == null) null else Diskresjonskoder().apply {
+                                value = tilknytning.diskresjonskode
+                            }
+                            geografiskTilknytning = Geografi().apply {
+                                value = tilknytning.geografiskTilknytning
+                            }
+                            tema = Tema().apply {
+                                value = "SYK"
+                            }
+                            behandlingstema = hentRiktigTemaBehandlingstemaForSoknadstype(soknadstype)
                         }
-                        geografiskTilknytning = Geografi().apply {
-                            value = tilknytning.geografiskTilknytning
-                        }
-                        tema = Tema().apply {
-                            value = "SYK"
-                        }
-                        behandlingstema = hentRiktigTemaBehandlingstemaForSoknadstype(soknadstype)
                     }
-                })
+                )
                     .behandlendeEnhetListe
                     .firstOrNull { organisasjonsenhet -> organisasjonsenhet.status == Enhetsstatus.AKTIV }?.enhetId
                     ?: throw RuntimeException("Fant ingen aktiv enhet for ${tilknytning.geografiskTilknytning}")
@@ -47,7 +49,7 @@ class ArbeidsfordelingConsumer(private val arbeidsfordelingV1: ArbeidsfordelingV
             throw RuntimeException("Feil ved henting av brukers forvaltningsenhet", e)
         } catch (e: RuntimeException) {
             log().warn(
-                "Klarte ikke å hente behandlende enhet! Gir oppgaven til NAV_OPPFOLGING_UTLAND (${NAV_OPPFOLGING_UTLAND_KONTOR_NR})",
+                "Klarte ikke å hente behandlende enhet! Gir oppgaven til NAV_OPPFOLGING_UTLAND ($NAV_OPPFOLGING_UTLAND_KONTOR_NR)",
                 e
             )
             return NAV_OPPFOLGING_UTLAND_KONTOR_NR

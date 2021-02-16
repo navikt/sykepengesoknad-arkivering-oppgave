@@ -23,8 +23,7 @@ import no.nav.syfo.kafka.felles.SvartypeDTO
 import no.nav.syfo.kafka.felles.SykepengesoknadDTO
 import no.nav.syfo.skapConsumerRecord
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Test
 import org.mockito.Mock
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -32,17 +31,14 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
-import org.springframework.test.context.junit4.SpringRunner
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
-@RunWith(SpringRunner::class)
 @EmbeddedKafka
 @SpringBootTest(classes = [TestApplication::class])
 @DirtiesContext
 class SaksbehandlingIntegrationTest {
-
 
     @MockBean
     private lateinit var aktorConsumer: AktorConsumer
@@ -65,7 +61,6 @@ class SaksbehandlingIntegrationTest {
     @Autowired
     private lateinit var innsendingDAO: InnsendingDAO
 
-
     @Test
     fun `test happycase`() {
         val aktorId = "aktor"
@@ -76,23 +71,25 @@ class SaksbehandlingIntegrationTest {
         whenever(oppgaveConsumer.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
 
         val soknad = SykepengesoknadDTO(
-                aktorId = aktorId,
-                id = UUID.randomUUID().toString(),
-                opprettet = LocalDateTime.now(),
-                fom = LocalDate.of(2019, 5, 4),
-                tom = LocalDate.of(2019, 5, 8),
-                type = SoknadstypeDTO.ARBEIDSTAKERE,
-                sporsmal = listOf(SporsmalDTO(
-                        id = UUID.randomUUID().toString(),
-                        tag = "TAGGEN",
-                        sporsmalstekst = "Har systemet gode integrasjonstester?",
-                        svartype = SvartypeDTO.JA_NEI,
-                        svar = listOf(SvarDTO(verdi = "JA"))
+            aktorId = aktorId,
+            id = UUID.randomUUID().toString(),
+            opprettet = LocalDateTime.now(),
+            fom = LocalDate.of(2019, 5, 4),
+            tom = LocalDate.of(2019, 5, 8),
+            type = SoknadstypeDTO.ARBEIDSTAKERE,
+            sporsmal = listOf(
+                SporsmalDTO(
+                    id = UUID.randomUUID().toString(),
+                    tag = "TAGGEN",
+                    sporsmalstekst = "Har systemet gode integrasjonstester?",
+                    svartype = SvartypeDTO.JA_NEI,
+                    svar = listOf(SvarDTO(verdi = "JA"))
 
-                )),
-                status = SoknadsstatusDTO.SENDT,
-                sendtNav = LocalDateTime.now(),
-                fodselsnummer = null
+                )
+            ),
+            status = SoknadsstatusDTO.SENDT,
+            sendtNav = LocalDateTime.now(),
+            fodselsnummer = null
         )
 
         soknadSendtListener.listen(skapConsumerRecord(soknad.id!!, soknad), acknowledgment)
@@ -122,14 +119,16 @@ class SaksbehandlingIntegrationTest {
             fom = LocalDate.of(2020, 5, 1),
             tom = LocalDate.of(2020, 5, 5),
             type = SoknadstypeDTO.SELVSTENDIGE_OG_FRILANSERE,
-            sporsmal = listOf(SporsmalDTO(
-                id = UUID.randomUUID().toString(),
-                tag = "TAGGEN",
-                sporsmalstekst = "Har systemet gode integrasjonstester?",
-                svartype = SvartypeDTO.JA_NEI,
-                svar = listOf(SvarDTO(verdi = "JA"))
+            sporsmal = listOf(
+                SporsmalDTO(
+                    id = UUID.randomUUID().toString(),
+                    tag = "TAGGEN",
+                    sporsmalstekst = "Har systemet gode integrasjonstester?",
+                    svartype = SvartypeDTO.JA_NEI,
+                    svar = listOf(SvarDTO(verdi = "JA"))
 
-            )),
+                )
+            ),
             status = SoknadsstatusDTO.SENDT,
             sendtNav = LocalDateTime.now(),
             fodselsnummer = null,
@@ -150,7 +149,9 @@ class SaksbehandlingIntegrationTest {
 Søknad om sykepenger fra Selvstendig Næringsdrivende / Frilanser for perioden 01.05.2020 - 05.05.2020
 
 Har systemet gode integrasjonstester?
-Ja""".trimIndent())
+Ja
+            """.trimIndent()
+        )
         assertThat(oppgaveRequest.tema).isEqualTo("SYK")
         assertThat(oppgaveRequest.oppgavetype).isEqualTo("SOK")
         assertThat(oppgaveRequest.prioritet).isEqualTo("NORM")

@@ -21,9 +21,11 @@ import javax.inject.Inject
 
 @Component
 class RebehandlingListener @Inject
-constructor(private val behandleFeiledeSoknaderService: BehandleFeiledeSoknaderService,
-            private val innsendingDAO: InnsendingDAO,
-            private val rebehandlingProducer: RebehandlingProducer) {
+constructor(
+    private val behandleFeiledeSoknaderService: BehandleFeiledeSoknaderService,
+    private val innsendingDAO: InnsendingDAO,
+    private val rebehandlingProducer: RebehandlingProducer
+) {
     val log = log()
 
     @KafkaListener(topics = ["syfogsak-rebehandle-soknad-v1"], id = "syfogsak-rebehandling", idIsGroup = false, containerFactory = "rebehandlingContainerFactory")

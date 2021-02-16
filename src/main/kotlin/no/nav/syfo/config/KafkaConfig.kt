@@ -35,7 +35,6 @@ class KafkaConfig(private val kafkaErrorHandler: KafkaErrorHandler, private val 
         .configure(READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE, true)
         .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-
     @Bean
     fun kafkaListenerContainerFactory(consumerFactory: ConsumerFactory<String, SykepengesoknadDTO>): ConcurrentKafkaListenerContainerFactory<String, SykepengesoknadDTO> =
         ConcurrentKafkaListenerContainerFactory<String, SykepengesoknadDTO>().apply {
@@ -44,7 +43,6 @@ class KafkaConfig(private val kafkaErrorHandler: KafkaErrorHandler, private val 
             this.containerProperties.authorizationExceptionRetryInterval = Duration.ofSeconds(2)
             this.consumerFactory = consumerFactory
         }
-
 
     @Bean
     fun consumerFactory(properties: KafkaProperties): ConsumerFactory<String, SykepengesoknadDTO> {
@@ -60,7 +58,8 @@ class KafkaConfig(private val kafkaErrorHandler: KafkaErrorHandler, private val 
         return DefaultKafkaConsumerFactory(
             properties.buildConsumerProperties(),
             StringDeserializer(),
-            FunctionDeserializer { bytes -> objectMapper.readValue(bytes, Sykepengesoknad::class.java) })
+            FunctionDeserializer { bytes -> objectMapper.readValue(bytes, Sykepengesoknad::class.java) }
+        )
     }
 
     @Bean
@@ -98,7 +97,4 @@ class KafkaConfig(private val kafkaErrorHandler: KafkaErrorHandler, private val 
             FunctionSerializer<Sykepengesoknad>(objectMapper::writeValueAsBytes)
         )
     )
-
 }
-
-

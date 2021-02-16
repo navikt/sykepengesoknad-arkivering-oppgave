@@ -4,9 +4,9 @@ import no.nav.syfo.TestApplication
 import no.nav.syfo.consumer.token.Token
 import no.nav.syfo.consumer.token.TokenConsumer
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.*
 import org.mockito.Mock
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,10 +17,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
-import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.web.client.RestTemplate
 
-@RunWith(SpringRunner::class)
 @EmbeddedKafka
 @SpringBootTest(classes = [TestApplication::class])
 @DirtiesContext
@@ -34,13 +32,14 @@ class AktorConsumerTest {
     @Autowired
     private lateinit var aktorConsumer: AktorConsumer
 
-    @Before
+    @BeforeEach
     fun setup() {
         aktorConsumer = AktorConsumer(
-                tokenConsumer = tokenConsumer,
-                username = "username",
-                url = "https://aktor.nav.no",
-                restTemplate = restTemplate)
+            tokenConsumer = tokenConsumer,
+            username = "username",
+            url = "https://aktor.nav.no",
+            restTemplate = restTemplate
+        )
         given(tokenConsumer.token).willReturn(Token("token", "Bearer", 3600))
     }
 
@@ -48,79 +47,102 @@ class AktorConsumerTest {
     fun finnerAktorId() {
         val response = AktorResponse()
         response["fnr"] = Aktor(
-                identer = listOf(Ident(
-                        ident = "aktorId",
-                        identgruppe = "AktoerId",
-                        gjeldende = true)),
-                feilmelding = null
+            identer = listOf(
+                Ident(
+                    ident = "aktorId",
+                    identgruppe = "AktoerId",
+                    gjeldende = true
+                )
+            ),
+            feilmelding = null
         )
 
-        given(restTemplate.exchange(
+        given(
+            restTemplate.exchange(
                 anyString(),
                 any(HttpMethod::class.java),
                 any(HttpEntity::class.java),
                 eq(AktorResponse::class.java)
-        )).willReturn(ResponseEntity(response, HttpStatus.OK))
+            )
+        ).willReturn(ResponseEntity(response, HttpStatus.OK))
 
         val aktorId = aktorConsumer.getAktorId("fnr")
 
         assertThat(aktorId).isEqualTo("aktorId")
     }
 
-    @Test(expected = RuntimeException::class)
+    @Test
     fun finnerIkkeIdent() {
-        val response = AktorResponse()
-        response["fnr"] = Aktor(
+        assertThrows(RuntimeException::class.java) {
+
+            val response = AktorResponse()
+            response["fnr"] = Aktor(
                 identer = null,
                 feilmelding = "Fant ikke aktor"
-        )
+            )
 
-        given(restTemplate.exchange(
-                anyString(),
-                any(HttpMethod::class.java),
-                any(HttpEntity::class.java),
-                eq(AktorResponse::class.java)
-        )).willReturn(ResponseEntity(response, HttpStatus.OK))
+            given(
+                restTemplate.exchange(
+                    anyString(),
+                    any(HttpMethod::class.java),
+                    any(HttpEntity::class.java),
+                    eq(AktorResponse::class.java)
+                )
+            ).willReturn(ResponseEntity(response, HttpStatus.OK))
 
-        aktorConsumer.getAktorId("fnr")
+            aktorConsumer.getAktorId("fnr")
+        }
     }
 
-    @Test(expected = RuntimeException::class)
+    @Test
     fun manglendeFnrIResponseGirFeilmelding() {
-        val response = AktorResponse()
-        response["etAnnetFnr"] = Aktor(
-                identer = listOf(Ident(
+        assertThrows(RuntimeException::class.java) {
+
+            val response = AktorResponse()
+            response["etAnnetFnr"] = Aktor(
+                identer = listOf(
+                    Ident(
                         ident = "aktorId",
                         identgruppe = "AktoerId",
-                        gjeldende = true)),
+                        gjeldende = true
+                    )
+                ),
                 feilmelding = null
-        )
+            )
 
-        given(restTemplate.exchange(
-                anyString(),
-                any(HttpMethod::class.java),
-                any(HttpEntity::class.java),
-                eq(AktorResponse::class.java)
-        )).willReturn(ResponseEntity(response, HttpStatus.OK))
+            given(
+                restTemplate.exchange(
+                    anyString(),
+                    any(HttpMethod::class.java),
+                    any(HttpEntity::class.java),
+                    eq(AktorResponse::class.java)
+                )
+            ).willReturn(ResponseEntity(response, HttpStatus.OK))
 
-        aktorConsumer.getAktorId("fnr")
+            aktorConsumer.getAktorId("fnr")
+        }
     }
 
-    @Test(expected = RuntimeException::class)
+    @Test
     fun manglendeIdentGirFeilmelding() {
-        val response = AktorResponse()
-        response["fnr"] = Aktor(
+        assertThrows(RuntimeException::class.java) {
+
+            val response = AktorResponse()
+            response["fnr"] = Aktor(
                 identer = emptyList(),
                 feilmelding = null
-        )
+            )
 
-        given(restTemplate.exchange(
-                anyString(),
-                any(HttpMethod::class.java),
-                any(HttpEntity::class.java),
-                eq(AktorResponse::class.java)
-        )).willReturn(ResponseEntity(response, HttpStatus.OK))
+            given(
+                restTemplate.exchange(
+                    anyString(),
+                    any(HttpMethod::class.java),
+                    any(HttpEntity::class.java),
+                    eq(AktorResponse::class.java)
+                )
+            ).willReturn(ResponseEntity(response, HttpStatus.OK))
 
-        aktorConsumer.getAktorId("fnr")
+            aktorConsumer.getAktorId("fnr")
+        }
     }
 }

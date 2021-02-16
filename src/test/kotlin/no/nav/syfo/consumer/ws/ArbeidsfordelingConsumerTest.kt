@@ -3,28 +3,23 @@ package no.nav.syfo.consumer.ws
 import no.nav.syfo.domain.dto.Soknadstype
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.ArbeidsfordelingV1
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.FinnBehandlendeEnhetListeUgyldigInput
-import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.Behandlingstema
-import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.Diskresjonskoder
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.Enhetsstatus
-import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.Geografi
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.Organisasjonsenhet
-import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.Tema
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.meldinger.FinnBehandlendeEnhetListeRequest
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.meldinger.FinnBehandlendeEnhetListeResponse
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.verify
-import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.junit.jupiter.MockitoExtension
 
-
-@RunWith(MockitoJUnitRunner::class)
+@ExtendWith(MockitoExtension::class)
 class ArbeidsfordelingConsumerTest {
 
     @Mock
@@ -33,16 +28,20 @@ class ArbeidsfordelingConsumerTest {
     @InjectMocks
     private val arbeidsfordelingConsumer: ArbeidsfordelingConsumer? = null
 
-    @Before
+    @BeforeEach
     @Throws(FinnBehandlendeEnhetListeUgyldigInput::class)
     fun setup() {
         `when`(arbeidsfordelingV1!!.finnBehandlendeEnhetListe(any()))
-            .thenReturn(FinnBehandlendeEnhetListeResponse().apply {
-                behandlendeEnhetListe.add(Organisasjonsenhet().apply {
-                    status = Enhetsstatus.AKTIV
-                    enhetId = "enhetsId"
-                })
-            })
+            .thenReturn(
+                FinnBehandlendeEnhetListeResponse().apply {
+                    behandlendeEnhetListe.add(
+                        Organisasjonsenhet().apply {
+                            status = Enhetsstatus.AKTIV
+                            enhetId = "enhetsId"
+                        }
+                    )
+                }
+            )
     }
 
     @Test

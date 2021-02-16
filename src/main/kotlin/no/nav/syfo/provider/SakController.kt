@@ -35,7 +35,7 @@ class SakController(
         )
     }
 
-    private fun validerInput(fom: LocalDate?, tom: LocalDate?){
+    private fun validerInput(fom: LocalDate?, tom: LocalDate?) {
         if (fom != null && tom != null && fom.isAfter(tom)) {
             log.error("FOM må være før eller lik TOM")
             throw IllegalArgumentException("FOM må være før eller lik TOM")

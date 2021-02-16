@@ -27,7 +27,7 @@ class SpreOppgaverListener(private val spreOppgaverService: SpreOppgaverService)
                 spreOppgaverService.prosesserOppgave(cr.value(), OppgaveKilde.Saksbehandling)
             }
             acknowledgment.acknowledge()
-        }  catch (e: Exception) {
+        } catch (e: Exception) {
             log.error("Uventet feil ved lesing fra ${cr.topic()}", e)
             throw RuntimeException("Uventet feil ved lesing fra ${cr.topic()}")
         } finally {

@@ -1,6 +1,5 @@
 package no.nav.syfo.consumer.repository
 
-
 import no.nav.syfo.log
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
@@ -29,7 +28,7 @@ class OppgavestyringDAO(private val namedParameterJdbcTemplate: NamedParameterJd
                 .addValue("status", status.name)
                 .addValue("opprettet", opprettet)
                 .addValue("modifisert", opprettet)
-                .addValue("avstemt", if(avstemt) 1 else 0)
+                .addValue("avstemt", if (avstemt) 1 else 0)
         )
     }
 

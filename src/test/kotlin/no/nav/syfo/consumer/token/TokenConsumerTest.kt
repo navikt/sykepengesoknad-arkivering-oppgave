@@ -2,9 +2,8 @@ package no.nav.syfo.consumer.token
 
 import no.nav.syfo.TestApplication
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito
 import org.mockito.BDDMockito.given
 import org.mockito.Mock
@@ -16,10 +15,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
-import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.web.client.RestTemplate
 
-@RunWith(SpringRunner::class)
 @SpringBootTest(classes = [TestApplication::class])
 @EmbeddedKafka
 @DirtiesContext
@@ -32,11 +29,11 @@ class TokenConsumerTest {
 
     private val token = Token("token", "Bearer", 3600)
 
-    @Before
+    @BeforeEach
     fun setup() {
         tokenConsumer = TokenConsumer(
-                restTemplate,
-                url = "https://url.no"
+            restTemplate,
+            url = "https://url.no"
         )
     }
 
@@ -64,11 +61,13 @@ class TokenConsumerTest {
     }
 
     private fun mockTokenRespone(token: Token) {
-        given(restTemplate.exchange(
+        given(
+            restTemplate.exchange(
                 BDDMockito.anyString(),
                 BDDMockito.any(HttpMethod::class.java),
                 BDDMockito.any(HttpEntity::class.java),
                 BDDMockito.eq(Token::class.java)
-        )).willReturn(ResponseEntity(token, HttpStatus.OK))
+            )
+        ).willReturn(ResponseEntity(token, HttpStatus.OK))
     }
 }

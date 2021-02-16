@@ -16,10 +16,12 @@ import java.time.Instant
 import java.util.*
 
 @Component
-class AzureAdTokenConsumer(private val restTemplateMedProxy: RestTemplate,
-                           @param:Value("\${aad_accesstoken_url}") private val url: String,
-                           @param:Value("\${aad_syfogsak_client_id}") private val clientId: String,
-                           @param:Value("\${aad_syfogsak_client_secret}") private val clientSecret: String) {
+class AzureAdTokenConsumer(
+    private val restTemplateMedProxy: RestTemplate,
+    @param:Value("\${aad_accesstoken_url}") private val url: String,
+    @param:Value("\${aad_syfogsak_client_id}") private val clientId: String,
+    @param:Value("\${aad_syfogsak_client_secret}") private val clientSecret: String
+) {
     private val azureAdTokenMap = HashMap<String, AzureAdToken>()
 
     val log = log()
@@ -50,15 +52,13 @@ class AzureAdTokenConsumer(private val restTemplateMedProxy: RestTemplate,
                     throw RuntimeException("Henting av token fra Azure AD feiler fordi body er null")
                 }
                 azureAdTokenMap[resource] = result.body!!
-
             }
         }
         return azureAdTokenMap[resource]?.access_token ?: throw RuntimeException("Ingen azure ad token tilgjengelig")
-
     }
 }
 
 class AzureAdToken(
-        val access_token: String,
-        val expires_on: Instant? = null
+    val access_token: String,
+    val expires_on: Instant? = null
 )

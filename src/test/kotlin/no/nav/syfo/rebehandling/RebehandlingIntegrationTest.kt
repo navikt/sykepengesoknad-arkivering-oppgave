@@ -26,9 +26,8 @@ import no.nav.syfo.kafka.felles.SykepengesoknadDTO
 import no.nav.syfo.kafka.mapper.toSykepengesoknad
 import no.nav.syfo.skapConsumerRecord
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Test
 import org.mockito.Mock
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -36,17 +35,14 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
-import org.springframework.test.context.junit4.SpringRunner
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
-@RunWith(SpringRunner::class)
 @EmbeddedKafka
 @SpringBootTest(classes = [TestApplication::class])
 @DirtiesContext
 class RebehandlingIntegrationTest {
-
 
     @Autowired
     private lateinit var rebehandlingProducerMock: RebehandlingProducerMock
@@ -78,7 +74,7 @@ class RebehandlingIntegrationTest {
     @Autowired
     private lateinit var innsendingDAO: InnsendingDAO
 
-    @After
+    @AfterEach
     fun tearDown() {
         rebehandlingProducerMock.topicMeldinger.clear()
     }
@@ -88,17 +84,16 @@ class RebehandlingIntegrationTest {
         whenever(aktorConsumer.finnFnr(any())).thenThrow(RuntimeException("Gæli"))
 
         val soknad = SykepengesoknadDTO(
-                aktorId = "aktor",
-                id = "hei",
-                opprettet = LocalDateTime.now(),
-                type = SoknadstypeDTO.ARBEIDSTAKERE,
-                sporsmal = emptyList(),
-                status = SoknadsstatusDTO.SENDT,
-                fodselsnummer = null
+            aktorId = "aktor",
+            id = "hei",
+            opprettet = LocalDateTime.now(),
+            type = SoknadstypeDTO.ARBEIDSTAKERE,
+            sporsmal = emptyList(),
+            status = SoknadsstatusDTO.SENDT,
+            fodselsnummer = null
         )
         soknadSendtListener.listen(skapConsumerRecord(soknad.id!!, soknad), acknowledgment)
         verify(acknowledgment).acknowledge()
-
 
         assertThat(rebehandlingProducerMock.topicMeldinger).hasSize(1)
 
@@ -124,27 +119,28 @@ class RebehandlingIntegrationTest {
         whenever(oppgaveConsumer.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
 
         val soknad = SykepengesoknadDTO(
-                aktorId = aktorId,
-                id = UUID.randomUUID().toString(),
-                opprettet = LocalDateTime.now(),
-                fom = LocalDate.of(2019, 5, 4),
-                tom = LocalDate.of(2019, 5, 8),
-                type = SoknadstypeDTO.ARBEIDSTAKERE,
-                sporsmal = listOf(SporsmalDTO(
-                        id = UUID.randomUUID().toString(),
-                        tag = "TAGGEN",
-                        sporsmalstekst = "Fungerer rebehandlinga?",
-                        svartype = SvartypeDTO.JA_NEI,
-                        svar = listOf(SvarDTO(verdi = "JA"))
+            aktorId = aktorId,
+            id = UUID.randomUUID().toString(),
+            opprettet = LocalDateTime.now(),
+            fom = LocalDate.of(2019, 5, 4),
+            tom = LocalDate.of(2019, 5, 8),
+            type = SoknadstypeDTO.ARBEIDSTAKERE,
+            sporsmal = listOf(
+                SporsmalDTO(
+                    id = UUID.randomUUID().toString(),
+                    tag = "TAGGEN",
+                    sporsmalstekst = "Fungerer rebehandlinga?",
+                    svartype = SvartypeDTO.JA_NEI,
+                    svar = listOf(SvarDTO(verdi = "JA"))
 
-                )),
-                status = SoknadsstatusDTO.SENDT,
-                sendtNav = LocalDateTime.now(),
-                fodselsnummer = null
+                )
+            ),
+            status = SoknadsstatusDTO.SENDT,
+            sendtNav = LocalDateTime.now(),
+            fodselsnummer = null
         )
         soknadSendtListener.listen(skapConsumerRecord(soknad.id!!, soknad), acknowledgment)
         verify(acknowledgment).acknowledge()
-
 
         assertThat(rebehandlingProducerMock.topicMeldinger).hasSize(1)
         val innsendingIDatabaseEtterFeiling = innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id!!)!!
@@ -152,7 +148,7 @@ class RebehandlingIntegrationTest {
         assertThat(innsendingIDatabaseEtterFeiling.oppgaveId).isNull()
         assertThat(innsendingIDatabaseEtterFeiling.behandlet).isNull()
 
-        //Rebehandle
+        // Rebehandle
         rebehandlingListener.listen(rebehandlingProducerMock.hentSisteSomConsumerRecord(), acknowledgmentRebehandling)
         verify(acknowledgmentRebehandling).acknowledge()
 
@@ -176,26 +172,28 @@ class RebehandlingIntegrationTest {
         val oppgaveID = 1
         whenever(oppgaveConsumer.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
         val soknad = SykepengesoknadDTO(
-                aktorId = aktorId,
-                id = UUID.randomUUID().toString(),
-                opprettet = LocalDateTime.now(),
-                fom = LocalDate.of(2019, 5, 4),
-                tom = LocalDate.of(2019, 5, 8),
-                type = SoknadstypeDTO.ARBEIDSTAKERE,
-                sporsmal = listOf(SporsmalDTO(
-                        id = UUID.randomUUID().toString(),
-                        tag = "TAGGEN",
-                        sporsmalstekst = "Fungerer rebehandlinga?",
-                        svartype = SvartypeDTO.JA_NEI,
-                        svar = listOf(SvarDTO(verdi = "JA"))
+            aktorId = aktorId,
+            id = UUID.randomUUID().toString(),
+            opprettet = LocalDateTime.now(),
+            fom = LocalDate.of(2019, 5, 4),
+            tom = LocalDate.of(2019, 5, 8),
+            type = SoknadstypeDTO.ARBEIDSTAKERE,
+            sporsmal = listOf(
+                SporsmalDTO(
+                    id = UUID.randomUUID().toString(),
+                    tag = "TAGGEN",
+                    sporsmalstekst = "Fungerer rebehandlinga?",
+                    svartype = SvartypeDTO.JA_NEI,
+                    svar = listOf(SvarDTO(verdi = "JA"))
 
-                )),
-                status = SoknadsstatusDTO.SENDT,
-                sendtNav = LocalDateTime.now(),
-                fodselsnummer = null
+                )
+            ),
+            status = SoknadsstatusDTO.SENDT,
+            sendtNav = LocalDateTime.now(),
+            fodselsnummer = null
         ).toSykepengesoknad()
 
-        //Rebehandle uten innsending i database
+        // Rebehandle uten innsending i database
         rebehandlingProducerMock.leggPaRebehandlingTopic(soknad, LocalDateTime.now())
         rebehandlingListener.listen(rebehandlingProducerMock.hentSisteSomConsumerRecord(), acknowledgmentRebehandling)
         verify(acknowledgmentRebehandling).acknowledge()

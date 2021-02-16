@@ -7,15 +7,15 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.Bydel
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Diskresjonskoder
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentGeografiskTilknytningResponse
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers.any
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
-import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.junit.jupiter.MockitoExtension
 
-@RunWith(MockitoJUnitRunner::class)
+@ExtendWith(MockitoExtension::class)
 class PersonConsumerTest {
 
     @Mock
@@ -28,11 +28,14 @@ class PersonConsumerTest {
     @Throws(HentGeografiskTilknytningSikkerhetsbegrensing::class, HentGeografiskTilknytningPersonIkkeFunnet::class)
     fun hentGeografiskTilknytning() {
 
-        `when`(personV3!!.hentGeografiskTilknytning(any())).thenReturn(HentGeografiskTilknytningResponse()
+        `when`(personV3!!.hentGeografiskTilknytning(any())).thenReturn(
+            HentGeografiskTilknytningResponse()
                 .withDiskresjonskode(null)
-                .withGeografiskTilknytning(Bydel()
+                .withGeografiskTilknytning(
+                    Bydel()
                         .withGeografiskTilknytning("2017")
-                ))
+                )
+        )
 
         val geografiskTilknytning = personConsumer!!.hentGeografiskTilknytning("fnr")
         assertThat(geografiskTilknytning.geografiskTilknytning).isEqualTo("2017")
@@ -43,11 +46,14 @@ class PersonConsumerTest {
     @Throws(HentGeografiskTilknytningSikkerhetsbegrensing::class, HentGeografiskTilknytningPersonIkkeFunnet::class)
     fun hentGeografiskTilknytningMapperOmDiskresjonskode() {
 
-        `when`(personV3!!.hentGeografiskTilknytning(any())).thenReturn(HentGeografiskTilknytningResponse()
+        `when`(personV3!!.hentGeografiskTilknytning(any())).thenReturn(
+            HentGeografiskTilknytningResponse()
                 .withDiskresjonskode(Diskresjonskoder().withValue("SPSF"))
-                .withGeografiskTilknytning(Bydel()
+                .withGeografiskTilknytning(
+                    Bydel()
                         .withGeografiskTilknytning("2017")
-                ))
+                )
+        )
 
         val geografiskTilknytning = personConsumer!!.hentGeografiskTilknytning("fnr")
         assertThat(geografiskTilknytning.geografiskTilknytning).isEqualTo("2017")
@@ -56,8 +62,10 @@ class PersonConsumerTest {
 
     @Test
     fun taklerAtGeografiskTilknytningErNull() {
-        `when`(personV3!!.hentGeografiskTilknytning(any())).thenReturn(HentGeografiskTilknytningResponse()
-                .withDiskresjonskode(Diskresjonskoder().withValue("SPSF")))
+        `when`(personV3!!.hentGeografiskTilknytning(any())).thenReturn(
+            HentGeografiskTilknytningResponse()
+                .withDiskresjonskode(Diskresjonskoder().withValue("SPSF"))
+        )
 
         val geografiskTilknytning = personConsumer!!.hentGeografiskTilknytning("fnr")
 

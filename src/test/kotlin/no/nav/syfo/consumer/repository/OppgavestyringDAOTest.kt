@@ -1,11 +1,10 @@
 package no.nav.syfo.consumer.repository
 
 import no.nav.syfo.TestApplication
-import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.jdbc.core.JdbcTemplate
@@ -13,10 +12,8 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
-import org.springframework.test.context.junit4.SpringRunner
 import java.time.LocalDateTime
 
-@RunWith(SpringRunner::class)
 @SpringBootTest(classes = [TestApplication::class])
 @EmbeddedKafka
 @DirtiesContext
@@ -28,7 +25,7 @@ class OppgavestyringDAOTest {
     @Autowired
     private lateinit var jdbcTemplate: JdbcTemplate
 
-    @Before
+    @BeforeEach
     fun setup() {
         namedParaJdbcTemplate.update(
             "INSERT INTO OPPGAVESTYRING (SYKEPENGESOKNAD_ID, TIMEOUT, STATUS, OPPRETTET, MODIFISERT, AVSTEMT) values (:soknadsId, :timeout, :status, :opprettet, :modifisert, :avstemt)",
@@ -82,7 +79,7 @@ class OppgavestyringDAOTest {
         )
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         jdbcTemplate.update("DELETE FROM OPPGAVESTYRING")
     }
@@ -103,8 +100,6 @@ class OppgavestyringDAOTest {
         assertEquals(1, oppgaver.size)
         assertEquals("uuid-4", oppgaver.first().søknadsId)
     }
-
-
 
     private fun hentAlleOppgaver() =
         namedParaJdbcTemplate.query("SELECT * FROM OPPGAVESTYRING", oppgavestyringRowMapper)

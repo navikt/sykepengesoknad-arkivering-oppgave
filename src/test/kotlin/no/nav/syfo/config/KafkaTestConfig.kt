@@ -20,9 +20,10 @@ class KafkaTestConfig {
     @Bean
     fun producerFactory(kafkaProperties: KafkaProperties): ProducerFactory<String, SykepengesoknadDTO> {
         return DefaultKafkaProducerFactory(
-                kafkaProperties.buildProducerProperties(),
-                StringSerializer(),
-                FunctionSerializer { byteArrayOf(1) })
+            kafkaProperties.buildProducerProperties(),
+            StringSerializer(),
+            FunctionSerializer { byteArrayOf(1) }
+        )
     }
 
     @Bean

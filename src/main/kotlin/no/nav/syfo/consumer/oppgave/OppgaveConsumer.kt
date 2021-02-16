@@ -83,13 +83,14 @@ class OppgaveConsumer(
                 fristFerdigstillelse = omTreUkedager(now()).format(oppgaveDato),
                 prioritet = "NORM"
             ).apply {
-                if(harRedusertVenteperiode) { this.behandlingstype = "ae0247" }
-                else { this.behandlingstema = when (soknad.soknadstype) {
-                    Soknadstype.OPPHOLD_UTLAND -> "ab0314"
-                    Soknadstype.BEHANDLINGSDAGER -> "ab0351"
-                    Soknadstype.ARBEIDSLEDIG -> "ab0426"
-                    else -> "ab0061"
-                }}
+                if (harRedusertVenteperiode) { this.behandlingstype = "ae0247" } else {
+                    this.behandlingstema = when (soknad.soknadstype) {
+                        Soknadstype.OPPHOLD_UTLAND -> "ab0314"
+                        Soknadstype.BEHANDLINGSDAGER -> "ab0351"
+                        Soknadstype.ARBEIDSLEDIG -> "ab0426"
+                        else -> "ab0061"
+                    }
+                }
             }
 
         fun omTreUkedager(idag: LocalDate) = when (idag.dayOfWeek) {

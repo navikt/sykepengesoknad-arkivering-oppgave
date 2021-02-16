@@ -33,7 +33,6 @@ class SpreOppgaverService(
         }
     }
 
-
     private fun håndterOppgaveFraSøknad(
         eksisterendeOppgave: SpreOppgave?,
         oppgave: OppgaveDTO
@@ -90,7 +89,8 @@ class SpreOppgaverService(
                             oppdateringstype = OppdateringstypeDTO.Utsett,
                             timeout = sykepengesoknad.sendtNav?.plusHours(timeout) ?: LocalDateTime.now()
                                 .plusHours(timeout)
-                        ), OppgaveKilde.Søknad
+                        ),
+                        OppgaveKilde.Søknad
                     )
                 } else {
                     if (skalBehandlesAvNav(sykepengesoknad)) {
@@ -109,8 +109,8 @@ class SpreOppgaverService(
     private fun skalBehandlesAvNav(sykepengesoknad: Sykepengesoknad) =
         sykepengesoknad.sendtNav != null
 
-    private fun ettersendtTilArbeidsgiver(sykepengesoknad: Sykepengesoknad) = sykepengesoknad.sendtArbeidsgiver != null
-            && sykepengesoknad.sendtNav?.isBefore(sykepengesoknad.sendtArbeidsgiver) ?: false
+    private fun ettersendtTilArbeidsgiver(sykepengesoknad: Sykepengesoknad) = sykepengesoknad.sendtArbeidsgiver != null &&
+        sykepengesoknad.sendtNav?.isBefore(sykepengesoknad.sendtArbeidsgiver) ?: false
 }
 
 fun OppdateringstypeDTO.tilOppgaveStatus() = when (this) {

@@ -10,9 +10,8 @@ import no.nav.syfo.TestApplication
 import no.nav.syfo.consumer.repository.TidligereInnsending
 import no.nav.syfo.consumer.repository.insertBehandletSoknad
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -21,13 +20,11 @@ import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
-import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDate
 
-@RunWith(SpringRunner::class)
 @EmbeddedKafka
 @SpringBootTest(classes = [TestApplication::class])
 @AutoConfigureMockMvc
@@ -55,7 +52,7 @@ class SakControllerTest {
         )
     ).serialize()
 
-    @After
+    @AfterEach
     fun cleanup() {
         namedParameterJdbcTemplate.update("DELETE FROM INNSENDING", EmptySqlParameterSource())
     }

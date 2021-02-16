@@ -11,13 +11,11 @@ import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-
 @Component
 @Primary
 class RebehandlingProducerMock : RebehandlingProducer {
 
     val topicMeldinger = ArrayList<SyfoProducerRecord<String, Sykepengesoknad>>()
-
 
     fun hentSisteSomConsumerRecord(): ConsumerRecord<String, Sykepengesoknad> {
         val sisteProducerRecord = topicMeldinger.last()
@@ -29,8 +27,10 @@ class RebehandlingProducerMock : RebehandlingProducer {
             throw RuntimeException("For mange rebehandlinger i testen, noe er feil satt opp")
         }
 
-        val syfoProducerRecord = SyfoProducerRecord("syfogsak-rebehandle-soknad-v1", sykepengesoknad.id, sykepengesoknad,
-                mapOf(Pair(BEHANDLINGSTIDSPUNKT, LocalDateTime.now().minusMinutes(1).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))))
+        val syfoProducerRecord = SyfoProducerRecord(
+            "syfogsak-rebehandle-soknad-v1", sykepengesoknad.id, sykepengesoknad,
+            mapOf(Pair(BEHANDLINGSTIDSPUNKT, LocalDateTime.now().minusMinutes(1).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)))
+        )
 
         topicMeldinger.add(syfoProducerRecord)
     }

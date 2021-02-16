@@ -40,7 +40,7 @@ class BehandleVedTimeoutService(
                         oppgavestyringDAO.slettSpreOppgave(it.søknadsId)
                     }
                 }
-            } catch(e: SøknadIkkeFunnetException) {
+            } catch (e: SøknadIkkeFunnetException) {
                 if (toggle.isQ()) {
                     log.warn("Søknaden ${it.søknadsId} finnes ikke i Q, hopper over oppgaveopprettelse og fortsetter")
                     oppgavestyringDAO.oppdaterOppgave(UUID.fromString(it.søknadsId), null, OppgaveStatus.IkkeOpprett)

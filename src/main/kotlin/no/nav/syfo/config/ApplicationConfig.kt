@@ -22,5 +22,3 @@ class ApplicationConfig {
             .forEach { it.objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false) }
     }
 }
-
-

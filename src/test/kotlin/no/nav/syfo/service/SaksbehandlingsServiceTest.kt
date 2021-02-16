@@ -23,9 +23,9 @@ import no.nav.syfo.domain.dto.Soknadstype.ARBEIDSTAKERE
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.syfo.kafka.producer.RebehandlingProducer
 import org.assertj.core.api.Assertions
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers
 import org.mockito.BDDMockito.given
 import org.mockito.InjectMocks
@@ -34,11 +34,14 @@ import org.mockito.Mockito.mock
 import org.mockito.Mockito.never
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
-import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.junit.jupiter.MockitoSettings
+import org.mockito.quality.Strictness
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-@RunWith(MockitoJUnitRunner::class)
+@ExtendWith(MockitoExtension::class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class SaksbehandlingsServiceTest {
 
     @Mock
@@ -66,7 +69,7 @@ class SaksbehandlingsServiceTest {
     private val objectMapper = ObjectMapper().registerModules(JavaTimeModule(), KotlinModule())
     private val aktorId = "aktorId-745463060"
 
-    @Before
+    @BeforeEach
     fun setup() {
         given(aktorConsumer.finnFnr(any())).willReturn("12345678901")
         given(personConsumer.finnBrukerPersonnavnByFnr(any())).willReturn("Personnavn")
@@ -82,9 +85,9 @@ class SaksbehandlingsServiceTest {
     fun behandlerSoknaderSomEttersendesTilNavDerDetManglerOppgave() {
         val now = LocalDateTime.now()
         val sykepengesoknadUtenOppgave = objectMapper.readValue(TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
-                .copy(sendtNav = null, sendtArbeidsgiver = now)
+            .copy(sendtNav = null, sendtArbeidsgiver = now)
         val sykepengesoknadEttersendingTilNAV = objectMapper.readValue(TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
-                .copy(sendtNav = now, sendtArbeidsgiver = now)
+            .copy(sendtNav = now, sendtArbeidsgiver = now)
 
         saksbehandlingsService.behandleSoknad(sykepengesoknadUtenOppgave)
         verify(behandleJournalConsumer, times(1)).opprettJournalpost(any(), any())
@@ -118,9 +121,9 @@ class SaksbehandlingsServiceTest {
     @Test
     fun brukerEksisterendeSakOmSoknadErPafolgende() {
         val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
-                .copy(fom = LocalDate.of(2019, 3, 11), tom = LocalDate.of(2019, 3, 20))
+            .copy(fom = LocalDate.of(2019, 3, 11), tom = LocalDate.of(2019, 3, 20))
 
-        given(innsendingDAO.finnTidligereInnsendinger(aktorId)).willReturn(listOf(TidligereInnsending(aktorId, "sak1", LocalDate.now(), LocalDate.of(2019, 3, 1),LocalDate.of(2019, 3, 10))))
+        given(innsendingDAO.finnTidligereInnsendinger(aktorId)).willReturn(listOf(TidligereInnsending(aktorId, "sak1", LocalDate.now(), LocalDate.of(2019, 3, 1), LocalDate.of(2019, 3, 10))))
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
         verify(sakConsumer, never()).opprettSak(ArgumentMatchers.anyString())
@@ -130,9 +133,9 @@ class SaksbehandlingsServiceTest {
     @Test
     fun brukerIkkeEksisterendeSakOmSoknadIkkeErPafolgende() {
         val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
-                .copy(fom = LocalDate.of(2019, 3, 11), tom = LocalDate.of(2019, 3, 20))
+            .copy(fom = LocalDate.of(2019, 3, 11), tom = LocalDate.of(2019, 3, 20))
 
-        given(innsendingDAO.finnTidligereInnsendinger(aktorId)).willReturn(listOf(TidligereInnsending(aktorId, "sak1", LocalDate.now(), LocalDate.of(2019, 3, 1),LocalDate.of(2019, 3, 6))))
+        given(innsendingDAO.finnTidligereInnsendinger(aktorId)).willReturn(listOf(TidligereInnsending(aktorId, "sak1", LocalDate.now(), LocalDate.of(2019, 3, 1), LocalDate.of(2019, 3, 6))))
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
         verify(sakConsumer).opprettSak(ArgumentMatchers.anyString())
@@ -142,9 +145,9 @@ class SaksbehandlingsServiceTest {
     @Test
     fun brukerEksisterendeSakOmSoknadErPafolgendeMedHelg() {
         val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
-                .copy(fom = LocalDate.of(2019, 3, 11), tom = LocalDate.of(2019, 3, 20))
+            .copy(fom = LocalDate.of(2019, 3, 11), tom = LocalDate.of(2019, 3, 20))
 
-        given(innsendingDAO.finnTidligereInnsendinger(aktorId)).willReturn(listOf(TidligereInnsending(aktorId, "sak1", LocalDate.now(), LocalDate.of(2019, 3, 1),LocalDate.of(2019, 3, 8))))
+        given(innsendingDAO.finnTidligereInnsendinger(aktorId)).willReturn(listOf(TidligereInnsending(aktorId, "sak1", LocalDate.now(), LocalDate.of(2019, 3, 1), LocalDate.of(2019, 3, 8))))
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
         verify(sakConsumer, never()).opprettSak(ArgumentMatchers.anyString())
@@ -154,9 +157,9 @@ class SaksbehandlingsServiceTest {
     @Test
     fun brukerIkkeEksisterendeSakOmSoknadInnenforToDagerMenIkkeHelg() {
         val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
-                .copy(fom = LocalDate.of(2019, 3, 12), tom = LocalDate.of(2019, 3, 21))
+            .copy(fom = LocalDate.of(2019, 3, 12), tom = LocalDate.of(2019, 3, 21))
 
-        given(innsendingDAO.finnTidligereInnsendinger(aktorId)).willReturn(listOf(TidligereInnsending(aktorId, "sak1", LocalDate.now(), LocalDate.of(2019, 3, 1),LocalDate.of(2019, 3, 10))))
+        given(innsendingDAO.finnTidligereInnsendinger(aktorId)).willReturn(listOf(TidligereInnsending(aktorId, "sak1", LocalDate.now(), LocalDate.of(2019, 3, 1), LocalDate.of(2019, 3, 10))))
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
         verify(sakConsumer).opprettSak(ArgumentMatchers.anyString())
@@ -166,7 +169,7 @@ class SaksbehandlingsServiceTest {
     @Test
     fun brukerIkkeEksisterendeSakOmViIkkeHarTidligereInnsending() {
         val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
-                .copy(fom = LocalDate.of(2019, 3, 12), tom = LocalDate.of(2019, 3, 21))
+            .copy(fom = LocalDate.of(2019, 3, 12), tom = LocalDate.of(2019, 3, 21))
 
         given(innsendingDAO.finnTidligereInnsendinger(aktorId)).willReturn(emptyList())
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
@@ -178,9 +181,9 @@ class SaksbehandlingsServiceTest {
     @Test
     fun brukerIkkeEksistrendeSakOmInnsendingErEtterSoknad() {
         val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
-                .copy(fom = LocalDate.of(2019, 2, 11), tom = LocalDate.of(2019, 2, 21))
+            .copy(fom = LocalDate.of(2019, 2, 11), tom = LocalDate.of(2019, 2, 21))
 
-        given(innsendingDAO.finnTidligereInnsendinger(aktorId)).willReturn(listOf(TidligereInnsending(aktorId, "sak1", LocalDate.now(), LocalDate.of(2019, 3, 1),LocalDate.of(2019, 3, 10))))
+        given(innsendingDAO.finnTidligereInnsendinger(aktorId)).willReturn(listOf(TidligereInnsending(aktorId, "sak1", LocalDate.now(), LocalDate.of(2019, 3, 1), LocalDate.of(2019, 3, 10))))
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
         verify(sakConsumer).opprettSak(ArgumentMatchers.anyString())
@@ -190,12 +193,15 @@ class SaksbehandlingsServiceTest {
     @Test
     fun brukerEksisterendeSakOmSoknadErPafolgendeMedHelgFlereInnsendinger() {
         val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
-                .copy(fom = LocalDate.of(2019, 3, 11), tom = LocalDate.of(2019, 3, 20))
+            .copy(fom = LocalDate.of(2019, 3, 11), tom = LocalDate.of(2019, 3, 20))
 
-        given(innsendingDAO.finnTidligereInnsendinger(aktorId)).willReturn(listOf(
-                TidligereInnsending(aktorId, "sak1", LocalDate.now(), LocalDate.of(2019, 2, 1),LocalDate.of(2019, 2, 8)),
-                TidligereInnsending(aktorId, "sak2", LocalDate.now(), LocalDate.of(2019, 3, 1),LocalDate.of(2019, 3, 8)),
-                TidligereInnsending(aktorId, "sak3", LocalDate.now(), LocalDate.of(2018, 3, 1),LocalDate.of(2018, 3, 8))))
+        given(innsendingDAO.finnTidligereInnsendinger(aktorId)).willReturn(
+            listOf(
+                TidligereInnsending(aktorId, "sak1", LocalDate.now(), LocalDate.of(2019, 2, 1), LocalDate.of(2019, 2, 8)),
+                TidligereInnsending(aktorId, "sak2", LocalDate.now(), LocalDate.of(2019, 3, 1), LocalDate.of(2019, 3, 8)),
+                TidligereInnsending(aktorId, "sak3", LocalDate.now(), LocalDate.of(2018, 3, 1), LocalDate.of(2018, 3, 8))
+            )
+        )
         saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
         verify(sakConsumer, never()).opprettSak(ArgumentMatchers.anyString())
@@ -203,7 +209,7 @@ class SaksbehandlingsServiceTest {
     }
 
     @Test
-    fun `oppretter oppgave med korrekte felter` () {
+    fun `oppretter oppgave med korrekte felter`() {
         val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
         val søknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
         saksbehandlingsService.opprettOppgave(søknad, innsending(søknad))
@@ -228,7 +234,9 @@ Periode 2:
 Grad: 40
 
 Betaler arbeidsgiveren lønnen din når du er syk?
-Vet ikke""".trimIndent())
+Vet ikke
+            """.trimIndent()
+        )
         Assertions.assertThat(oppgaveRequest.tema).isEqualTo("SYK")
         Assertions.assertThat(oppgaveRequest.oppgavetype).isEqualTo("SOK")
         Assertions.assertThat(oppgaveRequest.prioritet).isEqualTo("NORM")

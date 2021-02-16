@@ -5,12 +5,15 @@ import no.nav.syfo.consumer.token.TokenConsumer
 import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.Soknadstype
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.BDDMockito
 import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.junit.jupiter.MockitoSettings
+import org.mockito.quality.Strictness
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
@@ -27,7 +30,8 @@ import java.time.DayOfWeek.WEDNESDAY
 import java.time.LocalDate.now
 import java.time.temporal.TemporalAdjusters.next
 
-@RunWith(MockitoJUnitRunner::class)
+@ExtendWith(MockitoExtension::class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class OppgaveConsumerTest {
     private val aktorId = "aktorId"
     private val behandlendeEnhet = "0101"
@@ -42,13 +46,14 @@ class OppgaveConsumerTest {
     @Autowired
     private lateinit var oppgaveConsumer: OppgaveConsumer
 
-    @Before
+    @BeforeEach
     fun setup() {
         oppgaveConsumer = OppgaveConsumer(
-                tokenConsumer = tokenConsumer,
-                username = "username",
-                url = "https://oppgave.nav.no",
-                restTemplate = restTemplate)
+            tokenConsumer = tokenConsumer,
+            username = "username",
+            url = "https://oppgave.nav.no",
+            restTemplate = restTemplate
+        )
         BDDMockito.given(tokenConsumer.token).willReturn(Token("token", "Bearer", 3600))
     }
 
@@ -76,12 +81,14 @@ class OppgaveConsumerTest {
     fun opprettSakOppretterSakOgReturnererSakId() {
         val response = OppgaveResponse(1234)
 
-        BDDMockito.given(restTemplate.exchange(
+        BDDMockito.given(
+            restTemplate.exchange(
                 BDDMockito.anyString(),
                 BDDMockito.any(HttpMethod::class.java),
                 BDDMockito.any(HttpEntity::class.java),
                 BDDMockito.eq(OppgaveResponse::class.java)
-        )).willReturn(ResponseEntity(response, HttpStatus.CREATED))
+            )
+        ).willReturn(ResponseEntity(response, HttpStatus.CREATED))
 
         val oppgaveRequest = OppgaveConsumer.lagRequestBody(aktorId, behandlendeEnhet, saksId, journalpostId, lagSoknad(Soknadstype.ARBEIDSTAKERE))
         val oppgaveResponse = oppgaveConsumer.opprettOppgave(oppgaveRequest)
@@ -89,17 +96,21 @@ class OppgaveConsumerTest {
         assertThat(oppgaveResponse.id.toString()).isEqualTo("1234")
     }
 
-    @Test(expected = RuntimeException::class)
+    @Test
     fun opprettOppgaveGirFeilmeldingHvisOppgaveErNede() {
-        BDDMockito.given(restTemplate.exchange(
-                BDDMockito.anyString(),
-                BDDMockito.any(HttpMethod::class.java),
-                BDDMockito.any(HttpEntity::class.java),
-                BDDMockito.eq(OppgaveResponse::class.java)
-        )).willReturn(ResponseEntity(HttpStatus.SERVICE_UNAVAILABLE))
+        assertThrows(RuntimeException::class.java) {
+            BDDMockito.given(
+                restTemplate.exchange(
+                    BDDMockito.anyString(),
+                    BDDMockito.any(HttpMethod::class.java),
+                    BDDMockito.any(HttpEntity::class.java),
+                    BDDMockito.eq(OppgaveResponse::class.java)
+                )
+            ).willReturn(ResponseEntity(HttpStatus.SERVICE_UNAVAILABLE))
 
-        val oppgaveRequest = OppgaveConsumer.lagRequestBody(aktorId, behandlendeEnhet, saksId, journalpostId, lagSoknad(Soknadstype.ARBEIDSTAKERE))
-        oppgaveConsumer.opprettOppgave(oppgaveRequest)
+            val oppgaveRequest = OppgaveConsumer.lagRequestBody(aktorId, behandlendeEnhet, saksId, journalpostId, lagSoknad(Soknadstype.ARBEIDSTAKERE))
+            oppgaveConsumer.opprettOppgave(oppgaveRequest)
+        }
     }
 
     @Test
@@ -144,26 +155,24 @@ class OppgaveConsumerTest {
 
     private fun lagSoknad(soknadstype: Soknadstype): Soknad {
         return Soknad(
-                aktorId,
-                "",
-                "fnr",
-                "Navn",
-                true,
-                soknadstype,
-                now().minusWeeks(3),
-                now().minusDays(3),
-                null,
-                null,
-                now().minusWeeks(3),
-                now().minusWeeks(3),
-                "arbeidsgiver",
-                null,
-                null,
-                null,
-                ArrayList(),
-                ArrayList()
+            aktorId,
+            "",
+            "fnr",
+            "Navn",
+            true,
+            soknadstype,
+            now().minusWeeks(3),
+            now().minusDays(3),
+            null,
+            null,
+            now().minusWeeks(3),
+            now().minusWeeks(3),
+            "arbeidsgiver",
+            null,
+            null,
+            null,
+            ArrayList(),
+            ArrayList()
         )
     }
 }
-
-

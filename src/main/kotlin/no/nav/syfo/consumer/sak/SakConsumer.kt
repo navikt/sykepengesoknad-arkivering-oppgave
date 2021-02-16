@@ -20,7 +20,6 @@ class SakConsumer(
 
     val log = log()
 
-
     fun opprettSak(aktorId: String): String {
 
         try {
@@ -59,7 +58,6 @@ class SakConsumer(
     fun lagRequestBody(aktorId: String): SakRequest =
         SakRequest("SYK", "FS22", aktorId)
 }
-
 
 data class SakRequest(
     val tema: String,

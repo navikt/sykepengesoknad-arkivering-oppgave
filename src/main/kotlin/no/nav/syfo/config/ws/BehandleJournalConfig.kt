@@ -14,8 +14,10 @@ class BehandleJournalConfig {
     @Bean
     @ConditionalOnProperty(value = ["mockWS"], havingValue = "false", matchIfMissing = true)
     @Primary
-    fun behandleJournalV2(@Value("\${behandleJournal.v2.endpointurl}") serviceUrl: String,
-                          @Value("\${ws.sts.enabled:true}") wsStsEnabled: Boolean): BehandleJournalV2 {
+    fun behandleJournalV2(
+        @Value("\${behandleJournal.v2.endpointurl}") serviceUrl: String,
+        @Value("\${ws.sts.enabled:true}") wsStsEnabled: Boolean
+    ): BehandleJournalV2 {
         return createPort(serviceUrl = serviceUrl, handlers = listOf(LogErrorHandler()), wsStsEnabled = wsStsEnabled)
     }
 }

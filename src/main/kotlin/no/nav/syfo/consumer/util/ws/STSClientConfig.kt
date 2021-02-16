@@ -22,7 +22,6 @@ object STSClientConfig {
     private val STS_REQUEST_SAML_POLICY = "classpath:policy/requestSamlPolicyNoTransportBinding.xml"
     private val STS_CLIENT_AUTHENTICATION_POLICY = "classpath:policy/untPolicy.xml"
 
-
     fun <T> configureRequestSamlToken(port: T): T {
         val client = ClientProxy.getClient(port)
         // do not have onbehalfof token so cache token in endpoint
@@ -48,8 +47,12 @@ object STSClientConfig {
         configureStsWithPolicyForClient(stsClient, client, STS_REQUEST_SAML_POLICY, cacheTokenInEndpoint)
     }
 
-    fun configureStsWithPolicyForClient(stsClient: STSClient, client: Client, policyReference: String,
-                                        cacheTokenInEndpoint: Boolean) {
+    fun configureStsWithPolicyForClient(
+        stsClient: STSClient,
+        client: Client,
+        policyReference: String,
+        cacheTokenInEndpoint: Boolean
+    ) {
         val location = requireProperty(STS_URL_KEY)
         val username = requireProperty(SERVICEUSER_USERNAME)
         val password = requireProperty(SERVICEUSER_PASSWORD)
@@ -74,8 +77,12 @@ object STSClientConfig {
         return STSClientWSTrust13and14(bus)
     }
 
-    fun configureSTSClient(stsClient: STSClient, location: String, username: String,
-                           password: String): STSClient {
+    fun configureSTSClient(
+        stsClient: STSClient,
+        location: String,
+        username: String,
+        password: String
+    ): STSClient {
 
         stsClient.isEnableAppliesTo = false
         stsClient.isAllowRenewing = false
