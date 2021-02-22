@@ -5,6 +5,7 @@ import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import io.micrometer.core.instrument.MeterRegistry
 import no.nav.syfo.config.Toggle
 import no.nav.syfo.consumer.repository.OppgaveStatus
 import no.nav.syfo.consumer.repository.OppgavestyringDAO
@@ -42,6 +43,9 @@ class BehandleVedTimeoutServiceTest {
 
     @Mock
     lateinit var toggle: Toggle
+
+    @Mock
+    lateinit var registry: MeterRegistry
 
     @InjectMocks
     lateinit var behandleVedTimeoutService: BehandleVedTimeoutService

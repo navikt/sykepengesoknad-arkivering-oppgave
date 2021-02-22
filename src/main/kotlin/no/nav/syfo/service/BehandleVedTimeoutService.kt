@@ -1,5 +1,7 @@
 package no.nav.syfo.service
 
+import io.micrometer.core.instrument.MeterRegistry
+import io.micrometer.core.instrument.Tags
 import no.nav.syfo.config.Toggle
 import no.nav.syfo.consumer.repository.OppgaveStatus
 import no.nav.syfo.consumer.repository.OppgavestyringDAO
@@ -17,7 +19,8 @@ class BehandleVedTimeoutService(
     private val oppgavestyringDAO: OppgavestyringDAO,
     private val saksbehandlingsService: SaksbehandlingsService,
     private val syfosoknadConsumer: SyfosoknadConsumer,
-    private val toggle: Toggle
+    private val toggle: Toggle,
+    private val registry: MeterRegistry,
 ) {
     private val log = log()
 
@@ -40,6 +43,9 @@ class BehandleVedTimeoutService(
                         oppgavestyringDAO.slettSpreOppgave(it.søknadsId)
                     }
                 }
+                if (it.status == OppgaveStatus.Utsett) {
+                    tellTimeout()
+                }
             } catch (e: SøknadIkkeFunnetException) {
                 if (toggle.isQ()) {
                     log.warn("Søknaden ${it.søknadsId} finnes ikke i Q, hopper over oppgaveopprettelse og fortsetter")
@@ -49,6 +55,13 @@ class BehandleVedTimeoutService(
                 log.error("Runtime-feil ved opprettelse av oppgave ${it.søknadsId}", error)
             }
         }
+    }
+
+    private fun tellTimeout() {
+        registry.counter(
+            "syfogsak.bomlo.timeout",
+            Tags.of("type", "info")
+        ).increment()
     }
 
     @Scheduled(cron = "0 6 * * * *")

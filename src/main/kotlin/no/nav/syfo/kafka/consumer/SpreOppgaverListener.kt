@@ -1,5 +1,7 @@
 package no.nav.syfo.kafka.consumer
 
+import io.micrometer.core.instrument.MeterRegistry
+import io.micrometer.core.instrument.Tags
 import no.nav.syfo.domain.DokumentTypeDTO
 import no.nav.syfo.domain.OppgaveDTO
 import no.nav.syfo.kafka.NAV_CALLID
@@ -14,7 +16,10 @@ import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
 
 @Component
-class SpreOppgaverListener(private val spreOppgaverService: SpreOppgaverService) {
+class SpreOppgaverListener(
+    private val spreOppgaverService: SpreOppgaverService,
+    private val registry: MeterRegistry,
+) {
     private val log = log()
 
     @KafkaListener(topics = ["aapen-helse-spre-oppgaver"], id = "syfogsakListener", idIsGroup = false, containerFactory = "spreOppgaverContainerFactory")
@@ -25,6 +30,7 @@ class SpreOppgaverListener(private val spreOppgaverService: SpreOppgaverService)
             if (oppgave.dokumentType == DokumentTypeDTO.Søknad) {
                 log.info("Mottok spre oppgave: $oppgave")
                 spreOppgaverService.prosesserOppgave(cr.value(), OppgaveKilde.Saksbehandling)
+                tellOppgave(oppgave)
             }
             acknowledgment.acknowledge()
         } catch (e: Exception) {
@@ -33,5 +39,15 @@ class SpreOppgaverListener(private val spreOppgaverService: SpreOppgaverService)
         } finally {
             MDC.remove(NAV_CALLID)
         }
+    }
+
+    private fun tellOppgave(oppgave: OppgaveDTO) {
+        registry.counter(
+            "syfogsak.spre.oppgave",
+            Tags.of(
+                "type", "info",
+                "oppdateringstype", oppgave.oppdateringstype.name
+            )
+        ).increment()
     }
 }
