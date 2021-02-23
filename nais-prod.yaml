@@ -79,6 +79,12 @@ spec:
       value: "3600000"
     - name: DEFAULT_TIMEOUT_TIMER
       value: "1"
+    - name: AAD_SYFOINNTEKTSMELDING_CLIENTID_USERNAME
+      value: e533392d-3b97-4c8c-a0d5-d4af010f1b54
+    - name: SYFO_JWT_ISSUER_URL
+      value: https://sts.windows.net/62366534-1ec3-4962-8869-9b5535279d0b/
+    - name: NO_NAV_SECURITY_OIDC_ISSUER_AZUREAD_ACCEPTEDAUDIENCE
+      value: 1e05815e-2d35-4903-b304-623b4d137c23
 
     - name: JOURNAL_V2_ENDPOINTURL
       value: https://wasapp.adeo.no/joark/Journal/v2
