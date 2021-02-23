@@ -52,7 +52,7 @@ spec:
     - name: SYFOSOKNAD_URL
       value: https://syfosoknad.nais.preprod.local
     - name: PDFGEN_URL
-      value: http://syfopdfgen
+      value: https://flex-sykepengesoknad-pdfgen.dev.intern.nav.no
     - name: FASIT_ENVIRONMENT_NAME
       value: q1
     - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
