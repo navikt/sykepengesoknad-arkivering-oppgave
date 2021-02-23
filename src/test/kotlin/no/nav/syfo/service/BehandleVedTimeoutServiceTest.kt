@@ -1,11 +1,8 @@
 package no.nav.syfo.service
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.never
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import com.nhaarman.mockitokotlin2.*
 import io.micrometer.core.instrument.MeterRegistry
+import io.micrometer.core.instrument.Tag
 import no.nav.syfo.config.Toggle
 import no.nav.syfo.consumer.repository.OppgaveStatus
 import no.nav.syfo.consumer.repository.OppgavestyringDAO
@@ -50,6 +47,10 @@ class BehandleVedTimeoutServiceTest {
     @InjectMocks
     lateinit var behandleVedTimeoutService: BehandleVedTimeoutService
 
+    fun mockRegistry() {
+        whenever(registry.counter(any(), any<Iterable<Tag>>())).thenReturn(mock())
+    }
+
     fun mockHenting() {
         whenever(syfosoknadConsumer.hentSoknad(any())).thenReturn(
             SykepengesoknadDTO(
@@ -84,6 +85,7 @@ class BehandleVedTimeoutServiceTest {
 
     @Test
     fun `har noe å behandle men mangler innsending`() {
+        mockRegistry()
         whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
             listOf(
                 SpreOppgave(
@@ -102,6 +104,7 @@ class BehandleVedTimeoutServiceTest {
 
     @Test
     fun `sletter ikke oppgave(i test) om vi mangler innsending og den er fersk`() {
+        mockRegistry()
         whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
             listOf(
                 SpreOppgave(
@@ -121,7 +124,7 @@ class BehandleVedTimeoutServiceTest {
 
     @Test
     fun `sletter oppgave(i test) om vi mangler innsending og den er gammel`() {
-
+        mockRegistry()
         whenever(toggle.isQ()).thenReturn(true)
         whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
             listOf(
@@ -143,6 +146,7 @@ class BehandleVedTimeoutServiceTest {
     @Test
     fun `har noe å behandle og har innsending`() {
         mockHenting()
+        mockRegistry()
         val søknadsId = UUID.randomUUID().toString()
         whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
             listOf(
@@ -172,6 +176,7 @@ class BehandleVedTimeoutServiceTest {
 
     @Test
     fun `flere oppgaver hvor en tryner`() {
+        mockRegistry()
         mockHenting()
         val søknadsId1 = UUID.randomUUID()
         val søknadsId2 = UUID.randomUUID()

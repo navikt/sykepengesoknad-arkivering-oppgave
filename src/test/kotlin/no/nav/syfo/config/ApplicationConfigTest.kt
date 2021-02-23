@@ -1,5 +1,6 @@
 package no.nav.syfo.config
 
+import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import no.nav.syfo.TestApplication
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
@@ -11,6 +12,7 @@ import org.springframework.test.annotation.DirtiesContext
 @SpringBootTest(classes = [TestApplication::class])
 @DirtiesContext
 @EnableScheduling
+@EnableMockOAuth2Server
 class ApplicationConfigTest {
     @Test
     fun test() {

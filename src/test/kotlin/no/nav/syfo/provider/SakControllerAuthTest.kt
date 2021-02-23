@@ -1,8 +1,7 @@
-package no.nav.syfo.filter
+package no.nav.syfo.provider
 
-import buildClaimSet
-import no.nav.security.oidc.test.support.JwtTokenGenerator
-import no.nav.syfo.AZUREAD
+import no.nav.security.mock.oauth2.MockOAuth2Server
+import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import no.nav.syfo.TestApplication
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -13,6 +12,7 @@ import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import token
 
 @EmbeddedKafka
 @SpringBootTest(
@@ -21,61 +21,81 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 )
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-class AzureADTokenFilterTest {
+@EnableMockOAuth2Server
+class SakControllerAuthTest {
+
+    @Autowired
+    private lateinit var server: MockOAuth2Server
 
     @Autowired
     private lateinit var mockMvc: MockMvc
-
-    private val jwt = JwtTokenGenerator.createSignedJWT(buildClaimSet(subject = "syfoinntektsmelding", issuer = AZUREAD, appId = "syfoinntektsmelding_clientid", audience = "syfogsak_clientid")).serialize()
 
     @Test
     fun fungerMedGyldigToken() {
         mockMvc.perform(
             MockMvcRequestBuilders.get("/aktorId/sisteSak/")
-                .header("Authorization", "Bearer $jwt")
+                .header("Authorization", "Bearer ${server.token()}")
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
     }
 
     @Test
-    fun fungerMedGyldigTokenOgKnektSignatur() {
+    fun fungerIkkeMedGyldigTokenOgKnektSignatur() {
         mockMvc.perform(
             MockMvcRequestBuilders.get("/aktorId/sisteSak/")
-                .header("Authorization", """Bearer ${jwt}sdsdf""")
+                .header("Authorization", """Bearer ${server.token()}sdsdf""")
         )
-            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.status().isUnauthorized)
     }
 
     @Test
     fun feilerOmAppIdIkkeErNarmesteLeder() {
-        val jwt = JwtTokenGenerator.createSignedJWT(buildClaimSet(subject = "syfoinntektsmelding", issuer = AZUREAD, appId = "annen_clientid", audience = "syfogsak_clientid")).serialize()
+        val jwt = server.token(appId = "syfoslemming")
 
         mockMvc.perform(
             MockMvcRequestBuilders.get("/aktorId/sisteSak/")
                 .header("Authorization", "Bearer $jwt")
         )
-            .andExpect(MockMvcResultMatchers.status().is4xxClientError)
+            .andExpect(MockMvcResultMatchers.status().isForbidden)
+    }
+
+    @Test
+    fun feilerOmAppIdMangler() {
+        val jwt = server.token(appId = null)
+
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/aktorId/sisteSak/")
+                .header("Authorization", "Bearer $jwt")
+        )
+            .andExpect(MockMvcResultMatchers.status().isUnauthorized)
+    }
+
+    @Test
+    fun feilerOmJwtMangler() {
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/aktorId/sisteSak/"))
+            .andExpect(MockMvcResultMatchers.status().isUnauthorized)
     }
 
     @Test
     fun feilerOmRequestHarFeilAudience() {
-        val jwt = JwtTokenGenerator.createSignedJWT(buildClaimSet(subject = "syfoinntektsmelding", issuer = AZUREAD, appId = "syfoinntektsmelding_clientid", audience = "annen audience")).serialize()
+        val jwt = server.token(audience = "noe-annet")
 
         mockMvc.perform(
             MockMvcRequestBuilders.get("/aktorId/sisteSak/")
                 .header("Authorization", "Bearer $jwt")
         )
-            .andExpect(MockMvcResultMatchers.status().is4xxClientError)
+            .andExpect(MockMvcResultMatchers.status().isUnauthorized)
     }
 
     @Test
     fun feilerOmViHarFeilIssuer() {
-        val jwt = JwtTokenGenerator.createSignedJWT(buildClaimSet(subject = "syfoinntektsmelding", issuer = "feil issuer", appId = "syfoinntektsmelding_clientid", audience = "syfogsak_clientid")).serialize()
+        val jwt = server.token(issuerId = "blabla")
 
         mockMvc.perform(
             MockMvcRequestBuilders.get("/aktorId/sisteSak/")
                 .header("Authorization", "Bearer $jwt")
         )
-            .andExpect(MockMvcResultMatchers.status().is4xxClientError)
+            .andExpect(MockMvcResultMatchers.status().isUnauthorized)
     }
 }

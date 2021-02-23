@@ -1,6 +1,7 @@
 package no.nav.syfo.e2e
 
 import com.nhaarman.mockitokotlin2.whenever
+import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import no.nav.syfo.TestApplication
 import no.nav.syfo.any
 import no.nav.syfo.consumer.repository.OppgaveStatus
@@ -37,6 +38,7 @@ import java.util.UUID
 @EmbeddedKafka
 @SpringBootTest(classes = [TestApplication::class])
 @DirtiesContext
+@EnableMockOAuth2Server
 class E2ETest {
 
     companion object {

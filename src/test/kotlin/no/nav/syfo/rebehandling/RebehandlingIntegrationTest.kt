@@ -6,6 +6,7 @@ import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import no.nav.syfo.TestApplication
 import no.nav.syfo.config.RebehandlingProducerMock
 import no.nav.syfo.consumer.aktor.AktorConsumer
@@ -41,6 +42,7 @@ import java.util.*
 
 @EmbeddedKafka
 @SpringBootTest(classes = [TestApplication::class])
+@EnableMockOAuth2Server
 @DirtiesContext
 class RebehandlingIntegrationTest {
 

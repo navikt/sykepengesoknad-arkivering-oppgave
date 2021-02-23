@@ -1,5 +1,6 @@
 package no.nav.syfo.consumer.aktor
 
+import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import no.nav.syfo.TestApplication
 import no.nav.syfo.consumer.token.Token
 import no.nav.syfo.consumer.token.TokenConsumer
@@ -22,6 +23,7 @@ import org.springframework.web.client.RestTemplate
 @EmbeddedKafka
 @SpringBootTest(classes = [TestApplication::class])
 @DirtiesContext
+@EnableMockOAuth2Server
 class AktorConsumerTest {
 
     @Mock

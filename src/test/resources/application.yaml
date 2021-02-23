@@ -59,13 +59,17 @@ spring:
 
 syfosoknad_url: http://syfosoknad
 
+no.nav.security.jwt:
+  issuer:
+    aad:
+      discoveryurl: http://localhost:${mock-oauth2-server.port}/aad/.well-known/openid-configuration
+      accepted_audience: syfogsak-client-id
+
 
 aad_syfoinntektsmelding_clientid_username: syfoinntektsmelding_clientid
-no.nav.security.oidc.issuer.azuread.acceptedaudience: syfogsak_clientid
-syfo.jwt.issuer.url: azuread
 
 aad_accesstoken_url: http://azure
-aad_syfogsak_client_id: syfogsak
+aad_syfogsak_client_id: syfogsak-client-id
 aad_syfogsak_client_secret: min-hemmelighet
 aad_syfosoknad_clientid: syfosoknad-yo
 

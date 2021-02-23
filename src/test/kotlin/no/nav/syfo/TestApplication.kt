@@ -1,5 +1,6 @@
 package no.nav.syfo
 
+import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
 import org.h2.tools.Server
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Configuration
@@ -10,6 +11,7 @@ import java.sql.SQLException
 @SpringBootApplication
 @EnableTransactionManagement
 @Configuration
+@EnableJwtTokenValidation
 class TestApplication {
 
     @Profile("local")

@@ -6,6 +6,7 @@ import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import no.nav.syfo.TestApplication
 import no.nav.syfo.consumer.aktor.AktorConsumer
 import no.nav.syfo.consumer.oppgave.OppgaveConsumer
@@ -38,6 +39,7 @@ import java.util.*
 @EmbeddedKafka
 @SpringBootTest(classes = [TestApplication::class])
 @DirtiesContext
+@EnableMockOAuth2Server
 class SaksbehandlingIntegrationTest {
 
     @MockBean

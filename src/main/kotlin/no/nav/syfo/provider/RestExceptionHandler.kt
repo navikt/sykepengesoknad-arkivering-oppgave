@@ -1,10 +1,10 @@
 package no.nav.syfo.provider
 
-import no.nav.security.spring.oidc.validation.interceptor.OIDCUnauthorizedException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
 import java.time.LocalDateTime
 
@@ -19,10 +19,10 @@ class RestExceptionHandler : ResponseEntityExceptionHandler() {
         return buildResponseEntity(apiError)
     }
 
-    @ExceptionHandler(OIDCUnauthorizedException::class)
-    fun handleOIDCUnauthorizedException(ex: OIDCUnauthorizedException): ResponseEntity<Any> {
+    @ExceptionHandler(HttpClientErrorException::class)
+    fun handleHttpClientErrorException(ex: HttpClientErrorException): ResponseEntity<Any> {
         val apiError = ApiError(
-            status = HttpStatus.UNAUTHORIZED, message = ex.message
+            status = ex.statusCode, message = ex.message
         )
         return buildResponseEntity(apiError)
     }

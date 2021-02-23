@@ -1,5 +1,6 @@
 package no.nav.syfo.consumer.repository
 
+import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import no.nav.syfo.TestApplication
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -17,6 +18,7 @@ import java.time.LocalDateTime
 @SpringBootTest(classes = [TestApplication::class])
 @EmbeddedKafka
 @DirtiesContext
+@EnableMockOAuth2Server
 class OppgavestyringDAOTest {
     @Autowired
     private lateinit var oppgavestyringDAO: OppgavestyringDAO

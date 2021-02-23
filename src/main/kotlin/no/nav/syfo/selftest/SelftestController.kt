@@ -1,5 +1,6 @@
 package no.nav.syfo.selftest
 
+import no.nav.security.token.support.core.api.Unprotected
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -12,6 +13,7 @@ const val APPLICATION_READY = "Application is ready!"
 
 @RestController
 @RequestMapping(value = ["/internal"])
+@Unprotected
 class SelftestController(private val applicationState: ApplicationState) {
 
     val isAlive: ResponseEntity<String>

@@ -1,11 +1,10 @@
 package no.nav.syfo.provider
 
-import buildClaimSet
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import no.nav.security.oidc.test.support.JwtTokenGenerator
-import no.nav.syfo.AZUREAD
+import no.nav.security.mock.oauth2.MockOAuth2Server
+import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import no.nav.syfo.TestApplication
 import no.nav.syfo.consumer.repository.TidligereInnsending
 import no.nav.syfo.consumer.repository.insertBehandletSoknad
@@ -23,12 +22,14 @@ import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import token
 import java.time.LocalDate
 
 @EmbeddedKafka
 @SpringBootTest(classes = [TestApplication::class])
 @AutoConfigureMockMvc
 @DirtiesContext
+@EnableMockOAuth2Server
 class SakControllerTest {
 
     @Autowired
@@ -43,14 +44,8 @@ class SakControllerTest {
         .registerModule(JavaTimeModule())
         .registerModule(KotlinModule())
 
-    private val jwt = JwtTokenGenerator.createSignedJWT(
-        buildClaimSet(
-            subject = "syfoinntektsmelding",
-            issuer = AZUREAD,
-            appId = "syfoinntektsmelding_clientid",
-            audience = "syfogsak_clientid"
-        )
-    ).serialize()
+    @Autowired
+    private lateinit var server: MockOAuth2Server
 
     @AfterEach
     fun cleanup() {
@@ -80,7 +75,7 @@ class SakControllerTest {
         val result = mockMvc
             .perform(
                 MockMvcRequestBuilders.get("/aktor/sisteSak")
-                    .header("Authorization", "Bearer $jwt")
+                    .header("Authorization", "Bearer ${server.token()}")
                     .contentType(MediaType.APPLICATION_JSON)
             ).andExpect(status().isOk).andReturn()
 
@@ -118,7 +113,7 @@ class SakControllerTest {
         val result = mockMvc
             .perform(
                 MockMvcRequestBuilders.get("/aktor/sisteSak?fom=2019-06-02&tom=2019-06-08")
-                    .header("Authorization", "Bearer $jwt")
+                    .header("Authorization", "Bearer ${server.token()}")
                     .contentType(MediaType.APPLICATION_JSON)
             ).andExpect(status().isOk).andReturn()
 
@@ -132,7 +127,7 @@ class SakControllerTest {
         mockMvc
             .perform(
                 MockMvcRequestBuilders.get("/aktor/sisteSak?fom=2019-06-06&tom=2019-06-06")
-                    .header("Authorization", "Bearer $jwt")
+                    .header("Authorization", "Bearer ${server.token()}")
                     .contentType(MediaType.APPLICATION_JSON)
             ).andExpect(status().isOk).andReturn()
     }
@@ -142,20 +137,22 @@ class SakControllerTest {
         mockMvc
             .perform(
                 MockMvcRequestBuilders.get("/aktor/sisteSak?fom=2019-06-08&tom=2019-06-02")
-                    .header("Authorization", "Bearer $jwt")
+                    .header("Authorization", "Bearer ${server.token()}")
                     .contentType(MediaType.APPLICATION_JSON)
             ).andExpect(status().is4xxClientError).andReturn()
     }
 
     @Test
     fun finnerIkkeSak() {
-        assertThat(
-            sakController.finnSisteSak(
-                "aktor",
-                LocalDate.of(2019, 6, 2),
-                LocalDate.of(2019, 6, 8)
-            ).sisteSak
-        ).isNull()
+
+        val contentAsString = mockMvc
+            .perform(
+                MockMvcRequestBuilders.get("/aktor/sisteSak?fom=2019-06-02&tom=2019-06-08")
+                    .header("Authorization", "Bearer ${server.token()}")
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isOk).andReturn().response.contentAsString
+
+        assertThat(contentAsString).isEqualTo("{\"sisteSak\":null}")
     }
 
     val tidligereInnsending = TidligereInnsending(

@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.springframework.boot") version "2.4.2"
+    id("org.springframework.boot") version "2.4.3"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
     kotlin("jvm") version "1.4.30"
     kotlin("plugin.spring") version "1.4.30"
@@ -52,6 +52,7 @@ val assertjVersion = "3.19.0"
 val micrometerRegistryPrometheusVersion = "1.5.1"
 val tjenestespesifikasjonerVersion = "1.2019.08.16-13.46-35cbdfd492d4"
 val cxfVersion = "3.2.10"
+val tokenSupportVersion = "1.3.3"
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -82,15 +83,14 @@ dependencies {
     implementation("com.h2database:h2:$h2Version")
     implementation("org.flywaydb:flyway-core")
     implementation("org.slf4j:slf4j-api")
-    implementation("org.springframework.security:spring-security-jwt:1.0.10.RELEASE")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashLogbackEncoderVersion")
     implementation("no.nav.tjenestespesifikasjoner:nav-fim-behandleJournal-v2-tjenestespesifikasjon:$tjenestespesifikasjonerVersion")
     implementation("no.nav.tjenestespesifikasjoner:person-v3-tjenestespesifikasjon:$tjenestespesifikasjonerVersion")
     implementation("no.nav.tjenestespesifikasjoner:arbeidsfordeling-v1-tjenestespesifikasjon:$tjenestespesifikasjonerVersion")
-    implementation("no.nav.security:oidc-spring-support:0.2.18")
+    implementation("no.nav.security:token-validation-spring:$tokenSupportVersion")
     testImplementation("org.springframework.kafka:spring-kafka-test")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("no.nav.security:oidc-test-support:0.2.18")
+    testImplementation("no.nav.security:token-validation-spring-test:$tokenSupportVersion")
     testImplementation("org.assertj:assertj-core:$assertjVersion")
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlinVersion")
     testImplementation("org.mockito:mockito-core:$mockitoCoreVersion")

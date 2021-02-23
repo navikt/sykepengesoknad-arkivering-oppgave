@@ -11,6 +11,7 @@ import no.nav.syfo.kafka.mapper.toSykepengesoknad
 import no.nav.syfo.log
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
+import java.time.Duration
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -44,6 +45,8 @@ class BehandleVedTimeoutService(
                     }
                 }
                 if (it.status == OppgaveStatus.Utsett) {
+                    val tidBrukt = Duration.between(it.opprettet, it.timeout ?: LocalDateTime.now())
+                    log.info("Soknad ${it.søknadsId}  timet ut. Total ventetid: ${tidBrukt.toHours()} timer")
                     tellTimeout()
                 }
             } catch (e: SøknadIkkeFunnetException) {
