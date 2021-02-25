@@ -3,19 +3,24 @@ package no.nav.syfo.service
 import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.Arbeidssituasjon.ARBEIDSTAKER
 import no.nav.syfo.domain.dto.Avsendertype.SYSTEM
+import no.nav.syfo.domain.dto.Merknad
 import no.nav.syfo.domain.dto.Soknadstype.*
 import no.nav.syfo.domain.dto.Sporsmal
 import no.nav.syfo.domain.dto.Svartype.*
 import no.nav.syfo.util.DatoUtil.norskDato
 import no.nav.syfo.util.PeriodeMapper.jsonTilPeriode
+import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.util.Collections.nCopies
+
+val log = LoggerFactory.getLogger("no.nav.syfo.service.BeskrivelseService")
 
 fun lagBeskrivelse(soknad: Soknad): String {
     return soknad.meldingDersomEgenmeldtSykmelding() +
         soknad.meldingDersomAvsendertypeErSystem() +
         soknad.lagTittel() +
         soknad.erKorrigert() + "\n" +
+        soknad.beskrivMerknaderFraSykmelding() +
         soknad.beskrivArbeidsgiver() +
         soknad.beskrivPerioder() +
         soknad.beskrivFaktiskGradFrilansere() +
@@ -24,6 +29,24 @@ fun lagBeskrivelse(soknad: Soknad): String {
             .map { sporsmal -> beskrivSporsmal(sporsmal, 0) }
             .filter { it.isNotBlank() }
             .joinToString("\n")
+}
+
+private fun Soknad.beskrivMerknaderFraSykmelding(): String {
+    return if (merknaderFraSykmelding?.isNotEmpty() == true) {
+        merknaderFraSykmelding
+            .joinToString(separator = "\n", postfix = "\n") { it.beskrivMerknad() }
+    } else ""
+}
+
+private fun Merknad.beskrivMerknad(): String {
+    return when (type) {
+        "UGYLDIG_TILBAKEDATERING" -> "OBS! Sykmeldingen er avslått grunnet ugyldig tilbakedatering"
+        "TILBAKEDATERING_KREVER_FLERE_OPPLYSNINGER" -> "OBS! Sykmeldingen er avslått grunnet tilbakedatering som krever flere opplysninger"
+        else -> {
+            log.warn("Ukjent merknadstype $type")
+            "OBS! Sykmeldingen har en merknad $this"
+        }
+    }
 }
 
 private fun Soknad.meldingDersomEgenmeldtSykmelding() =
@@ -44,7 +67,11 @@ private fun Soknad.lagTittel() =
         SELVSTENDIGE_OG_FRILANSERE -> {
             // Det kan finnes eldre søknader som mangler arbeidssituasjon
             val arbeidssituasjon = arbeidssituasjon?.navn ?: "Selvstendig Næringsdrivende / Frilanser"
-            "Søknad om sykepenger fra $arbeidssituasjon for perioden ${fom!!.format(norskDato)} - ${tom!!.format(norskDato)}"
+            "Søknad om sykepenger fra $arbeidssituasjon for perioden ${fom!!.format(norskDato)} - ${
+            tom!!.format(
+                norskDato
+            )
+            }"
         }
         OPPHOLD_UTLAND -> "Søknad om å beholde sykepenger utenfor EØS"
         ARBEIDSLEDIG -> "Søknad om sykepenger for arbeidsledig"
@@ -113,7 +140,13 @@ private fun beskrivSporsmal(sporsmal: Sporsmal, dybde: Int): String {
     val innrykk = "\n" + nCopies(dybde, "    ").joinToString("")
     val svarverdier = sporsmal.svarverdier()
 
-    return if (svarverdier.isEmpty() && sporsmal.svartype !in listOf(CHECKBOX_GRUPPE, RADIO_GRUPPE, RADIO_GRUPPE_TIMER_PROSENT, INFO_BEHANDLINGSDAGER)) {
+    return if (svarverdier.isEmpty() && sporsmal.svartype !in listOf(
+            CHECKBOX_GRUPPE,
+            RADIO_GRUPPE,
+            RADIO_GRUPPE_TIMER_PROSENT,
+            INFO_BEHANDLINGSDAGER
+        )
+    ) {
         ""
     } else {
         sporsmal.formatterSporsmalOgSvar().joinToString("") { sporsmalOgSvar ->

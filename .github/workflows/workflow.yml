@@ -22,7 +22,7 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
       - run: echo $VERSION > VERSION.txt
       - name: Last opp VERSION til neste job
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2.2.2
         with:
           name: VERSION.txt
           path: VERSION.txt
@@ -75,7 +75,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v1
       - name: Last ned versjon
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v2.0.8
         with:
           name: VERSION.txt
           path: .
@@ -97,7 +97,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v1
       - name: Last ned versjon
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v2.0.8
         with:
           name: VERSION.txt
           path: .
@@ -123,7 +123,7 @@ jobs:
     needs: build-and-publish
     steps:
       - name: Last ned versjon
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v2.0.8
         with:
           name: VERSION.txt
           path: .

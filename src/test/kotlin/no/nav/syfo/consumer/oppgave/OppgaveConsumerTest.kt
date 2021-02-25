@@ -155,24 +155,26 @@ class OppgaveConsumerTest {
 
     private fun lagSoknad(soknadstype: Soknadstype): Soknad {
         return Soknad(
-            aktorId,
-            "",
-            "fnr",
-            "Navn",
-            true,
-            soknadstype,
-            now().minusWeeks(3),
-            now().minusDays(3),
-            null,
-            null,
-            now().minusWeeks(3),
-            now().minusWeeks(3),
-            "arbeidsgiver",
-            null,
-            null,
-            null,
-            ArrayList(),
-            ArrayList()
+            aktorId = aktorId,
+            soknadsId = "",
+            fnr = "fnr",
+            navn = "Navn",
+            tilNav = true,
+            soknadstype = soknadstype,
+            fom = now().minusWeeks(3),
+            tom = now().minusDays(3),
+            innsendtDato = null,
+            sendtArbeidsgiver = null,
+            startSykeforlop = now().minusWeeks(3),
+            sykmeldingUtskrevet = now().minusWeeks(3),
+            arbeidsgiver = "arbeidsgiver",
+            korrigerer = null,
+            korrigertAv = null,
+            arbeidssituasjon = null,
+            soknadPerioder = ArrayList(),
+            sporsmal = ArrayList(),
+            avsendertype = null,
+            merknaderFraSykmelding = null
         )
     }
 }

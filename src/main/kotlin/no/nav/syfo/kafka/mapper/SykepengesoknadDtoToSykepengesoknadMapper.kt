@@ -1,9 +1,6 @@
 package no.nav.syfo.kafka.mapper
 
-import no.nav.syfo.domain.dto.SoknadPeriode
-import no.nav.syfo.domain.dto.Sporsmal
-import no.nav.syfo.domain.dto.Svar
-import no.nav.syfo.domain.dto.Sykepengesoknad
+import no.nav.syfo.domain.dto.*
 import no.nav.syfo.kafka.felles.SoknadsperiodeDTO
 import no.nav.syfo.kafka.felles.SporsmalDTO
 import no.nav.syfo.kafka.felles.SvarDTO
@@ -61,6 +58,8 @@ fun SykepengesoknadDTO.toSykepengesoknad(): Sykepengesoknad {
         ettersending = ettersending,
         egenmeldtSykmelding = egenmeldtSykmelding,
         orgNummer = arbeidsgiver?.orgnummer,
-        harRedusertVenteperiode = harRedusertVenteperiode ?: false
+        harRedusertVenteperiode = harRedusertVenteperiode ?: false,
+        merknaderFraSykmelding = merknaderFraSykmelding?.map { Merknad(type = it.type, beskrivelse = it.beskrivelse) }
+
     )
 }

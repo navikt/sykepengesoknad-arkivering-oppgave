@@ -26,5 +26,6 @@ data class Sykepengesoknad(
     val ettersending: Boolean? = null,
     val egenmeldtSykmelding: Boolean? = null,
     val harRedusertVenteperiode: Boolean = false,
-    val orgNummer: String? = null
+    val orgNummer: String? = null,
+    val merknaderFraSykmelding: List<Merknad>? = null
 )

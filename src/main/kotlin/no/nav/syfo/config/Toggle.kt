@@ -8,5 +8,5 @@ class Toggle(
     @Value("\${fasit.environment.name:p}") val fasitEnvironmentName: String
 ) {
     fun isQ(): Boolean =
-        fasitEnvironmentName == "q"
+        fasitEnvironmentName == "q1"
 }

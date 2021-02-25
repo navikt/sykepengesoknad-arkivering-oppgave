@@ -10,22 +10,16 @@ import no.nav.syfo.consumer.repository.SpreOppgave
 import no.nav.syfo.consumer.syfosoknad.SyfosoknadConsumer
 import no.nav.syfo.consumer.syfosoknad.SøknadIkkeFunnetException
 import no.nav.syfo.domain.Innsending
-import no.nav.syfo.kafka.felles.SkjultVerdi
-import no.nav.syfo.kafka.felles.SoknadsstatusDTO
-import no.nav.syfo.kafka.felles.SoknadstypeDTO
-import no.nav.syfo.kafka.felles.SporsmalDTO
-import no.nav.syfo.kafka.felles.SvarDTO
-import no.nav.syfo.kafka.felles.SvartypeDTO
-import no.nav.syfo.kafka.felles.SykepengesoknadDTO
+import no.nav.syfo.kafka.felles.*
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
-import java.lang.RuntimeException
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 @ExtendWith(MockitoExtension::class)
 class BehandleVedTimeoutServiceTest {
@@ -282,7 +276,9 @@ class BehandleVedTimeoutServiceTest {
         )
         whenever(toggle.isQ()).thenReturn(false)
         whenever(syfosoknadConsumer.hentSoknad(søknadsId1.toString())).thenThrow(SøknadIkkeFunnetException("msg"))
-        behandleVedTimeoutService.behandleTimeout()
+        assertThrows(SøknadIkkeFunnetException::class.java) {
+            behandleVedTimeoutService.behandleTimeout()
+        }
         verify(oppgavestyringDAO, never()).oppdaterOppgave(any(), any(), any())
     }
 }

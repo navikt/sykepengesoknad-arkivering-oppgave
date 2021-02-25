@@ -53,9 +53,12 @@ class BehandleVedTimeoutService(
                 if (toggle.isQ()) {
                     log.warn("Søknaden ${it.søknadsId} finnes ikke i Q, hopper over oppgaveopprettelse og fortsetter")
                     oppgavestyringDAO.oppdaterOppgave(UUID.fromString(it.søknadsId), null, OppgaveStatus.IkkeOpprett)
+                } else {
+                    log.error("SøknadIkkeFunnetException ved opprettelse av oppgave ${it.søknadsId}", e)
+                    throw e
                 }
-            } catch (error: RuntimeException) {
-                log.error("Runtime-feil ved opprettelse av oppgave ${it.søknadsId}", error)
+            } catch (e: RuntimeException) {
+                log.error("Runtime-feil ved opprettelse av oppgave ${it.søknadsId}", e)
             }
         }
     }
