@@ -2,7 +2,7 @@ apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
   name: syfogsak
-  namespace: default
+  namespace: flex
   labels:
     team: flex
 spec:
@@ -45,8 +45,6 @@ spec:
         mountPath: /var/run/secrets/nais.io/vault
       - kvPath: /azuread/data/dev/creds/syfogsak
         mountPath: /var/run/secrets/nais.io/azuread
-  ingresses:
-    - "https://syfogsak.nais.preprod.local"
   webproxy: false
   env:
     - name: SYFOSOKNAD_URL
