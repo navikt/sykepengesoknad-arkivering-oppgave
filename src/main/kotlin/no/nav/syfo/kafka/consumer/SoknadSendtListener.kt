@@ -1,6 +1,7 @@
 package no.nav.syfo.kafka.consumer
 
 import no.nav.syfo.kafka.NAV_CALLID
+import no.nav.syfo.kafka.felles.SoknadstypeDTO
 import no.nav.syfo.kafka.felles.SykepengesoknadDTO
 import no.nav.syfo.kafka.getSafeNavCallIdHeaderAsString
 import no.nav.syfo.kafka.mapper.toSykepengesoknad
@@ -29,7 +30,11 @@ constructor(private val spreOppgaverService: SpreOppgaverService) {
             MDC.put(NAV_CALLID, getSafeNavCallIdHeaderAsString(cr.headers()))
 
             val value = cr.value()
-            spreOppgaverService.soknadSendt(value.toSykepengesoknad())
+            if (value.type == SoknadstypeDTO.REISETILSKUDD) {
+                log.info("Skipper søknad om reisetilskudd med id ${cr.key()}")
+            } else {
+                spreOppgaverService.soknadSendt(value.toSykepengesoknad())
+            }
 
             acknowledgment.acknowledge()
         } catch (e: Exception) {
