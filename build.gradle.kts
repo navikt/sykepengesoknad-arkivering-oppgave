@@ -1,10 +1,10 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.springframework.boot") version "2.4.3"
+    id("org.springframework.boot") version "2.4.4"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
-    kotlin("jvm") version "1.4.30"
-    kotlin("plugin.spring") version "1.4.30"
+    kotlin("jvm") version "1.4.32"
+    kotlin("plugin.spring") version "1.4.32"
 }
 
 group = "no.nav.helse.flex"
@@ -47,7 +47,7 @@ val mockitoKotlinVersion = "2.2.0"
 val h2Version = "1.4.200"
 val ojdbc8Version = "19.3.0.0"
 val logstashLogbackEncoderVersion = "4.10"
-val mockitoCoreVersion = "3.7.7"
+val mockitoCoreVersion = "3.8.0"
 val assertjVersion = "3.19.0"
 val micrometerRegistryPrometheusVersion = "1.5.1"
 val tjenestespesifikasjonerVersion = "1.2019.08.16-13.46-35cbdfd492d4"
