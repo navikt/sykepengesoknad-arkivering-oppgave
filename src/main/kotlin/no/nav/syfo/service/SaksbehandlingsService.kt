@@ -3,12 +3,14 @@ package no.nav.syfo.service
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tags
 import no.nav.syfo.consumer.aktor.AktorConsumer
+import no.nav.syfo.consumer.bucket.FlexBucketUploaderClient
 import no.nav.syfo.consumer.oppgave.OppgaveConsumer
 import no.nav.syfo.consumer.repository.InnsendingDAO
 import no.nav.syfo.consumer.sak.SakConsumer
 import no.nav.syfo.consumer.ws.BehandleJournalConsumer
 import no.nav.syfo.consumer.ws.PersonConsumer
 import no.nav.syfo.domain.Innsending
+import no.nav.syfo.domain.PdfKvittering
 import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.Soknadstype
 import no.nav.syfo.domain.dto.Sykepengesoknad
@@ -19,6 +21,7 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime.now
 import java.time.temporal.ChronoUnit
+import java.util.*
 import java.util.stream.Stream
 
 @Component
@@ -31,7 +34,8 @@ class SaksbehandlingsService(
     private val innsendingDAO: InnsendingDAO,
     private val personConsumer: PersonConsumer,
     private val registry: MeterRegistry,
-    private val rebehandlingProducer: RebehandlingProducer
+    private val rebehandlingProducer: RebehandlingProducer,
+    private val flexBucketUploaderClient: FlexBucketUploaderClient,
 ) {
 
     private val log = log()
@@ -39,7 +43,12 @@ class SaksbehandlingsService(
     fun behandleSoknad(sykepengesoknad: Sykepengesoknad): String {
         val eksisterendeInnsending = finnEksisterendeInnsending(sykepengesoknad.id)
         val innsendingId = eksisterendeInnsending?.innsendingsId
-            ?: innsendingDAO.opprettInnsending(sykepengesoknad.id, sykepengesoknad.aktorId, sykepengesoknad.fom, sykepengesoknad.tom)
+            ?: innsendingDAO.opprettInnsending(
+                sykepengesoknad.id,
+                sykepengesoknad.aktorId,
+                sykepengesoknad.fom,
+                sykepengesoknad.tom
+            )
         val fnr = aktorConsumer.finnFnr(sykepengesoknad.aktorId)
         val soknad = opprettSoknad(sykepengesoknad, fnr)
         val saksId = eksisterendeInnsending?.saksId
@@ -54,7 +63,14 @@ class SaksbehandlingsService(
         val soknad = opprettSoknad(sykepengesoknad, fnr)
 
         val behandlendeEnhet = behandlendeEnhetService.hentBehandlendeEnhet(fnr, soknad.soknadstype)
-        val requestBody = OppgaveConsumer.lagRequestBody(sykepengesoknad.aktorId, behandlendeEnhet, innsending.saksId!!, innsending.journalpostId!!, soknad, sykepengesoknad.harRedusertVenteperiode)
+        val requestBody = OppgaveConsumer.lagRequestBody(
+            sykepengesoknad.aktorId,
+            behandlendeEnhet,
+            innsending.saksId!!,
+            innsending.journalpostId!!,
+            soknad,
+            sykepengesoknad.harRedusertVenteperiode
+        )
         val oppgaveId = oppgaveConsumer.opprettOppgave(requestBody).id.toString()
 
         innsendingDAO.oppdaterOppgaveId(uuid = innsending.innsendingsId, oppgaveId = oppgaveId)
@@ -111,8 +127,18 @@ class SaksbehandlingsService(
             .map { it.dayOfWeek }
             .allMatch { it == DayOfWeek.SATURDAY || it == DayOfWeek.SUNDAY }
 
-    fun opprettSoknad(sykepengesoknad: Sykepengesoknad, fnr: String): Soknad =
-        Soknad.lagSoknad(sykepengesoknad, fnr, personConsumer.finnBrukerPersonnavnByFnr(fnr))
+    fun opprettSoknad(sykepengesoknad: Sykepengesoknad, fnr: String): Soknad {
+        val soknad = Soknad.lagSoknad(sykepengesoknad, fnr, personConsumer.finnBrukerPersonnavnByFnr(fnr))
+
+        return soknad.copy(kvitteringer = soknad.kvitteringer?.map { it.hentOgSettKvittering() })
+    }
+
+    private fun PdfKvittering.hentOgSettKvittering(): PdfKvittering {
+
+        return this.copy(
+            b64data = Base64.getEncoder().encodeToString(flexBucketUploaderClient.hentVedlegg(this.blobId))
+        )
+    }
 
     private fun tellInnsendingBehandlet(soknadstype: Soknadstype?) {
         registry.counter(

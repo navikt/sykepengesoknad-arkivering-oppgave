@@ -88,6 +88,7 @@ dependencies {
     implementation("no.nav.tjenestespesifikasjoner:person-v3-tjenestespesifikasjon:$tjenestespesifikasjonerVersion")
     implementation("no.nav.tjenestespesifikasjoner:arbeidsfordeling-v1-tjenestespesifikasjon:$tjenestespesifikasjonerVersion")
     implementation("no.nav.security:token-validation-spring:$tokenSupportVersion")
+    implementation("no.nav.security:token-client-spring:$tokenSupportVersion")
     testImplementation("org.springframework.kafka:spring-kafka-test")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("no.nav.security:token-validation-spring-test:$tokenSupportVersion")

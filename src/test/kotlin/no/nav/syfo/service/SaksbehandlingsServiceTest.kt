@@ -10,6 +10,7 @@ import io.micrometer.core.instrument.MeterRegistry
 import no.nav.syfo.TestApplication
 import no.nav.syfo.any
 import no.nav.syfo.consumer.aktor.AktorConsumer
+import no.nav.syfo.consumer.bucket.FlexBucketUploaderClient
 import no.nav.syfo.consumer.oppgave.OppgaveConsumer
 import no.nav.syfo.consumer.oppgave.OppgaveRequest
 import no.nav.syfo.consumer.oppgave.OppgaveResponse
@@ -58,6 +59,8 @@ class SaksbehandlingsServiceTest {
     lateinit var behandleJournalConsumer: BehandleJournalConsumer
     @Mock
     lateinit var behandlendeEnhetService: BehandlendeEnhetService
+    @Mock
+    lateinit var flexBucketUploaderClient: FlexBucketUploaderClient
     @Mock
     lateinit var registry: MeterRegistry
     @Mock

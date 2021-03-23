@@ -4,6 +4,7 @@ import com.nhaarman.mockitokotlin2.*
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import no.nav.syfo.TestApplication
 import no.nav.syfo.consumer.aktor.AktorConsumer
+import no.nav.syfo.consumer.bucket.FlexBucketUploaderClient
 import no.nav.syfo.consumer.oppgave.OppgaveConsumer
 import no.nav.syfo.consumer.oppgave.OppgaveRequest
 import no.nav.syfo.consumer.oppgave.OppgaveResponse
@@ -11,7 +12,6 @@ import no.nav.syfo.consumer.pdf.PDFConsumer
 import no.nav.syfo.consumer.repository.InnsendingDAO
 import no.nav.syfo.consumer.sak.SakConsumer
 import no.nav.syfo.domain.Soknad
-import no.nav.syfo.domain.b64dataEksempel
 import no.nav.syfo.domain.dto.PDFTemplate
 import no.nav.syfo.domain.dto.Svartype
 import no.nav.syfo.kafka.consumer.SoknadSendtListener
@@ -49,6 +49,9 @@ class SaksbehandlingIntegrationTest {
 
     @MockBean
     private lateinit var oppgaveConsumer: OppgaveConsumer
+
+    @MockBean
+    private lateinit var flexBucketUploaderClient: FlexBucketUploaderClient
 
     @Autowired
     private lateinit var behandleJournalV2: BehandleJournalMock
@@ -177,6 +180,8 @@ Ja
         whenever(aktorConsumer.finnFnr(aktorId)).thenReturn(fnr)
         val saksId = "saksId"
         whenever(sakConsumer.opprettSak(aktorId)).thenReturn(saksId)
+
+        whenever(flexBucketUploaderClient.hentVedlegg(any())).thenReturn("123".encodeToByteArray())
         val oppgaveID = 1
         whenever(oppgaveConsumer.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
 
@@ -249,7 +254,7 @@ Nei
         val pdfReq = pdfReqCaptor.firstValue
         assertThat(pdfReq.kvitteringSum).isEqualTo(133800)
         assertThat(pdfReq.kvitteringer).hasSize(2)
-        assertThat(pdfReq.kvitteringer!![0].b64data).isEqualTo(b64dataEksempel)
+        assertThat(pdfReq.kvitteringer!![0].b64data).isEqualTo("MTIz")
         assertThat(pdfReq.sporsmal.filter { it.svartype == Svartype.KVITTERING }).isEmpty()
 
         val journalreq = behandleJournalV2.sisteJournalfoerInngaaendeHenvendelseRequest

@@ -32,6 +32,10 @@ spec:
     requests:
       cpu: 200m
       memory: 768Mi
+  azure:
+    application:
+      enabled: true
+      tenant: "trygdeetaten.no"
   vault:
     enabled: true
     paths:
@@ -109,3 +113,7 @@ spec:
       value: SAML
     - name: VIRKSOMHET_PERSON_V3_WSDLURL
       value: http://maven.adeo.no/nexus/content/groups/public/no/nav/tjenester/nav-person-v3-tjenestespesifikasjon/3.6.1/nav-person-v3-tjenestespesifikasjon-3.6.1.zip
+    - name: FLEX_BUCKET_UPLOADER_AAD_CLIENT_ID
+      value: dev-gcp.flex.flex-bucket-uploader
+    - name: FLEX_BUCKET_UPLOADER_URL
+      value: https://flex-bucket-uploader.dev.intern.nav.no

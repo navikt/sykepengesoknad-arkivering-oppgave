@@ -33,6 +33,8 @@ mockWS: true
 pdfgen.url: "http://pdf"
 
 spring:
+  profiles:
+    active: test
   jackson.serialization.WRITE_DATES_AS_TIMESTAMPS: false
   datasource:
     url: 'jdbc:h2:mem:testdb;MODE=Oracle'
@@ -58,6 +60,7 @@ spring:
     enabled: true
 
 syfosoknad_url: http://syfosoknad
+flex.bucket.uploader.url: http://flex-bucket
 
 no.nav.security.jwt:
   issuer:
