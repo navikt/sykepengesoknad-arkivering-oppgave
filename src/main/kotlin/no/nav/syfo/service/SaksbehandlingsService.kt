@@ -60,7 +60,7 @@ class SaksbehandlingsService(
         innsendingDAO.oppdaterOppgaveId(uuid = innsending.innsendingsId, oppgaveId = oppgaveId)
 
         tellInnsendingBehandlet(soknad.soknadstype)
-        log.info("Oppretter oppgave ${innsending.innsendingsId} for ${soknad.soknadstype?.name?.toLowerCase()} søknad: ${soknad.soknadsId}")
+        log.info("Oppretter oppgave ${innsending.innsendingsId} for ${soknad.soknadstype.name.toLowerCase()} søknad: ${soknad.soknadsId}")
     }
 
     fun settFerdigbehandlet(innsendingsId: String) {

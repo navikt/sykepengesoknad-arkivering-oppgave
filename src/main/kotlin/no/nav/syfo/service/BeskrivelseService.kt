@@ -11,6 +11,7 @@ import no.nav.syfo.util.DatoUtil.norskDato
 import no.nav.syfo.util.PeriodeMapper.jsonTilPeriode
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
+import java.util.*
 import java.util.Collections.nCopies
 
 val log = LoggerFactory.getLogger("no.nav.syfo.service.BeskrivelseService")
@@ -21,6 +22,7 @@ fun lagBeskrivelse(soknad: Soknad): String {
         soknad.lagTittel() +
         soknad.erKorrigert() + "\n" +
         soknad.beskrivMerknaderFraSykmelding() +
+        soknad.beskrivKvitteringer() +
         soknad.beskrivArbeidsgiver() +
         soknad.beskrivPerioder() +
         soknad.beskrivFaktiskGradFrilansere() +
@@ -35,6 +37,12 @@ private fun Soknad.beskrivMerknaderFraSykmelding(): String {
     return if (merknaderFraSykmelding?.isNotEmpty() == true) {
         merknaderFraSykmelding
             .joinToString(separator = "\n", postfix = "\n") { it.beskrivMerknad() }
+    } else ""
+}
+
+private fun Soknad.beskrivKvitteringer(): String {
+    return if (kvitteringer != null && kvitteringer.isNotEmpty()) {
+        "\nSøknaden har vedlagt ${kvitteringer.size} kvitteringer med en sum på ${kvitteringSum.toString().formatterBelop()} kr\n"
     } else ""
 }
 
@@ -77,7 +85,7 @@ private fun Soknad.lagTittel() =
         ARBEIDSLEDIG -> "Søknad om sykepenger for arbeidsledig"
         BEHANDLINGSDAGER -> "Søknad med enkeltstående behandlingsdager"
         ANNET_ARBEIDSFORHOLD -> "Søknad om sykepenger med uavklart arbeidssituasjon"
-        null -> error("Mangler søknadstype for $soknadsId")
+        REISETILSKUDD -> "Søknad om reisetilskudd for perioden ${fom!!.format(norskDato)} - ${tom!!.format(norskDato)}"
     }
 
 private fun Soknad.erKorrigert() =
@@ -96,7 +104,10 @@ private fun Soknad.beskrivPerioder() =
             "${periode.fom!!.format(norskDato)} - ${periode.tom!!.format(norskDato)}\n" +
             (
                 periode.grad?.let { grad ->
-                    "Grad: ${grad}\n"
+                    if (soknadstype != REISETILSKUDD)
+                        "Grad: ${grad}\n"
+                    else
+                        ""
                 } ?: ""
                 ) +
             (
@@ -132,6 +143,7 @@ private fun Sporsmal.skalVises() =
     when (tag) {
         "ANSVARSERKLARING", "BEKREFT_OPPLYSNINGER", "EGENMELDINGER", "FRAVER_FOR_BEHANDLING" -> false
         "ARBEIDSGIVER" -> true
+        "UTBETALING" -> true
         "FRISKMELDT" -> "NEI" == forsteSvarverdi()
         else -> "NEI" != forsteSvarverdi()
     }
@@ -189,11 +201,13 @@ private fun Sporsmal.formatterSporsmalOgSvar(): List<String> {
         PERIODE -> listOfNotNull(sporsmalstekst, formatterPeriode(forsteSvarverdi()))
         PERIODER -> listOfNotNull(sporsmalstekst) + svarverdier().map { formatterPeriode(it) }
         LAND -> listOfNotNull(sporsmalstekst) + svarverdier().map { formatterLand(it) }
-        TALL -> listOfNotNull(sporsmalstekst, forsteSvarverdi() + " " + undertekst)
+        TALL, KILOMETER -> listOfNotNull(sporsmalstekst, forsteSvarverdi() + " " + undertekst)
+        BELOP -> listOfNotNull(sporsmalstekst, forsteSvarverdi().formatterBelop() + " " + undertekst)
         TIMER -> listOfNotNull(sporsmalstekst, forsteSvarverdi() + " timer")
         PROSENT -> listOfNotNull(sporsmalstekst, forsteSvarverdi() + " prosent")
         FRITEKST -> listOfNotNull(sporsmalstekst, forsteSvarverdi())
         RADIO_GRUPPE_UKEKALENDER -> listOfNotNull(formatterBehandlingsdato(forsteSvarverdi()))
+        DATOER -> listOfNotNull(sporsmalstekst) + svarverdier().map { formatterDato(it) }
         else -> emptyList()
     }
 }
@@ -204,6 +218,13 @@ private fun Sporsmal.svarverdier(): List<String> {
 
 private fun Sporsmal.forsteSvarverdi(): String {
     return svar?.firstOrNull()?.verdi ?: ""
+}
+
+private fun String.formatterBelop(): String {
+    val context = this.toInt()
+    val kr = context / 100
+    val øre = context % 100
+    return "%,d,%02d".format(locale = Locale("nb"), kr, øre)
 }
 
 private fun formatterDato(svarverdi: String?): String {

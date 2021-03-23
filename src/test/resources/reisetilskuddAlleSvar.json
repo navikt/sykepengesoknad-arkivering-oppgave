@@ -1,0 +1,299 @@
+{
+  "id": "042782ab-4564-4c76-a954-ed6907cd23ce",
+  "type": "REISETILSKUDD",
+  "status": "SENDT",
+  "aktorId": "aktor",
+  "sykmeldingId": "b501e0e1-e3a9-402f-9395-6123f141dd07",
+  "arbeidsgiver": {
+    "navn": "Barnehagen",
+    "orgnummer": "123454543"
+  },
+  "arbeidssituasjon": "ARBEIDSTAKER",
+  "korrigerer": null,
+  "korrigertAv": null,
+  "soktUtenlandsopphold": null,
+  "arbeidsgiverForskutterer": null,
+  "fom": "2021-03-18",
+  "tom": "2021-03-22",
+  "dodsdato": null,
+  "startSyketilfelle": "2021-03-23",
+  "arbeidGjenopptatt": null,
+  "sykmeldingSkrevet": "2021-03-23T07:39:07.767701",
+  "opprettet": "2021-03-23T08:39:08.274709",
+  "sendtNav": "2021-03-23T08:39:09.096622",
+  "sendtArbeidsgiver": null,
+  "egenmeldinger": [],
+  "papirsykmeldinger": [],
+  "fravar": [],
+  "andreInntektskilder": [],
+  "soknadsperioder": [
+    {
+      "fom": "2021-03-18",
+      "tom": "2021-03-22",
+      "sykmeldingsgrad": 0,
+      "faktiskGrad": null,
+      "avtaltTimer": null,
+      "faktiskTimer": null,
+      "sykmeldingstype": "REISETILSKUDD",
+      "grad": 0
+    }
+  ],
+  "sporsmal": [
+    {
+      "id": "1",
+      "tag": "ANSVARSERKLARING",
+      "sporsmalstekst": "Jeg vet at jeg kan miste retten til reisetilskudd og sykepenger hvis opplysningene jeg gir ikke er riktige eller fullstendige. Jeg vet også at NAV kan holde igjen eller kreve tilbake penger, og at å gi feil opplysninger kan være straffbart.",
+      "undertekst": null,
+      "min": null,
+      "max": null,
+      "svartype": "CHECKBOX_PANEL",
+      "kriterieForVisningAvUndersporsmal": null,
+      "svar": [
+        {
+          "verdi": "CHECKED"
+        }
+      ],
+      "undersporsmal": []
+    },
+    {
+      "id": "2",
+      "tag": "TRANSPORT_TIL_DAGLIG",
+      "sporsmalstekst": "Brukte du bil eller offentlig transport til og fra jobben?",
+      "undertekst": null,
+      "min": null,
+      "max": null,
+      "svartype": "JA_NEI",
+      "kriterieForVisningAvUndersporsmal": "JA",
+      "svar": [
+        {
+          "verdi": "JA"
+        }
+      ],
+      "undersporsmal": [
+        {
+          "id": "3",
+          "tag": "TYPE_TRANSPORT",
+          "sporsmalstekst": "Hva slags type transport bruker du?",
+          "undertekst": null,
+          "min": null,
+          "max": null,
+          "svartype": "CHECKBOX_GRUPPE",
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [],
+          "undersporsmal": [
+            {
+              "id": "4",
+              "tag": "OFFENTLIG_TRANSPORT_TIL_DAGLIG",
+              "sporsmalstekst": "Offentlig transport",
+              "undertekst": null,
+              "min": null,
+              "max": null,
+              "svartype": "CHECKBOX",
+              "kriterieForVisningAvUndersporsmal": "CHECKED",
+              "svar": [
+                {
+                  "verdi": "CHECKED"
+                }
+              ],
+              "undersporsmal": [
+                {
+                  "id": "5",
+                  "tag": "OFFENTLIG_TRANSPORT_BELOP",
+                  "sporsmalstekst": "Hvor mye betaler du vanligvis i måneden for offentlig transport?",
+                  "undertekst": "kr",
+                  "min": "0",
+                  "max": null,
+                  "svartype": "BELOP",
+                  "kriterieForVisningAvUndersporsmal": null,
+                  "svar": [
+                    {
+                      "verdi": "2000"
+                    }
+                  ],
+                  "undersporsmal": []
+                }
+              ]
+            },
+            {
+              "id": "6",
+              "tag": "BIL_TIL_DAGLIG",
+              "sporsmalstekst": "Bil",
+              "undertekst": null,
+              "min": null,
+              "max": null,
+              "svartype": "CHECKBOX",
+              "kriterieForVisningAvUndersporsmal": "CHECKED",
+              "svar": [
+                {
+                  "verdi": "CHECKED"
+                }
+              ],
+              "undersporsmal": [
+                {
+                  "id": "7",
+                  "tag": "KM_HJEM_JOBB",
+                  "sporsmalstekst": "Hvor mange kilometer er kjøreturen mellom hjemmet ditt og jobben?",
+                  "undertekst": "km",
+                  "min": "0",
+                  "max": null,
+                  "svartype": "KILOMETER",
+                  "kriterieForVisningAvUndersporsmal": null,
+                  "svar": [
+                    {
+                      "verdi": "42"
+                    }
+                  ],
+                  "undersporsmal": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "8",
+      "tag": "REISE_MED_BIL",
+      "sporsmalstekst": "Reiste du med egen bil, leiebil eller kollega til jobben mellom 18. - 22. mars 2021?",
+      "undertekst": null,
+      "min": null,
+      "max": null,
+      "svartype": "JA_NEI",
+      "kriterieForVisningAvUndersporsmal": "JA",
+      "svar": [
+        {
+          "verdi": "JA"
+        }
+      ],
+      "undersporsmal": [
+        {
+          "id": "9",
+          "tag": "BIL_DATOER",
+          "sporsmalstekst": "Hvilke dager reiste du med bil?",
+          "undertekst": null,
+          "min": "2021-03-18",
+          "max": "2021-03-22",
+          "svartype": "DATOER",
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [
+            {
+              "verdi": "2021-03-22"
+            },
+            {
+              "verdi": "2021-03-21"
+            }
+          ],
+          "undersporsmal": []
+        },
+        {
+          "id": "10",
+          "tag": "BIL_BOMPENGER",
+          "sporsmalstekst": "Hadde du utgifter til bompenger?",
+          "undertekst": null,
+          "min": null,
+          "max": null,
+          "svartype": "JA_NEI",
+          "kriterieForVisningAvUndersporsmal": "JA",
+          "svar": [
+            {
+              "verdi": "JA"
+            }
+          ],
+          "undersporsmal": [
+            {
+              "id": "11",
+              "tag": "BIL_BOMPENGER_BELOP",
+              "sporsmalstekst": "Hvor mye betalte du i bompenger mellom hjemmet ditt og jobben?",
+              "undertekst": "kr",
+              "min": "0",
+              "max": null,
+              "svartype": "BELOP",
+              "kriterieForVisningAvUndersporsmal": null,
+              "svar": [
+                {
+                  "verdi": "3000"
+                }
+              ],
+              "undersporsmal": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "12",
+      "tag": "KVITTERINGER",
+      "sporsmalstekst": "Last opp kvitteringer for reiser til og fra jobben mellom 18. - 22. mars 2021.",
+      "undertekst": null,
+      "min": null,
+      "max": null,
+      "svartype": "KVITTERING",
+      "kriterieForVisningAvUndersporsmal": null,
+      "svar": [
+        {
+          "verdi": "{\"blobId\":\"9a186e3c-aeeb-4566-a865-15aa9139d364\",\"belop\":133700,\"typeUtgift\":\"PARKERING\",\"opprettet\":\"2021-03-23T07:39:08.849162Z\"}"
+        },
+        {
+          "verdi": "{\"blobId\":\"9a186e3c-aeeb-4566-a865-15aa9139d365\",\"belop\":100,\"typeUtgift\":\"PARKERING\",\"opprettet\":\"2021-03-23T07:39:08.849162Z\"}"
+        }
+      ],
+      "undersporsmal": []
+    },
+    {
+      "id": "13",
+      "tag": "UTBETALING",
+      "sporsmalstekst": "Legger arbeidsgiveren din ut for reisene?",
+      "undertekst": null,
+      "min": null,
+      "max": null,
+      "svartype": "JA_NEI",
+      "kriterieForVisningAvUndersporsmal": null,
+      "svar": [
+        {
+          "verdi": "NEI"
+        }
+      ],
+      "undersporsmal": []
+    },
+    {
+      "id": "14",
+      "tag": "VAER_KLAR_OVER_AT",
+      "sporsmalstekst": "Viktig å være klar over:",
+      "undertekst": "<ul><li>Du kan bare få sykepenger hvis det er din egen sykdom eller skade som hindrer deg i å jobbe. Sosiale eller økonomiske problemer gir ikke rett til sykepenger.</li><li>Du kan miste retten til sykepenger hvis du nekter å opplyse om din egen arbeidsevne, eller hvis du ikke tar imot behandling eller tilrettelegging.</li><li>Retten til sykepenger gjelder bare inntekt du har mottatt som lønn og betalt skatt av på sykmeldingstidspunktet.</li><li>NAV kan innhente opplysninger som er nødvendige for å behandle søknaden.</li><li>Du må melde fra til NAV hvis du satt i varetekt, sonet straff eller var under forvaring i sykmeldingsperioden.</li><li>Fristen for å søke sykepenger er som hovedregel 3 måneder</li></ul><p>Du kan lese mer om rettigheter og plikter på <a href=\"https://www.nav.no/sykepenger\" target=\"_blank\">nav.no/sykepenger</a>.</p>",
+      "min": null,
+      "max": null,
+      "svartype": "IKKE_RELEVANT",
+      "kriterieForVisningAvUndersporsmal": null,
+      "svar": [],
+      "undersporsmal": []
+    },
+    {
+      "id": "15",
+      "tag": "BEKREFT_OPPLYSNINGER",
+      "sporsmalstekst": "Jeg har lest all informasjonen jeg har fått i søknaden og bekrefter at opplysningene jeg har gitt er korrekte.",
+      "undertekst": null,
+      "min": null,
+      "max": null,
+      "svartype": "CHECKBOX_PANEL",
+      "kriterieForVisningAvUndersporsmal": null,
+      "svar": [
+        {
+          "verdi": "CHECKED"
+        }
+      ],
+      "undersporsmal": []
+    }
+  ],
+  "avsendertype": "BRUKER",
+  "ettersending": false,
+  "mottaker": "NAV",
+  "fodselsnummer": {
+    "verdi": "fnr"
+  },
+  "egenmeldtSykmelding": null,
+  "harRedusertVenteperiode": null,
+  "behandlingsdager": null,
+  "permitteringer": [],
+  "merknaderFraSykmelding": null,
+  "fnr": "fnr"
+}

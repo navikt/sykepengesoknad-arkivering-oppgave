@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service
 @ConditionalOnProperty(value = ["mockWS"], havingValue = "true")
 class BehandleJournalMock : BehandleJournalV2 {
 
+    var sisteJournalfoerInngaaendeHenvendelseRequest: JournalfoerInngaaendeHenvendelseRequest? = null
+
     override fun arkiverUstrukturertKrav(
         wsArkiverUstrukturertKravRequest: ArkiverUstrukturertKravRequest
     ): ArkiverUstrukturertKravResponse {
@@ -46,6 +48,7 @@ class BehandleJournalMock : BehandleJournalV2 {
     override fun journalfoerInngaaendeHenvendelse(
         wsJournalfoerInngaaendeHenvendelseRequest: JournalfoerInngaaendeHenvendelseRequest
     ): JournalfoerInngaaendeHenvendelseResponse {
+        sisteJournalfoerInngaaendeHenvendelseRequest = wsJournalfoerInngaaendeHenvendelseRequest
         return JournalfoerInngaaendeHenvendelseResponse().withJournalpostId("journalpostId")
     }
 

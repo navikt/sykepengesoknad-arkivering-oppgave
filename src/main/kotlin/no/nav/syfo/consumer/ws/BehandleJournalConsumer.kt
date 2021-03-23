@@ -1,6 +1,6 @@
 package no.nav.syfo.consumer.ws
 
-import no.nav.syfo.controller.PDFRestController
+import no.nav.syfo.consumer.pdf.PDFConsumer
 import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.PDFTemplate
 import no.nav.syfo.domain.dto.PDFTemplate.SELVSTENDIGNAERINGSDRIVENDE
@@ -24,14 +24,14 @@ class BehandleJournalConsumer @Inject
 constructor(
     private val behandleJournalV2: BehandleJournalV2,
     private val personConsumer: PersonConsumer,
-    private val pdfRestController: PDFRestController
+    private val pdfConsumer: PDFConsumer
 ) {
 
     fun opprettJournalpost(soknad: Soknad, saksId: String): String {
         val pdf: ByteArray?
 
         try {
-            pdf = pdfRestController.getPDF(soknad, hentPDFTemplateEtterSoknadstype(soknad.soknadstype!!))
+            pdf = pdfConsumer.getPDF(soknad, hentPDFTemplateEtterSoknadstype(soknad.soknadstype))
         } catch (e: RuntimeException) {
             val feilmelding = "Kunne ikke generere PDF for søknad med id: ${soknad.soknadsId} og saks id: $saksId"
             log().error(feilmelding, e)
@@ -55,7 +55,7 @@ constructor(
                             .withArkivtema(Arkivtemaer().withValue("SYK"))
                             .withForBruker(Person().withIdent(NorskIdent().withIdent(soknad.fnr)))
                             .withOpprettetAvNavn("Syfogsak")
-                            .withInnhold(getJournalPostInnholdNavn(soknad.soknadstype!!))
+                            .withInnhold(getJournalPostInnholdNavn(soknad.soknadstype))
                             .withEksternPart(
                                 EksternPart()
                                     .withNavn(personConsumer.finnBrukerPersonnavnByFnr(soknad.fnr!!))
@@ -94,8 +94,8 @@ constructor(
     private fun getBrevkode(soknad: Soknad): String {
         return when (soknad.soknadstype) {
             OPPHOLD_UTLAND -> "NAV 08-07.09"
+            REISETILSKUDD -> "NAV 08-14.01"
             SELVSTENDIGE_OG_FRILANSERE, ARBEIDSTAKERE, ARBEIDSLEDIG, BEHANDLINGSDAGER, ANNET_ARBEIDSFORHOLD -> "NAV 08-07.04 D"
-            else -> throw RuntimeException("Har ikke implementert brevkode for søknad av typen: ${soknad.soknadstype}")
         }
     }
 
@@ -107,7 +107,7 @@ constructor(
             ARBEIDSLEDIG -> "Søknad om sykepenger fra arbeidsledig for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
             BEHANDLINGSDAGER -> "Søknad om enkeltstående behandlingsdager fra ${soknad.arbeidssituasjon.toString().toLowerCase()} for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
             ANNET_ARBEIDSFORHOLD -> "Søknad om sykepenger med uavklart arbeidssituasjon fra ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
-            else -> throw RuntimeException("Har ikke implementert journalført dokumenttittel for søknad av typen: ${soknad.soknadstype!!}")
+            REISETILSKUDD -> "Søknad om reisetilskudd for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
         }
     }
 
@@ -119,20 +119,20 @@ constructor(
             ARBEIDSLEDIG -> "Søknad om sykepenger fra arbeidsledig for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
             BEHANDLINGSDAGER -> "Søknad om enkeltstående behandlingsdager fra ${soknad.arbeidssituasjon.toString().toLowerCase()} for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
             ANNET_ARBEIDSFORHOLD -> "Søknad om sykepenger med uavklart arbeidssituasjon fra ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
-            else -> throw RuntimeException("Har ikke implementert strukturert innhold-filnavn for søknad av typen: ${soknad.soknadstype!!}")
+            REISETILSKUDD -> "Søknad om reisetilskudd for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
         }
     }
 
-    private fun getJournalPostInnholdNavn(soknadstype: Soknadstype?): String {
+    private fun getJournalPostInnholdNavn(soknadstype: Soknadstype): String {
         return when (soknadstype) {
             OPPHOLD_UTLAND -> "Søknad om å beholde sykepenger utenfor EØS"
             SELVSTENDIGE_OG_FRILANSERE, ARBEIDSTAKERE, ARBEIDSLEDIG, ANNET_ARBEIDSFORHOLD -> "Søknad om sykepenger"
+            REISETILSKUDD -> "Søknad om reisetilskudd"
             BEHANDLINGSDAGER -> "Søknad om enkeltstående behandlingsdager"
-            else -> throw RuntimeException("Har ikke implementert strukturert innhold-filnavn for søknad av typen: $soknadstype")
         }
     }
 
-    private fun hentPDFTemplateEtterSoknadstype(soknadstype: Soknadstype?): PDFTemplate {
+    private fun hentPDFTemplateEtterSoknadstype(soknadstype: Soknadstype): PDFTemplate {
         return when (soknadstype) {
             OPPHOLD_UTLAND -> SYKEPENGERUTLAND
             SELVSTENDIGE_OG_FRILANSERE -> SELVSTENDIGNAERINGSDRIVENDE
@@ -140,7 +140,7 @@ constructor(
             ARBEIDSLEDIG -> PDFTemplate.ARBEIDSLEDIG
             BEHANDLINGSDAGER -> PDFTemplate.BEHANDLINGSDAGER
             ANNET_ARBEIDSFORHOLD -> PDFTemplate.ANNETARBEIDSFORHOLD
-            else -> throw RuntimeException("Har ikke implementert PDF-template for søknad av typen: $soknadstype")
+            REISETILSKUDD -> PDFTemplate.REISETILSKUDD
         }
     }
 

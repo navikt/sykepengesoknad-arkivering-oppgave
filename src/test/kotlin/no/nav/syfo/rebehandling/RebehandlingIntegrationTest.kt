@@ -13,9 +13,9 @@ import no.nav.syfo.consumer.aktor.AktorConsumer
 import no.nav.syfo.consumer.oppgave.OppgaveConsumer
 import no.nav.syfo.consumer.oppgave.OppgaveRequest
 import no.nav.syfo.consumer.oppgave.OppgaveResponse
+import no.nav.syfo.consumer.pdf.PDFConsumer
 import no.nav.syfo.consumer.repository.InnsendingDAO
 import no.nav.syfo.consumer.sak.SakConsumer
-import no.nav.syfo.controller.PDFRestController
 import no.nav.syfo.kafka.consumer.RebehandlingListener
 import no.nav.syfo.kafka.consumer.SoknadSendtListener
 import no.nav.syfo.kafka.felles.SoknadsstatusDTO
@@ -68,7 +68,7 @@ class RebehandlingIntegrationTest {
     private lateinit var sakConsumer: SakConsumer
 
     @MockBean
-    private lateinit var pdfRestController: PDFRestController
+    private lateinit var pdfConsumer: PDFConsumer
 
     @MockBean
     private lateinit var oppgaveConsumer: OppgaveConsumer

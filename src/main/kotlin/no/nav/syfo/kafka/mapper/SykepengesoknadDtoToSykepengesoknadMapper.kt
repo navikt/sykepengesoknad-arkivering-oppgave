@@ -39,7 +39,7 @@ fun SykepengesoknadDTO.toSykepengesoknad(): Sykepengesoknad {
         id = id!!,
         sykmeldingId = sykmeldingId,
         aktorId = aktorId!!,
-        soknadstype = type.enumValueOrNull(),
+        soknadstype = type.enumValueOrNull()!!,
         status = status!!.name,
         fom = fom,
         tom = tom,

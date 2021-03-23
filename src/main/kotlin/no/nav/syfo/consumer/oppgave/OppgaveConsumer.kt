@@ -88,6 +88,7 @@ class OppgaveConsumer(
                         Soknadstype.OPPHOLD_UTLAND -> "ab0314"
                         Soknadstype.BEHANDLINGSDAGER -> "ab0351"
                         Soknadstype.ARBEIDSLEDIG -> "ab0426"
+                        Soknadstype.REISETILSKUDD -> "ab0237"
                         else -> "ab0061"
                     }
                 }

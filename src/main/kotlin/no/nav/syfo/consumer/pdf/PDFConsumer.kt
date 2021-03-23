@@ -1,4 +1,4 @@
-package no.nav.syfo.controller
+package no.nav.syfo.consumer.pdf
 
 import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.PDFTemplate
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.client.RestTemplate
 
 @Controller
-class PDFRestController(
+class PDFConsumer(
     private val restTemplate: RestTemplate,
     @Value("\${pdfgen.url}") private val pdfgenUrl: String
 ) {

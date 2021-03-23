@@ -7,7 +7,7 @@ data class Sykepengesoknad(
     val id: String,
     val sykmeldingId: String? = null,
     val aktorId: String,
-    val soknadstype: Soknadstype?,
+    val soknadstype: Soknadstype,
     val status: String,
     val fom: LocalDate? = null,
     val tom: LocalDate? = null,

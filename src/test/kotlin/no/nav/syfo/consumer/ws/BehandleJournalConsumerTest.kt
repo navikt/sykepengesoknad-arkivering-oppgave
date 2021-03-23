@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.nav.syfo.TestApplication
-import no.nav.syfo.controller.PDFRestController
+import no.nav.syfo.consumer.pdf.PDFConsumer
 import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.BehandleJournalV2
@@ -28,7 +28,7 @@ class BehandleJournalConsumerTest {
     @Mock
     private val personConsumer: PersonConsumer? = null
     @Mock
-    private val pdfRestController: PDFRestController? = null
+    private val pdfConsumer: PDFConsumer? = null
 
     @InjectMocks
     private val behandleJournalConsumer: BehandleJournalConsumer? = null
