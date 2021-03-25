@@ -17,6 +17,7 @@ import no.nav.syfo.domain.dto.Svartype
 import no.nav.syfo.kafka.consumer.SoknadSendtListener
 import no.nav.syfo.kafka.felles.*
 import no.nav.syfo.mock.BehandleJournalMock
+import no.nav.syfo.mock.PersonMock
 import no.nav.syfo.skapConsumerRecord
 import no.nav.syfo.util.OBJECT_MAPPER
 import org.assertj.core.api.Assertions.assertThat
@@ -55,6 +56,9 @@ class SaksbehandlingIntegrationTest {
 
     @Autowired
     private lateinit var behandleJournalV2: BehandleJournalMock
+
+    @Autowired
+    private lateinit var personMock: PersonMock
 
     @Mock
     private lateinit var acknowledgment: Acknowledgment
@@ -242,6 +246,7 @@ Nei
         assertThat(oppgaveRequest.prioritet).isEqualTo("NORM")
         assertThat(oppgaveRequest.behandlingstema).isEqualTo("ab0237")
         assertThat(oppgaveRequest.behandlingstype).isNull()
+        assertThat(oppgaveRequest.tildeltEnhetsnr).isEqualTo("4488")
 
         val innsendingIDatabase = innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id!!)!!
         assertThat(innsendingIDatabase.ressursId).isEqualTo(soknad.id)
@@ -259,5 +264,36 @@ Nei
 
         val journalreq = behandleJournalV2.sisteJournalfoerInngaaendeHenvendelseRequest
         assertThat(journalreq!!.journalpost.dokumentinfoRelasjon.first().journalfoertDokument.dokumentType.value).isEqualTo("NAV 08-14.01")
+    }
+
+    @Test
+    fun `Reisetilskudd for kode 6 går til Vikafossen`() {
+        personMock.returnerKode6 = true
+
+        val aktorId = "aktor"
+        val fnr = "fnr"
+        whenever(aktorConsumer.finnFnr(aktorId)).thenReturn(fnr)
+        val saksId = "saksId"
+        whenever(sakConsumer.opprettSak(aktorId)).thenReturn(saksId)
+
+        whenever(flexBucketUploaderClient.hentVedlegg(any())).thenReturn("123".encodeToByteArray())
+        val oppgaveID = 3
+        whenever(oppgaveConsumer.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
+
+        val soknad = OBJECT_MAPPER.readValue(
+            TestApplication::class.java.getResource("/reisetilskuddAlleSvar.json"),
+            SykepengesoknadDTO::class.java
+        ).copy(id = UUID.randomUUID().toString())
+
+        soknadSendtListener.listen(skapConsumerRecord(soknad.id!!, soknad), acknowledgment)
+
+        val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
+        verify(oppgaveConsumer).opprettOppgave(captor.capture())
+
+        val oppgaveRequest = captor.firstValue
+
+        assertThat(oppgaveRequest.tildeltEnhetsnr).isEqualTo("2103")
+
+        personMock.returnerKode6 = false
     }
 }

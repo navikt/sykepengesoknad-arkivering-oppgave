@@ -20,7 +20,7 @@ const val NAV_OPPFOLGING_UTLAND_KONTOR_NR = "0393"
 @Component
 class ArbeidsfordelingConsumer(private val arbeidsfordelingV1: ArbeidsfordelingV1) {
 
-    fun finnBehandlendeEnhet(tilknytning: GeografiskTilknytning, soknadstype: Soknadstype?): String {
+    fun finnBehandlendeEnhet(tilknytning: GeografiskTilknytning, soknadstype: Soknadstype): String {
         try {
             return if ("NOR" == tilknytning.geografiskTilknytning)
                 "4474"
