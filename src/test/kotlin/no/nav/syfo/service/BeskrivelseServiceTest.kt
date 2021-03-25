@@ -111,7 +111,7 @@ OBS! Sykmeldingen er avslått grunnet ugyldig tilbakedatering
         val beskrivelseArbeidstakerMedNeisvar =
             """Søknad om sykepenger for perioden 02.01.1970 - 30.08.1973
 OBS! Sykmeldingen er avslått grunnet ugyldig tilbakedatering
-OBS! Sykmeldingen er avslått grunnet tilbakedatering som krever flere opplysninger
+OBS! Tilbakedatert sykmelding er til vurdering
 """
         assertThat(beskrivelse).isEqualTo(beskrivelseArbeidstakerMedNeisvar)
     }

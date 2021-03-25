@@ -49,7 +49,8 @@ private fun Soknad.beskrivKvitteringer(): String {
 private fun Merknad.beskrivMerknad(): String {
     return when (type) {
         "UGYLDIG_TILBAKEDATERING" -> "OBS! Sykmeldingen er avslått grunnet ugyldig tilbakedatering"
-        "TILBAKEDATERING_KREVER_FLERE_OPPLYSNINGER" -> "OBS! Sykmeldingen er avslått grunnet tilbakedatering som krever flere opplysninger"
+        "TILBAKEDATERING_KREVER_FLERE_OPPLYSNINGER" -> "OBS! Tilbakedatert sykmelding er til vurdering"
+        "TILBAKEDATERT_PAPIRSYKMELDING" -> "OBS! Sykmeldingen sendt til NAY for manuell kontroll grunnet tilbakedatering"
         else -> {
             log.warn("Ukjent merknadstype $type")
             "OBS! Sykmeldingen har en merknad $this"
