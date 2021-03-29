@@ -23,8 +23,31 @@ class AadRestTemplateConfiguration {
         restTemplateBuilder: RestTemplateBuilder,
         clientConfigurationProperties: ClientConfigurationProperties,
         oAuth2AccessTokenService: OAuth2AccessTokenService
+    ): RestTemplate = downstreamRestTemplate(
+        registrationName = "flex-bucket-uploader-client-credentials",
+        restTemplateBuilder = restTemplateBuilder,
+        clientConfigurationProperties = clientConfigurationProperties,
+        oAuth2AccessTokenService = oAuth2AccessTokenService,
+    )
+
+    @Bean
+    fun syfosoknadRestTemplate(
+        restTemplateBuilder: RestTemplateBuilder,
+        clientConfigurationProperties: ClientConfigurationProperties,
+        oAuth2AccessTokenService: OAuth2AccessTokenService
+    ): RestTemplate = downstreamRestTemplate(
+        registrationName = "syfosoknad-client-credentials",
+        restTemplateBuilder = restTemplateBuilder,
+        clientConfigurationProperties = clientConfigurationProperties,
+        oAuth2AccessTokenService = oAuth2AccessTokenService,
+    )
+
+    private fun downstreamRestTemplate(
+        restTemplateBuilder: RestTemplateBuilder,
+        clientConfigurationProperties: ClientConfigurationProperties,
+        oAuth2AccessTokenService: OAuth2AccessTokenService,
+        registrationName: String
     ): RestTemplate {
-        val registrationName = "flex-bucket-uploader-client-credentials"
         val clientProperties = clientConfigurationProperties.registration[registrationName]
             ?: throw RuntimeException("Fant ikke config for $registrationName")
         return restTemplateBuilder

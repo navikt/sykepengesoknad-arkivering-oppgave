@@ -13,4 +13,8 @@ class OverrideAadRestTemplateConfiguration {
     @Bean
     fun flexBucketUploaderRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate =
         restTemplateBuilder.build()
+
+    @Bean
+    fun syfosoknadRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate =
+        restTemplateBuilder.build()
 }

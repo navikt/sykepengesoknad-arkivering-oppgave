@@ -1,6 +1,5 @@
 package no.nav.syfo.consumer.syfosoknad
 
-import no.nav.syfo.consumer.azure.AzureAdTokenConsumer
 import no.nav.syfo.kafka.NAV_CALLID
 import no.nav.syfo.kafka.felles.SykepengesoknadDTO
 import no.nav.syfo.log
@@ -18,9 +17,7 @@ import org.springframework.web.util.UriComponentsBuilder
 
 @Component
 class SyfosoknadConsumer(
-    private val restTemplate: RestTemplate,
-    private val azureAdTokenConsumer: AzureAdTokenConsumer,
-    @param:Value("\${aad_syfosoknad_clientid}") private val resource: String,
+    private val syfosoknadRestTemplate: RestTemplate,
     @param:Value("\${syfosoknad_url}") private val url: String
 ) {
 
@@ -28,14 +25,13 @@ class SyfosoknadConsumer(
 
     fun hentSoknad(soknadId: String): SykepengesoknadDTO {
         try {
-            val uriBuilder = UriComponentsBuilder.fromHttpUrl("$url/api/soknader/$soknadId/kafkaformat")
+            val uriBuilder = UriComponentsBuilder.fromHttpUrl("$url/api/v2/soknader/$soknadId/kafkaformat")
 
             val headers = HttpHeaders()
             headers.contentType = MediaType.APPLICATION_JSON
-            headers.set("Authorization", "Bearer ${azureAdTokenConsumer.getAccessToken(resource)}")
             headers.set(NAV_CALLID, callId())
 
-            val result = restTemplate
+            val result = syfosoknadRestTemplate
                 .exchange(
                     uriBuilder.toUriString(),
                     HttpMethod.GET,

@@ -72,8 +72,6 @@ spec:
       value: https://service-gw.adeo.no/
     - name: AAD_ACCESSTOKEN_URL
       value: https://login.microsoftonline.com/navno.onmicrosoft.com/oauth2/token
-    - name: AAD_SYFOSOKNAD_CLIENTID
-      value: ffca591d-dfc9-4ecf-9ac2-050d75b39fc0
     - name: BEHANDLE_OPPGAVE_DEPLOY
       value: "600000"
     - name: BEHANDLE_OPPGAVE_INTERVALL
@@ -116,3 +114,5 @@ spec:
       value: prod-gcp.flex.flex-bucket-uploader
     - name: FLEX_BUCKET_UPLOADER_URL
       value: https://flex-bucket-uploader.intern.nav.no
+    - name: SYFOSOKNAD_AAD_CLIENT_ID
+      value: prod-fss.flex.syfosoknad
