@@ -52,7 +52,7 @@ val assertjVersion = "3.19.0"
 val micrometerRegistryPrometheusVersion = "1.5.1"
 val tjenestespesifikasjonerVersion = "1.2019.08.16-13.46-35cbdfd492d4"
 val cxfVersion = "3.4.2"
-val tokenSupportVersion = "1.3.3"
+val tokenSupportVersion = "1.3.4"
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
