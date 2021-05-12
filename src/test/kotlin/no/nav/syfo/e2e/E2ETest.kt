@@ -13,12 +13,12 @@ import no.nav.syfo.domain.OppdateringstypeDTO
 import no.nav.syfo.domain.OppgaveDTO
 import no.nav.syfo.kafka.consumer.SoknadSendtListener
 import no.nav.syfo.kafka.consumer.SpreOppgaverListener
+import no.nav.syfo.kafka.felles.DeprecatedSykepengesoknadDTO
 import no.nav.syfo.kafka.felles.SoknadsstatusDTO
 import no.nav.syfo.kafka.felles.SoknadstypeDTO
 import no.nav.syfo.kafka.felles.SporsmalDTO
 import no.nav.syfo.kafka.felles.SvarDTO
 import no.nav.syfo.kafka.felles.SvartypeDTO
-import no.nav.syfo.kafka.felles.SykepengesoknadDTO
 import no.nav.syfo.service.BehandleVedTimeoutService
 import no.nav.syfo.service.SaksbehandlingsService
 import no.nav.syfo.skapConsumerRecord
@@ -236,14 +236,14 @@ class E2ETest {
     private fun leggOppgavePåKafka(oppgave: OppgaveDTO) =
         spreOppgaverListener.listen(skapConsumerRecord("key", oppgave), acknowledgment)
 
-    private fun leggSøknadPåKafka(søknad: SykepengesoknadDTO) =
+    private fun leggSøknadPåKafka(søknad: DeprecatedSykepengesoknadDTO) =
         soknadSendtListener.listen(skapConsumerRecord("key", søknad), acknowledgment)
 
     private fun søknad(
         søknadsId: UUID = UUID.randomUUID(),
         sendtNav: LocalDateTime? = LocalDateTime.now(),
         sendtArbeidsgiver: LocalDateTime? = null
-    ) = SykepengesoknadDTO(
+    ) = DeprecatedSykepengesoknadDTO(
         aktorId = aktørId,
         id = søknadsId.toString(),
         opprettet = LocalDateTime.now(),

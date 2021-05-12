@@ -1,7 +1,7 @@
 package no.nav.syfo.kafka.consumer
 
 import no.nav.syfo.kafka.NAV_CALLID
-import no.nav.syfo.kafka.felles.SykepengesoknadDTO
+import no.nav.syfo.kafka.felles.DeprecatedSykepengesoknadDTO
 import no.nav.syfo.kafka.getSafeNavCallIdHeaderAsString
 import no.nav.syfo.kafka.mapper.toSykepengesoknad
 import no.nav.syfo.log
@@ -24,7 +24,7 @@ constructor(private val spreOppgaverService: SpreOppgaverService) {
         idIsGroup = false,
         containerFactory = "kafkaListenerContainerFactory"
     )
-    fun listen(cr: ConsumerRecord<String, SykepengesoknadDTO>, acknowledgment: Acknowledgment) {
+    fun listen(cr: ConsumerRecord<String, DeprecatedSykepengesoknadDTO>, acknowledgment: Acknowledgment) {
         try {
             MDC.put(NAV_CALLID, getSafeNavCallIdHeaderAsString(cr.headers()))
 

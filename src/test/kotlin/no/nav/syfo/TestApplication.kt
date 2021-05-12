@@ -12,7 +12,7 @@ import java.sql.SQLException
 @EnableTransactionManagement
 @Configuration
 @EnableJwtTokenValidation
-class TestApplication: AbstractContainerBaseTest() {
+class TestApplication : AbstractContainerBaseTest() {
 
     @Profile("local")
     fun server(): Server {

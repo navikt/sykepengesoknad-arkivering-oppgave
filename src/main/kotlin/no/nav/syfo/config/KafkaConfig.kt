@@ -8,7 +8,7 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.nav.syfo.domain.OppgaveDTO
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.syfo.kafka.KafkaErrorHandler
-import no.nav.syfo.kafka.felles.SykepengesoknadDTO
+import no.nav.syfo.kafka.felles.DeprecatedSykepengesoknadDTO
 import no.nav.syfo.kafka.soknad.deserializer.FunctionDeserializer
 import no.nav.syfo.kafka.soknad.serializer.FunctionSerializer
 import org.apache.kafka.common.serialization.StringDeserializer
@@ -36,8 +36,8 @@ class KafkaConfig(private val kafkaErrorHandler: KafkaErrorHandler, private val 
         .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
 
     @Bean
-    fun kafkaListenerContainerFactory(consumerFactory: ConsumerFactory<String, SykepengesoknadDTO>): ConcurrentKafkaListenerContainerFactory<String, SykepengesoknadDTO> =
-        ConcurrentKafkaListenerContainerFactory<String, SykepengesoknadDTO>().apply {
+    fun kafkaListenerContainerFactory(consumerFactory: ConsumerFactory<String, DeprecatedSykepengesoknadDTO>): ConcurrentKafkaListenerContainerFactory<String, DeprecatedSykepengesoknadDTO> =
+        ConcurrentKafkaListenerContainerFactory<String, DeprecatedSykepengesoknadDTO>().apply {
             containerProperties.ackMode = ContainerProperties.AckMode.MANUAL_IMMEDIATE
             setErrorHandler(kafkaErrorHandler)
             this.containerProperties.authorizationExceptionRetryInterval = Duration.ofSeconds(2)
@@ -45,11 +45,11 @@ class KafkaConfig(private val kafkaErrorHandler: KafkaErrorHandler, private val 
         }
 
     @Bean
-    fun consumerFactory(properties: KafkaProperties): ConsumerFactory<String, SykepengesoknadDTO> {
+    fun consumerFactory(properties: KafkaProperties): ConsumerFactory<String, DeprecatedSykepengesoknadDTO> {
         return DefaultKafkaConsumerFactory(
             properties.buildConsumerProperties(),
             StringDeserializer(),
-            FunctionDeserializer { bytes -> objectMapper.readValue(bytes, SykepengesoknadDTO::class.java) }
+            FunctionDeserializer { bytes -> objectMapper.readValue(bytes, DeprecatedSykepengesoknadDTO::class.java) }
         )
     }
 

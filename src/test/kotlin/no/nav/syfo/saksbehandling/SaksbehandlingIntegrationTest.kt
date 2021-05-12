@@ -78,7 +78,7 @@ class SaksbehandlingIntegrationTest {
         val oppgaveID = 1
         whenever(oppgaveConsumer.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
 
-        val soknad = SykepengesoknadDTO(
+        val soknad = DeprecatedSykepengesoknadDTO(
             aktorId = aktorId,
             id = UUID.randomUUID().toString(),
             opprettet = LocalDateTime.now(),
@@ -124,7 +124,7 @@ class SaksbehandlingIntegrationTest {
         val oppgaveID = 1
         whenever(oppgaveConsumer.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
 
-        val soknad = SykepengesoknadDTO(
+        val soknad = DeprecatedSykepengesoknadDTO(
             aktorId = aktorId,
             id = UUID.randomUUID().toString(),
             opprettet = LocalDateTime.now(),
@@ -191,7 +191,7 @@ Ja
 
         val soknad = OBJECT_MAPPER.readValue(
             TestApplication::class.java.getResource("/reisetilskuddAlleSvar.json"),
-            SykepengesoknadDTO::class.java
+            DeprecatedSykepengesoknadDTO::class.java
         )
 
         soknadSendtListener.listen(skapConsumerRecord(soknad.id!!, soknad), acknowledgment)
@@ -282,7 +282,7 @@ Nei
 
         val soknad = OBJECT_MAPPER.readValue(
             TestApplication::class.java.getResource("/reisetilskuddAlleSvar.json"),
-            SykepengesoknadDTO::class.java
+            DeprecatedSykepengesoknadDTO::class.java
         ).copy(id = UUID.randomUUID().toString())
 
         soknadSendtListener.listen(skapConsumerRecord(soknad.id!!, soknad), acknowledgment)

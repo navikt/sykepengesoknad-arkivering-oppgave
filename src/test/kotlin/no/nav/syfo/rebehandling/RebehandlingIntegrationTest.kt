@@ -18,12 +18,12 @@ import no.nav.syfo.consumer.repository.InnsendingDAO
 import no.nav.syfo.consumer.sak.SakConsumer
 import no.nav.syfo.kafka.consumer.RebehandlingListener
 import no.nav.syfo.kafka.consumer.SoknadSendtListener
+import no.nav.syfo.kafka.felles.DeprecatedSykepengesoknadDTO
 import no.nav.syfo.kafka.felles.SoknadsstatusDTO
 import no.nav.syfo.kafka.felles.SoknadstypeDTO
 import no.nav.syfo.kafka.felles.SporsmalDTO
 import no.nav.syfo.kafka.felles.SvarDTO
 import no.nav.syfo.kafka.felles.SvartypeDTO
-import no.nav.syfo.kafka.felles.SykepengesoknadDTO
 import no.nav.syfo.kafka.mapper.toSykepengesoknad
 import no.nav.syfo.skapConsumerRecord
 import org.assertj.core.api.Assertions.assertThat
@@ -85,7 +85,7 @@ class RebehandlingIntegrationTest {
     fun `kan ikke hente aktor id legges på rebehandling`() {
         whenever(aktorConsumer.finnFnr(any())).thenThrow(RuntimeException("Gæli"))
 
-        val soknad = SykepengesoknadDTO(
+        val soknad = DeprecatedSykepengesoknadDTO(
             aktorId = "aktor",
             id = "hei",
             opprettet = LocalDateTime.now(),
@@ -120,7 +120,7 @@ class RebehandlingIntegrationTest {
         val oppgaveID = 1
         whenever(oppgaveConsumer.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
 
-        val soknad = SykepengesoknadDTO(
+        val soknad = DeprecatedSykepengesoknadDTO(
             aktorId = aktorId,
             id = UUID.randomUUID().toString(),
             opprettet = LocalDateTime.now(),
@@ -173,7 +173,7 @@ class RebehandlingIntegrationTest {
         whenever(sakConsumer.opprettSak(aktorId)).thenReturn(saksId)
         val oppgaveID = 1
         whenever(oppgaveConsumer.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
-        val soknad = SykepengesoknadDTO(
+        val soknad = DeprecatedSykepengesoknadDTO(
             aktorId = aktorId,
             id = UUID.randomUUID().toString(),
             opprettet = LocalDateTime.now(),

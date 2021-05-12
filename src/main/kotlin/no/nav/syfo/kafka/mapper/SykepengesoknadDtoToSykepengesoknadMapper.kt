@@ -1,10 +1,10 @@
 package no.nav.syfo.kafka.mapper
 
 import no.nav.syfo.domain.dto.*
+import no.nav.syfo.kafka.felles.DeprecatedSykepengesoknadDTO
 import no.nav.syfo.kafka.felles.SoknadsperiodeDTO
 import no.nav.syfo.kafka.felles.SporsmalDTO
 import no.nav.syfo.kafka.felles.SvarDTO
-import no.nav.syfo.kafka.felles.SykepengesoknadDTO
 
 private inline fun <T : Enum<*>, reified U : Enum<*>> T?.enumValueOrNull(): U? =
     U::class.java.enumConstants.firstOrNull { it.name == this?.name }
@@ -34,7 +34,7 @@ private fun SoknadsperiodeDTO.toSoknadPeriode(): SoknadPeriode =
         faktiskGrad = faktiskGrad
     )
 
-fun SykepengesoknadDTO.toSykepengesoknad(): Sykepengesoknad {
+fun DeprecatedSykepengesoknadDTO.toSykepengesoknad(): Sykepengesoknad {
     return Sykepengesoknad(
         id = id!!,
         sykmeldingId = sykmeldingId,

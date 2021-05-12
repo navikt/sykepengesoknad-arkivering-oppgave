@@ -1,7 +1,7 @@
 package no.nav.syfo.consumer.syfosoknad
 
 import no.nav.syfo.kafka.NAV_CALLID
-import no.nav.syfo.kafka.felles.SykepengesoknadDTO
+import no.nav.syfo.kafka.felles.DeprecatedSykepengesoknadDTO
 import no.nav.syfo.log
 import no.nav.syfo.util.callId
 import org.springframework.beans.factory.annotation.Value
@@ -23,7 +23,7 @@ class SyfosoknadConsumer(
 
     val log = log()
 
-    fun hentSoknad(soknadId: String): SykepengesoknadDTO {
+    fun hentSoknad(soknadId: String): DeprecatedSykepengesoknadDTO {
         try {
             val uriBuilder = UriComponentsBuilder.fromHttpUrl("$url/api/v2/soknader/$soknadId/kafkaformat")
 
@@ -36,7 +36,7 @@ class SyfosoknadConsumer(
                     uriBuilder.toUriString(),
                     HttpMethod.GET,
                     HttpEntity<Any>(headers),
-                    SykepengesoknadDTO::class.java
+                    DeprecatedSykepengesoknadDTO::class.java
                 )
 
             if (result.statusCode != OK) {
