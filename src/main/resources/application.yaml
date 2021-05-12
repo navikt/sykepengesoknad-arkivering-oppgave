@@ -7,6 +7,11 @@ management:
     exposure.include: prometheus
     path-mapping.prometheus: /prometheus
 
+aiven-kafka:
+  auto-offset-reset: latest # Sett til none
+  security-protocol: SSL
+
+
 no.nav.security.jwt:
   issuer:
     aad:
