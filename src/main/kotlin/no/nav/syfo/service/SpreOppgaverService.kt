@@ -42,7 +42,7 @@ class SpreOppgaverService(
         } else {
             oppgavestyringDAO.nySpreOppgave(
                 oppgave.dokumentId,
-                LocalDateTime.now().plusHours(12),
+                LocalDateTime.now().plusHours(48),
                 OppgaveStatus.Utsett,
                 avstemt = true
             )
