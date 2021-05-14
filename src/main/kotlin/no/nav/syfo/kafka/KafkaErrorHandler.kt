@@ -2,7 +2,7 @@ package no.nav.syfo.kafka
 
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tags
-import no.nav.syfo.log
+import no.nav.syfo.logger
 import no.nav.syfo.selftest.ApplicationState
 import org.apache.kafka.clients.consumer.Consumer
 import org.apache.kafka.clients.consumer.ConsumerRecord
@@ -16,7 +16,7 @@ private val STOPPING_ERROR_HANDLER = ContainerStoppingErrorHandler()
 
 @Component
 class KafkaErrorHandler(private val registry: MeterRegistry, private val applicationState: ApplicationState) : ContainerAwareErrorHandler {
-    val log = log()
+    private val log = logger()
 
     override fun handle(
         thrownException: Exception,

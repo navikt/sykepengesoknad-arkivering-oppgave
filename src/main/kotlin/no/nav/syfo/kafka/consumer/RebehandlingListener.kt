@@ -6,7 +6,7 @@ import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.syfo.kafka.NAV_CALLID
 import no.nav.syfo.kafka.getSafeNavCallIdHeaderAsString
 import no.nav.syfo.kafka.producer.RebehandlingProducer
-import no.nav.syfo.log
+import no.nav.syfo.logger
 import no.nav.syfo.service.BehandleFeiledeSoknaderService
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.MDC
@@ -26,7 +26,7 @@ constructor(
     private val innsendingDAO: InnsendingDAO,
     private val rebehandlingProducer: RebehandlingProducer
 ) {
-    val log = log()
+    private val log = logger()
 
     @KafkaListener(topics = ["syfogsak-rebehandle-soknad-v1"], id = "syfogsak-rebehandling", idIsGroup = false, containerFactory = "rebehandlingContainerFactory")
     fun listen(cr: ConsumerRecord<String, Sykepengesoknad>, acknowledgment: Acknowledgment) {

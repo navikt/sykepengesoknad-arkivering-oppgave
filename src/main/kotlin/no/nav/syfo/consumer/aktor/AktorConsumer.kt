@@ -1,7 +1,7 @@
 package no.nav.syfo.consumer.aktor
 
 import no.nav.syfo.consumer.token.TokenConsumer
-import no.nav.syfo.log
+import no.nav.syfo.logger
 import no.nav.syfo.util.callId
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
@@ -22,7 +22,7 @@ class AktorConsumer(
     private val restTemplate: RestTemplate
 ) {
 
-    val log = log()
+    private val log = logger()
 
     fun getAktorId(fnr: String): String {
         return getIdent(fnr, "AktoerId")

@@ -1,6 +1,6 @@
 package no.nav.syfo.consumer.repository
 
-import no.nav.syfo.log
+import no.nav.syfo.logger
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.stereotype.Repository
@@ -15,7 +15,7 @@ import java.util.UUID
 @Repository
 class OppgavestyringDAO(private val namedParameterJdbcTemplate: NamedParameterJdbcTemplate) {
 
-    val log = log()
+    private val log = logger()
 
     fun nySpreOppgave(søknadsId: UUID, timeout: LocalDateTime?, status: OppgaveStatus, avstemt: Boolean = false) {
         log.info("Oppretter ny SpreOppgave for id $søknadsId og timeout $timeout")

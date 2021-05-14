@@ -1,7 +1,7 @@
 package no.nav.syfo.consumer.repository
 
 import no.nav.syfo.domain.Innsending
-import no.nav.syfo.log
+import no.nav.syfo.logger
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.stereotype.Repository
@@ -16,7 +16,7 @@ import java.util.UUID
 @Repository
 class InnsendingDAO(private val namedParameterJdbcTemplate: NamedParameterJdbcTemplate) {
 
-    val log = log()
+    private val log = logger()
 
     fun opprettInnsending(
         sykepengesoknadId: String,

@@ -1,6 +1,6 @@
 package no.nav.syfo.kafka
 
-import no.nav.syfo.log
+import no.nav.syfo.logger
 import org.apache.kafka.clients.consumer.Consumer
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.springframework.kafka.listener.MessageListenerContainer
@@ -15,7 +15,7 @@ class AivenKafkaErrorHandler : SeekToCurrentErrorHandler(
         it.maxInterval = 60_000L * 10
     }
 ) {
-    val log = log()
+    private val log = logger()
 
     override fun handle(
         thrownException: Exception,

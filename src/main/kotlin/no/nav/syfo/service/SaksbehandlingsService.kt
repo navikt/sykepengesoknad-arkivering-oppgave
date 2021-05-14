@@ -15,7 +15,7 @@ import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.Soknadstype
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.syfo.kafka.producer.RebehandlingProducer
-import no.nav.syfo.log
+import no.nav.syfo.logger
 import org.springframework.stereotype.Component
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -38,7 +38,7 @@ class SaksbehandlingsService(
     private val flexBucketUploaderClient: FlexBucketUploaderClient,
 ) {
 
-    private val log = log()
+    private val log = logger()
 
     fun behandleSoknad(sykepengesoknad: Sykepengesoknad): String {
         val eksisterendeInnsending = finnEksisterendeInnsending(sykepengesoknad.id)

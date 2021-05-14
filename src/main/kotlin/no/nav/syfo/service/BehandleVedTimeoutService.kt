@@ -8,7 +8,7 @@ import no.nav.syfo.consumer.repository.OppgavestyringDAO
 import no.nav.syfo.consumer.syfosoknad.SyfosoknadConsumer
 import no.nav.syfo.consumer.syfosoknad.SøknadIkkeFunnetException
 import no.nav.syfo.kafka.mapper.toSykepengesoknad
-import no.nav.syfo.log
+import no.nav.syfo.logger
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.time.Duration
@@ -23,7 +23,7 @@ class BehandleVedTimeoutService(
     private val toggle: Toggle,
     private val registry: MeterRegistry,
 ) {
-    private val log = log()
+    private val log = logger()
 
     @Scheduled(fixedDelayString = "\${behandle.oppgave.intervall}", initialDelayString = "\${behandle.oppgave.deploy}")
     fun behandleTimeout() {

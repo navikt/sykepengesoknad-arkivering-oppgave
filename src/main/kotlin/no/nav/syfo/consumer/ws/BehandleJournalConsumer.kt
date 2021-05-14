@@ -7,7 +7,7 @@ import no.nav.syfo.domain.dto.PDFTemplate.SELVSTENDIGNAERINGSDRIVENDE
 import no.nav.syfo.domain.dto.PDFTemplate.SYKEPENGERUTLAND
 import no.nav.syfo.domain.dto.Soknadstype
 import no.nav.syfo.domain.dto.Soknadstype.*
-import no.nav.syfo.log
+import no.nav.syfo.logger
 import no.nav.syfo.util.DatoUtil.norskDato
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.BehandleJournalV2
 import no.nav.tjeneste.virksomhet.behandlejournal.v2.informasjon.behandlejournal.*
@@ -26,6 +26,7 @@ constructor(
     private val personConsumer: PersonConsumer,
     private val pdfConsumer: PDFConsumer
 ) {
+    private val log = logger()
 
     fun opprettJournalpost(soknad: Soknad, saksId: String): String {
         val pdf: ByteArray?
@@ -34,7 +35,7 @@ constructor(
             pdf = pdfConsumer.getPDF(soknad, hentPDFTemplateEtterSoknadstype(soknad.soknadstype))
         } catch (e: RuntimeException) {
             val feilmelding = "Kunne ikke generere PDF for søknad med id: ${soknad.soknadsId} og saks id: $saksId"
-            log().error(feilmelding, e)
+            log.error(feilmelding, e)
             throw RuntimeException(feilmelding, e)
         }
 
@@ -86,7 +87,7 @@ constructor(
             ).journalpostId
         } catch (e: RuntimeException) {
             val feilmelding = "Kunne ikke behandle journalpost for søknad med id ${soknad.soknadsId} og saks id: $saksId"
-            log().error(feilmelding, e)
+            log.error(feilmelding, e)
             throw RuntimeException(feilmelding, e)
         }
     }
