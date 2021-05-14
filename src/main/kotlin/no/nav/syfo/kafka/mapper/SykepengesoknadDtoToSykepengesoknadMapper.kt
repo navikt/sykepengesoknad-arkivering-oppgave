@@ -5,6 +5,7 @@ import no.nav.syfo.kafka.felles.DeprecatedSykepengesoknadDTO
 import no.nav.syfo.kafka.felles.SoknadsperiodeDTO
 import no.nav.syfo.kafka.felles.SporsmalDTO
 import no.nav.syfo.kafka.felles.SvarDTO
+import no.nav.syfo.kafka.felles.SykepengesoknadDTO
 
 private inline fun <T : Enum<*>, reified U : Enum<*>> T?.enumValueOrNull(): U? =
     U::class.java.enumConstants.firstOrNull { it.name == this?.name }
@@ -41,6 +42,39 @@ fun DeprecatedSykepengesoknadDTO.toSykepengesoknad(): Sykepengesoknad {
         aktorId = aktorId!!,
         soknadstype = type.enumValueOrNull()!!,
         status = status!!.name,
+        fom = fom,
+        tom = tom,
+        opprettet = opprettet!!,
+        sendtNav = sendtNav,
+        sendtArbeidsgiver = sendtArbeidsgiver,
+        arbeidsgiver = arbeidsgiver?.navn,
+        arbeidssituasjon = arbeidssituasjon.enumValueOrNull(),
+        startSykeforlop = startSyketilfelle,
+        sykmeldingSkrevet = sykmeldingSkrevet,
+        korrigertAv = korrigertAv,
+        korrigerer = korrigerer,
+        soknadPerioder = soknadsperioder?.map { it.toSoknadPeriode() },
+        sporsmal = sporsmal!!.map { it.toSporsmal() },
+        avsendertype = avsendertype.enumValueOrNull(),
+        ettersending = ettersending,
+        egenmeldtSykmelding = egenmeldtSykmelding,
+        orgNummer = arbeidsgiver?.orgnummer,
+        harRedusertVenteperiode = harRedusertVenteperiode ?: false,
+        merknaderFraSykmelding = merknaderFraSykmelding?.map { Merknad(type = it.type, beskrivelse = it.beskrivelse) }
+
+    )
+}
+
+
+fun SykepengesoknadDTO.toSykepengesoknad(
+    aktorId: String
+): Sykepengesoknad {
+    return Sykepengesoknad(
+        id = id,
+        sykmeldingId = sykmeldingId,
+        aktorId = aktorId,
+        soknadstype = type.enumValueOrNull()!!,
+        status = status.name,
         fom = fom,
         tom = tom,
         opprettet = opprettet!!,
