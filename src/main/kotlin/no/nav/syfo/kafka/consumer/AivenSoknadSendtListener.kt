@@ -1,7 +1,6 @@
 package no.nav.syfo.kafka.consumer
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import no.nav.syfo.OVERGANG
 import no.nav.syfo.consumer.aktor.AktorConsumer
 import no.nav.syfo.kafka.NAV_CALLID
 import no.nav.syfo.kafka.felles.SykepengesoknadDTO
@@ -18,7 +17,6 @@ import org.springframework.kafka.event.ConsumerStoppedEvent
 import org.springframework.kafka.listener.KafkaMessageListenerContainer
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
-import java.time.LocalDateTime
 
 const val SYKEPENGESOKNAD_TOPIC = "flex." + "sykepengesoknad"
 
@@ -35,14 +33,6 @@ class AivenSoknadSendtListener(
         containerFactory = "aivenKafkaListenerContainerFactory"
     )
     fun listen(cr: ConsumerRecord<String, String>, acknowledgment: Acknowledgment) {
-        val nå = LocalDateTime.now()
-        if (nå < OVERGANG) {
-            if (nå >= OVERGANG.minusMinutes(10)) {
-                log.info("aiven behandler ikke ${cr.key()}")
-            }
-            acknowledgment.acknowledge()
-            return
-        }
         try {
             MDC.put(NAV_CALLID, getSafeNavCallIdHeaderAsString(cr.headers()))
 

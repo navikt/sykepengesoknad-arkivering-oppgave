@@ -6,7 +6,6 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import no.nav.syfo.AbstractContainerBaseTest
-import no.nav.syfo.OVERGANG
 import no.nav.syfo.TestApplication
 import no.nav.syfo.consumer.aktor.AktorConsumer
 import no.nav.syfo.consumer.pdf.PDFConsumer
@@ -28,7 +27,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.annotation.DirtiesContext
 import java.time.Duration
-import java.time.LocalDateTime
 import java.util.*
 
 @SpringBootTest(classes = [TestApplication::class])
@@ -59,9 +57,6 @@ class RebehandlingIntegrationTest : AbstractContainerBaseTest() {
         val aktorId = "aktor"
         val fnr = "fnr"
         val saksId = "saksId"
-
-        val old = OVERGANG
-        OVERGANG = LocalDateTime.now() // TODO: Fjern
 
         whenever(aktorConsumer.getAktorId(fnr)).thenReturn(aktorId)
         whenever(aktorConsumer.finnFnr(aktorId)).thenReturn(fnr)
@@ -96,7 +91,5 @@ class RebehandlingIntegrationTest : AbstractContainerBaseTest() {
         spreOppgave.status shouldBeEqualTo OppgaveStatus.Utsett
 
         verify(pdfConsumer, times(2)).getPDF(any(), any())
-
-        OVERGANG = old
     }
 }

@@ -77,6 +77,7 @@ class SpreOppgaverService(
     private fun timeout(oppgave: OppgaveDTO) =
         if (oppgave.oppdateringstype == OppdateringstypeDTO.Utsett) oppgave.timeout else null
 
+    @Synchronized
     fun soknadSendt(sykepengesoknad: Sykepengesoknad) {
         try {
             if (sykepengesoknad.status == "SENDT" && !ettersendtTilArbeidsgiver(sykepengesoknad)) {
