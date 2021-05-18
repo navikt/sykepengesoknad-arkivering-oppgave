@@ -5,7 +5,7 @@ import no.nav.syfo.consumer.repository.InnsendingDAO
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.syfo.kafka.NAV_CALLID
 import no.nav.syfo.kafka.getSafeNavCallIdHeaderAsString
-import no.nav.syfo.kafka.producer.RebehandlingProducer
+import no.nav.syfo.kafka.producer.RebehandleSykepengesoknadProducer
 import no.nav.syfo.logger
 import no.nav.syfo.service.BehandleFeiledeSoknaderService
 import org.apache.kafka.clients.consumer.ConsumerRecord
@@ -19,12 +19,14 @@ import java.time.LocalDateTime.now
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
+// TODO: Fjern denne fila
+
 @Component
 class RebehandlingListener @Inject
 constructor(
     private val behandleFeiledeSoknaderService: BehandleFeiledeSoknaderService,
     private val innsendingDAO: InnsendingDAO,
-    private val rebehandlingProducer: RebehandlingProducer
+    private val rebehandleSykepengesoknadProducer: RebehandleSykepengesoknadProducer,
 ) {
     private val log = logger()
 
@@ -40,7 +42,7 @@ constructor(
                 ?.apply {
                     log.info("Plukket opp søknad ${cr.key()} for rebehandling med senere behandlingstidspunkt, venter 1 minutt og legger tilbake på kø...")
                     Thread.sleep(60000)
-                    rebehandlingProducer.leggPaRebehandlingTopic(cr.value() as Sykepengesoknad, this)
+                    rebehandleSykepengesoknadProducer.send(cr.value())
                     acknowledgment.acknowledge()
                     return
                 }
@@ -53,7 +55,7 @@ constructor(
         } catch (e: Exception) {
             val sykepengesoknad = cr.value() as Sykepengesoknad
             log.error("Uventet feil ved rebehandling av søknad ${sykepengesoknad.id}, legger søknaden tilbake på rebehandling-topic", e)
-            rebehandlingProducer.leggPaRebehandlingTopic(sykepengesoknad, now().plusMinutes(10))
+            rebehandleSykepengesoknadProducer.send(sykepengesoknad)
             acknowledgment.acknowledge()
         } finally {
             MDC.remove(NAV_CALLID)

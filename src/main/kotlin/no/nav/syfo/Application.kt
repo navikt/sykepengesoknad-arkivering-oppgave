@@ -16,7 +16,7 @@ import java.time.LocalDateTime
 
 const val AAD = "aad"
 const val BEHANDLINGSTIDSPUNKT = "behandlingstidspunkt"
-val OVERGANG = LocalDateTime.of(2021, 5, 18, 20, 8)
+var OVERGANG = LocalDateTime.of(2021, 5, 18, 20, 8)
 
 @SpringBootApplication
 @EnableTransactionManagement

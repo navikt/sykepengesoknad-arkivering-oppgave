@@ -88,5 +88,7 @@ KAFKA_CREDSTORE_PASSWORD: ""
 KAFKA_KEYSTORE_PATH: ""
 
 aiven-kafka:
-  auto-offset-reset: none
+  auto-offset-reset: earliest
   security-protocol: PLAINTEXT
+
+rebehandling.delay.sekunder: 10

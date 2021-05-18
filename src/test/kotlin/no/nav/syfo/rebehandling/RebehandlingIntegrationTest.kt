@@ -1,42 +1,33 @@
 package no.nav.syfo.rebehandling
 
-import com.nhaarman.mockitokotlin2.KArgumentCaptor
 import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.argumentCaptor
-import com.nhaarman.mockitokotlin2.never
+import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import no.nav.syfo.AbstractContainerBaseTest
+import no.nav.syfo.OVERGANG
 import no.nav.syfo.TestApplication
-import no.nav.syfo.config.RebehandlingProducerMock
 import no.nav.syfo.consumer.aktor.AktorConsumer
-import no.nav.syfo.consumer.oppgave.OppgaveConsumer
-import no.nav.syfo.consumer.oppgave.OppgaveRequest
-import no.nav.syfo.consumer.oppgave.OppgaveResponse
 import no.nav.syfo.consumer.pdf.PDFConsumer
 import no.nav.syfo.consumer.repository.InnsendingDAO
+import no.nav.syfo.consumer.repository.OppgaveStatus
+import no.nav.syfo.consumer.repository.OppgavestyringDAO
 import no.nav.syfo.consumer.sak.SakConsumer
-import no.nav.syfo.kafka.consumer.RebehandlingListener
-import no.nav.syfo.kafka.consumer.SoknadSendtListener
-import no.nav.syfo.kafka.felles.DeprecatedSykepengesoknadDTO
-import no.nav.syfo.kafka.felles.SoknadsstatusDTO
-import no.nav.syfo.kafka.felles.SoknadstypeDTO
-import no.nav.syfo.kafka.felles.SporsmalDTO
-import no.nav.syfo.kafka.felles.SvarDTO
-import no.nav.syfo.kafka.felles.SvartypeDTO
-import no.nav.syfo.kafka.mapper.toSykepengesoknad
-import no.nav.syfo.skapConsumerRecord
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.AfterEach
+import no.nav.syfo.kafka.consumer.SYKEPENGESOKNAD_TOPIC
+import no.nav.syfo.mockSykepengesoknadDTO
+import no.nav.syfo.serialisertTilString
+import org.amshove.kluent.shouldBeEqualTo
+import org.amshove.kluent.shouldNotBe
+import org.apache.kafka.clients.producer.KafkaProducer
+import org.apache.kafka.clients.producer.ProducerRecord
+import org.awaitility.Awaitility.await
 import org.junit.jupiter.api.Test
-import org.mockito.Mock
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.kafka.support.Acknowledgment
 import org.springframework.test.annotation.DirtiesContext
-import java.time.LocalDate
+import java.time.Duration
 import java.time.LocalDateTime
 import java.util.*
 
@@ -46,19 +37,7 @@ import java.util.*
 class RebehandlingIntegrationTest : AbstractContainerBaseTest() {
 
     @Autowired
-    private lateinit var rebehandlingProducerMock: RebehandlingProducerMock
-
-    @Autowired
-    private lateinit var soknadSendtListener: SoknadSendtListener
-
-    @Autowired
-    private lateinit var rebehandlingListener: RebehandlingListener
-
-    @Mock
-    private lateinit var acknowledgment: Acknowledgment
-
-    @Mock
-    private lateinit var acknowledgmentRebehandling: Acknowledgment
+    private lateinit var aivenKafkaProducer: KafkaProducer<String, String>
 
     @MockBean
     private lateinit var aktorConsumer: AktorConsumer
@@ -69,142 +48,55 @@ class RebehandlingIntegrationTest : AbstractContainerBaseTest() {
     @MockBean
     private lateinit var pdfConsumer: PDFConsumer
 
-    @MockBean
-    private lateinit var oppgaveConsumer: OppgaveConsumer
-
     @Autowired
     private lateinit var innsendingDAO: InnsendingDAO
 
-    @AfterEach
-    fun tearDown() {
-        rebehandlingProducerMock.topicMeldinger.clear()
-    }
+    @Autowired
+    private lateinit var oppgavestyringDAO: OppgavestyringDAO
 
     @Test
-    fun `kan ikke hente aktor id legges på rebehandling`() {
-        whenever(aktorConsumer.finnFnr(any())).thenThrow(RuntimeException("Gæli"))
-
-        val soknad = DeprecatedSykepengesoknadDTO(
-            aktorId = "aktor",
-            id = "hei",
-            opprettet = LocalDateTime.now(),
-            type = SoknadstypeDTO.ARBEIDSTAKERE,
-            sporsmal = emptyList(),
-            status = SoknadsstatusDTO.SENDT,
-            fodselsnummer = null
-        )
-        soknadSendtListener.listen(skapConsumerRecord(soknad.id!!, soknad), acknowledgment)
-        verify(acknowledgment).acknowledge()
-
-        assertThat(rebehandlingProducerMock.topicMeldinger).hasSize(1)
-
-        rebehandlingListener.listen(rebehandlingProducerMock.hentSisteSomConsumerRecord(), acknowledgmentRebehandling)
-        verify(acknowledgmentRebehandling).acknowledge()
-
-        assertThat(rebehandlingProducerMock.topicMeldinger).hasSize(2)
-
-        val innsendingIDatabase = innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id!!)!!
-        assertThat(innsendingIDatabase.ressursId).isEqualTo(soknad.id)
-        assertThat(innsendingIDatabase.oppgaveId).isNull()
-        assertThat(innsendingIDatabase.behandlet).isNull()
-        rebehandlingProducerMock.topicMeldinger.clear()
-    }
-
-    @Test
-    fun `Vi rebehandler en søknad hvor vi først ikke fikk henta aktørid`() {
+    fun `Behandling av søknad feiler og rebehandles`() {
         val aktorId = "aktor"
-        whenever(aktorConsumer.finnFnr(aktorId)).thenThrow(RuntimeException("Gæli")).thenReturn("fnr")
+        val fnr = "fnr"
         val saksId = "saksId"
+
+        val old = OVERGANG
+        OVERGANG = LocalDateTime.now() // TODO: Fjern
+
+        whenever(aktorConsumer.getAktorId(fnr)).thenReturn(aktorId)
+        whenever(aktorConsumer.finnFnr(aktorId)).thenReturn(fnr)
         whenever(sakConsumer.opprettSak(aktorId)).thenReturn(saksId)
-        val oppgaveID = 1
-        whenever(oppgaveConsumer.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
+        whenever(pdfConsumer.getPDF(any(), any())).thenThrow(RuntimeException("OOOPS")).thenReturn("pdf".toByteArray())
 
-        val soknad = DeprecatedSykepengesoknadDTO(
-            aktorId = aktorId,
-            id = UUID.randomUUID().toString(),
-            opprettet = LocalDateTime.now(),
-            fom = LocalDate.of(2019, 5, 4),
-            tom = LocalDate.of(2019, 5, 8),
-            type = SoknadstypeDTO.ARBEIDSTAKERE,
-            sporsmal = listOf(
-                SporsmalDTO(
-                    id = UUID.randomUUID().toString(),
-                    tag = "TAGGEN",
-                    sporsmalstekst = "Fungerer rebehandlinga?",
-                    svartype = SvartypeDTO.JA_NEI,
-                    svar = listOf(SvarDTO(verdi = "JA"))
-
-                )
-            ),
-            status = SoknadsstatusDTO.SENDT,
-            sendtNav = LocalDateTime.now(),
-            fodselsnummer = null
+        val id = UUID.randomUUID().toString()
+        val soknad = mockSykepengesoknadDTO.copy(id = id, fnr = fnr)
+        aivenKafkaProducer.send(
+            ProducerRecord(
+                SYKEPENGESOKNAD_TOPIC,
+                id,
+                soknad.serialisertTilString()
+            )
         )
-        soknadSendtListener.listen(skapConsumerRecord(soknad.id!!, soknad), acknowledgment)
-        verify(acknowledgment).acknowledge()
 
-        assertThat(rebehandlingProducerMock.topicMeldinger).hasSize(1)
-        val innsendingIDatabaseEtterFeiling = innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id!!)!!
-        assertThat(innsendingIDatabaseEtterFeiling.ressursId).isEqualTo(soknad.id)
-        assertThat(innsendingIDatabaseEtterFeiling.oppgaveId).isNull()
-        assertThat(innsendingIDatabaseEtterFeiling.behandlet).isNull()
+        // Det skal ta ca 10 sekunder grunnet rebehandlinga
+        await().between(Duration.ofSeconds(8), Duration.ofSeconds(12))
+            .until {
+                innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id)?.behandlet != null
+            }
 
-        // Rebehandle
-        rebehandlingListener.listen(rebehandlingProducerMock.hentSisteSomConsumerRecord(), acknowledgmentRebehandling)
-        verify(acknowledgmentRebehandling).acknowledge()
+        val innsending = innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id)
+        innsending?.behandlet shouldNotBe null
+        innsending!!.aktorId shouldBeEqualTo aktorId
+        innsending.saksId shouldBeEqualTo saksId
+        innsending.ressursId shouldBeEqualTo soknad.id
+        innsending.oppgaveId shouldBeEqualTo null
 
-        val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
-        verify(oppgaveConsumer, never()).opprettOppgave(captor.capture())
+        val spreOppgave = oppgavestyringDAO.hentSpreOppgave(soknad.id)
+        spreOppgave!!.søknadsId shouldBeEqualTo soknad.id
+        spreOppgave.status shouldBeEqualTo OppgaveStatus.Utsett
 
-        val innsendingIDatabaseEtterRebehandling = innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id!!)!!
-        assertThat(innsendingIDatabaseEtterRebehandling.ressursId).isEqualTo(soknad.id)
-        assertThat(innsendingIDatabaseEtterRebehandling.oppgaveId).isNull()
-        assertThat(innsendingIDatabaseEtterRebehandling.behandlet).isNotNull()
+        verify(pdfConsumer, times(2)).getPDF(any(), any())
 
-        assertThat(innsendingIDatabaseEtterRebehandling.innsendingsId).isEqualTo(innsendingIDatabaseEtterFeiling.innsendingsId)
-    }
-
-    @Test
-    fun `Vi rebehandler en søknad der innsending ikke lagres`() {
-        val aktorId = "aktor"
-        whenever(aktorConsumer.finnFnr(aktorId)).thenReturn("fnr")
-        val saksId = "saksId"
-        whenever(sakConsumer.opprettSak(aktorId)).thenReturn(saksId)
-        val oppgaveID = 1
-        whenever(oppgaveConsumer.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
-        val soknad = DeprecatedSykepengesoknadDTO(
-            aktorId = aktorId,
-            id = UUID.randomUUID().toString(),
-            opprettet = LocalDateTime.now(),
-            fom = LocalDate.of(2019, 5, 4),
-            tom = LocalDate.of(2019, 5, 8),
-            type = SoknadstypeDTO.ARBEIDSTAKERE,
-            sporsmal = listOf(
-                SporsmalDTO(
-                    id = UUID.randomUUID().toString(),
-                    tag = "TAGGEN",
-                    sporsmalstekst = "Fungerer rebehandlinga?",
-                    svartype = SvartypeDTO.JA_NEI,
-                    svar = listOf(SvarDTO(verdi = "JA"))
-
-                )
-            ),
-            status = SoknadsstatusDTO.SENDT,
-            sendtNav = LocalDateTime.now(),
-            fodselsnummer = null
-        ).toSykepengesoknad()
-
-        // Rebehandle uten innsending i database
-        rebehandlingProducerMock.leggPaRebehandlingTopic(soknad, LocalDateTime.now())
-        rebehandlingListener.listen(rebehandlingProducerMock.hentSisteSomConsumerRecord(), acknowledgmentRebehandling)
-        verify(acknowledgmentRebehandling).acknowledge()
-
-        val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
-        verify(oppgaveConsumer, never()).opprettOppgave(captor.capture())
-
-        val innsendingIDatabaseEtterRebehandling = innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id)!!
-        assertThat(innsendingIDatabaseEtterRebehandling.ressursId).isEqualTo(soknad.id)
-        assertThat(innsendingIDatabaseEtterRebehandling.oppgaveId).isNull()
-        assertThat(innsendingIDatabaseEtterRebehandling.behandlet).isNotNull()
+        OVERGANG = old
     }
 }

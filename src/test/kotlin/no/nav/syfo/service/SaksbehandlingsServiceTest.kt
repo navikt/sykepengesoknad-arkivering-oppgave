@@ -22,7 +22,7 @@ import no.nav.syfo.consumer.ws.PersonConsumer
 import no.nav.syfo.domain.Innsending
 import no.nav.syfo.domain.dto.Soknadstype.ARBEIDSTAKERE
 import no.nav.syfo.domain.dto.Sykepengesoknad
-import no.nav.syfo.kafka.producer.RebehandlingProducer
+import no.nav.syfo.kafka.producer.RebehandleSykepengesoknadProducer
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -64,7 +64,7 @@ class SaksbehandlingsServiceTest {
     @Mock
     lateinit var registry: MeterRegistry
     @Mock
-    lateinit var rebehandlingProducer: RebehandlingProducer
+    lateinit var rebehandleSykepengesoknadProducer: RebehandleSykepengesoknadProducer
 
     @InjectMocks
     lateinit var saksbehandlingsService: SaksbehandlingsService
