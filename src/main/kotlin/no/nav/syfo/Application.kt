@@ -12,9 +12,11 @@ import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.retry.annotation.EnableRetry
 import org.springframework.transaction.annotation.EnableTransactionManagement
+import java.time.LocalDateTime
 
 const val AAD = "aad"
 const val BEHANDLINGSTIDSPUNKT = "behandlingstidspunkt"
+val OVERGANG = LocalDateTime.of(2021, 5, 18, 20, 8)
 
 @SpringBootApplication
 @EnableTransactionManagement

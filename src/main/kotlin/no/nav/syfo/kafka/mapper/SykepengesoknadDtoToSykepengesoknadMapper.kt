@@ -65,7 +65,6 @@ fun DeprecatedSykepengesoknadDTO.toSykepengesoknad(): Sykepengesoknad {
     )
 }
 
-
 fun SykepengesoknadDTO.toSykepengesoknad(
     aktorId: String
 ): Sykepengesoknad {
