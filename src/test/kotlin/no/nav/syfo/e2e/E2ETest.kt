@@ -2,6 +2,7 @@ package no.nav.syfo.e2e
 
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
+import no.nav.syfo.AbstractContainerBaseTest
 import no.nav.syfo.TestApplication
 import no.nav.syfo.any
 import no.nav.syfo.consumer.repository.OppgaveStatus
@@ -29,17 +30,15 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.kafka.support.Acknowledgment
-import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
 
-@EmbeddedKafka
 @SpringBootTest(classes = [TestApplication::class])
 @DirtiesContext
 @EnableMockOAuth2Server
-class E2ETest {
+class E2ETest : AbstractContainerBaseTest() {
 
     companion object {
         val aktørId = "aktørId"

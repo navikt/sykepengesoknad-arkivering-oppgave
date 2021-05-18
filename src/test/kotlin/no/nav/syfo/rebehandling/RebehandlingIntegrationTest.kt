@@ -7,6 +7,7 @@ import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
+import no.nav.syfo.AbstractContainerBaseTest
 import no.nav.syfo.TestApplication
 import no.nav.syfo.config.RebehandlingProducerMock
 import no.nav.syfo.consumer.aktor.AktorConsumer
@@ -34,17 +35,15 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.kafka.support.Acknowledgment
-import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
-@EmbeddedKafka
 @SpringBootTest(classes = [TestApplication::class])
 @EnableMockOAuth2Server
 @DirtiesContext
-class RebehandlingIntegrationTest {
+class RebehandlingIntegrationTest : AbstractContainerBaseTest() {
 
     @Autowired
     private lateinit var rebehandlingProducerMock: RebehandlingProducerMock
