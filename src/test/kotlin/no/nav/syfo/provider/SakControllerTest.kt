@@ -5,6 +5,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
+import no.nav.syfo.AbstractContainerBaseTest
 import no.nav.syfo.TestApplication
 import no.nav.syfo.consumer.repository.TidligereInnsending
 import no.nav.syfo.consumer.repository.insertBehandletSoknad
@@ -17,7 +18,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
-import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -25,12 +25,11 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import token
 import java.time.LocalDate
 
-@EmbeddedKafka
 @SpringBootTest(classes = [TestApplication::class])
 @AutoConfigureMockMvc
 @DirtiesContext
 @EnableMockOAuth2Server
-class SakControllerTest {
+class SakControllerTest : AbstractContainerBaseTest() {
 
     @Autowired
     private lateinit var namedParameterJdbcTemplate: NamedParameterJdbcTemplate

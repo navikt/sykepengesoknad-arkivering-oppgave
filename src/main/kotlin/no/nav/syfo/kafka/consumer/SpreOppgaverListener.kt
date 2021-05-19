@@ -6,7 +6,7 @@ import no.nav.syfo.domain.DokumentTypeDTO
 import no.nav.syfo.domain.OppgaveDTO
 import no.nav.syfo.kafka.NAV_CALLID
 import no.nav.syfo.kafka.getSafeNavCallIdHeaderAsString
-import no.nav.syfo.log
+import no.nav.syfo.logger
 import no.nav.syfo.service.OppgaveKilde
 import no.nav.syfo.service.SpreOppgaverService
 import org.apache.kafka.clients.consumer.ConsumerRecord
@@ -20,7 +20,7 @@ class SpreOppgaverListener(
     private val spreOppgaverService: SpreOppgaverService,
     private val registry: MeterRegistry,
 ) {
-    private val log = log()
+    private val log = logger()
 
     @KafkaListener(topics = ["aapen-helse-spre-oppgaver"], id = "syfogsakListener", idIsGroup = false, containerFactory = "spreOppgaverContainerFactory")
     fun listen(cr: ConsumerRecord<String, OppgaveDTO>, acknowledgment: Acknowledgment) {

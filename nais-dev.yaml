@@ -50,6 +50,8 @@ spec:
       - kvPath: /azuread/data/dev/creds/syfogsak
         mountPath: /var/run/secrets/nais.io/azuread
   webproxy: false
+  kafka:
+    pool: nav-dev
   env:
     - name: SYFOSOKNAD_URL
       value: https://syfosoknad.nais.preprod.local

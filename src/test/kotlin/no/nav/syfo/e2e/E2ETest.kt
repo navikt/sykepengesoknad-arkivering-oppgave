@@ -2,6 +2,7 @@ package no.nav.syfo.e2e
 
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
+import no.nav.syfo.AbstractContainerBaseTest
 import no.nav.syfo.TestApplication
 import no.nav.syfo.any
 import no.nav.syfo.consumer.repository.OppgaveStatus
@@ -13,12 +14,12 @@ import no.nav.syfo.domain.OppdateringstypeDTO
 import no.nav.syfo.domain.OppgaveDTO
 import no.nav.syfo.kafka.consumer.SoknadSendtListener
 import no.nav.syfo.kafka.consumer.SpreOppgaverListener
+import no.nav.syfo.kafka.felles.DeprecatedSykepengesoknadDTO
 import no.nav.syfo.kafka.felles.SoknadsstatusDTO
 import no.nav.syfo.kafka.felles.SoknadstypeDTO
 import no.nav.syfo.kafka.felles.SporsmalDTO
 import no.nav.syfo.kafka.felles.SvarDTO
 import no.nav.syfo.kafka.felles.SvartypeDTO
-import no.nav.syfo.kafka.felles.SykepengesoknadDTO
 import no.nav.syfo.service.BehandleVedTimeoutService
 import no.nav.syfo.service.SaksbehandlingsService
 import no.nav.syfo.skapConsumerRecord
@@ -29,17 +30,15 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.kafka.support.Acknowledgment
-import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
 
-@EmbeddedKafka
 @SpringBootTest(classes = [TestApplication::class])
 @DirtiesContext
 @EnableMockOAuth2Server
-class E2ETest {
+class E2ETest : AbstractContainerBaseTest() {
 
     companion object {
         val aktørId = "aktørId"
@@ -236,14 +235,14 @@ class E2ETest {
     private fun leggOppgavePåKafka(oppgave: OppgaveDTO) =
         spreOppgaverListener.listen(skapConsumerRecord("key", oppgave), acknowledgment)
 
-    private fun leggSøknadPåKafka(søknad: SykepengesoknadDTO) =
+    private fun leggSøknadPåKafka(søknad: DeprecatedSykepengesoknadDTO) =
         soknadSendtListener.listen(skapConsumerRecord("key", søknad), acknowledgment)
 
     private fun søknad(
         søknadsId: UUID = UUID.randomUUID(),
         sendtNav: LocalDateTime? = LocalDateTime.now(),
         sendtArbeidsgiver: LocalDateTime? = null
-    ) = SykepengesoknadDTO(
+    ) = DeprecatedSykepengesoknadDTO(
         aktorId = aktørId,
         id = søknadsId.toString(),
         opprettet = LocalDateTime.now(),

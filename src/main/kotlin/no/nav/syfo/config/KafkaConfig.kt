@@ -1,16 +1,12 @@
 package no.nav.syfo.config
 
-import com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
-import com.fasterxml.jackson.databind.DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.nav.syfo.domain.OppgaveDTO
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.syfo.kafka.KafkaErrorHandler
-import no.nav.syfo.kafka.felles.SykepengesoknadDTO
+import no.nav.syfo.kafka.felles.DeprecatedSykepengesoknadDTO
 import no.nav.syfo.kafka.soknad.deserializer.FunctionDeserializer
 import no.nav.syfo.kafka.soknad.serializer.FunctionSerializer
+import no.nav.syfo.objectMapper
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.kafka.common.serialization.StringSerializer
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties
@@ -28,16 +24,9 @@ import java.time.Duration
 @Configuration
 @EnableKafka
 class KafkaConfig(private val kafkaErrorHandler: KafkaErrorHandler, private val properties: KafkaProperties) {
-
-    private val objectMapper = ObjectMapper()
-        .registerModule(JavaTimeModule())
-        .registerModule(KotlinModule())
-        .configure(READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE, true)
-        .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
-
     @Bean
-    fun kafkaListenerContainerFactory(consumerFactory: ConsumerFactory<String, SykepengesoknadDTO>): ConcurrentKafkaListenerContainerFactory<String, SykepengesoknadDTO> =
-        ConcurrentKafkaListenerContainerFactory<String, SykepengesoknadDTO>().apply {
+    fun kafkaListenerContainerFactory(consumerFactory: ConsumerFactory<String, DeprecatedSykepengesoknadDTO>): ConcurrentKafkaListenerContainerFactory<String, DeprecatedSykepengesoknadDTO> =
+        ConcurrentKafkaListenerContainerFactory<String, DeprecatedSykepengesoknadDTO>().apply {
             containerProperties.ackMode = ContainerProperties.AckMode.MANUAL_IMMEDIATE
             setErrorHandler(kafkaErrorHandler)
             this.containerProperties.authorizationExceptionRetryInterval = Duration.ofSeconds(2)
@@ -45,11 +34,11 @@ class KafkaConfig(private val kafkaErrorHandler: KafkaErrorHandler, private val 
         }
 
     @Bean
-    fun consumerFactory(properties: KafkaProperties): ConsumerFactory<String, SykepengesoknadDTO> {
+    fun consumerFactory(properties: KafkaProperties): ConsumerFactory<String, DeprecatedSykepengesoknadDTO> {
         return DefaultKafkaConsumerFactory(
             properties.buildConsumerProperties(),
             StringDeserializer(),
-            FunctionDeserializer { bytes -> objectMapper.readValue(bytes, SykepengesoknadDTO::class.java) }
+            FunctionDeserializer { bytes -> objectMapper.readValue(bytes, DeprecatedSykepengesoknadDTO::class.java) }
         )
     }
 

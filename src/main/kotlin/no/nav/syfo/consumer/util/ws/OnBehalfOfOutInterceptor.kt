@@ -1,6 +1,6 @@
 package no.nav.syfo.consumer.util.ws
 
-import no.nav.syfo.log
+import no.nav.syfo.logger
 import org.apache.cxf.interceptor.Fault
 import org.apache.cxf.message.Message
 import org.apache.cxf.phase.AbstractPhaseInterceptor
@@ -43,7 +43,7 @@ class OnBehalfOfOutInterceptor : AbstractPhaseInterceptor<Message>(Phase.SETUP) 
     }
 
     companion object {
-        private val log = OnBehalfOfOutInterceptor::class.java.log()
+        private val log = OnBehalfOfOutInterceptor::class.java.logger()
 
         const val REQUEST_CONTEXT_ONBEHALFOF_TOKEN_TYPE = "request.onbehalfof.tokentype"
         const val REQUEST_CONTEXT_ONBEHALFOF_TOKEN = "request.onbehalfof.token"
@@ -57,14 +57,12 @@ class OnBehalfOfOutInterceptor : AbstractPhaseInterceptor<Message>(Phase.SETUP) 
                 val document = builder.parse(InputSource(StringReader(content)))
                 return document.documentElement
             } catch (e: ParserConfigurationException) {
-                RuntimeException(e)
+                throw RuntimeException(e)
             } catch (e: SAXException) {
-                RuntimeException(e)
+                throw RuntimeException(e)
             } catch (e: IOException) {
-                RuntimeException(e)
+                throw RuntimeException(e)
             }
-
-            return null
         }
 
         private fun wrapWithBinarySecurityToken(token: ByteArray, valueType: String): String {

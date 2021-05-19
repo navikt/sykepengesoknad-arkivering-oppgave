@@ -47,7 +47,7 @@ class BehandleVedTimeoutServiceTest {
 
     fun mockHenting() {
         whenever(syfosoknadConsumer.hentSoknad(any())).thenReturn(
-            SykepengesoknadDTO(
+            DeprecatedSykepengesoknadDTO(
                 aktorId = "aktor",
                 id = UUID.randomUUID().toString(),
                 opprettet = LocalDateTime.now(),

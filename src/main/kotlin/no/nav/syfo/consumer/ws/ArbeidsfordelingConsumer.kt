@@ -2,7 +2,7 @@ package no.nav.syfo.consumer.ws
 
 import no.nav.syfo.domain.dto.Soknadstype
 import no.nav.syfo.domain.dto.Soknadstype.OPPHOLD_UTLAND
-import no.nav.syfo.log
+import no.nav.syfo.logger
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.ArbeidsfordelingV1
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.FinnBehandlendeEnhetListeUgyldigInput
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.ArbeidsfordelingKriterier
@@ -19,6 +19,7 @@ const val NAV_OPPFOLGING_UTLAND_KONTOR_NR = "0393"
 
 @Component
 class ArbeidsfordelingConsumer(private val arbeidsfordelingV1: ArbeidsfordelingV1) {
+    private val log = logger()
 
     fun finnBehandlendeEnhet(tilknytning: GeografiskTilknytning, soknadstype: Soknadstype): String {
         try {
@@ -45,10 +46,10 @@ class ArbeidsfordelingConsumer(private val arbeidsfordelingV1: ArbeidsfordelingV
                     .firstOrNull { organisasjonsenhet -> organisasjonsenhet.status == Enhetsstatus.AKTIV }?.enhetId
                     ?: throw RuntimeException("Fant ingen aktiv enhet for ${tilknytning.geografiskTilknytning}")
         } catch (e: FinnBehandlendeEnhetListeUgyldigInput) {
-            log().error("Feil ved henting av brukers forvaltningsenhet", e)
+            log.error("Feil ved henting av brukers forvaltningsenhet", e)
             throw RuntimeException("Feil ved henting av brukers forvaltningsenhet", e)
         } catch (e: RuntimeException) {
-            log().warn(
+            log.warn(
                 "Klarte ikke å hente behandlende enhet! Gir oppgaven til NAV_OPPFOLGING_UTLAND ($NAV_OPPFOLGING_UTLAND_KONTOR_NR)",
                 e
             )

@@ -7,6 +7,11 @@ management:
     exposure.include: prometheus
     path-mapping.prometheus: /prometheus
 
+aiven-kafka:
+  auto-offset-reset: latest # Sett til none
+  security-protocol: SSL
+
+
 no.nav.security.jwt:
   issuer:
     aad:
@@ -55,3 +60,5 @@ spring:
       enable-auto-commit: false
   flyway:
     enabled: false # Prod databasen må oppgraderes før flyway kan kjøres igjen
+
+rebehandling.delay.sekunder: 240 # 4 minutter. Må være mindre enn max.poll.interval.ms

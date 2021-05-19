@@ -1,6 +1,7 @@
 package no.nav.syfo.consumer.token
 
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
+import no.nav.syfo.AbstractContainerBaseTest
 import no.nav.syfo.TestApplication
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -14,15 +15,13 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.web.client.RestTemplate
 
 @SpringBootTest(classes = [TestApplication::class])
-@EmbeddedKafka
 @DirtiesContext
 @EnableMockOAuth2Server
-class TokenConsumerTest {
+class TokenConsumerTest : AbstractContainerBaseTest() {
     @Mock
     lateinit var restTemplate: RestTemplate
 

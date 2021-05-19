@@ -8,7 +8,7 @@ import no.nav.syfo.domain.OppdateringstypeDTO
 import no.nav.syfo.domain.OppgaveDTO
 import no.nav.syfo.domain.dto.Soknadstype.ARBEIDSTAKERE
 import no.nav.syfo.domain.dto.Sykepengesoknad
-import no.nav.syfo.log
+import no.nav.syfo.logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
@@ -20,7 +20,7 @@ class SpreOppgaverService(
     private val saksbehandlingsService: SaksbehandlingsService,
     private val oppgavestyringDAO: OppgavestyringDAO
 ) {
-    private val log = log()
+    private val log = logger()
     private val timeout = defaultTimeoutTimer.toLong()
 
     // Er Synchronized pga. race condition mellom saksbehandling i vårt system og saksbehandling i Bømlo's system
@@ -77,6 +77,7 @@ class SpreOppgaverService(
     private fun timeout(oppgave: OppgaveDTO) =
         if (oppgave.oppdateringstype == OppdateringstypeDTO.Utsett) oppgave.timeout else null
 
+    @Synchronized
     fun soknadSendt(sykepengesoknad: Sykepengesoknad) {
         try {
             if (sykepengesoknad.status == "SENDT" && !ettersendtTilArbeidsgiver(sykepengesoknad)) {

@@ -1,7 +1,7 @@
 package no.nav.syfo.consumer.ws
 
 import net.logstash.logback.encoder.org.apache.commons.lang.WordUtils.capitalizeFully
-import no.nav.syfo.log
+import no.nav.syfo.logger
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentGeografiskTilknytningPersonIkkeFunnet
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentGeografiskTilknytningSikkerhetsbegrensing
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
@@ -18,6 +18,7 @@ import javax.inject.Inject
 @Component
 class PersonConsumer @Inject
 constructor(private val personV3: PersonV3) {
+    private val log = logger()
 
     @Retryable(backoff = Backoff(delay = 5000))
     fun finnBrukerPersonnavnByFnr(fnr: String): String {
@@ -47,10 +48,10 @@ constructor(private val personV3: PersonV3) {
 
             return GeografiskTilknytning(response.geografiskTilknytning?.geografiskTilknytning, response.diskresjonskode?.value)
         } catch (e: HentGeografiskTilknytningSikkerhetsbegrensing) {
-            log().error("Feil ved henting av geografisk tilknytning", e)
+            log.error("Feil ved henting av geografisk tilknytning", e)
             throw RuntimeException("Feil ved henting av geografisk tilknytning", e)
         } catch (e: HentGeografiskTilknytningPersonIkkeFunnet) {
-            log().error("Feil ved henting av geografisk tilknytning", e)
+            log.error("Feil ved henting av geografisk tilknytning", e)
             throw RuntimeException("Feil ved henting av geografisk tilknytning", e)
         }
     }

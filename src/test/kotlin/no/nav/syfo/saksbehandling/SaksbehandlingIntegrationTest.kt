@@ -2,6 +2,7 @@ package no.nav.syfo.saksbehandling
 
 import com.nhaarman.mockitokotlin2.*
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
+import no.nav.syfo.AbstractContainerBaseTest
 import no.nav.syfo.TestApplication
 import no.nav.syfo.consumer.aktor.AktorConsumer
 import no.nav.syfo.consumer.bucket.FlexBucketUploaderClient
@@ -27,17 +28,15 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.kafka.support.Acknowledgment
-import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
-@EmbeddedKafka
 @SpringBootTest(classes = [TestApplication::class])
 @DirtiesContext
 @EnableMockOAuth2Server
-class SaksbehandlingIntegrationTest {
+class SaksbehandlingIntegrationTest : AbstractContainerBaseTest() {
 
     @MockBean
     private lateinit var aktorConsumer: AktorConsumer
@@ -78,7 +77,7 @@ class SaksbehandlingIntegrationTest {
         val oppgaveID = 1
         whenever(oppgaveConsumer.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
 
-        val soknad = SykepengesoknadDTO(
+        val soknad = DeprecatedSykepengesoknadDTO(
             aktorId = aktorId,
             id = UUID.randomUUID().toString(),
             opprettet = LocalDateTime.now(),
@@ -124,7 +123,7 @@ class SaksbehandlingIntegrationTest {
         val oppgaveID = 1
         whenever(oppgaveConsumer.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
 
-        val soknad = SykepengesoknadDTO(
+        val soknad = DeprecatedSykepengesoknadDTO(
             aktorId = aktorId,
             id = UUID.randomUUID().toString(),
             opprettet = LocalDateTime.now(),
@@ -191,7 +190,7 @@ Ja
 
         val soknad = OBJECT_MAPPER.readValue(
             TestApplication::class.java.getResource("/reisetilskuddAlleSvar.json"),
-            SykepengesoknadDTO::class.java
+            DeprecatedSykepengesoknadDTO::class.java
         )
 
         soknadSendtListener.listen(skapConsumerRecord(soknad.id!!, soknad), acknowledgment)
@@ -282,7 +281,7 @@ Nei
 
         val soknad = OBJECT_MAPPER.readValue(
             TestApplication::class.java.getResource("/reisetilskuddAlleSvar.json"),
-            SykepengesoknadDTO::class.java
+            DeprecatedSykepengesoknadDTO::class.java
         ).copy(id = UUID.randomUUID().toString())
 
         soknadSendtListener.listen(skapConsumerRecord(soknad.id!!, soknad), acknowledgment)

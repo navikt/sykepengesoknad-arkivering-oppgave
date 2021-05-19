@@ -42,7 +42,7 @@ repositories {
     }
 }
 
-val syfoKafkaVersion = "2021.03.10-10.47-188034bc"
+val syfoKafkaVersion = "2021.04.08-13.45-0da5bd8e"
 val mockitoKotlinVersion = "2.2.0"
 val h2Version = "1.4.200"
 val ojdbc8Version = "19.3.0.0"
@@ -53,6 +53,8 @@ val micrometerRegistryPrometheusVersion = "1.6.6"
 val tjenestespesifikasjonerVersion = "1.2019.08.16-13.46-35cbdfd492d4"
 val cxfVersion = "3.4.3"
 val tokenSupportVersion = "1.3.4"
+val testContainersVersion = "1.15.3"
+val kluentVersion = "1.65"
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -89,12 +91,18 @@ dependencies {
     implementation("no.nav.tjenestespesifikasjoner:arbeidsfordeling-v1-tjenestespesifikasjon:$tjenestespesifikasjonerVersion")
     implementation("no.nav.security:token-validation-spring:$tokenSupportVersion")
     implementation("no.nav.security:token-client-spring:$tokenSupportVersion")
+
+    testImplementation("org.amshove.kluent:kluent:$kluentVersion")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.testcontainers:kafka:$testContainersVersion")
+    testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
     testImplementation("org.springframework.kafka:spring-kafka-test")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("no.nav.security:token-validation-spring-test:$tokenSupportVersion")
     testImplementation("org.assertj:assertj-core:$assertjVersion")
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlinVersion")
     testImplementation("org.mockito:mockito-core:$mockitoCoreVersion")
+    testImplementation("org.awaitility:awaitility")
 }
 
 tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {

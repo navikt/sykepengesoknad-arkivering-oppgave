@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import no.nav.syfo.consumer.token.TokenConsumer
 import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.Soknadstype
-import no.nav.syfo.log
 import no.nav.syfo.service.lagBeskrivelse
 import no.nav.syfo.util.callId
 import org.springframework.beans.factory.annotation.Value
@@ -28,8 +27,7 @@ class OppgaveConsumer(
     @Value("\${oppgave.oppgaver.url}") private val url: String,
     private val restTemplate: RestTemplate
 ) {
-    val log = log()
-    val uriString = UriComponentsBuilder.fromHttpUrl(url).toUriString()
+    private val uriString = UriComponentsBuilder.fromHttpUrl(url).toUriString()
 
     fun opprettOppgave(request: OppgaveRequest): OppgaveResponse {
         return try {

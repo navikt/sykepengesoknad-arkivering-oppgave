@@ -1,6 +1,6 @@
 package no.nav.syfo.consumer.util.ws
 
-import no.nav.syfo.log
+import no.nav.syfo.logger
 import org.apache.cxf.interceptor.Fault
 import org.apache.cxf.jaxws.handler.soap.SOAPMessageContextImpl
 import org.apache.cxf.message.Message
@@ -12,6 +12,7 @@ import javax.xml.ws.handler.soap.SOAPHandler
 import javax.xml.ws.handler.soap.SOAPMessageContext
 
 class LogErrorHandler : SOAPHandler<SOAPMessageContext> {
+    private val log = logger()
 
     override fun getHeaders(): Set<QName>? = null
     override fun handleMessage(context: SOAPMessageContext) = true
@@ -24,7 +25,7 @@ class LogErrorHandler : SOAPHandler<SOAPMessageContext> {
 
             if (exception is Fault) exception = exception.cause ?: exception
 
-            log().error(beskrivelse(message).toString(), exception)
+            log.error(beskrivelse(message).toString(), exception)
         }
         return true
     }

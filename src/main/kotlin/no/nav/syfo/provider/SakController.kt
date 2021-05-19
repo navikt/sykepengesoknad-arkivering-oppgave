@@ -5,7 +5,7 @@ import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.syfo.AAD
 import no.nav.syfo.consumer.repository.InnsendingDAO
 import no.nav.syfo.consumer.repository.TidligereInnsending
-import no.nav.syfo.log
+import no.nav.syfo.logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
@@ -21,7 +21,7 @@ class SakController(
     private val contextHolder: TokenValidationContextHolder,
 ) {
 
-    val log = log()
+    private val log = logger()
 
     @ResponseBody
     @ProtectedWithClaims(issuer = AAD)

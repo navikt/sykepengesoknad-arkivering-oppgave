@@ -1,6 +1,7 @@
 package no.nav.syfo.consumer.repository
 
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
+import no.nav.syfo.AbstractContainerBaseTest
 import no.nav.syfo.TestApplication
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
@@ -11,16 +12,14 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
-import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
 import java.time.LocalDate
 import java.util.UUID
 
-@EmbeddedKafka
 @SpringBootTest(classes = [TestApplication::class])
 @DirtiesContext
 @EnableMockOAuth2Server
-class InnsendingDAOTest {
+class InnsendingDAOTest : AbstractContainerBaseTest() {
 
     @Autowired
     private lateinit var innsendingDAO: InnsendingDAO

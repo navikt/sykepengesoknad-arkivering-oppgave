@@ -14,12 +14,11 @@ import no.nav.syfo.domain.PdfKvittering
 import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.Soknadstype
 import no.nav.syfo.domain.dto.Sykepengesoknad
-import no.nav.syfo.kafka.producer.RebehandlingProducer
-import no.nav.syfo.log
+import no.nav.syfo.kafka.producer.RebehandleSykepengesoknadProducer
+import no.nav.syfo.logger
 import org.springframework.stereotype.Component
 import java.time.DayOfWeek
 import java.time.LocalDate
-import java.time.LocalDateTime.now
 import java.time.temporal.ChronoUnit
 import java.util.*
 import java.util.stream.Stream
@@ -34,11 +33,11 @@ class SaksbehandlingsService(
     private val innsendingDAO: InnsendingDAO,
     private val personConsumer: PersonConsumer,
     private val registry: MeterRegistry,
-    private val rebehandlingProducer: RebehandlingProducer,
+    private val rebehandleSykepengesoknadProducer: RebehandleSykepengesoknadProducer,
     private val flexBucketUploaderClient: FlexBucketUploaderClient,
 ) {
 
-    private val log = log()
+    private val log = logger()
 
     fun behandleSoknad(sykepengesoknad: Sykepengesoknad): String {
         val eksisterendeInnsending = finnEksisterendeInnsending(sykepengesoknad.id)
@@ -112,7 +111,7 @@ class SaksbehandlingsService(
             sykepengesoknad.id,
             e
         )
-        rebehandlingProducer.leggPaRebehandlingTopic(sykepengesoknad, now().plusMinutes(10))
+        rebehandleSykepengesoknadProducer.send(sykepengesoknad)
     }
 
     private fun opprettSak(aktorId: String, innsendingId: String): String {

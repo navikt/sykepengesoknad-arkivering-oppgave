@@ -12,14 +12,15 @@ import java.sql.SQLException
 @EnableTransactionManagement
 @Configuration
 @EnableJwtTokenValidation
-class TestApplication {
+class TestApplication : AbstractContainerBaseTest() {
+    private val log = logger()
 
     @Profile("local")
     fun server(): Server {
         try {
             return Server.createTcpServer("-tcp", "-tcpAllowOthers", "-tcpPort", "8082").start()
         } catch (e: SQLException) {
-            log().error("Klarte ikke starte databasekobling", e)
+            log.error("Klarte ikke starte databasekobling", e)
             throw RuntimeException("Klarte ikke starte databasekobling", e)
         }
     }

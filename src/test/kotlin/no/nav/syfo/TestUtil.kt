@@ -1,5 +1,6 @@
 package no.nav.syfo
 
+import no.nav.syfo.kafka.felles.SykepengesoknadDTO
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.common.header.Headers
 import org.apache.kafka.common.header.internals.RecordHeaders
@@ -35,3 +36,9 @@ fun <T> skapConsumerRecord(key: String, value: T, headers: Headers = RecordHeade
         headers
     )
 }
+
+val mockSykepengesoknadDTO: SykepengesoknadDTO =
+    objectMapper.readValue(
+        Application::class.java.getResource("/arbeidstakersoknad.json"),
+        SykepengesoknadDTO::class.java
+    )
