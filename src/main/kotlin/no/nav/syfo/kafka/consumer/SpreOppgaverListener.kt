@@ -15,6 +15,8 @@ import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
 
+const val SPRE_OPPGAVER_TOPIC = "aapen-helse-spre-oppgaver"
+
 @Component
 class SpreOppgaverListener(
     private val spreOppgaverService: SpreOppgaverService,
@@ -22,7 +24,7 @@ class SpreOppgaverListener(
 ) {
     private val log = logger()
 
-    @KafkaListener(topics = ["aapen-helse-spre-oppgaver"], id = "syfogsakListener", idIsGroup = false, containerFactory = "spreOppgaverContainerFactory")
+    @KafkaListener(topics = [SPRE_OPPGAVER_TOPIC], id = "syfogsakListener", idIsGroup = false, containerFactory = "spreOppgaverContainerFactory")
     fun listen(cr: ConsumerRecord<String, OppgaveDTO>, acknowledgment: Acknowledgment) {
         try {
             MDC.put(NAV_CALLID, getSafeNavCallIdHeaderAsString(cr.headers()))

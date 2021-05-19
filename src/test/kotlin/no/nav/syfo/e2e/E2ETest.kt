@@ -5,6 +5,7 @@ import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import no.nav.syfo.AbstractContainerBaseTest
 import no.nav.syfo.TestApplication
 import no.nav.syfo.any
+import no.nav.syfo.consumer.aktor.AktorConsumer
 import no.nav.syfo.consumer.repository.OppgaveStatus
 import no.nav.syfo.consumer.repository.OppgavestyringDAO
 import no.nav.syfo.consumer.syfosoknad.SyfosoknadConsumer
@@ -12,7 +13,7 @@ import no.nav.syfo.domain.DokumentTypeDTO
 import no.nav.syfo.domain.Innsending
 import no.nav.syfo.domain.OppdateringstypeDTO
 import no.nav.syfo.domain.OppgaveDTO
-import no.nav.syfo.kafka.consumer.SoknadSendtListener
+import no.nav.syfo.kafka.consumer.AivenSoknadSendtListener
 import no.nav.syfo.kafka.consumer.SpreOppgaverListener
 import no.nav.syfo.kafka.felles.DeprecatedSykepengesoknadDTO
 import no.nav.syfo.kafka.felles.SoknadsstatusDTO
@@ -20,6 +21,9 @@ import no.nav.syfo.kafka.felles.SoknadstypeDTO
 import no.nav.syfo.kafka.felles.SporsmalDTO
 import no.nav.syfo.kafka.felles.SvarDTO
 import no.nav.syfo.kafka.felles.SvartypeDTO
+import no.nav.syfo.kafka.felles.SykepengesoknadDTO
+import no.nav.syfo.objectMapper
+import no.nav.syfo.serialisertTilString
 import no.nav.syfo.service.BehandleVedTimeoutService
 import no.nav.syfo.service.SaksbehandlingsService
 import no.nav.syfo.skapConsumerRecord
@@ -42,6 +46,7 @@ class E2ETest : AbstractContainerBaseTest() {
 
     companion object {
         val aktørId = "aktørId"
+        val fnr = "fnr"
         val omFireTimer = LocalDateTime.now().plusHours(4)
     }
 
@@ -54,11 +59,14 @@ class E2ETest : AbstractContainerBaseTest() {
     @MockBean
     lateinit var syfosoknadConsumer: SyfosoknadConsumer
 
+    @MockBean
+    lateinit var aktorConsumer: AktorConsumer
+
     @Autowired
     lateinit var spreOppgaverListener: SpreOppgaverListener
 
     @Autowired
-    lateinit var soknadSendtListener: SoknadSendtListener
+    lateinit var aivenSoknadSendtListener: AivenSoknadSendtListener
 
     @Autowired
     lateinit var spreOppgavestyringDAO: OppgavestyringDAO
@@ -77,7 +85,15 @@ class E2ETest : AbstractContainerBaseTest() {
                 journalpostId = "journalpost"
             )
         }
-        whenever(syfosoknadConsumer.hentSoknad(any())).thenReturn(søknad())
+        whenever(syfosoknadConsumer.hentSoknad(any())).thenReturn(
+            objectMapper.readValue(
+                søknad().serialisertTilString(),
+                DeprecatedSykepengesoknadDTO::class.java
+            ).copy(
+                aktorId = aktørId
+            )
+        )
+        whenever(aktorConsumer.getAktorId(fnr)).thenReturn(aktørId)
     }
 
     @Test
@@ -235,15 +251,15 @@ class E2ETest : AbstractContainerBaseTest() {
     private fun leggOppgavePåKafka(oppgave: OppgaveDTO) =
         spreOppgaverListener.listen(skapConsumerRecord("key", oppgave), acknowledgment)
 
-    private fun leggSøknadPåKafka(søknad: DeprecatedSykepengesoknadDTO) =
-        soknadSendtListener.listen(skapConsumerRecord("key", søknad), acknowledgment)
+    private fun leggSøknadPåKafka(søknad: SykepengesoknadDTO) =
+        aivenSoknadSendtListener.listen(skapConsumerRecord("key", søknad.serialisertTilString()), acknowledgment)
 
     private fun søknad(
         søknadsId: UUID = UUID.randomUUID(),
         sendtNav: LocalDateTime? = LocalDateTime.now(),
         sendtArbeidsgiver: LocalDateTime? = null
-    ) = DeprecatedSykepengesoknadDTO(
-        aktorId = aktørId,
+    ) = SykepengesoknadDTO(
+        fnr = fnr,
         id = søknadsId.toString(),
         opprettet = LocalDateTime.now(),
         fom = LocalDate.of(2019, 5, 4),
@@ -262,6 +278,5 @@ class E2ETest : AbstractContainerBaseTest() {
         status = SoknadsstatusDTO.SENDT,
         sendtNav = sendtNav,
         sendtArbeidsgiver = sendtArbeidsgiver,
-        fodselsnummer = null
     )
 }
