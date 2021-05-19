@@ -58,6 +58,6 @@ spring:
       auto-offset-reset: none
       enable-auto-commit: false
   flyway:
-    enabled: false # Prod databasen må oppgraderes før flyway kan kjøres igjen  TODO
+    enabled: true
 
 rebehandling.delay.sekunder: 240 # 4 minutter. Må være mindre enn max.poll.interval.ms
