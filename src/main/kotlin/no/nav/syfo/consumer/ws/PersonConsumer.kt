@@ -1,6 +1,5 @@
 package no.nav.syfo.consumer.ws
 
-import net.logstash.logback.encoder.org.apache.commons.lang.WordUtils.capitalizeFully
 import no.nav.syfo.logger
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentGeografiskTilknytningPersonIkkeFunnet
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentGeografiskTilknytningSikkerhetsbegrensing
@@ -10,6 +9,7 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentGeografiskTilknytningRequest
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonnavnBolkRequest
+import org.apache.commons.text.WordUtils
 import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
@@ -63,7 +63,6 @@ constructor(private val personV3: PersonV3) {
             else -> personnavn.fornavn + " " + personnavn.mellomnavn + " " + personnavn.etternavn
         }
 
-        val delimiters = charArrayOf(' ', '-')
-        return capitalizeFully(navn, delimiters)
+        return WordUtils.capitalizeFully(navn, ' ', '-')
     }
 }

@@ -46,10 +46,10 @@ val syfoKafkaVersion = "2021.04.08-13.45-0da5bd8e"
 val mockitoKotlinVersion = "2.2.0"
 val h2Version = "1.4.200"
 val ojdbc8Version = "19.3.0.0"
-val logstashLogbackEncoderVersion = "4.10"
-val mockitoCoreVersion = "3.9.0"
+val logstashLogbackEncoderVersion = "6.6"
+val mockitoCoreVersion = "3.10.0"
 val assertjVersion = "3.19.0"
-val micrometerRegistryPrometheusVersion = "1.6.6"
+val micrometerRegistryPrometheusVersion = "1.7.0"
 val tjenestespesifikasjonerVersion = "1.2019.08.16-13.46-35cbdfd492d4"
 val cxfVersion = "3.4.3"
 val tokenSupportVersion = "1.3.4"
@@ -74,6 +74,7 @@ dependencies {
     implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-ws-policy:$cxfVersion")
+    implementation("org.apache.commons:commons-text:1.9")
     implementation("com.sun.xml.messaging.saaj:saaj-impl:1.5.1")
     implementation("javax.xml.soap:saaj-api:1.3.5")
     implementation("javax.xml.ws:jaxws-api:2.3.1")
