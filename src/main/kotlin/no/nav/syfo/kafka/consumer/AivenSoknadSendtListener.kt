@@ -30,6 +30,8 @@ class AivenSoknadSendtListener(
 
     @KafkaListener(
         topics = [SYKEPENGESOKNAD_TOPIC],
+        id = "soknadSendt",
+        idIsGroup = false,
         containerFactory = "aivenKafkaListenerContainerFactory"
     )
     fun listen(cr: ConsumerRecord<String, String>, acknowledgment: Acknowledgment) {
