@@ -23,6 +23,7 @@ class SyfosoknadConsumer(
 
     private val log = logger()
 
+    // TODO: nytt kafkaformat
     fun hentSoknad(soknadId: String): DeprecatedSykepengesoknadDTO {
         try {
             val uriBuilder = UriComponentsBuilder.fromHttpUrl("$url/api/v2/soknader/$soknadId/kafkaformat")

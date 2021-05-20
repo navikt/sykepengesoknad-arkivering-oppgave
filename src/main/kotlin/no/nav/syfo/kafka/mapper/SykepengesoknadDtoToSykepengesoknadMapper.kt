@@ -35,6 +35,7 @@ private fun SoknadsperiodeDTO.toSoknadPeriode(): SoknadPeriode =
         faktiskGrad = faktiskGrad
     )
 
+// TODO: Fjern
 fun DeprecatedSykepengesoknadDTO.toSykepengesoknad(): Sykepengesoknad {
     return Sykepengesoknad(
         id = id!!,

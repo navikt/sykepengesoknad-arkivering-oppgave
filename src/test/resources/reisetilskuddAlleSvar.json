@@ -2,7 +2,7 @@
   "id": "042782ab-4564-4c76-a954-ed6907cd23ce",
   "type": "REISETILSKUDD",
   "status": "SENDT",
-  "aktorId": "aktor",
+  "fnr": "fnr",
   "sykmeldingId": "b501e0e1-e3a9-402f-9395-6123f141dd07",
   "arbeidsgiver": {
     "navn": "Barnehagen",
@@ -287,13 +287,9 @@
   "avsendertype": "BRUKER",
   "ettersending": false,
   "mottaker": "NAV",
-  "fodselsnummer": {
-    "verdi": "fnr"
-  },
   "egenmeldtSykmelding": null,
   "harRedusertVenteperiode": null,
   "behandlingsdager": null,
   "permitteringer": [],
-  "merknaderFraSykmelding": null,
-  "fnr": "fnr"
+  "merknaderFraSykmelding": null
 }

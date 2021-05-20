@@ -15,20 +15,23 @@ import no.nav.syfo.consumer.sak.SakConsumer
 import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.PDFTemplate
 import no.nav.syfo.domain.dto.Svartype
-import no.nav.syfo.kafka.consumer.SoknadSendtListener
+import no.nav.syfo.kafka.consumer.SYKEPENGESOKNAD_TOPIC
 import no.nav.syfo.kafka.felles.*
 import no.nav.syfo.mock.BehandleJournalMock
 import no.nav.syfo.mock.PersonMock
-import no.nav.syfo.skapConsumerRecord
-import no.nav.syfo.util.OBJECT_MAPPER
+import no.nav.syfo.mockReisetilskuddDTO
+import no.nav.syfo.mockSykepengesoknadDTO
+import no.nav.syfo.serialisertTilString
+import org.apache.kafka.clients.producer.KafkaProducer
+import org.apache.kafka.clients.producer.ProducerRecord
 import org.assertj.core.api.Assertions.assertThat
+import org.awaitility.Awaitility.await
 import org.junit.jupiter.api.Test
-import org.mockito.Mock
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.kafka.support.Acknowledgment
 import org.springframework.test.annotation.DirtiesContext
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
@@ -59,26 +62,24 @@ class SaksbehandlingIntegrationTest : AbstractContainerBaseTest() {
     @Autowired
     private lateinit var personMock: PersonMock
 
-    @Mock
-    private lateinit var acknowledgment: Acknowledgment
-
-    @Autowired
-    private lateinit var soknadSendtListener: SoknadSendtListener
-
     @Autowired
     private lateinit var innsendingDAO: InnsendingDAO
+
+    @Autowired
+    private lateinit var aivenKafkaProducer: KafkaProducer<String, String>
 
     @Test
     fun `test happycase`() {
         val aktorId = "aktor"
-        whenever(aktorConsumer.finnFnr(aktorId)).thenReturn("fnr")
+        val fnr = "fnr"
+        whenever(aktorConsumer.finnFnr(aktorId)).thenReturn(fnr)
+        whenever(aktorConsumer.getAktorId(fnr)).thenReturn(aktorId)
         val saksId = "saksId"
         whenever(sakConsumer.opprettSak(aktorId)).thenReturn(saksId)
         val oppgaveID = 1
         whenever(oppgaveConsumer.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
 
-        val soknad = DeprecatedSykepengesoknadDTO(
-            aktorId = aktorId,
+        val soknad = mockSykepengesoknadDTO.copy(
             id = UUID.randomUUID().toString(),
             opprettet = LocalDateTime.now(),
             fom = LocalDate.of(2019, 5, 4),
@@ -96,15 +97,25 @@ class SaksbehandlingIntegrationTest : AbstractContainerBaseTest() {
             ),
             status = SoknadsstatusDTO.SENDT,
             sendtNav = LocalDateTime.now(),
-            fodselsnummer = null
+            fnr = "fnr"
         )
 
-        soknadSendtListener.listen(skapConsumerRecord(soknad.id!!, soknad), acknowledgment)
+        aivenKafkaProducer.send(
+            ProducerRecord(
+                SYKEPENGESOKNAD_TOPIC,
+                soknad.id,
+                soknad.serialisertTilString()
+            )
+        )
+
+        await().atMost(Duration.ofSeconds(10)).until {
+            innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id) != null
+        }
 
         val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
         verify(oppgaveConsumer, never()).opprettOppgave(captor.capture())
 
-        val innsendingIDatabase = innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id!!)!!
+        val innsendingIDatabase = innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id)!!
         assertThat(innsendingIDatabase.ressursId).isEqualTo(soknad.id)
         assertThat(innsendingIDatabase.oppgaveId).isNull()
         assertThat(innsendingIDatabase.behandlet).isNotNull()
@@ -117,14 +128,15 @@ class SaksbehandlingIntegrationTest : AbstractContainerBaseTest() {
     @Test
     fun `Kafkamelding med redusertVenteperiode setter riktig behandlingstema`() {
         val aktorId = "aktor"
-        whenever(aktorConsumer.finnFnr(aktorId)).thenReturn("fnr")
+        val fnr = "fnr"
+        whenever(aktorConsumer.finnFnr(aktorId)).thenReturn(fnr)
+        whenever(aktorConsumer.getAktorId(fnr)).thenReturn(aktorId)
         val saksId = "saksId"
         whenever(sakConsumer.opprettSak(aktorId)).thenReturn(saksId)
-        val oppgaveID = 1
+        val oppgaveID = 2
         whenever(oppgaveConsumer.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
 
-        val soknad = DeprecatedSykepengesoknadDTO(
-            aktorId = aktorId,
+        val soknad = SykepengesoknadDTO(
             id = UUID.randomUUID().toString(),
             opprettet = LocalDateTime.now(),
             fom = LocalDate.of(2020, 5, 1),
@@ -142,11 +154,21 @@ class SaksbehandlingIntegrationTest : AbstractContainerBaseTest() {
             ),
             status = SoknadsstatusDTO.SENDT,
             sendtNav = LocalDateTime.now(),
-            fodselsnummer = null,
+            fnr = "fnr",
             harRedusertVenteperiode = true
         )
 
-        soknadSendtListener.listen(skapConsumerRecord(soknad.id!!, soknad), acknowledgment)
+        aivenKafkaProducer.send(
+            ProducerRecord(
+                SYKEPENGESOKNAD_TOPIC,
+                soknad.id,
+                soknad.serialisertTilString()
+            )
+        )
+
+        await().atMost(Duration.ofSeconds(10)).until {
+            innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id)?.oppgaveId != null
+        }
 
         val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
         verify(oppgaveConsumer).opprettOppgave(captor.capture())
@@ -169,7 +191,7 @@ Ja
         assertThat(oppgaveRequest.behandlingstema).isNull()
         assertThat(oppgaveRequest.behandlingstype).isEqualTo("ae0247")
 
-        val innsendingIDatabase = innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id!!)!!
+        val innsendingIDatabase = innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id)!!
         assertThat(innsendingIDatabase.ressursId).isEqualTo(soknad.id)
         assertThat(innsendingIDatabase.oppgaveId).isEqualTo(oppgaveID.toString())
         assertThat(innsendingIDatabase.behandlet).isNotNull()
@@ -181,19 +203,27 @@ Ja
         val aktorId = "aktor"
         val fnr = "fnr"
         whenever(aktorConsumer.finnFnr(aktorId)).thenReturn(fnr)
+        whenever(aktorConsumer.getAktorId(fnr)).thenReturn(aktorId)
         val saksId = "saksId"
         whenever(sakConsumer.opprettSak(aktorId)).thenReturn(saksId)
 
         whenever(flexBucketUploaderClient.hentVedlegg(any())).thenReturn("123".encodeToByteArray())
-        val oppgaveID = 1
+        val oppgaveID = 3
         whenever(oppgaveConsumer.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
 
-        val soknad = OBJECT_MAPPER.readValue(
-            TestApplication::class.java.getResource("/reisetilskuddAlleSvar.json"),
-            DeprecatedSykepengesoknadDTO::class.java
+        val soknad = mockReisetilskuddDTO.copy(id = UUID.randomUUID().toString())
+
+        aivenKafkaProducer.send(
+            ProducerRecord(
+                SYKEPENGESOKNAD_TOPIC,
+                soknad.id,
+                soknad.serialisertTilString()
+            )
         )
 
-        soknadSendtListener.listen(skapConsumerRecord(soknad.id!!, soknad), acknowledgment)
+        await().atMost(Duration.ofSeconds(10)).until {
+            innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id)?.oppgaveId != null
+        }
 
         val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
         verify(oppgaveConsumer).opprettOppgave(captor.capture())
@@ -247,7 +277,7 @@ Nei
         assertThat(oppgaveRequest.behandlingstype).isNull()
         assertThat(oppgaveRequest.tildeltEnhetsnr).isEqualTo("4488")
 
-        val innsendingIDatabase = innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id!!)!!
+        val innsendingIDatabase = innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id)!!
         assertThat(innsendingIDatabase.ressursId).isEqualTo(soknad.id)
         assertThat(innsendingIDatabase.oppgaveId).isEqualTo(oppgaveID.toString())
         assertThat(innsendingIDatabase.behandlet).isNotNull()
@@ -272,22 +302,31 @@ Nei
         val aktorId = "aktor"
         val fnr = "fnr"
         whenever(aktorConsumer.finnFnr(aktorId)).thenReturn(fnr)
+        whenever(aktorConsumer.getAktorId(fnr)).thenReturn(aktorId)
         val saksId = "saksId"
         whenever(sakConsumer.opprettSak(aktorId)).thenReturn(saksId)
 
         whenever(flexBucketUploaderClient.hentVedlegg(any())).thenReturn("123".encodeToByteArray())
-        val oppgaveID = 3
+        val oppgaveID = 4
         whenever(oppgaveConsumer.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
 
-        val soknad = OBJECT_MAPPER.readValue(
-            TestApplication::class.java.getResource("/reisetilskuddAlleSvar.json"),
-            DeprecatedSykepengesoknadDTO::class.java
-        ).copy(id = UUID.randomUUID().toString())
+        val soknad = mockReisetilskuddDTO
 
-        soknadSendtListener.listen(skapConsumerRecord(soknad.id!!, soknad), acknowledgment)
+        aivenKafkaProducer.send(
+            ProducerRecord(
+                SYKEPENGESOKNAD_TOPIC,
+                soknad.id,
+                soknad.serialisertTilString()
+            )
+        )
+
+        await().atMost(Duration.ofSeconds(10)).until {
+            innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id)?.oppgaveId != null
+        }
 
         val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
         verify(oppgaveConsumer).opprettOppgave(captor.capture())
+        verify(pdfConsumer).getPDF(any(), eq(PDFTemplate.REISETILSKUDD))
 
         val oppgaveRequest = captor.firstValue
 
