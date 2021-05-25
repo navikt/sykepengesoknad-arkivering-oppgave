@@ -119,3 +119,5 @@ spec:
       value: https://flex-bucket-uploader.dev.intern.nav.no
     - name: SYFOSOKNAD_AAD_CLIENT_ID
       value: dev-fss.flex.syfosoknad
+    - name: PDL_API_AAD_CLIENT_ID
+      value: dev-fss.pdl.pdl-api

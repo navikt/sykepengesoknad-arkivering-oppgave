@@ -1,5 +1,6 @@
 package no.nav.syfo.consumer.ws
 
+import no.nav.syfo.client.pdl.PdlClient
 import no.nav.syfo.consumer.pdf.PDFConsumer
 import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.PDFTemplate
@@ -24,7 +25,8 @@ class BehandleJournalConsumer @Inject
 constructor(
     private val behandleJournalV2: BehandleJournalV2,
     private val personConsumer: PersonConsumer,
-    private val pdfConsumer: PDFConsumer
+    private val pdfConsumer: PDFConsumer,
+    private val pdlClient: PdlClient,
 ) {
     private val log = logger()
 
@@ -44,6 +46,10 @@ constructor(
 
     private fun journalforSoknad(soknad: Soknad, saksId: String, pdf: ByteArray?): String {
         try {
+            val navn = personConsumer.finnBrukerPersonnavnByFnr(soknad.fnr!!) // TODO
+            val pdlNavn = pdlClient.hentFormattertNavn(soknad.fnr!!)
+            if (navn != pdlNavn) log.warn("PersonConsumer gir ikke samme resultat som PDL ved henting av navn")
+
             return behandleJournalV2.journalfoerInngaaendeHenvendelse(
                 JournalfoerInngaaendeHenvendelseRequest()
                     .withApplikasjonsID("SYFOGSAK")
@@ -59,7 +65,7 @@ constructor(
                             .withInnhold(getJournalPostInnholdNavn(soknad.soknadstype))
                             .withEksternPart(
                                 EksternPart()
-                                    .withNavn(personConsumer.finnBrukerPersonnavnByFnr(soknad.fnr!!))
+                                    .withNavn(navn)
                                     .withEksternAktoer(Person().withIdent(NorskIdent().withIdent(soknad.fnr)))
                             )
                             .withGjelderSak(Sak().withSaksId(saksId).withFagsystemkode(GOSYS))
@@ -106,7 +112,7 @@ constructor(
             SELVSTENDIGE_OG_FRILANSERE -> "Søknad om sykepenger fra Selvstendig/Frilanser for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
             ARBEIDSTAKERE -> "Søknad om sykepenger ${soknad.fom!!.format(norskDato)} - ${soknad.tom!!.format(norskDato)}"
             ARBEIDSLEDIG -> "Søknad om sykepenger fra arbeidsledig for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
-            BEHANDLINGSDAGER -> "Søknad om enkeltstående behandlingsdager fra ${soknad.arbeidssituasjon.toString().toLowerCase()} for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
+            BEHANDLINGSDAGER -> "Søknad om enkeltstående behandlingsdager fra ${soknad.arbeidssituasjon.toString().lowercase()} for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
             ANNET_ARBEIDSFORHOLD -> "Søknad om sykepenger med uavklart arbeidssituasjon fra ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
             REISETILSKUDD -> "Søknad om reisetilskudd for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
         }
@@ -118,7 +124,7 @@ constructor(
             SELVSTENDIGE_OG_FRILANSERE -> "Søknad om sykepenger fra Selvstendig/Frilanser for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
             ARBEIDSTAKERE -> "Søknad om sykepenger ${soknad.fom!!.format(norskDato)} - ${soknad.tom!!.format(norskDato)}"
             ARBEIDSLEDIG -> "Søknad om sykepenger fra arbeidsledig for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
-            BEHANDLINGSDAGER -> "Søknad om enkeltstående behandlingsdager fra ${soknad.arbeidssituasjon.toString().toLowerCase()} for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
+            BEHANDLINGSDAGER -> "Søknad om enkeltstående behandlingsdager fra ${soknad.arbeidssituasjon.toString().lowercase()} for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
             ANNET_ARBEIDSFORHOLD -> "Søknad om sykepenger med uavklart arbeidssituasjon fra ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
             REISETILSKUDD -> "Søknad om reisetilskudd for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
         }

@@ -2,6 +2,7 @@ package no.nav.syfo.service
 
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tags
+import no.nav.syfo.client.pdl.PdlClient
 import no.nav.syfo.consumer.aktor.AktorConsumer
 import no.nav.syfo.consumer.bucket.FlexBucketUploaderClient
 import no.nav.syfo.consumer.oppgave.OppgaveConsumer
@@ -35,6 +36,8 @@ class SaksbehandlingsService(
     private val registry: MeterRegistry,
     private val rebehandleSykepengesoknadProducer: RebehandleSykepengesoknadProducer,
     private val flexBucketUploaderClient: FlexBucketUploaderClient,
+    private val identService: IdentService,
+    private val pdlClient: PdlClient,
 ) {
 
     private val log = logger()
@@ -48,7 +51,10 @@ class SaksbehandlingsService(
                 sykepengesoknad.fom,
                 sykepengesoknad.tom
             )
-        val fnr = aktorConsumer.finnFnr(sykepengesoknad.aktorId)
+        val fnr = aktorConsumer.finnFnr(sykepengesoknad.aktorId) // TODO
+        val pdlFnr = identService.hentFnrForAktorId(sykepengesoknad.aktorId)
+        if (pdlFnr != fnr) log.warn("AktorConsumer gir ikke samme resultat som PDL ved henting av fnr")
+
         val soknad = opprettSoknad(sykepengesoknad, fnr)
         val saksId = eksisterendeInnsending?.saksId
             ?: finnEllerOpprettSak(innsendingId, sykepengesoknad.aktorId, soknad.fom)
@@ -58,7 +64,10 @@ class SaksbehandlingsService(
     }
 
     fun opprettOppgave(sykepengesoknad: Sykepengesoknad, innsending: Innsending) {
-        val fnr = aktorConsumer.finnFnr(sykepengesoknad.aktorId)
+        val fnr = aktorConsumer.finnFnr(sykepengesoknad.aktorId) // TODO
+        val pdlFnr = identService.hentFnrForAktorId(sykepengesoknad.aktorId)
+        if (pdlFnr != fnr) log.warn("AktorConsumer gir ikke samme resultat som PDL ved henting av fnr")
+
         val soknad = opprettSoknad(sykepengesoknad, fnr)
 
         val behandlendeEnhet = behandlendeEnhetService.hentBehandlendeEnhet(fnr, soknad.soknadstype)
@@ -75,7 +84,7 @@ class SaksbehandlingsService(
         innsendingDAO.oppdaterOppgaveId(uuid = innsending.innsendingsId, oppgaveId = oppgaveId)
 
         tellInnsendingBehandlet(soknad.soknadstype)
-        log.info("Oppretter oppgave ${innsending.innsendingsId} for ${soknad.soknadstype.name.toLowerCase()} søknad: ${soknad.soknadsId}")
+        log.info("Oppretter oppgave ${innsending.innsendingsId} for ${soknad.soknadstype.name.lowercase()} søknad: ${soknad.soknadsId}")
     }
 
     fun settFerdigbehandlet(innsendingsId: String) {
@@ -127,7 +136,11 @@ class SaksbehandlingsService(
             .allMatch { it == DayOfWeek.SATURDAY || it == DayOfWeek.SUNDAY }
 
     fun opprettSoknad(sykepengesoknad: Sykepengesoknad, fnr: String): Soknad {
-        val soknad = Soknad.lagSoknad(sykepengesoknad, fnr, personConsumer.finnBrukerPersonnavnByFnr(fnr))
+        val navn = personConsumer.finnBrukerPersonnavnByFnr(fnr) // TODO
+        val pdlNavn = pdlClient.hentFormattertNavn(fnr)
+        if (navn != pdlNavn) log.warn("PersonConsumer gir ikke samme resultat som PDL ved henting av navn")
+
+        val soknad = Soknad.lagSoknad(sykepengesoknad, fnr, navn)
 
         return soknad.copy(kvitteringer = soknad.kvitteringer?.map { it.hentOgSettKvittering() })
     }

@@ -9,6 +9,7 @@ import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.syfo.TestApplication
 import no.nav.syfo.any
+import no.nav.syfo.client.pdl.PdlClient
 import no.nav.syfo.consumer.aktor.AktorConsumer
 import no.nav.syfo.consumer.bucket.FlexBucketUploaderClient
 import no.nav.syfo.consumer.oppgave.OppgaveConsumer
@@ -44,7 +45,10 @@ import java.time.LocalDateTime
 @ExtendWith(MockitoExtension::class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class SaksbehandlingsServiceTest {
-
+    @Mock
+    lateinit var pdlClient: PdlClient
+    @Mock
+    lateinit var identService: IdentService
     @Mock
     lateinit var aktorConsumer: AktorConsumer
     @Mock
@@ -74,6 +78,8 @@ class SaksbehandlingsServiceTest {
 
     @BeforeEach
     fun setup() {
+        given(pdlClient.hentFormattertNavn(any())).willReturn("Personnavn")
+        given(identService.hentAktorIdForFnr(any())).willReturn(aktorId)
         given(aktorConsumer.finnFnr(any())).willReturn("12345678901")
         given(personConsumer.finnBrukerPersonnavnByFnr(any())).willReturn("Personnavn")
         given(sakConsumer.opprettSak(any())).willReturn("ny-sak-fra-gsak")

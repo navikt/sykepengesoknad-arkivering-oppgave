@@ -1,10 +1,10 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.springframework.boot") version "2.4.4"
+    id("org.springframework.boot") version "2.4.5"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
-    kotlin("jvm") version "1.4.32"
-    kotlin("plugin.spring") version "1.4.32"
+    kotlin("jvm") version "1.5.0"
+    kotlin("plugin.spring") version "1.5.0"
 }
 
 group = "no.nav.helse.flex"
@@ -30,7 +30,6 @@ val githubPassword: String by project
 apply(plugin = "org.jlleitschuh.gradle.ktlint")
 
 repositories {
-    jcenter()
     mavenCentral()
 
     maven {
@@ -52,7 +51,7 @@ val assertjVersion = "3.19.0"
 val micrometerRegistryPrometheusVersion = "1.7.0"
 val tjenestespesifikasjonerVersion = "1.2019.08.16-13.46-35cbdfd492d4"
 val cxfVersion = "3.4.3"
-val tokenSupportVersion = "1.3.4"
+val tokenSupportVersion = "1.3.7"
 val testContainersVersion = "1.15.3"
 val kluentVersion = "1.65"
 
@@ -83,7 +82,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-jta-atomikos")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("com.oracle.ojdbc:ojdbc8:$ojdbc8Version")
-    implementation("com.h2database:h2:$h2Version")
     implementation("org.flywaydb:flyway-core")
     implementation("org.slf4j:slf4j-api")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashLogbackEncoderVersion")
@@ -92,6 +90,7 @@ dependencies {
     implementation("no.nav.tjenestespesifikasjoner:arbeidsfordeling-v1-tjenestespesifikasjon:$tjenestespesifikasjonerVersion")
     implementation("no.nav.security:token-validation-spring:$tokenSupportVersion")
     implementation("no.nav.security:token-client-spring:$tokenSupportVersion")
+    implementation("com.h2database:h2:$h2Version")
 
     testImplementation("org.amshove.kluent:kluent:$kluentVersion")
     testImplementation("org.springframework.boot:spring-boot-starter-test")

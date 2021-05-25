@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.nav.syfo.TestApplication
+import no.nav.syfo.client.pdl.PdlClient
 import no.nav.syfo.consumer.pdf.PDFConsumer
 import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.Sykepengesoknad
@@ -29,6 +30,8 @@ class BehandleJournalConsumerTest {
     private val personConsumer: PersonConsumer? = null
     @Mock
     private val pdfConsumer: PDFConsumer? = null
+    @Mock
+    private val pdlClient: PdlClient? = null
 
     @InjectMocks
     private val behandleJournalConsumer: BehandleJournalConsumer? = null

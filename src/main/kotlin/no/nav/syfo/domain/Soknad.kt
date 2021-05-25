@@ -77,7 +77,7 @@ private fun Sporsmal.skalMedPaaPdf(): Boolean = this.svartype != Svartype.KVITTE
 
 private fun Sykepengesoknad.hentKvitteringSum(): Int? {
     val hentKvitteringer = hentKvitteringer()
-    return hentKvitteringer?.sumBy { it.belop }
+    return hentKvitteringer?.sumOf { it.belop }
 }
 
 private fun Sykepengesoknad.hentPdfKvitteringer(): List<PdfKvittering>? {

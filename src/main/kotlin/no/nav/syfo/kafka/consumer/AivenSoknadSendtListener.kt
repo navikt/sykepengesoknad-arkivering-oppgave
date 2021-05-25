@@ -8,6 +8,7 @@ import no.nav.syfo.kafka.getSafeNavCallIdHeaderAsString
 import no.nav.syfo.kafka.mapper.toSykepengesoknad
 import no.nav.syfo.logger
 import no.nav.syfo.objectMapper
+import no.nav.syfo.service.IdentService
 import no.nav.syfo.service.SpreOppgaverService
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.MDC
@@ -24,6 +25,7 @@ const val SYKEPENGESOKNAD_TOPIC = "flex." + "sykepengesoknad"
 class AivenSoknadSendtListener(
     private val spreOppgaverService: SpreOppgaverService,
     private val aktorConsumer: AktorConsumer,
+    private val identService: IdentService,
 ) {
 
     private val log = logger()
@@ -39,7 +41,11 @@ class AivenSoknadSendtListener(
             MDC.put(NAV_CALLID, getSafeNavCallIdHeaderAsString(cr.headers()))
 
             val dto = cr.value().tilSykepengesoknadDTO()
-            val aktorId = aktorConsumer.getAktorId(dto.fnr)
+
+            val aktorId = aktorConsumer.getAktorId(dto.fnr) // TODO
+            val pdlAktorId = identService.hentAktorIdForFnr(dto.fnr)
+            if (aktorId != pdlAktorId) log.warn("AktorConsumer gir ikke samme resultat som PDL ved henting av aktorId")
+
             val sykepengesoknad = dto.toSykepengesoknad(aktorId)
             spreOppgaverService.soknadSendt(sykepengesoknad)
 

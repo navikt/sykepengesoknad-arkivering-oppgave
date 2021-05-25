@@ -17,4 +17,8 @@ class OverrideAadRestTemplateConfiguration {
     @Bean
     fun syfosoknadRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate =
         restTemplateBuilder.build()
+
+    @Bean
+    fun pdlRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate =
+        restTemplateBuilder.build()
 }

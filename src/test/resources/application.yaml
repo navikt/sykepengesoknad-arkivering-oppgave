@@ -31,6 +31,7 @@ virksomhet:
 
 mockWS: true
 pdfgen.url: "http://pdf"
+pdl.api.url: "http://pdl-api.pdl"
 
 spring:
   profiles:

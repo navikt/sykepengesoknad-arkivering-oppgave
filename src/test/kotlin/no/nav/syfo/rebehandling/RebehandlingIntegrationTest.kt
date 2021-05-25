@@ -16,6 +16,7 @@ import no.nav.syfo.consumer.sak.SakConsumer
 import no.nav.syfo.kafka.consumer.SYKEPENGESOKNAD_TOPIC
 import no.nav.syfo.mockSykepengesoknadDTO
 import no.nav.syfo.serialisertTilString
+import no.nav.syfo.service.IdentService
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldNotBe
 import org.apache.kafka.clients.producer.KafkaProducer
@@ -38,6 +39,9 @@ class RebehandlingIntegrationTest : AbstractContainerBaseTest() {
     private lateinit var aivenKafkaProducer: KafkaProducer<String, String>
 
     @MockBean
+    private lateinit var identService: IdentService
+
+    @MockBean
     private lateinit var aktorConsumer: AktorConsumer
 
     @MockBean
@@ -58,6 +62,7 @@ class RebehandlingIntegrationTest : AbstractContainerBaseTest() {
         val fnr = "fnr"
         val saksId = "saksId"
 
+        whenever(identService.hentAktorIdForFnr(fnr)).thenReturn(aktorId)
         whenever(aktorConsumer.getAktorId(fnr)).thenReturn(aktorId)
         whenever(aktorConsumer.finnFnr(aktorId)).thenReturn(fnr)
         whenever(sakConsumer.opprettSak(aktorId)).thenReturn(saksId)

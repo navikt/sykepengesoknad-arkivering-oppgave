@@ -72,11 +72,11 @@ class SaksbehandlingIntegrationTest : AbstractContainerBaseTest() {
     fun `test happycase`() {
         val aktorId = "aktor"
         val fnr = "fnr"
+        val saksId = "saksId"
+        val oppgaveID = 1
         whenever(aktorConsumer.finnFnr(aktorId)).thenReturn(fnr)
         whenever(aktorConsumer.getAktorId(fnr)).thenReturn(aktorId)
-        val saksId = "saksId"
         whenever(sakConsumer.opprettSak(aktorId)).thenReturn(saksId)
-        val oppgaveID = 1
         whenever(oppgaveConsumer.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
 
         val soknad = mockSykepengesoknadDTO.copy(
@@ -129,11 +129,11 @@ class SaksbehandlingIntegrationTest : AbstractContainerBaseTest() {
     fun `Kafkamelding med redusertVenteperiode setter riktig behandlingstema`() {
         val aktorId = "aktor"
         val fnr = "fnr"
+        val saksId = "saksId"
+        val oppgaveID = 2
         whenever(aktorConsumer.finnFnr(aktorId)).thenReturn(fnr)
         whenever(aktorConsumer.getAktorId(fnr)).thenReturn(aktorId)
-        val saksId = "saksId"
         whenever(sakConsumer.opprettSak(aktorId)).thenReturn(saksId)
-        val oppgaveID = 2
         whenever(oppgaveConsumer.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
 
         val soknad = SykepengesoknadDTO(
@@ -202,13 +202,12 @@ Ja
     fun `Reisetilskudd søknad behandles korrekt`() {
         val aktorId = "aktor"
         val fnr = "fnr"
+        val saksId = "saksId"
+        val oppgaveID = 3
         whenever(aktorConsumer.finnFnr(aktorId)).thenReturn(fnr)
         whenever(aktorConsumer.getAktorId(fnr)).thenReturn(aktorId)
-        val saksId = "saksId"
         whenever(sakConsumer.opprettSak(aktorId)).thenReturn(saksId)
-
         whenever(flexBucketUploaderClient.hentVedlegg(any())).thenReturn("123".encodeToByteArray())
-        val oppgaveID = 3
         whenever(oppgaveConsumer.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
 
         val soknad = mockReisetilskuddDTO.copy(id = UUID.randomUUID().toString())
@@ -301,13 +300,12 @@ Nei
 
         val aktorId = "aktor"
         val fnr = "fnr"
+        val saksId = "saksId"
+        val oppgaveID = 4
         whenever(aktorConsumer.finnFnr(aktorId)).thenReturn(fnr)
         whenever(aktorConsumer.getAktorId(fnr)).thenReturn(aktorId)
-        val saksId = "saksId"
         whenever(sakConsumer.opprettSak(aktorId)).thenReturn(saksId)
-
         whenever(flexBucketUploaderClient.hentVedlegg(any())).thenReturn("123".encodeToByteArray())
-        val oppgaveID = 4
         whenever(oppgaveConsumer.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
 
         val soknad = mockReisetilskuddDTO
