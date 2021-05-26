@@ -37,7 +37,7 @@ class PersonMock : PersonV3 {
     override fun hentGeografiskTilknytning(hentGeografiskTilknytningRequest: HentGeografiskTilknytningRequest): HentGeografiskTilknytningResponse {
         return HentGeografiskTilknytningResponse().withGeografiskTilknytning(Bydel().withGeografiskTilknytning("Grorud")).also {
             if (returnerKode6) {
-                it.withDiskresjonskode(Diskresjonskoder().withValue("6"))
+                it.withDiskresjonskode(Diskresjonskoder().withValue("SPSF"))
             }
         }
     }
