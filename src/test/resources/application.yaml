@@ -21,7 +21,6 @@ servicegateway.url: http://servicegateway.url
 security.token.service.token.url: "https://sts-q1.preprod.local:8080/SecurityTokenServiceProvider/"
 
 behandleJournal.v2.endpointurl: "http://behandleJournalv2.url"
-aktoerregister.api.v1.url: "http://aktoerregister.api.v1.url"
 sak.saker.url: "http://sak.saker.url"
 oppgave.oppgaver.url: "http://oppgave.oppgaver.url"
 

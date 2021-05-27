@@ -4,7 +4,6 @@ import com.nhaarman.mockitokotlin2.*
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import no.nav.syfo.AbstractContainerBaseTest
 import no.nav.syfo.TestApplication
-import no.nav.syfo.consumer.aktor.AktorConsumer
 import no.nav.syfo.consumer.bucket.FlexBucketUploaderClient
 import no.nav.syfo.consumer.oppgave.OppgaveConsumer
 import no.nav.syfo.consumer.oppgave.OppgaveRequest
@@ -42,9 +41,6 @@ import java.util.*
 class SaksbehandlingIntegrationTest : AbstractContainerBaseTest() {
 
     @MockBean
-    private lateinit var aktorConsumer: AktorConsumer
-
-    @MockBean
     private lateinit var sakConsumer: SakConsumer
 
     @MockBean
@@ -70,12 +66,9 @@ class SaksbehandlingIntegrationTest : AbstractContainerBaseTest() {
 
     @Test
     fun `test happycase`() {
-        val aktorId = "aktor"
-        val fnr = "fnr"
+        val aktorId = "298374918"
         val saksId = "saksId"
         val oppgaveID = 1
-        whenever(aktorConsumer.finnFnr(aktorId)).thenReturn(fnr)
-        whenever(aktorConsumer.getAktorId(fnr)).thenReturn(aktorId)
         whenever(sakConsumer.opprettSak(aktorId)).thenReturn(saksId)
         whenever(oppgaveConsumer.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
 
@@ -127,12 +120,9 @@ class SaksbehandlingIntegrationTest : AbstractContainerBaseTest() {
 
     @Test
     fun `Kafkamelding med redusertVenteperiode setter riktig behandlingstema`() {
-        val aktorId = "aktor"
-        val fnr = "fnr"
+        val aktorId = "298374918"
         val saksId = "saksId"
         val oppgaveID = 2
-        whenever(aktorConsumer.finnFnr(aktorId)).thenReturn(fnr)
-        whenever(aktorConsumer.getAktorId(fnr)).thenReturn(aktorId)
         whenever(sakConsumer.opprettSak(aktorId)).thenReturn(saksId)
         whenever(oppgaveConsumer.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
 
@@ -200,12 +190,9 @@ Ja
 
     @Test
     fun `Reisetilskudd søknad behandles korrekt`() {
-        val aktorId = "aktor"
-        val fnr = "fnr"
+        val aktorId = "298374918"
         val saksId = "saksId"
         val oppgaveID = 3
-        whenever(aktorConsumer.finnFnr(aktorId)).thenReturn(fnr)
-        whenever(aktorConsumer.getAktorId(fnr)).thenReturn(aktorId)
         whenever(sakConsumer.opprettSak(aktorId)).thenReturn(saksId)
         whenever(flexBucketUploaderClient.hentVedlegg(any())).thenReturn("123".encodeToByteArray())
         whenever(oppgaveConsumer.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
@@ -298,12 +285,9 @@ Nei
     fun `Reisetilskudd for kode 6 går til Vikafossen`() {
         personMock.returnerKode6 = true
 
-        val aktorId = "aktor"
-        val fnr = "fnr"
+        val aktorId = "298374918"
         val saksId = "saksId"
         val oppgaveID = 4
-        whenever(aktorConsumer.finnFnr(aktorId)).thenReturn(fnr)
-        whenever(aktorConsumer.getAktorId(fnr)).thenReturn(aktorId)
         whenever(sakConsumer.opprettSak(aktorId)).thenReturn(saksId)
         whenever(flexBucketUploaderClient.hentVedlegg(any())).thenReturn("123".encodeToByteArray())
         whenever(oppgaveConsumer.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))

@@ -3,7 +3,6 @@ package no.nav.syfo.service
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tags
 import no.nav.syfo.client.pdl.PdlClient
-import no.nav.syfo.consumer.aktor.AktorConsumer
 import no.nav.syfo.consumer.bucket.FlexBucketUploaderClient
 import no.nav.syfo.consumer.oppgave.OppgaveConsumer
 import no.nav.syfo.consumer.repository.InnsendingDAO
@@ -30,7 +29,6 @@ class SaksbehandlingsService(
     private val oppgaveConsumer: OppgaveConsumer,
     private val behandleJournalConsumer: BehandleJournalConsumer,
     private val behandlendeEnhetService: BehandlendeEnhetService,
-    private val aktorConsumer: AktorConsumer,
     private val innsendingDAO: InnsendingDAO,
     private val personConsumer: PersonConsumer,
     private val registry: MeterRegistry,
@@ -51,9 +49,7 @@ class SaksbehandlingsService(
                 sykepengesoknad.fom,
                 sykepengesoknad.tom
             )
-        val fnr = aktorConsumer.finnFnr(sykepengesoknad.aktorId) // TODO
-        val pdlFnr = identService.hentFnrForAktorId(sykepengesoknad.aktorId)
-        if (pdlFnr != fnr) log.warn("AktorConsumer gir ikke samme resultat som PDL ved henting av fnr")
+        val fnr = identService.hentFnrForAktorId(sykepengesoknad.aktorId)
 
         val soknad = opprettSoknad(sykepengesoknad, fnr)
         val saksId = eksisterendeInnsending?.saksId
@@ -64,9 +60,7 @@ class SaksbehandlingsService(
     }
 
     fun opprettOppgave(sykepengesoknad: Sykepengesoknad, innsending: Innsending) {
-        val fnr = aktorConsumer.finnFnr(sykepengesoknad.aktorId) // TODO
-        val pdlFnr = identService.hentFnrForAktorId(sykepengesoknad.aktorId)
-        if (pdlFnr != fnr) log.warn("AktorConsumer gir ikke samme resultat som PDL ved henting av fnr")
+        val fnr = identService.hentFnrForAktorId(sykepengesoknad.aktorId)
 
         val soknad = opprettSoknad(sykepengesoknad, fnr)
 

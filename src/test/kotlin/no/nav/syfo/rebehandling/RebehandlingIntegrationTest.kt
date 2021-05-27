@@ -7,7 +7,6 @@ import com.nhaarman.mockitokotlin2.whenever
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import no.nav.syfo.AbstractContainerBaseTest
 import no.nav.syfo.TestApplication
-import no.nav.syfo.consumer.aktor.AktorConsumer
 import no.nav.syfo.consumer.pdf.PDFConsumer
 import no.nav.syfo.consumer.repository.InnsendingDAO
 import no.nav.syfo.consumer.repository.OppgaveStatus
@@ -16,7 +15,6 @@ import no.nav.syfo.consumer.sak.SakConsumer
 import no.nav.syfo.kafka.consumer.SYKEPENGESOKNAD_TOPIC
 import no.nav.syfo.mockSykepengesoknadDTO
 import no.nav.syfo.serialisertTilString
-import no.nav.syfo.service.IdentService
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldNotBe
 import org.apache.kafka.clients.producer.KafkaProducer
@@ -39,12 +37,6 @@ class RebehandlingIntegrationTest : AbstractContainerBaseTest() {
     private lateinit var aivenKafkaProducer: KafkaProducer<String, String>
 
     @MockBean
-    private lateinit var identService: IdentService
-
-    @MockBean
-    private lateinit var aktorConsumer: AktorConsumer
-
-    @MockBean
     private lateinit var sakConsumer: SakConsumer
 
     @MockBean
@@ -58,13 +50,10 @@ class RebehandlingIntegrationTest : AbstractContainerBaseTest() {
 
     @Test
     fun `Behandling av søknad feiler og rebehandles`() {
-        val aktorId = "aktor"
+        val aktorId = "298374918"
         val fnr = "fnr"
         val saksId = "saksId"
 
-        whenever(identService.hentAktorIdForFnr(fnr)).thenReturn(aktorId)
-        whenever(aktorConsumer.getAktorId(fnr)).thenReturn(aktorId)
-        whenever(aktorConsumer.finnFnr(aktorId)).thenReturn(fnr)
         whenever(sakConsumer.opprettSak(aktorId)).thenReturn(saksId)
         whenever(pdfConsumer.getPDF(any(), any())).thenThrow(RuntimeException("OOOPS")).thenReturn("pdf".toByteArray())
 

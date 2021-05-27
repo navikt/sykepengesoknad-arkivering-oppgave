@@ -5,7 +5,6 @@ import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import no.nav.syfo.AbstractContainerBaseTest
 import no.nav.syfo.TestApplication
 import no.nav.syfo.any
-import no.nav.syfo.consumer.aktor.AktorConsumer
 import no.nav.syfo.consumer.repository.OppgaveStatus
 import no.nav.syfo.consumer.repository.OppgavestyringDAO
 import no.nav.syfo.consumer.syfosoknad.SyfosoknadConsumer
@@ -59,9 +58,6 @@ class E2ETest : AbstractContainerBaseTest() {
     @MockBean
     lateinit var syfosoknadConsumer: SyfosoknadConsumer
 
-    @MockBean
-    lateinit var aktorConsumer: AktorConsumer
-
     @Autowired
     lateinit var spreOppgaverListener: SpreOppgaverListener
 
@@ -93,7 +89,6 @@ class E2ETest : AbstractContainerBaseTest() {
                 aktorId = aktørId
             )
         )
-        whenever(aktorConsumer.getAktorId(fnr)).thenReturn(aktørId)
     }
 
     @Test

@@ -1,7 +1,6 @@
 package no.nav.syfo.kafka.consumer
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import no.nav.syfo.consumer.aktor.AktorConsumer
 import no.nav.syfo.kafka.NAV_CALLID
 import no.nav.syfo.kafka.felles.SykepengesoknadDTO
 import no.nav.syfo.kafka.getSafeNavCallIdHeaderAsString
@@ -24,7 +23,6 @@ const val SYKEPENGESOKNAD_TOPIC = "flex." + "sykepengesoknad"
 @Component
 class AivenSoknadSendtListener(
     private val spreOppgaverService: SpreOppgaverService,
-    private val aktorConsumer: AktorConsumer,
     private val identService: IdentService,
 ) {
 
@@ -42,9 +40,7 @@ class AivenSoknadSendtListener(
 
             val dto = cr.value().tilSykepengesoknadDTO()
 
-            val aktorId = aktorConsumer.getAktorId(dto.fnr) // TODO
-            val pdlAktorId = identService.hentAktorIdForFnr(dto.fnr)
-            if (aktorId != pdlAktorId) log.warn("AktorConsumer gir ikke samme resultat som PDL ved henting av aktorId")
+            val aktorId = identService.hentAktorIdForFnr(dto.fnr)
 
             val sykepengesoknad = dto.toSykepengesoknad(aktorId)
             spreOppgaverService.soknadSendt(sykepengesoknad)

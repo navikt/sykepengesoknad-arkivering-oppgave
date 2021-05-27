@@ -10,7 +10,6 @@ import io.micrometer.core.instrument.MeterRegistry
 import no.nav.syfo.TestApplication
 import no.nav.syfo.any
 import no.nav.syfo.client.pdl.PdlClient
-import no.nav.syfo.consumer.aktor.AktorConsumer
 import no.nav.syfo.consumer.bucket.FlexBucketUploaderClient
 import no.nav.syfo.consumer.oppgave.OppgaveConsumer
 import no.nav.syfo.consumer.oppgave.OppgaveRequest
@@ -50,8 +49,6 @@ class SaksbehandlingsServiceTest {
     @Mock
     lateinit var identService: IdentService
     @Mock
-    lateinit var aktorConsumer: AktorConsumer
-    @Mock
     lateinit var personConsumer: PersonConsumer
     @Mock
     lateinit var innsendingDAO: InnsendingDAO
@@ -75,12 +72,13 @@ class SaksbehandlingsServiceTest {
 
     private val objectMapper = ObjectMapper().registerModules(JavaTimeModule(), KotlinModule())
     private val aktorId = "aktorId-745463060"
+    private val fnr = "12345678901"
 
     @BeforeEach
     fun setup() {
         given(pdlClient.hentFormattertNavn(any())).willReturn("Personnavn")
         given(identService.hentAktorIdForFnr(any())).willReturn(aktorId)
-        given(aktorConsumer.finnFnr(any())).willReturn("12345678901")
+        given(identService.hentFnrForAktorId(any())).willReturn(fnr)
         given(personConsumer.finnBrukerPersonnavnByFnr(any())).willReturn("Personnavn")
         given(sakConsumer.opprettSak(any())).willReturn("ny-sak-fra-gsak")
         given(behandleJournalConsumer.opprettJournalpost(any(), any())).willReturn("journalpostId")
