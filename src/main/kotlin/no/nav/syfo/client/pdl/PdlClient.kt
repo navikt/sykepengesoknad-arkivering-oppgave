@@ -24,31 +24,6 @@ class PdlClient(
     private val TEMA_SYK = "SYK"
     private val IDENT = "ident"
 
-    private val HENT_IDENTER_QUERY =
-        """
-query(${"$"}ident: ID!){
-  hentIdenter(ident: ${"$"}ident, historikk: false) {
-    identer {
-      ident,
-      gruppe
-    }
-  }
-}
-"""
-
-    private val HENT_NAVN_QUERY =
-        """
-query(${"$"}ident: ID!){
-  hentPerson(ident: ${"$"}ident) {
-  	navn(historikk: false) {
-  	  fornavn
-  	  mellomnavn
-  	  etternavn
-    }
-  }
-}
-"""
-
     @Retryable(exclude = [FunctionalPdlError::class])
     fun hentIdenter(ident: String): HentIdenterResponseData {
 
@@ -104,7 +79,32 @@ query(${"$"}ident: ID!){
         throw FunctionalPdlError("Fant ikke person, ingen body eller data. ${parsedResponse.hentErrors()}")
     }
 
-    // TODO: hentGeografiskTilknytning
+    @Retryable(exclude = [FunctionalPdlError::class])
+    fun hentGeografiskTilknytning(fnr: String): HentGeografiskTilknytningResponseData {
+
+        val graphQLRequest = GraphQLRequest(
+            query = HENT_GEOGRAFISK_TILKNYTNING_QUERY,
+            variables = Collections.singletonMap(IDENT, fnr)
+        )
+
+        val responseEntity = pdlRestTemplate.exchange(
+            "$pdlApiUrl/graphql",
+            HttpMethod.POST,
+            HttpEntity(requestToJson(graphQLRequest), createHeaderWithTema()),
+            String::class.java
+        )
+
+        if (responseEntity.statusCode != HttpStatus.OK) {
+            throw RuntimeException("PDL svarer med status ${responseEntity.statusCode} - ${responseEntity.body}")
+        }
+
+        val parsedResponse: HentGeografiskTilknytningResponse? = responseEntity.body?.let { objectMapper.readValue(it) }
+
+        parsedResponse?.data?.let {
+            return it
+        }
+        throw FunctionalPdlError("Fant ikke person, ingen body eller data. ${parsedResponse.hentErrors()}")
+    }
 
     private fun createHeaderWithTema(): HttpHeaders {
         val headers = createHeader()
@@ -131,6 +131,10 @@ query(${"$"}ident: ID!){
     }
 
     private fun HentNavnResponse?.hentErrors(): String? {
+        return this?.errors?.map { it.message }?.joinToString(" - ")
+    }
+
+    private fun HentGeografiskTilknytningResponse?.hentErrors(): String? {
         return this?.errors?.map { it.message }?.joinToString(" - ")
     }
 
