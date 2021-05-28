@@ -2,8 +2,6 @@ package no.nav.syfo.consumer.pdf
 
 import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.PDFTemplate
-import no.nav.syfo.logger
-import no.nav.syfo.serialisertTilString
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -21,8 +19,6 @@ class PDFConsumer(
     @Value("\${pdfgen.url}") private val pdfgenUrl: String
 ) {
 
-    val log = logger()
-
     @Retryable(backoff = Backoff(delay = 5000))
     fun getPDF(soknad: Soknad, template: PDFTemplate): ByteArray? {
         val url = "$pdfgenUrl/api/v1/genpdf/syfosoknader/" + template.endpoint
@@ -30,13 +26,7 @@ class PDFConsumer(
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
 
-        val entity = try {
-            HttpEntity(soknad, headers)
-        } catch (e: Exception) {
-            val length = soknad.serialisertTilString().length
-            log.warn("Serialisert lengde er $length")
-            throw e
-        }
+        val entity = HttpEntity(soknad, headers)
 
         val result = restTemplate.exchange(url, HttpMethod.POST, entity, ByteArray::class.java)
 
