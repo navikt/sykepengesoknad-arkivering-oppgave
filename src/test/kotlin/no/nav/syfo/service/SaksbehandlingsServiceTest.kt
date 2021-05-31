@@ -18,7 +18,6 @@ import no.nav.syfo.consumer.repository.InnsendingDAO
 import no.nav.syfo.consumer.repository.TidligereInnsending
 import no.nav.syfo.consumer.sak.SakConsumer
 import no.nav.syfo.consumer.ws.BehandleJournalConsumer
-import no.nav.syfo.consumer.ws.PersonConsumer
 import no.nav.syfo.domain.Innsending
 import no.nav.syfo.domain.dto.Soknadstype.ARBEIDSTAKERE
 import no.nav.syfo.domain.dto.Sykepengesoknad
@@ -49,8 +48,6 @@ class SaksbehandlingsServiceTest {
     @Mock
     lateinit var identService: IdentService
     @Mock
-    lateinit var personConsumer: PersonConsumer
-    @Mock
     lateinit var innsendingDAO: InnsendingDAO
     @Mock
     lateinit var sakConsumer: SakConsumer
@@ -79,7 +76,6 @@ class SaksbehandlingsServiceTest {
         given(pdlClient.hentFormattertNavn(any())).willReturn("Personnavn")
         given(identService.hentAktorIdForFnr(any())).willReturn(aktorId)
         given(identService.hentFnrForAktorId(any())).willReturn(fnr)
-        given(personConsumer.finnBrukerPersonnavnByFnr(any())).willReturn("Personnavn")
         given(sakConsumer.opprettSak(any())).willReturn("ny-sak-fra-gsak")
         given(behandleJournalConsumer.opprettJournalpost(any(), any())).willReturn("journalpostId")
         given(behandlendeEnhetService.hentBehandlendeEnhet("12345678901", ARBEIDSTAKERE)).willReturn("2017")

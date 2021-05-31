@@ -66,7 +66,7 @@ fun HentGeografiskTilknytning.finnGT(): String? {
 
 fun HentPerson.getDiskresjonskode(): String? {
     return when (adressebeskyttelse?.lastOrNull()?.gradering) {
-        Gradering.STRENGT_FORTROLIG -> "SPSF"
+        Gradering.STRENGT_FORTROLIG, Gradering.STRENGT_FORTROLIG_UTLAND -> "SPSF"
         Gradering.FORTROLIG -> "SPFO"
         else -> null
     }

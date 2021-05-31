@@ -8,7 +8,6 @@ import no.nav.syfo.consumer.oppgave.OppgaveConsumer
 import no.nav.syfo.consumer.repository.InnsendingDAO
 import no.nav.syfo.consumer.sak.SakConsumer
 import no.nav.syfo.consumer.ws.BehandleJournalConsumer
-import no.nav.syfo.consumer.ws.PersonConsumer
 import no.nav.syfo.domain.Innsending
 import no.nav.syfo.domain.PdfKvittering
 import no.nav.syfo.domain.Soknad
@@ -30,7 +29,6 @@ class SaksbehandlingsService(
     private val behandleJournalConsumer: BehandleJournalConsumer,
     private val behandlendeEnhetService: BehandlendeEnhetService,
     private val innsendingDAO: InnsendingDAO,
-    private val personConsumer: PersonConsumer,
     private val registry: MeterRegistry,
     private val rebehandleSykepengesoknadProducer: RebehandleSykepengesoknadProducer,
     private val flexBucketUploaderClient: FlexBucketUploaderClient,
@@ -130,9 +128,7 @@ class SaksbehandlingsService(
             .allMatch { it == DayOfWeek.SATURDAY || it == DayOfWeek.SUNDAY }
 
     fun opprettSoknad(sykepengesoknad: Sykepengesoknad, fnr: String): Soknad {
-        val navn = personConsumer.finnBrukerPersonnavnByFnr(fnr) // TODO
-        val pdlNavn = pdlClient.hentFormattertNavn(fnr)
-        if (navn != pdlNavn) log.warn("PersonConsumer gir ikke samme resultat som PDL ved henting av navn")
+        val navn = pdlClient.hentFormattertNavn(fnr)
 
         val soknad = Soknad.lagSoknad(sykepengesoknad, fnr, navn)
 

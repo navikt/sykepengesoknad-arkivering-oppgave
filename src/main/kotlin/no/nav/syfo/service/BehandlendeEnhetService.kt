@@ -4,6 +4,7 @@ import no.nav.syfo.client.pdl.PdlClient
 import no.nav.syfo.client.pdl.finnGT
 import no.nav.syfo.client.pdl.getDiskresjonskode
 import no.nav.syfo.consumer.ws.ArbeidsfordelingConsumer
+import no.nav.syfo.consumer.ws.GeografiskTilknytning
 import no.nav.syfo.consumer.ws.PersonConsumer
 import no.nav.syfo.domain.dto.Soknadstype
 import org.springframework.stereotype.Component
@@ -26,14 +27,6 @@ class BehandlendeEnhetService(
         val pdlGT = pdlRes.hentGeografiskTilknytning.finnGT()
         val diskresjonskode = pdlRes.hentPerson.getDiskresjonskode()
 
-        if (geografiskTilknytning.geografiskTilknytning != pdlGT) {
-            log.warn("PV3 = ${geografiskTilknytning.geografiskTilknytning}, PDL = $pdlGT")
-        }
-
-        if (diskresjonskode != geografiskTilknytning.diskresjonskode) {
-            log.warn("PV3 og PDL gir ikke samme resultat for hentGeografiskTilknytning")
-        }
-
         if (soknadstype == Soknadstype.REISETILSKUDD) {
             if (geografiskTilknytning.diskresjonskode == DISKRESJONSKODE_KODE6) {
                 return NAV_VIKAFOSSEN
@@ -41,6 +34,24 @@ class BehandlendeEnhetService(
             return "4488"
         }
 
-        return arbeidsfordelingConsumer.finnBehandlendeEnhet(geografiskTilknytning, soknadstype)
+        val arbeidsfordeling = arbeidsfordelingConsumer.finnBehandlendeEnhet(geografiskTilknytning, soknadstype)
+        val pdlArbeidsfordeling = arbeidsfordelingConsumer.finnBehandlendeEnhet(GeografiskTilknytning(pdlGT, diskresjonskode), soknadstype)
+
+        if (arbeidsfordeling != pdlArbeidsfordeling) {
+            log.warn("arbeidsfordeling: $arbeidsfordeling, pdl: $pdlArbeidsfordeling")
+            if (geografiskTilknytning.diskresjonskode == DISKRESJONSKODE_KODE6 &&
+                diskresjonskode != DISKRESJONSKODE_KODE6
+            ) {
+                log.warn("GT case 1, pdl: $diskresjonskode")
+            } else if (geografiskTilknytning.diskresjonskode == DISKRESJONSKODE_KODE7 &&
+                diskresjonskode != DISKRESJONSKODE_KODE7
+            ) {
+                log.warn("GT case 2, pdl: $diskresjonskode")
+            } else if (geografiskTilknytning.diskresjonskode != diskresjonskode) {
+                log.warn("Disk: ${geografiskTilknytning.diskresjonskode}, pdl: $diskresjonskode")
+            }
+        }
+
+        return arbeidsfordeling
     }
 }

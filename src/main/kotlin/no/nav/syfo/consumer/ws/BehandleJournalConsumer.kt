@@ -24,7 +24,6 @@ import javax.inject.Inject
 class BehandleJournalConsumer @Inject
 constructor(
     private val behandleJournalV2: BehandleJournalV2,
-    private val personConsumer: PersonConsumer,
     private val pdfConsumer: PDFConsumer,
     private val pdlClient: PdlClient,
 ) {
@@ -46,9 +45,7 @@ constructor(
 
     private fun journalforSoknad(soknad: Soknad, saksId: String, pdf: ByteArray?): String {
         try {
-            val navn = personConsumer.finnBrukerPersonnavnByFnr(soknad.fnr!!) // TODO
-            val pdlNavn = pdlClient.hentFormattertNavn(soknad.fnr!!)
-            if (navn != pdlNavn) log.warn("PersonConsumer gir ikke samme resultat som PDL ved henting av navn")
+            val navn = pdlClient.hentFormattertNavn(soknad.fnr!!)
 
             return behandleJournalV2.journalfoerInngaaendeHenvendelse(
                 JournalfoerInngaaendeHenvendelseRequest()

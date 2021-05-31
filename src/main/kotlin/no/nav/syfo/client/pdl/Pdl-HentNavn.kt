@@ -35,10 +35,10 @@ data class Navn(
 )
 
 fun Navn.format(): String {
-    val navn = if (mellomnavn != null) {
-        "$fornavn $mellomnavn $etternavn"
-    } else {
-        "$fornavn $etternavn"
+    val navn: String = when {
+        fornavn.isBlank() -> etternavn
+        mellomnavn.isNullOrBlank() -> "$fornavn $etternavn"
+        else -> "$fornavn $mellomnavn $etternavn"
     }
 
     return WordUtils.capitalizeFully(navn, ' ', '-')

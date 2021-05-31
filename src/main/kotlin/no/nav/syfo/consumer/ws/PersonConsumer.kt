@@ -6,10 +6,7 @@ import no.nav.tjeneste.virksomhet.person.v3.binding.HentGeografiskTilknytningSik
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.NorskIdent
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Personnavn
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentGeografiskTilknytningRequest
-import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonnavnBolkRequest
-import org.apache.commons.text.WordUtils
 import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
@@ -19,18 +16,6 @@ import javax.inject.Inject
 class PersonConsumer @Inject
 constructor(private val personV3: PersonV3) {
     private val log = logger()
-
-    @Retryable(backoff = Backoff(delay = 5000))
-    fun finnBrukerPersonnavnByFnr(fnr: String): String {
-        return personV3.hentPersonnavnBolk(
-            HentPersonnavnBolkRequest()
-                .withAktoerListe(PersonIdent().withIdent(NorskIdent().withIdent(fnr)))
-        )
-            .aktoerHarNavnListe
-            .map { it.personnavn }
-            .map { fulltNavn(it) }
-            .first()
-    }
 
     @Retryable(backoff = Backoff(delay = 5000))
     fun hentGeografiskTilknytning(fnr: String): GeografiskTilknytning {
@@ -54,15 +39,5 @@ constructor(private val personV3: PersonV3) {
             log.error("Feil ved henting av geografisk tilknytning", e)
             throw RuntimeException("Feil ved henting av geografisk tilknytning", e)
         }
-    }
-
-    private fun fulltNavn(personnavn: Personnavn): String {
-        val navn: String = when {
-            personnavn.fornavn.isNullOrBlank() -> personnavn.etternavn
-            personnavn.mellomnavn.isNullOrBlank() -> personnavn.fornavn + " " + personnavn.etternavn
-            else -> personnavn.fornavn + " " + personnavn.mellomnavn + " " + personnavn.etternavn
-        }
-
-        return WordUtils.capitalizeFully(navn, ' ', '-')
     }
 }
