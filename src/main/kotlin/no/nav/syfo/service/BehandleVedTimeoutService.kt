@@ -22,6 +22,7 @@ class BehandleVedTimeoutService(
     private val syfosoknadConsumer: SyfosoknadConsumer,
     private val toggle: Toggle,
     private val registry: MeterRegistry,
+    private val identService: IdentService
 ) {
     private val log = logger()
 
@@ -33,8 +34,10 @@ class BehandleVedTimeoutService(
             try {
                 val innsending = saksbehandlingsService.finnEksisterendeInnsending(it.søknadsId)
                 if (innsending != null) {
-                    val søknad = syfosoknadConsumer.hentSoknad(it.søknadsId).toSykepengesoknad()
-                    saksbehandlingsService.opprettOppgave(søknad, innsending)
+                    val soknadDTO = syfosoknadConsumer.hentSoknad(it.søknadsId)
+                    val aktorId = identService.hentAktorIdForFnr(soknadDTO.fnr)
+                    val soknad = soknadDTO.toSykepengesoknad(aktorId)
+                    saksbehandlingsService.opprettOppgave(soknad, innsending)
                     oppgavestyringDAO.oppdaterOppgave(UUID.fromString(it.søknadsId), null, OppgaveStatus.Opprettet)
                 } else {
                     log.info("Fant ikke eksisterende innsending, ignorerer søknad med id ${it.søknadsId}")

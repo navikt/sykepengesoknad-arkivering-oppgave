@@ -38,6 +38,9 @@ class BehandleVedTimeoutServiceTest {
     @Mock
     lateinit var registry: MeterRegistry
 
+    @Mock
+    lateinit var identService: IdentService
+
     @InjectMocks
     lateinit var behandleVedTimeoutService: BehandleVedTimeoutService
 
@@ -47,8 +50,7 @@ class BehandleVedTimeoutServiceTest {
 
     fun mockHenting() {
         whenever(syfosoknadConsumer.hentSoknad(any())).thenReturn(
-            DeprecatedSykepengesoknadDTO(
-                aktorId = "aktor",
+            SykepengesoknadDTO(
                 id = UUID.randomUUID().toString(),
                 opprettet = LocalDateTime.now(),
                 fom = LocalDate.of(2019, 5, 4),
@@ -66,8 +68,11 @@ class BehandleVedTimeoutServiceTest {
                 ),
                 status = SoknadsstatusDTO.SENDT,
                 sendtNav = LocalDateTime.now(),
-                fodselsnummer = SkjultVerdi("fnr")
+                fnr = "fnr"
             )
+        )
+        whenever(identService.hentAktorIdForFnr(any())).thenReturn(
+            "aktor"
         )
     }
 

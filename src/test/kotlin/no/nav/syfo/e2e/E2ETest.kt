@@ -14,7 +14,6 @@ import no.nav.syfo.domain.OppdateringstypeDTO
 import no.nav.syfo.domain.OppgaveDTO
 import no.nav.syfo.kafka.consumer.AivenSoknadSendtListener
 import no.nav.syfo.kafka.consumer.SpreOppgaverListener
-import no.nav.syfo.kafka.felles.DeprecatedSykepengesoknadDTO
 import no.nav.syfo.kafka.felles.SoknadsstatusDTO
 import no.nav.syfo.kafka.felles.SoknadstypeDTO
 import no.nav.syfo.kafka.felles.SporsmalDTO
@@ -84,9 +83,7 @@ class E2ETest : AbstractContainerBaseTest() {
         whenever(syfosoknadConsumer.hentSoknad(any())).thenReturn(
             objectMapper.readValue(
                 søknad().serialisertTilString(),
-                DeprecatedSykepengesoknadDTO::class.java
-            ).copy(
-                aktorId = aktørId
+                SykepengesoknadDTO::class.java
             )
         )
     }
