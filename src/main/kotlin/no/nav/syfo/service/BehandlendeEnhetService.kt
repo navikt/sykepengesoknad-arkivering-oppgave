@@ -24,8 +24,8 @@ class BehandlendeEnhetService(
         val geografiskTilknytning = personConsumer.hentGeografiskTilknytning(fnr)
 
         val pdlRes = pdlClient.hentGeografiskTilknytning(fnr)
-        val pdlGT = pdlRes.hentGeografiskTilknytning.finnGT()
-        val diskresjonskode = pdlRes.hentPerson.getDiskresjonskode()
+        val pdlGT = pdlRes.hentGeografiskTilknytning?.finnGT()
+        val diskresjonskode = pdlRes.hentPerson?.getDiskresjonskode()
 
         if (soknadstype == Soknadstype.REISETILSKUDD) {
             if (geografiskTilknytning.diskresjonskode == DISKRESJONSKODE_KODE6) {

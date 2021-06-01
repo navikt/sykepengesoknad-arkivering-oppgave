@@ -23,8 +23,8 @@ data class HentGeografiskTilknytningResponse(
 )
 
 data class HentGeografiskTilknytningResponseData(
-    val hentGeografiskTilknytning: HentGeografiskTilknytning,
-    val hentPerson: HentPerson
+    val hentGeografiskTilknytning: HentGeografiskTilknytning? = null,
+    val hentPerson: HentPerson? = null
 )
 
 data class HentGeografiskTilknytning(

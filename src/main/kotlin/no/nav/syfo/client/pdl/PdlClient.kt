@@ -100,10 +100,17 @@ class PdlClient(
 
         val parsedResponse: HentGeografiskTilknytningResponse? = responseEntity.body?.let { objectMapper.readValue(it) }
 
-        parsedResponse?.data?.let {
-            return it
+        if (parsedResponse?.errors != null) {
+            throw FunctionalPdlError("PDL hentGeografiskTilknytning kastet error: ${parsedResponse.hentErrors()}")
         }
-        throw FunctionalPdlError("Fant ikke person, ingen body eller data. ${parsedResponse.hentErrors()}")
+        if (parsedResponse?.data?.hentGeografiskTilknytning == null) {
+            throw FunctionalPdlError("Klarte ikke hente ut GeografiskTilknytning fra PDL")
+        }
+        if (parsedResponse.data.hentPerson?.adressebeskyttelse == null) {
+            throw FunctionalPdlError("Klarte ikke hente ut Person fra PDL")
+        }
+
+        return parsedResponse.data
     }
 
     private fun createHeaderWithTema(): HttpHeaders {
