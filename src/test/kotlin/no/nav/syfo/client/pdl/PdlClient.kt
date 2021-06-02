@@ -6,6 +6,9 @@ import org.springframework.stereotype.Component
 @Component
 @Profile("test")
 class PdlClient {
+
+    var returnerKode6 = false
+
     fun hentIdenter(ident: String) = HentIdenterResponseData(
         HentIdenter(
             listOf(
@@ -32,7 +35,7 @@ class PdlClient {
         HentPerson(
             listOf(
                 Adressebeskyttelse(
-                    gradering = Gradering.UGRADERT
+                    gradering = if (returnerKode6) Gradering.STRENGT_FORTROLIG else Gradering.UGRADERT
                 )
             )
         )

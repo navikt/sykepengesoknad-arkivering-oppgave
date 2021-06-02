@@ -27,8 +27,6 @@ class BehandleJournalConsumerTest {
     @Mock
     private val behandleJournalV2: BehandleJournalV2? = null
     @Mock
-    private val personConsumer: PersonConsumer? = null
-    @Mock
     private val pdfConsumer: PDFConsumer? = null
     @Mock
     private val pdlClient: PdlClient? = null

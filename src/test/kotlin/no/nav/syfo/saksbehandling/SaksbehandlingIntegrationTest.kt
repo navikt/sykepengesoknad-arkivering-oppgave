@@ -4,6 +4,7 @@ import com.nhaarman.mockitokotlin2.*
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import no.nav.syfo.AbstractContainerBaseTest
 import no.nav.syfo.TestApplication
+import no.nav.syfo.client.pdl.PdlClient
 import no.nav.syfo.consumer.bucket.FlexBucketUploaderClient
 import no.nav.syfo.consumer.oppgave.OppgaveConsumer
 import no.nav.syfo.consumer.oppgave.OppgaveRequest
@@ -17,7 +18,6 @@ import no.nav.syfo.domain.dto.Svartype
 import no.nav.syfo.kafka.consumer.SYKEPENGESOKNAD_TOPIC
 import no.nav.syfo.kafka.felles.*
 import no.nav.syfo.mock.BehandleJournalMock
-import no.nav.syfo.mock.PersonMock
 import no.nav.syfo.mockReisetilskuddDTO
 import no.nav.syfo.mockSykepengesoknadDTO
 import no.nav.syfo.serialisertTilString
@@ -53,10 +53,10 @@ class SaksbehandlingIntegrationTest : AbstractContainerBaseTest() {
     private lateinit var flexBucketUploaderClient: FlexBucketUploaderClient
 
     @Autowired
-    private lateinit var behandleJournalV2: BehandleJournalMock
+    private lateinit var pdlClient: PdlClient
 
     @Autowired
-    private lateinit var personMock: PersonMock
+    private lateinit var behandleJournalV2: BehandleJournalMock
 
     @Autowired
     private lateinit var innsendingDAO: InnsendingDAO
@@ -283,14 +283,13 @@ Nei
 
     @Test
     fun `Reisetilskudd for kode 6 går til Vikafossen`() {
-        personMock.returnerKode6 = true
-
         val aktorId = "298374918"
         val saksId = "saksId"
         val oppgaveID = 4
         whenever(sakConsumer.opprettSak(aktorId)).thenReturn(saksId)
         whenever(flexBucketUploaderClient.hentVedlegg(any())).thenReturn("123".encodeToByteArray())
         whenever(oppgaveConsumer.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
+        pdlClient.returnerKode6 = true
 
         val soknad = mockReisetilskuddDTO
 
@@ -314,6 +313,6 @@ Nei
 
         assertThat(oppgaveRequest.tildeltEnhetsnr).isEqualTo("2103")
 
-        personMock.returnerKode6 = false
+        pdlClient.returnerKode6 = false
     }
 }

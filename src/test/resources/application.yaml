@@ -26,7 +26,6 @@ oppgave.oppgaver.url: "http://oppgave.oppgaver.url"
 
 virksomhet:
   arbeidsfordeling.v1.endpointurl: "arbeidsfordeling.url"
-  person.v3.endpointurl: "person.url"
 
 mockWS: true
 pdfgen.url: "http://pdf"
