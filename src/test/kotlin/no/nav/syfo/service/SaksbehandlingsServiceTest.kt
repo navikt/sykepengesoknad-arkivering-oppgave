@@ -19,7 +19,6 @@ import no.nav.syfo.consumer.repository.TidligereInnsending
 import no.nav.syfo.consumer.sak.SakConsumer
 import no.nav.syfo.consumer.ws.BehandleJournalConsumer
 import no.nav.syfo.domain.Innsending
-import no.nav.syfo.domain.dto.Soknadstype.ARBEIDSTAKERE
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.syfo.kafka.producer.RebehandleSykepengesoknadProducer
 import org.assertj.core.api.Assertions
@@ -78,7 +77,7 @@ class SaksbehandlingsServiceTest {
         given(identService.hentFnrForAktorId(any())).willReturn(fnr)
         given(sakConsumer.opprettSak(any())).willReturn("ny-sak-fra-gsak")
         given(behandleJournalConsumer.opprettJournalpost(any(), any())).willReturn("journalpostId")
-        given(behandlendeEnhetService.hentBehandlendeEnhet("12345678901", ARBEIDSTAKERE)).willReturn("2017")
+        given(behandlendeEnhetService.hentBehandlendeEnhet(any(), any(), any())).willReturn("2017")
         given(oppgaveConsumer.opprettOppgave(any())).willReturn(OppgaveResponse(1234))
         given(registry.counter(ArgumentMatchers.anyString(), ArgumentMatchers.anyIterable())).willReturn(mock(Counter::class.java))
         given(innsendingDAO.opprettInnsending(any(), any(), any(), any())).willReturn("innsending-guid")
