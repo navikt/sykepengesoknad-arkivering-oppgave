@@ -62,7 +62,7 @@ class SaksbehandlingsService(
 
         val soknad = opprettSoknad(sykepengesoknad, fnr)
 
-        val behandlendeEnhet = behandlendeEnhetService.hentBehandlendeEnhet(fnr, soknad.soknadstype, sykepengesoknad.id)
+        val behandlendeEnhet = behandlendeEnhetService.hentBehandlendeEnhet(fnr, soknad.soknadstype)
         val requestBody = OppgaveConsumer.lagRequestBody(
             sykepengesoknad.aktorId,
             behandlendeEnhet,

@@ -18,11 +18,7 @@ class BehandlendeEnhetService(
     private val pdlClient: PdlClient,
 ) {
 
-    fun hentBehandlendeEnhet(fnr: String, soknadstype: Soknadstype, soknadId: String? = null): String {
-        if (soknadId == "7d947d8b-3d85-4411-979f-3eb9f13a6c0e") {
-            return "4474"
-        }
-
+    fun hentBehandlendeEnhet(fnr: String, soknadstype: Soknadstype): String {
         val pdlRes = pdlClient.hentGeografiskTilknytning(fnr)
         val pdlGT = pdlRes.hentGeografiskTilknytning?.finnGT()
         val diskresjonskode = pdlRes.hentPerson?.getDiskresjonskode()
