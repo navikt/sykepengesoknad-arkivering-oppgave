@@ -62,14 +62,13 @@ class OppgaveConsumer(
 
         fun lagRequestBody(
             aktorId: String,
-            behandlendeEnhet: String,
+            behandlendeEnhet: String?,
             saksId: String,
             journalpostId: String,
             soknad: Soknad,
             harRedusertVenteperiode: Boolean = false
         ): OppgaveRequest =
             OppgaveRequest(
-                tildeltEnhetsnr = behandlendeEnhet,
                 opprettetAvEnhetsnr = "9999",
                 aktoerId = aktorId,
                 journalpostId = journalpostId,
@@ -81,7 +80,13 @@ class OppgaveConsumer(
                 fristFerdigstillelse = omTreUkedager(now()).format(oppgaveDato),
                 prioritet = "NORM"
             ).apply {
-                if (harRedusertVenteperiode) { this.behandlingstype = "ae0247" } else {
+                if (behandlendeEnhet != null) {
+                    this.tildeltEnhetsnr = behandlendeEnhet
+                }
+
+                if (harRedusertVenteperiode) {
+                    this.behandlingstype = "ae0247"
+                } else {
                     this.behandlingstema = when (soknad.soknadstype) {
                         Soknadstype.OPPHOLD_UTLAND -> "ab0314"
                         Soknadstype.BEHANDLINGSDAGER -> "ab0351"
@@ -101,7 +106,7 @@ class OppgaveConsumer(
 }
 
 data class OppgaveRequest(
-    val tildeltEnhetsnr: String,
+    var tildeltEnhetsnr: String? = null,
     val opprettetAvEnhetsnr: String,
     val aktoerId: String,
     val journalpostId: String,
