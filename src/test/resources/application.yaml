@@ -24,9 +24,6 @@ behandleJournal.v2.endpointurl: "http://behandleJournalv2.url"
 sak.saker.url: "http://sak.saker.url"
 oppgave.oppgaver.url: "http://oppgave.oppgaver.url"
 
-virksomhet:
-  arbeidsfordeling.v1.endpointurl: "arbeidsfordeling.url"
-
 mockWS: true
 pdfgen.url: "http://pdf"
 pdl.api.url: "http://pdl-api.pdl"

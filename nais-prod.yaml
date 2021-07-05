@@ -97,13 +97,6 @@ spec:
     - name: BEHANDLEJOURNAL_V2_WSDLURL
       value: http://maven.adeo.no/nexus/service/local/artifact/maven/redirect?a=nav-fim-behandleJournal-v2-tjenestespesifikasjon&e=zip&g=no.nav.tjenester.fim&r=m2internal&v=2.3.0
 
-    - name: VIRKSOMHET_ARBEIDSFORDELING_V1_ENDPOINTURL
-      value: https://app.adeo.no/norg2/ws/Arbeidsfordeling/v1
-    - name: VIRKSOMHET_ARBEIDSFORDELING_V1_SECURITYTOKEN
-      value: SAML
-    - name: VIRKSOMHET_ARBEIDSFORDELING_V1_WSDLURL
-      value: http://maven.adeo.no/nexus/content/groups/public/no/nav/tjenester/nav-arbeidsfordeling-v1-tjenestespesifikasjon/1.1.0/nav-arbeidsfordeling-v1-tjenestespesifikasjon-1.1.0.zip
-
     - name: FLEX_BUCKET_UPLOADER_AAD_CLIENT_ID
       value: prod-gcp.flex.flex-bucket-uploader
     - name: FLEX_BUCKET_UPLOADER_URL
