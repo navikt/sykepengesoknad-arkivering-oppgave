@@ -41,7 +41,7 @@ repositories {
     }
 }
 
-val syfoKafkaVersion = "2021.04.08-13.45-0da5bd8e"
+val syfoKafkaVersion = "2021.07.20-09.39-6be2c52c"
 val mockitoKotlinVersion = "2.2.0"
 val h2Version = "1.4.200"
 val ojdbc8Version = "19.3.0.0"
