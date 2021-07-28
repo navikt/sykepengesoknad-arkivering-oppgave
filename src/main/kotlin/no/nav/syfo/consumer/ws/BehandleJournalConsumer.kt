@@ -98,7 +98,7 @@ constructor(
     private fun getBrevkode(soknad: Soknad): String {
         return when (soknad.soknadstype) {
             OPPHOLD_UTLAND -> "NAV 08-07.09"
-            REISETILSKUDD -> "NAV 08-14.01"
+            GRADERT_REISETILSKUDD, REISETILSKUDD -> "NAV 08-14.01"
             SELVSTENDIGE_OG_FRILANSERE, ARBEIDSTAKERE, ARBEIDSLEDIG, BEHANDLINGSDAGER, ANNET_ARBEIDSFORHOLD -> "NAV 08-07.04 D"
         }
     }
@@ -112,6 +112,7 @@ constructor(
             BEHANDLINGSDAGER -> "Søknad om enkeltstående behandlingsdager fra ${soknad.arbeidssituasjon.toString().lowercase()} for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
             ANNET_ARBEIDSFORHOLD -> "Søknad om sykepenger med uavklart arbeidssituasjon fra ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
             REISETILSKUDD -> "Søknad om reisetilskudd for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
+            GRADERT_REISETILSKUDD -> "Søknad om sykepenger med reisetilskudd for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
         }
     }
 
@@ -124,6 +125,7 @@ constructor(
             BEHANDLINGSDAGER -> "Søknad om enkeltstående behandlingsdager fra ${soknad.arbeidssituasjon.toString().lowercase()} for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
             ANNET_ARBEIDSFORHOLD -> "Søknad om sykepenger med uavklart arbeidssituasjon fra ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
             REISETILSKUDD -> "Søknad om reisetilskudd for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
+            GRADERT_REISETILSKUDD -> "Søknad om sykepenger med reisetilskudd for periode: ${soknad.fom!!.format(norskDato)} til ${soknad.tom!!.format(norskDato)}"
         }
     }
 
@@ -132,6 +134,7 @@ constructor(
             OPPHOLD_UTLAND -> "Søknad om å beholde sykepenger utenfor EØS"
             SELVSTENDIGE_OG_FRILANSERE, ARBEIDSTAKERE, ARBEIDSLEDIG, ANNET_ARBEIDSFORHOLD -> "Søknad om sykepenger"
             REISETILSKUDD -> "Søknad om reisetilskudd"
+            GRADERT_REISETILSKUDD -> "Søknad om sykepenger reisetilskudd"
             BEHANDLINGSDAGER -> "Søknad om enkeltstående behandlingsdager"
         }
     }
@@ -145,6 +148,7 @@ constructor(
             BEHANDLINGSDAGER -> PDFTemplate.BEHANDLINGSDAGER
             ANNET_ARBEIDSFORHOLD -> PDFTemplate.ANNETARBEIDSFORHOLD
             REISETILSKUDD -> PDFTemplate.REISETILSKUDD
+            GRADERT_REISETILSKUDD -> PDFTemplate.GRADERT_REISETILSKUDD
         }
     }
 

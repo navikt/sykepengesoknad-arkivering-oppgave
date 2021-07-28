@@ -20,7 +20,7 @@ class BehandlendeEnhetService(
         val pdlGT = pdlRes.hentGeografiskTilknytning?.finnGT()
         val diskresjonskode = pdlRes.hentPerson?.getDiskresjonskode()
 
-        if (soknadstype == Soknadstype.REISETILSKUDD) {
+        if (soknadstype == Soknadstype.REISETILSKUDD || soknadstype == Soknadstype.GRADERT_REISETILSKUDD) {
             if (diskresjonskode == DISKRESJONSKODE_KODE6) {
                 return NAV_VIKAFOSSEN
             }

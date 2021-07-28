@@ -7,5 +7,6 @@ enum class PDFTemplate(val endpoint: String) {
     ARBEIDSLEDIG("arbeidsledig"),
     BEHANDLINGSDAGER("behandlingsdager"),
     ANNETARBEIDSFORHOLD("annetarbeidsforhold"),
-    REISETILSKUDD("reisetilskudd");
+    REISETILSKUDD("reisetilskudd"),
+    GRADERT_REISETILSKUDD("gradertreisetilskudd");
 }

@@ -87,6 +87,7 @@ private fun Soknad.lagTittel() =
         BEHANDLINGSDAGER -> "Søknad med enkeltstående behandlingsdager"
         ANNET_ARBEIDSFORHOLD -> "Søknad om sykepenger med uavklart arbeidssituasjon"
         REISETILSKUDD -> "Søknad om reisetilskudd for perioden ${fom!!.format(norskDato)} - ${tom!!.format(norskDato)}"
+        GRADERT_REISETILSKUDD -> "Søknad om sykepenger med reisetilskudd for perioden ${fom!!.format(norskDato)} - ${tom!!.format(norskDato)}"
     }
 
 private fun Soknad.erKorrigert() =

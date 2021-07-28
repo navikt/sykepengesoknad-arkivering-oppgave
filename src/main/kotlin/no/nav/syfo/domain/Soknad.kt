@@ -93,7 +93,7 @@ private fun Sykepengesoknad.hentPdfKvitteringer(): List<PdfKvittering>? {
 }
 
 private fun Sykepengesoknad.hentKvitteringer(): List<Kvittering>? {
-    if (this.soknadstype == Soknadstype.REISETILSKUDD) {
+    if (this.soknadstype == Soknadstype.REISETILSKUDD || this.soknadstype == Soknadstype.GRADERT_REISETILSKUDD) {
         return this.sporsmal
             .filter { it.svartype == Svartype.KVITTERING }
             .flatMap { it.svar ?: emptyList() }

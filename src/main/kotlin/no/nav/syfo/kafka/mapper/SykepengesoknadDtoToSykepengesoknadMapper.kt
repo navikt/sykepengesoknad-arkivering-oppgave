@@ -1,10 +1,7 @@
 package no.nav.syfo.kafka.mapper
 
 import no.nav.syfo.domain.dto.*
-import no.nav.syfo.kafka.felles.SoknadsperiodeDTO
-import no.nav.syfo.kafka.felles.SporsmalDTO
-import no.nav.syfo.kafka.felles.SvarDTO
-import no.nav.syfo.kafka.felles.SykepengesoknadDTO
+import no.nav.syfo.kafka.felles.*
 
 private inline fun <T : Enum<*>, reified U : Enum<*>> T?.enumValueOrNull(): U? =
     U::class.java.enumConstants.firstOrNull { it.name == this?.name }
@@ -34,6 +31,18 @@ private fun SoknadsperiodeDTO.toSoknadPeriode(): SoknadPeriode =
         faktiskGrad = faktiskGrad
     )
 
+private fun SoknadstypeDTO.tilSoknadstype(): Soknadstype =
+    when (this) {
+        SoknadstypeDTO.SELVSTENDIGE_OG_FRILANSERE -> Soknadstype.SELVSTENDIGE_OG_FRILANSERE
+        SoknadstypeDTO.OPPHOLD_UTLAND -> Soknadstype.OPPHOLD_UTLAND
+        SoknadstypeDTO.ARBEIDSTAKERE -> Soknadstype.ARBEIDSTAKERE
+        SoknadstypeDTO.ANNET_ARBEIDSFORHOLD -> Soknadstype.ANNET_ARBEIDSFORHOLD
+        SoknadstypeDTO.ARBEIDSLEDIG -> Soknadstype.ARBEIDSLEDIG
+        SoknadstypeDTO.BEHANDLINGSDAGER -> Soknadstype.BEHANDLINGSDAGER
+        SoknadstypeDTO.REISETILSKUDD -> Soknadstype.REISETILSKUDD
+        SoknadstypeDTO.GRADERT_REISETILSKUDD -> Soknadstype.GRADERT_REISETILSKUDD
+    }
+
 fun SykepengesoknadDTO.toSykepengesoknad(
     aktorId: String
 ): Sykepengesoknad {
@@ -41,7 +50,7 @@ fun SykepengesoknadDTO.toSykepengesoknad(
         id = id,
         sykmeldingId = sykmeldingId,
         aktorId = aktorId,
-        soknadstype = type.enumValueOrNull()!!,
+        soknadstype = type.tilSoknadstype(),
         status = status.name,
         fom = fom,
         tom = tom,
