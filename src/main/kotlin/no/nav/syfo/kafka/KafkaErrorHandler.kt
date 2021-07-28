@@ -21,7 +21,7 @@ class KafkaErrorHandler(private val registry: MeterRegistry, private val applica
     override fun handle(
         thrownException: Exception,
         records: List<ConsumerRecord<*, *>>?,
-        consumer: Consumer<*, *>?,
+        consumer: Consumer<*, *>,
         container: MessageListenerContainer
     ) {
         log.error("Feil i listener:", thrownException)
@@ -47,7 +47,7 @@ class KafkaErrorHandler(private val registry: MeterRegistry, private val applica
         restartConsumer(thrownException, records, consumer, container)
     }
 
-    private fun restartConsumer(thrownException: Exception, records: List<ConsumerRecord<*, *>>?, consumer: Consumer<*, *>?, container: MessageListenerContainer) {
+    private fun restartConsumer(thrownException: Exception, records: List<ConsumerRecord<*, *>>?, consumer: Consumer<*, *>, container: MessageListenerContainer) {
         Thread {
             try {
                 Thread.sleep(10000)

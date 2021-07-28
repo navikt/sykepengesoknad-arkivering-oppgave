@@ -1,10 +1,10 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.springframework.boot") version "2.4.5"
+    id("org.springframework.boot") version "2.5.3"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
-    kotlin("jvm") version "1.5.0"
-    kotlin("plugin.spring") version "1.5.0"
+    kotlin("jvm") version "1.5.21"
+    kotlin("plugin.spring") version "1.5.21"
 }
 
 group = "no.nav.helse.flex"
@@ -17,11 +17,10 @@ buildscript {
         maven("https://plugins.gradle.org/m2/")
     }
     dependencies {
-        classpath("org.jlleitschuh.gradle:ktlint-gradle:10.0.0")
+        classpath("org.jlleitschuh.gradle:ktlint-gradle:10.1.0")
     }
 }
 
-ext["nimbus-jose-jwt.version"] = "8.20" // https://nav-it.slack.com/archives/C01381BAT62/p1611056940004800
 ext["okhttp3.version"] = "4.9.0" // For at token support testen kjører (tror jeg)
 
 val githubUser: String by project
@@ -43,17 +42,15 @@ repositories {
 
 val syfoKafkaVersion = "2021.07.20-09.39-6be2c52c"
 val mockitoKotlinVersion = "2.2.0"
-val h2Version = "1.4.200"
 val ojdbc8Version = "19.3.0.0"
 val logstashLogbackEncoderVersion = "6.6"
 val mockitoCoreVersion = "3.10.0"
 val assertjVersion = "3.19.0"
-val micrometerRegistryPrometheusVersion = "1.7.0"
 val tjenestespesifikasjonerVersion = "1.2019.08.16-13.46-35cbdfd492d4"
 val cxfVersion = "3.4.3"
-val tokenSupportVersion = "1.3.7"
-val testContainersVersion = "1.15.3"
-val kluentVersion = "1.65"
+val tokenSupportVersion = "1.3.8"
+val testContainersVersion = "1.16.0"
+val kluentVersion = "1.68"
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -77,7 +74,7 @@ dependencies {
     implementation("com.sun.xml.messaging.saaj:saaj-impl:1.5.1")
     implementation("javax.xml.soap:saaj-api:1.3.5")
     implementation("javax.xml.ws:jaxws-api:2.3.1")
-    implementation("io.micrometer:micrometer-registry-prometheus:$micrometerRegistryPrometheusVersion")
+    implementation("io.micrometer:micrometer-registry-prometheus")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-jta-atomikos")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
@@ -88,7 +85,7 @@ dependencies {
     implementation("no.nav.tjenestespesifikasjoner:nav-fim-behandleJournal-v2-tjenestespesifikasjon:$tjenestespesifikasjonerVersion")
     implementation("no.nav.security:token-validation-spring:$tokenSupportVersion")
     implementation("no.nav.security:token-client-spring:$tokenSupportVersion")
-    implementation("com.h2database:h2:$h2Version")
+    implementation("com.h2database:h2")
 
     testImplementation("org.amshove.kluent:kluent:$kluentVersion")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
