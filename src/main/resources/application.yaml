@@ -12,7 +12,7 @@ KAFKA_CREDSTORE_PASSWORD: ""
 KAFKA_KEYSTORE_PATH: ""
 
 aiven-kafka:
-  auto-offset-reset: latest #todo bytt til earliest
+  auto-offset-reset: none
   security-protocol: SSL
 
 no.nav.security.jwt:
@@ -52,23 +52,6 @@ spring:
   jta.atomikos.datasource:
     max-pool-size: 32
     min-pool-size: 8
-  kafka:
-    client-id: ${nais.app.name}-${fasit.environment.name}
-    properties:
-      security.protocol: SASL_SSL
-      sasl:
-        mechanism: PLAIN
-        jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="${srvsyfogsak.username}" password="${srvsyfogsak.password}";
-      ssl.truststore:
-        location: ${javax.net.ssl.trustStore}
-        password: ${javax.net.ssl.trustStorePassword}
-    consumer:
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      group-id: ${nais.app.name}-${fasit.environment.name}
-      max-poll-records: 1
-      auto-offset-reset: none
-      enable-auto-commit: false
   flyway:
     enabled: true
 

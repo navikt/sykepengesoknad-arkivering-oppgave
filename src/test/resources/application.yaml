@@ -43,13 +43,6 @@ spring:
       min-pool-size: 8
     properties:
       log-base-dir: transaction-logs/test
-  kafka:
-    bootstrap-servers: "overskrives"
-    consumer:
-      group-id: syfogsak-local
-      max-poll-records: 1
-      auto-offset-reset: latest
-      enable-auto-commit: false
   main:
     banner-mode: off
   flyway:

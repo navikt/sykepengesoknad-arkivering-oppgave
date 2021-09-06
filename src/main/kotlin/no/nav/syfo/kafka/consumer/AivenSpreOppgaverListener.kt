@@ -40,7 +40,7 @@ class AivenSpreOppgaverListener(
             if (oppgaveDTO.dokumentType == DokumentTypeDTO.Søknad) {
                 log.info("Mottok spre oppgave på aiven: $oppgaveDTO")
                 spreOppgaverService.prosesserOppgave(oppgaveDTO, OppgaveKilde.Saksbehandling)
-                // tellOppgave(oppgaveDTO) // TODO: tellingen skal skje herfa når vi ikke lenger konsumerer fra on-prem
+                tellOppgave(oppgaveDTO)
             } else {
                 log.info("Ignorerer oppgave med dokumentId ${oppgaveDTO.dokumentId}")
             }

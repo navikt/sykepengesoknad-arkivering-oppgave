@@ -14,7 +14,6 @@ import no.nav.syfo.domain.OppdateringstypeDTO
 import no.nav.syfo.domain.OppgaveDTO
 import no.nav.syfo.kafka.consumer.AivenSoknadSendtListener
 import no.nav.syfo.kafka.consumer.AivenSpreOppgaverListener
-import no.nav.syfo.kafka.consumer.SpreOppgaverListener
 import no.nav.syfo.kafka.felles.SoknadsstatusDTO
 import no.nav.syfo.kafka.felles.SoknadstypeDTO
 import no.nav.syfo.kafka.felles.SporsmalDTO
@@ -59,9 +58,6 @@ class E2ETest : AbstractContainerBaseTest() {
     lateinit var syfosoknadConsumer: SyfosoknadConsumer
 
     @Autowired
-    lateinit var spreOppgaverListener: SpreOppgaverListener
-
-    @Autowired
     lateinit var aivenSoknadSendtListener: AivenSoknadSendtListener
 
     @Autowired
@@ -95,7 +91,6 @@ class E2ETest : AbstractContainerBaseTest() {
     @Test
     fun `bømlo sier opprett før vi behandler søknad`() {
         val søknadsId = UUID.randomUUID()
-        leggOppgavePåKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, søknadsId, null))
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, søknadsId, null))
 
         val oppgave = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
@@ -112,7 +107,6 @@ class E2ETest : AbstractContainerBaseTest() {
     @Test
     fun `bømlo sier utsett før vi behandler søknad`() {
         val søknadsId = UUID.randomUUID()
-        leggOppgavePåKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, omFireTimer))
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, omFireTimer))
 
         val oppgave = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
@@ -129,7 +123,6 @@ class E2ETest : AbstractContainerBaseTest() {
     @Test
     fun `bømlo sier ferdigbehandlet før vi behandler søknad`() {
         val søknadsId = UUID.randomUUID()
-        leggOppgavePåKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Ferdigbehandlet, søknadsId, null))
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Ferdigbehandlet, søknadsId, null))
 
         val oppgave = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
@@ -147,7 +140,6 @@ class E2ETest : AbstractContainerBaseTest() {
     fun `vi behandler søknad så kommer utsett fra bømlo`() {
         val søknadsId = UUID.randomUUID()
         leggSøknadPåKafka(søknad(søknadsId))
-        leggOppgavePåKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, omFireTimer))
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, omFireTimer))
 
         val oppgave = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
@@ -165,13 +157,7 @@ class E2ETest : AbstractContainerBaseTest() {
     fun `vi behandler søknad så kommer opprett fra bømlo`() {
         val søknadsId = UUID.randomUUID()
         leggSøknadPåKafka(søknad(søknadsId))
-        leggOppgavePåKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, søknadsId))
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, søknadsId))
-
-        val oppgave = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
-        assertThat(OppgaveStatus.Opprett).isEqualTo(oppgave.status)
-        assertThat(oppgave.timeout).isNull()
-        assertThat(oppgave.avstemt).isTrue
 
         val oppgaveFraAiven = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
         assertThat(OppgaveStatus.Opprett).isEqualTo(oppgaveFraAiven.status)
@@ -183,13 +169,7 @@ class E2ETest : AbstractContainerBaseTest() {
     fun `vi behandler søknad så kommer ferdigbehandlet fra bømlo`() {
         val søknadsId = UUID.randomUUID()
         leggSøknadPåKafka(søknad(søknadsId))
-        leggOppgavePåKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Ferdigbehandlet, søknadsId))
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Ferdigbehandlet, søknadsId))
-
-        val oppgave = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
-        assertThat(OppgaveStatus.IkkeOpprett).isEqualTo(oppgave.status)
-        assertThat(oppgave.timeout).isNull()
-        assertThat(oppgave.avstemt).isTrue
 
         val oppgaveFraAiven = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
         assertThat(OppgaveStatus.IkkeOpprett).isEqualTo(oppgaveFraAiven.status)
@@ -200,14 +180,8 @@ class E2ETest : AbstractContainerBaseTest() {
     @Test
     fun `bømlo sier utsett så behandler vi søknaden og utsetter oppgave`() {
         val søknadsId = UUID.randomUUID()
-        leggOppgavePåKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, omFireTimer))
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, omFireTimer))
         leggSøknadPåKafka(søknad(søknadsId))
-
-        val oppgave = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
-        assertThat(OppgaveStatus.Utsett).isEqualTo(oppgave.status)
-        assertThat(omFireTimer).isEqualTo(oppgave.timeout)
-        assertThat(oppgave.avstemt).isTrue
 
         val oppgaveFraAiven = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgaveFraAiven.status)
@@ -219,17 +193,11 @@ class E2ETest : AbstractContainerBaseTest() {
     fun `bømlo sier utsett etter oppgaven er opprettet`() {
         val søknadsId = UUID.randomUUID()
         val førsteTimeout = LocalDateTime.now().minusHours(1)
-        leggOppgavePåKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, førsteTimeout))
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, førsteTimeout))
         leggSøknadPåKafka(søknad(søknadsId))
 
         behandleVedTimeoutService.behandleTimeout()
-        leggOppgavePåKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, omFireTimer))
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, omFireTimer))
-
-        val oppgave = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
-        assertThat(OppgaveStatus.Opprettet).isEqualTo(oppgave.status)
-        assertThat(oppgave.timeout).isNull()
 
         val oppgaveFraAiven = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
         assertThat(OppgaveStatus.Opprettet).isEqualTo(oppgaveFraAiven.status)
@@ -239,15 +207,9 @@ class E2ETest : AbstractContainerBaseTest() {
     @Test
     fun `bømlo sier utsett etter oppgaven er ferdigbehandlet`() {
         val søknadsId = UUID.randomUUID()
-        leggOppgavePåKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Ferdigbehandlet, søknadsId))
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Ferdigbehandlet, søknadsId))
         leggSøknadPåKafka(søknad(søknadsId))
-        leggOppgavePåKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, omFireTimer))
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, omFireTimer))
-
-        val oppgave = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
-        assertThat(OppgaveStatus.IkkeOpprett).isEqualTo(oppgave.status)
-        assertThat(oppgave.timeout).isNull()
 
         val oppgaveFraAiven = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
         assertThat(OppgaveStatus.IkkeOpprett).isEqualTo(oppgaveFraAiven.status)
@@ -257,14 +219,6 @@ class E2ETest : AbstractContainerBaseTest() {
     @Test
     fun `bømlo sier utsett så behandler vi søknaden og ikke oppretter oppgave`() {
         val søknadsId = UUID.randomUUID()
-        leggOppgavePåKafka(
-            OppgaveDTO(
-                dokumentType = DokumentTypeDTO.Søknad,
-                oppdateringstype = OppdateringstypeDTO.Utsett,
-                dokumentId = søknadsId,
-                timeout = LocalDateTime.now().plusHours(1)
-            )
-        )
         leggOppgavePåAivenKafka(
             OppgaveDTO(
                 dokumentType = DokumentTypeDTO.Søknad,
@@ -291,14 +245,6 @@ class E2ETest : AbstractContainerBaseTest() {
     fun `vi behandler søknaden uten oppgave så sender bømlo utsett`() {
         val søknadsId = UUID.randomUUID()
         leggSøknadPåKafka(søknad(søknadsId = søknadsId, sendtNav = null, sendtArbeidsgiver = LocalDateTime.now()))
-        leggOppgavePåKafka(
-            OppgaveDTO(
-                dokumentType = DokumentTypeDTO.Søknad,
-                oppdateringstype = OppdateringstypeDTO.Utsett,
-                dokumentId = søknadsId,
-                timeout = omFireTimer
-            )
-        )
         leggOppgavePåAivenKafka(
             OppgaveDTO(
                 dokumentType = DokumentTypeDTO.Søknad,
@@ -318,9 +264,6 @@ class E2ETest : AbstractContainerBaseTest() {
         assertThat(omFireTimer).isEqualTo(oppgaveFraAiven.timeout)
         assertThat(oppgaveFraAiven.avstemt).isFalse
     }
-
-    private fun leggOppgavePåKafka(oppgave: OppgaveDTO) =
-        spreOppgaverListener.listen(skapConsumerRecord("key", oppgave), acknowledgment)
 
     private fun leggSøknadPåKafka(søknad: SykepengesoknadDTO) =
         aivenSoknadSendtListener.listen(skapConsumerRecord("key", søknad.serialisertTilString()), acknowledgment)
