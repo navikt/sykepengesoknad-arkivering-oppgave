@@ -49,6 +49,8 @@ class SpreOppgaverService(
         }
     }
 
+    // Dersom on-prem og aiven konsumering slåss om kallet
+    @Synchronized
     private fun håndterOppgaveFraBømlo(
         eksisterendeOppgave: SpreOppgave?,
         oppgave: OppgaveDTO
@@ -109,8 +111,9 @@ class SpreOppgaverService(
     private fun skalBehandlesAvNav(sykepengesoknad: Sykepengesoknad) =
         sykepengesoknad.sendtNav != null
 
-    private fun ettersendtTilArbeidsgiver(sykepengesoknad: Sykepengesoknad) = sykepengesoknad.sendtArbeidsgiver != null &&
-        sykepengesoknad.sendtNav?.isBefore(sykepengesoknad.sendtArbeidsgiver) ?: false
+    private fun ettersendtTilArbeidsgiver(sykepengesoknad: Sykepengesoknad) =
+        sykepengesoknad.sendtArbeidsgiver != null &&
+            sykepengesoknad.sendtNav?.isBefore(sykepengesoknad.sendtArbeidsgiver) ?: false
 }
 
 fun OppdateringstypeDTO.tilOppgaveStatus() = when (this) {
