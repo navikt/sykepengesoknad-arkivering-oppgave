@@ -29,6 +29,8 @@ class AivenSpreOppgaverListener(
 
     @KafkaListener(
         topics = [SPREOPPGAVER_TOPIC],
+        id = "spreOppgave",
+        idIsGroup = false,
         containerFactory = "aivenKafkaListenerContainerFactory"
     )
     fun listen(cr: ConsumerRecord<String, String>, acknowledgment: Acknowledgment) {
