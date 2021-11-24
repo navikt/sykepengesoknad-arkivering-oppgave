@@ -11,7 +11,7 @@ data class OppgaveDTO(
 )
 
 enum class OppdateringstypeDTO {
-    Utsett, Opprett, Ferdigbehandlet
+    Utsett, Opprett, Ferdigbehandlet, OpprettSpeilRelatert
 }
 
 enum class DokumentTypeDTO {
