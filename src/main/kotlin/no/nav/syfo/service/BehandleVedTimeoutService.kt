@@ -26,10 +26,14 @@ class BehandleVedTimeoutService(
 ) {
     private val log = logger()
 
-    @Scheduled(fixedDelayString = "\${behandle.oppgave.intervall}", initialDelayString = "\${behandle.oppgave.deploy}")
+    @Scheduled(fixedDelay = 1000L * 60 * 1, initialDelay = 1000L * 60 * 10)
     fun behandleTimeout() {
         val oppgaver = oppgavestyringDAO.hentOppgaverTilOpprettelse()
-        log.info("Behandler ${oppgaver.size} oppgaver som har passert timeout")
+
+        if (oppgaver.isNotEmpty()) {
+            log.info("Behandler ${oppgaver.size} oppgaver som skal opprettes")
+        }
+
         oppgaver.forEach {
             try {
                 val innsending = saksbehandlingsService.finnEksisterendeInnsending(it.søknadsId)

@@ -72,10 +72,6 @@ spec:
       value: https://service-gw.adeo.no/
     - name: AAD_ACCESSTOKEN_URL
       value: https://login.microsoftonline.com/navno.onmicrosoft.com/oauth2/token
-    - name: BEHANDLE_OPPGAVE_DEPLOY
-      value: "600000"
-    - name: BEHANDLE_OPPGAVE_INTERVALL
-      value: "3600000"
     - name: DEFAULT_TIMEOUT_TIMER
       value: "1"
     - name: AAD_SYFOINNTEKTSMELDING_CLIENTID_USERNAME

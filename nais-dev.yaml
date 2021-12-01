@@ -73,10 +73,6 @@ spec:
       value: https://service-gw-q1.preprod.local/
     - name: AAD_ACCESSTOKEN_URL
       value: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/token
-    - name: BEHANDLE_OPPGAVE_DEPLOY
-      value: "100000"
-    - name: BEHANDLE_OPPGAVE_INTERVALL
-      value: "120000"
     - name: DEFAULT_TIMEOUT_TIMER
       value: "1"
     - name: AAD_SYFOINNTEKTSMELDING_CLIENTID_USERNAME
