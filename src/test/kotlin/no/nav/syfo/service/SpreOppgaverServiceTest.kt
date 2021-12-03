@@ -87,7 +87,7 @@ class SpreOppgaverServiceTest {
             .copy(sendtNav = null, sendtArbeidsgiver = LocalDateTime.now())
 
         spreOppgaverService.soknadSendt(sykepengesoknad)
-        verify(saksbehandlingsService, never()).opprettOppgave(any(), any())
+        verify(saksbehandlingsService, never()).opprettOppgave(any(), any(), any())
     }
 
     @Test
@@ -145,21 +145,21 @@ class SpreOppgaverServiceTest {
         var hit = 0
 
         spreOppgaverService.soknadSendt(arbeidstaker)
-        verify(saksbehandlingsService, never()).opprettOppgave(any(), any())
+        verify(saksbehandlingsService, never()).opprettOppgave(any(), any(), any())
 
         spreOppgaverService.soknadSendt(frilanser)
-        verify(saksbehandlingsService, times(++hit)).opprettOppgave(any(), any())
+        verify(saksbehandlingsService, times(++hit)).opprettOppgave(any(), any(), any())
 
         spreOppgaverService.soknadSendt(arbeidsledig)
-        verify(saksbehandlingsService, times(++hit)).opprettOppgave(any(), any())
+        verify(saksbehandlingsService, times(++hit)).opprettOppgave(any(), any(), any())
 
         spreOppgaverService.soknadSendt(annet)
-        verify(saksbehandlingsService, times(++hit)).opprettOppgave(any(), any())
+        verify(saksbehandlingsService, times(++hit)).opprettOppgave(any(), any(), any())
 
         spreOppgaverService.soknadSendt(behandlingsdagerSelvstendig)
-        verify(saksbehandlingsService, times(++hit)).opprettOppgave(any(), any())
+        verify(saksbehandlingsService, times(++hit)).opprettOppgave(any(), any(), any())
 
         spreOppgaverService.soknadSendt(behandlingsdagerArbeidstaker)
-        verify(saksbehandlingsService, times(++hit)).opprettOppgave(any(), any())
+        verify(saksbehandlingsService, times(++hit)).opprettOppgave(any(), any(), any())
     }
 }

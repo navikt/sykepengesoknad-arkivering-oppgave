@@ -4,6 +4,7 @@ import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tags
 import no.nav.syfo.config.Toggle
 import no.nav.syfo.consumer.repository.OppgaveStatus
+import no.nav.syfo.consumer.repository.OppgaveStatus.OpprettSpeilRelatert
 import no.nav.syfo.consumer.repository.OppgavestyringDAO
 import no.nav.syfo.consumer.syfosoknad.SyfosoknadConsumer
 import no.nav.syfo.consumer.syfosoknad.SøknadIkkeFunnetException
@@ -41,7 +42,11 @@ class BehandleVedTimeoutService(
                     val soknadDTO = syfosoknadConsumer.hentSoknad(it.søknadsId)
                     val aktorId = identService.hentAktorIdForFnr(soknadDTO.fnr)
                     val soknad = soknadDTO.toSykepengesoknad(aktorId)
-                    saksbehandlingsService.opprettOppgave(soknad, innsending)
+                    saksbehandlingsService.opprettOppgave(
+                        sykepengesoknad = soknad,
+                        innsending = innsending,
+                        speilRelatert = it.status == OpprettSpeilRelatert
+                    )
                     oppgavestyringDAO.oppdaterOppgave(UUID.fromString(it.søknadsId), null, OppgaveStatus.Opprettet)
                 } else {
                     log.info("Fant ikke eksisterende innsending, ignorerer søknad med id ${it.søknadsId}")

@@ -59,7 +59,7 @@ class OppgavestyringDAO(private val namedParameterJdbcTemplate: NamedParameterJd
 
     fun hentOppgaverTilOpprettelse(): List<SpreOppgave> {
         return namedParameterJdbcTemplate.query(
-            "SELECT * FROM OPPGAVESTYRING WHERE AVSTEMT = 1 AND (STATUS = 'Opprett' OR (STATUS = 'Utsett' AND TIMEOUT < :now))",
+            "SELECT * FROM OPPGAVESTYRING WHERE AVSTEMT = 1 AND (STATUS = 'Opprett' OR STATUS = 'OpprettSpeilRelatert' OR (STATUS = 'Utsett' AND TIMEOUT < :now))",
             MapSqlParameterSource()
                 .addValue("now", LocalDateTime.now()),
             oppgavestyringRowMapper
@@ -89,7 +89,7 @@ class OppgavestyringDAO(private val namedParameterJdbcTemplate: NamedParameterJd
 }
 
 enum class OppgaveStatus {
-    Utsett, Opprett, IkkeOpprett, Opprettet
+    Utsett, Opprett, IkkeOpprett, Opprettet, OpprettSpeilRelatert
 }
 
 data class SpreOppgave(

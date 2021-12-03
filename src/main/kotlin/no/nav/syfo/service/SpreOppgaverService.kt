@@ -119,7 +119,7 @@ class SpreOppgaverService(
 fun OppdateringstypeDTO.tilOppgaveStatus() = when (this) {
     OppdateringstypeDTO.Utsett -> OppgaveStatus.Utsett
     OppdateringstypeDTO.Ferdigbehandlet -> OppgaveStatus.IkkeOpprett
-    OppdateringstypeDTO.OpprettSpeilRelatert -> OppgaveStatus.Opprett
+    OppdateringstypeDTO.OpprettSpeilRelatert -> OppgaveStatus.OpprettSpeilRelatert
     OppdateringstypeDTO.Opprett -> OppgaveStatus.Opprett
 }
 

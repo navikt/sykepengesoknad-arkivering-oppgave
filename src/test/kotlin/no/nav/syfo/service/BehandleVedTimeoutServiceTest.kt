@@ -79,7 +79,7 @@ class BehandleVedTimeoutServiceTest {
     @Test
     fun `har ingenting å behandle`() {
         behandleVedTimeoutService.behandleTimeout()
-        verify(saksbehandlingsService, never()).opprettOppgave(any(), any())
+        verify(saksbehandlingsService, never()).opprettOppgave(any(), any(), any())
     }
 
     @Test
@@ -98,7 +98,7 @@ class BehandleVedTimeoutServiceTest {
             )
         )
         behandleVedTimeoutService.behandleTimeout()
-        verify(saksbehandlingsService, never()).opprettOppgave(any(), any())
+        verify(saksbehandlingsService, never()).opprettOppgave(any(), any(), any())
     }
 
     @Test
@@ -117,7 +117,7 @@ class BehandleVedTimeoutServiceTest {
             )
         )
         behandleVedTimeoutService.behandleTimeout()
-        verify(saksbehandlingsService, never()).opprettOppgave(any(), any())
+        verify(saksbehandlingsService, never()).opprettOppgave(any(), any(), any())
         verify(oppgavestyringDAO, never()).slettSpreOppgave(any())
     }
 
@@ -138,7 +138,7 @@ class BehandleVedTimeoutServiceTest {
             )
         )
         behandleVedTimeoutService.behandleTimeout()
-        verify(saksbehandlingsService, never()).opprettOppgave(any(), any())
+        verify(saksbehandlingsService, never()).opprettOppgave(any(), any(), any())
         verify(oppgavestyringDAO, times(1)).slettSpreOppgave(any())
     }
 
@@ -169,7 +169,7 @@ class BehandleVedTimeoutServiceTest {
             )
         )
         behandleVedTimeoutService.behandleTimeout()
-        verify(saksbehandlingsService, times(1)).opprettOppgave(any(), any())
+        verify(saksbehandlingsService, times(1)).opprettOppgave(any(), any(), any())
         verify(oppgavestyringDAO, times(1)).oppdaterOppgave(UUID.fromString(søknadsId), null, OppgaveStatus.Opprettet)
     }
 
@@ -219,7 +219,7 @@ class BehandleVedTimeoutServiceTest {
         }
         whenever(syfosoknadConsumer.hentSoknad(søknadsId2.toString())).thenThrow(RuntimeException("I AM ERROR"))
         behandleVedTimeoutService.behandleTimeout()
-        verify(saksbehandlingsService, times(2)).opprettOppgave(any(), any())
+        verify(saksbehandlingsService, times(2)).opprettOppgave(any(), any(), any())
         verify(oppgavestyringDAO, times(1)).oppdaterOppgave(søknadsId1, null, OppgaveStatus.Opprettet)
         verify(oppgavestyringDAO, times(1)).oppdaterOppgave(søknadsId3, null, OppgaveStatus.Opprettet)
     }

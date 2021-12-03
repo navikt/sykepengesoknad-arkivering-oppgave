@@ -57,19 +57,20 @@ class SaksbehandlingsService(
         return innsendingId
     }
 
-    fun opprettOppgave(sykepengesoknad: Sykepengesoknad, innsending: Innsending) {
+    fun opprettOppgave(sykepengesoknad: Sykepengesoknad, innsending: Innsending, speilRelatert: Boolean = false) {
         val fnr = identService.hentFnrForAktorId(sykepengesoknad.aktorId)
 
         val soknad = opprettSoknad(sykepengesoknad, fnr)
 
         val behandlendeEnhet = behandlendeEnhetService.hentBehandlendeEnhet(fnr, soknad.soknadstype)
         val requestBody = OppgaveConsumer.lagRequestBody(
-            sykepengesoknad.aktorId,
-            behandlendeEnhet,
-            innsending.saksId!!,
-            innsending.journalpostId!!,
-            soknad,
-            sykepengesoknad.harRedusertVenteperiode
+            aktorId = sykepengesoknad.aktorId,
+            behandlendeEnhet = behandlendeEnhet,
+            saksId = innsending.saksId!!,
+            journalpostId = innsending.journalpostId!!,
+            soknad = soknad,
+            harRedusertVenteperiode = sykepengesoknad.harRedusertVenteperiode,
+            speilRelatert = speilRelatert,
         )
         val oppgaveId = oppgaveConsumer.opprettOppgave(requestBody).id.toString()
 

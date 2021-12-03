@@ -66,7 +66,8 @@ class OppgaveConsumer(
             saksId: String,
             journalpostId: String,
             soknad: Soknad,
-            harRedusertVenteperiode: Boolean = false
+            harRedusertVenteperiode: Boolean = false,
+            speilRelatert: Boolean = false,
         ): OppgaveRequest =
             OppgaveRequest(
                 opprettetAvEnhetsnr = "9999",
@@ -86,6 +87,8 @@ class OppgaveConsumer(
 
                 if (harRedusertVenteperiode) {
                     this.behandlingstype = "ae0247"
+                } else if (speilRelatert) {
+                    this.behandlingstema = "ab0455"
                 } else {
                     this.behandlingstema = when (soknad.soknadstype) {
                         Soknadstype.OPPHOLD_UTLAND -> "ab0314"
