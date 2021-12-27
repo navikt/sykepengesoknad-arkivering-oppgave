@@ -1,5 +1,6 @@
 package no.nav.syfo.service
 
+import io.micrometer.core.instrument.MeterRegistry
 import no.nav.syfo.consumer.repository.OppgaveStatus
 import no.nav.syfo.consumer.repository.OppgavestyringDAO
 import no.nav.syfo.consumer.repository.SpreOppgave
@@ -18,10 +19,12 @@ import java.util.UUID
 class SpreOppgaverService(
     @Value("\${default.timeout.timer}") private val defaultTimeoutTimer: String,
     private val saksbehandlingsService: SaksbehandlingsService,
-    private val oppgavestyringDAO: OppgavestyringDAO
+    private val oppgavestyringDAO: OppgavestyringDAO,
+    registry: MeterRegistry,
 ) {
     private val log = logger()
     private val timeout = defaultTimeoutTimer.toLong()
+    private val gjenopplivetCounter = registry.counter("syfogsak_gjenopplivet_oppgave")
 
     // Er Synchronized pga. race condition mellom saksbehandling i vårt system og saksbehandling i Bømlo's system
     @Synchronized
@@ -64,6 +67,15 @@ class SpreOppgaverService(
                 )
             }
             eksisterendeOppgave.status == OppgaveStatus.Utsett -> {
+                oppgavestyringDAO.oppdaterOppgave(
+                    oppgave.dokumentId,
+                    timeout(oppgave),
+                    oppgave.oppdateringstype.tilOppgaveStatus()
+                )
+            }
+            eksisterendeOppgave.status == OppgaveStatus.IkkeOpprett && oppgave.oppdateringstype == OppdateringstypeDTO.Opprett -> {
+                log.info("Vil opprette oppgave for søknad ${oppgave.dokumentId} som vi tidligere ble bedt om å ikke opprette")
+                gjenopplivetCounter.increment()
                 oppgavestyringDAO.oppdaterOppgave(
                     oppgave.dokumentId,
                     timeout(oppgave),

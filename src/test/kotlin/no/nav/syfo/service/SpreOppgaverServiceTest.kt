@@ -5,6 +5,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
+import io.micrometer.core.instrument.Counter
+import io.micrometer.core.instrument.MeterRegistry
 import no.nav.syfo.TestApplication
 import no.nav.syfo.consumer.repository.OppgavestyringDAO
 import no.nav.syfo.domain.Innsending
@@ -29,6 +31,12 @@ class SpreOppgaverServiceTest {
     @Mock
     lateinit var oppgavestyringDAO: OppgavestyringDAO
 
+    @Mock
+    lateinit var registry: MeterRegistry
+
+    @Mock
+    lateinit var counter: Counter
+
     private val objectMapper = ObjectMapper().registerModules(JavaTimeModule(), KotlinModule())
     private val sok = objectMapper.readValue(
         TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"),
@@ -49,7 +57,8 @@ class SpreOppgaverServiceTest {
 
     @BeforeEach
     fun setup() {
-        spreOppgaverService = SpreOppgaverService("1", saksbehandlingsService, oppgavestyringDAO)
+        whenever(registry.counter(any())).thenReturn(counter)
+        spreOppgaverService = SpreOppgaverService("1", saksbehandlingsService, oppgavestyringDAO, registry)
     }
 
     @Test

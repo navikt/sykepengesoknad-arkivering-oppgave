@@ -1,0 +1,73 @@
+package no.nav.syfo.e2e
+
+import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
+import no.nav.syfo.AbstractContainerBaseTest
+import no.nav.syfo.TestApplication
+import no.nav.syfo.consumer.repository.OppgaveStatus
+import no.nav.syfo.consumer.repository.OppgavestyringDAO
+import no.nav.syfo.domain.DokumentTypeDTO
+import no.nav.syfo.domain.OppdateringstypeDTO
+import no.nav.syfo.domain.OppgaveDTO
+import no.nav.syfo.kafka.consumer.AivenSpreOppgaverListener
+import no.nav.syfo.serialisertTilString
+import no.nav.syfo.skapConsumerRecord
+import org.amshove.kluent.shouldBeEqualTo
+import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.kafka.support.Acknowledgment
+import org.springframework.test.annotation.DirtiesContext
+import java.time.LocalDateTime
+import java.util.UUID
+
+@SpringBootTest(classes = [TestApplication::class])
+@DirtiesContext
+@EnableMockOAuth2Server
+class JulegateTest : AbstractContainerBaseTest() {
+
+    companion object {
+        val fnr = "fnr"
+    }
+
+    @MockBean
+    lateinit var acknowledgment: Acknowledgment
+
+    @Autowired
+    lateinit var aivenSpreOppgaverListener: AivenSpreOppgaverListener
+
+    @Autowired
+    lateinit var oppgavestyringDAO: OppgavestyringDAO
+
+    @Test
+    fun `Utsett til Ferdig til Opprett`() {
+        val søknadsId = UUID.randomUUID()
+        leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId))
+        oppgavestyringDAO.hentSpreOppgave(søknadsId.toString())!!.status shouldBeEqualTo OppgaveStatus.Utsett
+        leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Ferdigbehandlet, søknadsId))
+        oppgavestyringDAO.hentSpreOppgave(søknadsId.toString())!!.status shouldBeEqualTo OppgaveStatus.IkkeOpprett
+        leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, søknadsId))
+        oppgavestyringDAO.hentSpreOppgave(søknadsId.toString())!!.status shouldBeEqualTo OppgaveStatus.Opprett
+    }
+
+    @Test
+    fun `Oppretter ikke en som er allerede opprettet`() {
+        val søknadsId = UUID.randomUUID()
+        leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId))
+        oppgavestyringDAO.hentSpreOppgave(søknadsId.toString())!!.status shouldBeEqualTo OppgaveStatus.Utsett
+        oppgavestyringDAO.oppdaterOppgave(
+            søknadsId,
+            LocalDateTime.now(),
+            OppgaveStatus.Opprettet
+        )
+        oppgavestyringDAO.hentSpreOppgave(søknadsId.toString())!!.status shouldBeEqualTo OppgaveStatus.Opprettet
+
+        leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, søknadsId))
+
+        // Fortsatt opprettet
+        oppgavestyringDAO.hentSpreOppgave(søknadsId.toString())!!.status shouldBeEqualTo OppgaveStatus.Opprettet
+    }
+
+    private fun leggOppgavePåAivenKafka(oppgave: OppgaveDTO) =
+        aivenSpreOppgaverListener.listen(skapConsumerRecord("key", oppgave.serialisertTilString()), acknowledgment)
+}
