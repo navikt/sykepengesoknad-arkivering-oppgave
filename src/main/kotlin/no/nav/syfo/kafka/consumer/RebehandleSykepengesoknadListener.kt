@@ -2,11 +2,11 @@ package no.nav.syfo.kafka.consumer
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.syfo.BEHANDLINGSTIDSPUNKT
+import no.nav.syfo.consumer.repository.InnsendingDAO
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.syfo.kafka.producer.RebehandleSykepengesoknadProducer
 import no.nav.syfo.logger
 import no.nav.syfo.objectMapper
-import no.nav.syfo.repository.InnsendingDAO
 import no.nav.syfo.service.BehandleFeiledeSoknaderService
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.springframework.kafka.annotation.KafkaListener

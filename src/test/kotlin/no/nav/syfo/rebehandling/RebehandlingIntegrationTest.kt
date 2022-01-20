@@ -1,18 +1,19 @@
 package no.nav.syfo.rebehandling
 
-import com.nhaarman.mockitokotlin2.*
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.times
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.whenever
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import no.nav.syfo.AbstractContainerBaseTest
 import no.nav.syfo.TestApplication
-import no.nav.syfo.client.DokArkivClient
-import no.nav.syfo.client.PDFClient
-import no.nav.syfo.domain.DokumentInfo
-import no.nav.syfo.domain.JournalpostResponse
+import no.nav.syfo.consumer.pdf.PDFConsumer
+import no.nav.syfo.consumer.repository.InnsendingDAO
+import no.nav.syfo.consumer.repository.OppgaveStatus
+import no.nav.syfo.consumer.repository.OppgavestyringDAO
+import no.nav.syfo.consumer.sak.SakConsumer
 import no.nav.syfo.kafka.consumer.SYKEPENGESOKNAD_TOPIC
 import no.nav.syfo.mockSykepengesoknadDTO
-import no.nav.syfo.repository.InnsendingDAO
-import no.nav.syfo.repository.OppgaveStatus
-import no.nav.syfo.repository.OppgavestyringDAO
 import no.nav.syfo.serialisertTilString
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldNotBe
@@ -32,14 +33,14 @@ import java.util.*
 @DirtiesContext
 class RebehandlingIntegrationTest : AbstractContainerBaseTest() {
 
-    @MockBean
-    private lateinit var pdfClient: PDFClient
-
-    @MockBean
-    private lateinit var dokArkivClient: DokArkivClient
-
     @Autowired
     private lateinit var aivenKafkaProducer: KafkaProducer<String, String>
+
+    @MockBean
+    private lateinit var sakConsumer: SakConsumer
+
+    @MockBean
+    private lateinit var pdfConsumer: PDFConsumer
 
     @Autowired
     private lateinit var innsendingDAO: InnsendingDAO
@@ -51,18 +52,10 @@ class RebehandlingIntegrationTest : AbstractContainerBaseTest() {
     fun `Behandling av søknad feiler og rebehandles`() {
         val aktorId = "298374918"
         val fnr = "fnr"
+        val saksId = "saksId"
 
-        whenever(pdfClient.getPDF(any(), any())).thenThrow(RuntimeException("OOOPS")).thenReturn("pdf".toByteArray())
-
-        whenever(dokArkivClient.opprettJournalpost(any(), any())).thenReturn(
-            JournalpostResponse(
-                dokumenter = listOf(
-                    DokumentInfo()
-                ),
-                journalpostId = "1",
-                journalpostferdigstilt = true,
-            )
-        )
+        whenever(sakConsumer.opprettSak(aktorId)).thenReturn(saksId)
+        whenever(pdfConsumer.getPDF(any(), any())).thenThrow(RuntimeException("OOOPS")).thenReturn("pdf".toByteArray())
 
         val id = UUID.randomUUID().toString()
         val soknad = mockSykepengesoknadDTO.copy(id = id, fnr = fnr)
@@ -83,6 +76,7 @@ class RebehandlingIntegrationTest : AbstractContainerBaseTest() {
         val innsending = innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id)
         innsending?.behandlet shouldNotBe null
         innsending!!.aktorId shouldBeEqualTo aktorId
+        innsending.saksId shouldBeEqualTo saksId
         innsending.ressursId shouldBeEqualTo soknad.id
         innsending.oppgaveId shouldBeEqualTo null
 
@@ -90,6 +84,6 @@ class RebehandlingIntegrationTest : AbstractContainerBaseTest() {
         spreOppgave!!.søknadsId shouldBeEqualTo soknad.id
         spreOppgave.status shouldBeEqualTo OppgaveStatus.Utsett
 
-        verify(pdfClient, times(2)).getPDF(any(), any())
+        verify(pdfConsumer, times(2)).getPDF(any(), any())
     }
 }

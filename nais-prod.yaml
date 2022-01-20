@@ -64,6 +64,8 @@ spec:
       value: https://sts.adeo.no/SecurityTokenServiceProvider/
     - name: SECURITY_TOKEN_SERVICE_TOKEN_URL
       value: https://security-token-service.nais.adeo.no/rest/v1/sts/token
+    - name: SAK_SAKER_URL
+      value: https://sak.nais.adeo.no/api/v1/saker
     - name: OPPGAVE_OPPGAVER_URL
       value: https://oppgave.nais.adeo.no/api/v1/oppgaver
     - name: SERVICEGATEWAY_URL
@@ -77,6 +79,20 @@ spec:
     - name: AAD_WELL_KNOWN_URL
       value: https://login.microsoftonline.com/navno.onmicrosoft.com/.well-known/openid-configuration
 
+    - name: JOURNAL_V2_ENDPOINTURL
+      value: https://wasapp.adeo.no/joark/Journal/v2
+    - name: JOURNAL_V2_SECURITYTOKEN
+      value: SAML
+    - name: JOURNAL_V2_WSDLURL
+      value: http://maven.adeo.no/nexus/content/groups/public/no/nav/tjenester/nav-journal-v2-tjenestespesifikasjon/1.0.3/nav-journal-v2-tjenestespesifikasjon-1.0.3.zip
+
+    - name: BEHANDLEJOURNAL_V2_ENDPOINTURL
+      value: https://dokarkiv.nais.adeo.no/services/behandlejournal/v2
+    - name: BEHANDLEJOURNAL_V2_SECURITYTOKEN
+      value: SAML
+    - name: BEHANDLEJOURNAL_V2_WSDLURL
+      value: http://maven.adeo.no/nexus/service/local/artifact/maven/redirect?a=nav-fim-behandleJournal-v2-tjenestespesifikasjon&e=zip&g=no.nav.tjenester.fim&r=m2internal&v=2.3.0
+
     - name: FLEX_BUCKET_UPLOADER_AAD_CLIENT_ID
       value: prod-gcp.flex.flex-bucket-uploader
     - name: FLEX_BUCKET_UPLOADER_URL
@@ -85,7 +101,3 @@ spec:
       value: prod-fss.flex.syfosoknad
     - name: PDL_API_AAD_CLIENT_ID
       value: prod-fss.pdl.pdl-api
-    - name: DOKARKIV_URL
-      value: https://dokarkiv.intern.nav.no
-    - name: DOKARKIV_AAD_CLIENT_ID
-      value: 162b3255-2f72-4399-8f7a-244add9ffaac

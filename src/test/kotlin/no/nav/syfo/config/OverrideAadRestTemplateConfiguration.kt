@@ -15,10 +15,6 @@ class OverrideAadRestTemplateConfiguration {
         restTemplateBuilder.build()
 
     @Bean
-    fun dokArkivRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate =
-        restTemplateBuilder.build()
-
-    @Bean
     fun syfosoknadRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate =
         restTemplateBuilder.build()
 

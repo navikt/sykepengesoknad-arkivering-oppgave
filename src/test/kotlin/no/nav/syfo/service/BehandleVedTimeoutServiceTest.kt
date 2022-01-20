@@ -3,14 +3,14 @@ package no.nav.syfo.service
 import com.nhaarman.mockitokotlin2.*
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tag
-import no.nav.syfo.client.SyfosoknadClient
-import no.nav.syfo.client.SøknadIkkeFunnetException
 import no.nav.syfo.config.Toggle
+import no.nav.syfo.consumer.repository.OppgaveStatus
+import no.nav.syfo.consumer.repository.OppgavestyringDAO
+import no.nav.syfo.consumer.repository.SpreOppgave
+import no.nav.syfo.consumer.syfosoknad.SyfosoknadConsumer
+import no.nav.syfo.consumer.syfosoknad.SøknadIkkeFunnetException
 import no.nav.syfo.domain.Innsending
 import no.nav.syfo.kafka.felles.*
-import no.nav.syfo.repository.OppgaveStatus
-import no.nav.syfo.repository.OppgavestyringDAO
-import no.nav.syfo.repository.SpreOppgave
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -30,7 +30,7 @@ class BehandleVedTimeoutServiceTest {
     lateinit var oppgavestyringDAO: OppgavestyringDAO
 
     @Mock
-    lateinit var syfosoknadConsumer: SyfosoknadClient
+    lateinit var syfosoknadConsumer: SyfosoknadConsumer
 
     @Mock
     lateinit var toggle: Toggle
