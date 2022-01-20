@@ -47,7 +47,6 @@ val logstashLogbackEncoderVersion = "6.6"
 val mockitoCoreVersion = "3.11.2"
 val assertjVersion = "3.20.2"
 val tjenestespesifikasjonerVersion = "1.2019.08.16-13.46-35cbdfd492d4"
-val cxfVersion = "3.4.4"
 val tokenSupportVersion = "1.3.8"
 val testContainersVersion = "1.16.0"
 val kluentVersion = "1.68"
@@ -66,14 +65,7 @@ dependencies {
     implementation("no.nav.syfo.kafka:legacy-serialisering:$syfoKafkaVersion")
     implementation("no.nav.syfo.kafka:felles:$syfoKafkaVersion")
     implementation("org.apache.httpcomponents:httpclient:4.5.13")
-    implementation("org.apache.cxf:cxf-spring-boot-starter-jaxws:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-ws-policy:$cxfVersion")
     implementation("org.apache.commons:commons-text:1.9")
-    implementation("com.sun.xml.messaging.saaj:saaj-impl:1.5.1")
-    implementation("javax.xml.soap:saaj-api:1.3.5")
-    implementation("javax.xml.ws:jaxws-api:2.3.1")
     implementation("io.micrometer:micrometer-registry-prometheus")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-jta-atomikos")

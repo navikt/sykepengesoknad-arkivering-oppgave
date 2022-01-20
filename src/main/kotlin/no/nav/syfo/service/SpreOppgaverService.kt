@@ -1,15 +1,15 @@
 package no.nav.syfo.service
 
 import io.micrometer.core.instrument.MeterRegistry
-import no.nav.syfo.consumer.repository.OppgaveStatus
-import no.nav.syfo.consumer.repository.OppgavestyringDAO
-import no.nav.syfo.consumer.repository.SpreOppgave
 import no.nav.syfo.domain.DokumentTypeDTO
 import no.nav.syfo.domain.OppdateringstypeDTO
 import no.nav.syfo.domain.OppgaveDTO
 import no.nav.syfo.domain.dto.Soknadstype.ARBEIDSTAKERE
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.syfo.logger
+import no.nav.syfo.repository.OppgaveStatus
+import no.nav.syfo.repository.OppgavestyringDAO
+import no.nav.syfo.repository.SpreOppgave
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime

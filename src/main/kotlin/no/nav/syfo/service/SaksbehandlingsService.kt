@@ -2,12 +2,9 @@ package no.nav.syfo.service
 
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tags
+import no.nav.syfo.arkivering.Arkivaren
+import no.nav.syfo.client.FlexBucketUploaderClient
 import no.nav.syfo.client.pdl.PdlClient
-import no.nav.syfo.consumer.bucket.FlexBucketUploaderClient
-import no.nav.syfo.consumer.oppgave.OppgaveConsumer
-import no.nav.syfo.consumer.repository.InnsendingDAO
-import no.nav.syfo.consumer.sak.SakConsumer
-import no.nav.syfo.consumer.ws.BehandleJournalConsumer
 import no.nav.syfo.domain.Innsending
 import no.nav.syfo.domain.PdfKvittering
 import no.nav.syfo.domain.Soknad
@@ -15,18 +12,14 @@ import no.nav.syfo.domain.dto.Soknadstype
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.syfo.kafka.producer.RebehandleSykepengesoknadProducer
 import no.nav.syfo.logger
+import no.nav.syfo.repository.InnsendingDAO
 import org.springframework.stereotype.Component
-import java.time.DayOfWeek
-import java.time.LocalDate
-import java.time.temporal.ChronoUnit
 import java.util.*
-import java.util.stream.Stream
 
 @Component
 class SaksbehandlingsService(
-    private val sakConsumer: SakConsumer,
-    private val oppgaveConsumer: OppgaveConsumer,
-    private val behandleJournalConsumer: BehandleJournalConsumer,
+    private val oppgaveService: OppgaveService,
+    private val arkivaren: Arkivaren,
     private val behandlendeEnhetService: BehandlendeEnhetService,
     private val innsendingDAO: InnsendingDAO,
     private val registry: MeterRegistry,
@@ -50,10 +43,10 @@ class SaksbehandlingsService(
         val fnr = identService.hentFnrForAktorId(sykepengesoknad.aktorId)
 
         val soknad = opprettSoknad(sykepengesoknad, fnr)
-        val saksId = eksisterendeInnsending?.saksId
-            ?: finnEllerOpprettSak(innsendingId, sykepengesoknad.aktorId, soknad.fom)
-        eksisterendeInnsending?.journalpostId ?: opprettJournalpost(innsendingId, soknad, saksId)
-        log.info("Journalført søknad: ${sykepengesoknad.id}")
+        if (eksisterendeInnsending?.journalpostId.isNullOrBlank()) {
+            val jouralpostId = opprettJournalpost(innsendingId, soknad)
+            log.info("Journalført søknad: ${sykepengesoknad.id} med journalpostId: $jouralpostId")
+        }
         return innsendingId
     }
 
@@ -63,16 +56,16 @@ class SaksbehandlingsService(
         val soknad = opprettSoknad(sykepengesoknad, fnr)
 
         val behandlendeEnhet = behandlendeEnhetService.hentBehandlendeEnhet(fnr, soknad.soknadstype)
-        val requestBody = OppgaveConsumer.lagRequestBody(
+        val requestBody = OppgaveService.lagRequestBody(
             aktorId = sykepengesoknad.aktorId,
             behandlendeEnhet = behandlendeEnhet,
-            saksId = innsending.saksId!!,
+            saksId = innsending.saksId,
             journalpostId = innsending.journalpostId!!,
             soknad = soknad,
             harRedusertVenteperiode = sykepengesoknad.harRedusertVenteperiode,
             speilRelatert = speilRelatert,
         )
-        val oppgaveId = oppgaveConsumer.opprettOppgave(requestBody).id.toString()
+        val oppgaveId = oppgaveService.opprettOppgave(requestBody).id.toString()
 
         innsendingDAO.oppdaterOppgaveId(uuid = innsending.innsendingsId, oppgaveId = oppgaveId)
 
@@ -84,22 +77,11 @@ class SaksbehandlingsService(
         innsendingDAO.settBehandlet(innsendingsId)
     }
 
-    fun opprettJournalpost(innsendingId: String, soknad: Soknad, saksId: String): String {
-        val journalpostId = behandleJournalConsumer.opprettJournalpost(soknad, saksId)
+    fun opprettJournalpost(innsendingId: String, soknad: Soknad): String {
+        val journalpostId = arkivaren.opprettJournalpost(soknad = soknad)
         innsendingDAO.oppdaterJournalpostId(innsendingId, journalpostId)
         return journalpostId
     }
-
-    fun finnEllerOpprettSak(innsendingId: String, aktorId: String, soknadFom: LocalDate?): String =
-        innsendingDAO.finnTidligereInnsendinger(aktorId)
-            .filter { (it.soknadTom).isBefore(soknadFom ?: LocalDate.MIN) }
-            .filter { erPaFolgendeInkludertHelg(it.soknadTom, soknadFom ?: LocalDate.MAX) }
-            .maxByOrNull { it.soknadTom }
-            ?.let {
-                innsendingDAO.oppdaterSaksId(innsendingId, it.saksId)
-                return it.saksId
-            }
-            ?: opprettSak(aktorId, innsendingId)
 
     fun finnEksisterendeInnsending(sykepengesoknadId: String) =
         innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknadId)
@@ -115,18 +97,6 @@ class SaksbehandlingsService(
         )
         rebehandleSykepengesoknadProducer.send(sykepengesoknad)
     }
-
-    private fun opprettSak(aktorId: String, innsendingId: String): String {
-        val saksId = sakConsumer.opprettSak(aktorId)
-        innsendingDAO.oppdaterSaksId(innsendingId, saksId)
-        return saksId
-    }
-
-    fun erPaFolgendeInkludertHelg(one: LocalDate, two: LocalDate): Boolean =
-        Stream.iterate(one.plusDays(1)) { it.plusDays(1) }
-            .limit(ChronoUnit.DAYS.between(one, two) - 1)
-            .map { it.dayOfWeek }
-            .allMatch { it == DayOfWeek.SATURDAY || it == DayOfWeek.SUNDAY }
 
     fun opprettSoknad(sykepengesoknad: Sykepengesoknad, fnr: String): Soknad {
         val navn = pdlClient.hentFormattertNavn(fnr)
