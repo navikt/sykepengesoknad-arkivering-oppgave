@@ -2,13 +2,14 @@ package no.nav.syfo.service
 
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tags
-import no.nav.syfo.client.SyfosoknadClient
-import no.nav.syfo.client.SøknadIkkeFunnetException
 import no.nav.syfo.config.Toggle
+import no.nav.syfo.consumer.repository.OppgaveStatus
+import no.nav.syfo.consumer.repository.OppgaveStatus.OpprettSpeilRelatert
+import no.nav.syfo.consumer.repository.OppgavestyringDAO
+import no.nav.syfo.consumer.syfosoknad.SyfosoknadConsumer
+import no.nav.syfo.consumer.syfosoknad.SøknadIkkeFunnetException
 import no.nav.syfo.kafka.mapper.toSykepengesoknad
 import no.nav.syfo.logger
-import no.nav.syfo.repository.OppgaveStatus
-import no.nav.syfo.repository.OppgavestyringDAO
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.time.Duration
@@ -19,7 +20,7 @@ import java.util.UUID
 class BehandleVedTimeoutService(
     private val oppgavestyringDAO: OppgavestyringDAO,
     private val saksbehandlingsService: SaksbehandlingsService,
-    private val syfosoknadClient: SyfosoknadClient,
+    private val syfosoknadConsumer: SyfosoknadConsumer,
     private val toggle: Toggle,
     private val registry: MeterRegistry,
     private val identService: IdentService
@@ -38,13 +39,13 @@ class BehandleVedTimeoutService(
             try {
                 val innsending = saksbehandlingsService.finnEksisterendeInnsending(it.søknadsId)
                 if (innsending != null) {
-                    val soknadDTO = syfosoknadClient.hentSoknad(it.søknadsId)
+                    val soknadDTO = syfosoknadConsumer.hentSoknad(it.søknadsId)
                     val aktorId = identService.hentAktorIdForFnr(soknadDTO.fnr)
                     val soknad = soknadDTO.toSykepengesoknad(aktorId)
                     saksbehandlingsService.opprettOppgave(
                         sykepengesoknad = soknad,
                         innsending = innsending,
-                        speilRelatert = it.status == OppgaveStatus.OpprettSpeilRelatert
+                        speilRelatert = it.status == OpprettSpeilRelatert
                     )
                     oppgavestyringDAO.oppdaterOppgave(UUID.fromString(it.søknadsId), null, OppgaveStatus.Opprettet)
                 } else {
