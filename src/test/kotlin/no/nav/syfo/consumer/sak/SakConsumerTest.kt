@@ -42,7 +42,7 @@ class SakConsumerTest {
         BDDMockito.given(tokenConsumer.token).willReturn(Token("token", "Bearer", 3600))
     }
 
-    @Test
+/*    @Test
     fun opprettSakOppretterSakOgReturnererSakId() {
         val response = SakResponse(
             1234, "SYK", "FS22", "aktorId", null, null,
@@ -61,7 +61,7 @@ class SakConsumerTest {
         val sakId = sakConsumer.opprettSak("aktorId")
 
         assertThat(sakId).isEqualTo("1234")
-    }
+    }*/
 
     @Test
     fun opprettSakGirFeilmeldingHvisSakErNede() {

@@ -1,9 +1,12 @@
 package no.nav.syfo.consumer.oppgave
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.syfo.consumer.token.TokenConsumer
 import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.Soknadstype
+import no.nav.syfo.logger
+import no.nav.syfo.objectMapper
 import no.nav.syfo.service.lagBeskrivelse
 import no.nav.syfo.util.callId
 import org.springframework.beans.factory.annotation.Value
@@ -27,6 +30,8 @@ class OppgaveConsumer(
     @Value("\${oppgave.oppgaver.url}") private val url: String,
     private val restTemplate: RestTemplate
 ) {
+
+    val log = logger()
     private val uriString = UriComponentsBuilder.fromHttpUrl(url).toUriString()
 
     fun opprettOppgave(request: OppgaveRequest): OppgaveResponse {
@@ -35,15 +40,22 @@ class OppgaveConsumer(
                 uriString,
                 HttpMethod.POST,
                 HttpEntity(request, lagRequestHeaders()),
-                OppgaveResponse::class.java
+                String::class.java
             )
 
             if (!result.statusCode.is2xxSuccessful) {
                 throw RuntimeException("Oppretting av oppgave for aktør ${request.aktoerId} feiler med HTTP-${result.statusCode}")
             }
 
-            result.body
+            val body = result.body
+            body
                 ?: throw RuntimeException("Oppgave-respons mangler ved oppretting av oppgave for ${request.aktoerId}")
+
+            if (request.journalpostId == "531795668") {
+                log.info("Response feilsituasjon: $body")
+            }
+
+            objectMapper.readValue(body)
         } catch (e: HttpClientErrorException) {
             throw RuntimeException("Feil ved oppretting av oppgave for aktør ${request.aktoerId}", e)
         }
