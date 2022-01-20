@@ -9,19 +9,14 @@ import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.syfo.TestApplication
 import no.nav.syfo.any
+import no.nav.syfo.arkivering.Arkivaren
+import no.nav.syfo.client.FlexBucketUploaderClient
 import no.nav.syfo.client.pdl.PdlClient
-import no.nav.syfo.consumer.bucket.FlexBucketUploaderClient
-import no.nav.syfo.consumer.oppgave.OppgaveConsumer
-import no.nav.syfo.consumer.oppgave.OppgaveRequest
-import no.nav.syfo.consumer.oppgave.OppgaveResponse
-import no.nav.syfo.consumer.repository.InnsendingDAO
-import no.nav.syfo.consumer.repository.TidligereInnsending
-import no.nav.syfo.consumer.sak.SakConsumer
-import no.nav.syfo.consumer.ws.BehandleJournalConsumer
 import no.nav.syfo.domain.Innsending
 import no.nav.syfo.domain.dto.Soknadstype.ARBEIDSTAKERE
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.syfo.kafka.producer.RebehandleSykepengesoknadProducer
+import no.nav.syfo.repository.InnsendingDAO
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -50,11 +45,9 @@ class SaksbehandlingsServiceTest {
     @Mock
     lateinit var innsendingDAO: InnsendingDAO
     @Mock
-    lateinit var sakConsumer: SakConsumer
+    lateinit var oppgaveService: OppgaveService
     @Mock
-    lateinit var oppgaveConsumer: OppgaveConsumer
-    @Mock
-    lateinit var behandleJournalConsumer: BehandleJournalConsumer
+    lateinit var arkivaren: Arkivaren
     @Mock
     lateinit var behandlendeEnhetService: BehandlendeEnhetService
     @Mock
@@ -76,10 +69,9 @@ class SaksbehandlingsServiceTest {
         given(pdlClient.hentFormattertNavn(any())).willReturn("Personnavn")
         given(identService.hentAktorIdForFnr(any())).willReturn(aktorId)
         given(identService.hentFnrForAktorId(any())).willReturn(fnr)
-        given(sakConsumer.opprettSak(any())).willReturn("ny-sak-fra-gsak")
-        given(behandleJournalConsumer.opprettJournalpost(any(), any())).willReturn("journalpostId")
+        given(arkivaren.opprettJournalpost(any())).willReturn("journalpostId")
         given(behandlendeEnhetService.hentBehandlendeEnhet("12345678901", ARBEIDSTAKERE)).willReturn("2017")
-        given(oppgaveConsumer.opprettOppgave(any())).willReturn(OppgaveResponse(1234))
+        given(oppgaveService.opprettOppgave(any())).willReturn(OppgaveResponse(1234))
         given(registry.counter(ArgumentMatchers.anyString(), ArgumentMatchers.anyIterable())).willReturn(mock(Counter::class.java))
         given(innsendingDAO.opprettInnsending(any(), any(), any(), any())).willReturn("innsending-guid")
     }
@@ -93,16 +85,16 @@ class SaksbehandlingsServiceTest {
             .copy(sendtNav = now, sendtArbeidsgiver = now)
 
         saksbehandlingsService.behandleSoknad(sykepengesoknadUtenOppgave)
-        verify(behandleJournalConsumer, times(1)).opprettJournalpost(any(), any())
-        verify(oppgaveConsumer, never()).opprettOppgave(any())
+        verify(arkivaren, times(1)).opprettJournalpost(any())
+        verify(oppgaveService, never()).opprettOppgave(any())
         given(innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknadUtenOppgave.id)).willReturn(
             innsending(sykepengesoknadUtenOppgave)
         )
 
         saksbehandlingsService.behandleSoknad(sykepengesoknadEttersendingTilNAV)
         saksbehandlingsService.opprettOppgave(sykepengesoknadEttersendingTilNAV, innsending(sykepengesoknadEttersendingTilNAV))
-        verify(behandleJournalConsumer, times(1)).opprettJournalpost(any(), any())
-        verify(oppgaveConsumer, times(1)).opprettOppgave(any())
+        verify(arkivaren, times(1)).opprettJournalpost(any())
+        verify(oppgaveService, times(1)).opprettOppgave(any())
     }
 
     private fun innsending(
@@ -122,105 +114,14 @@ class SaksbehandlingsServiceTest {
     }
 
     @Test
-    fun brukerEksisterendeSakOmSoknadErPafolgende() {
-        val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
-            .copy(fom = LocalDate.of(2019, 3, 11), tom = LocalDate.of(2019, 3, 20))
-
-        given(innsendingDAO.finnTidligereInnsendinger(aktorId)).willReturn(listOf(TidligereInnsending(aktorId, "sak1", LocalDate.now(), LocalDate.of(2019, 3, 1), LocalDate.of(2019, 3, 10))))
-        saksbehandlingsService.behandleSoknad(sykepengesoknad)
-
-        verify(sakConsumer, never()).opprettSak(ArgumentMatchers.anyString())
-        verify(innsendingDAO).oppdaterSaksId("innsending-guid", "sak1")
-    }
-
-    @Test
-    fun brukerIkkeEksisterendeSakOmSoknadIkkeErPafolgende() {
-        val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
-            .copy(fom = LocalDate.of(2019, 3, 11), tom = LocalDate.of(2019, 3, 20))
-
-        given(innsendingDAO.finnTidligereInnsendinger(aktorId)).willReturn(listOf(TidligereInnsending(aktorId, "sak1", LocalDate.now(), LocalDate.of(2019, 3, 1), LocalDate.of(2019, 3, 6))))
-        saksbehandlingsService.behandleSoknad(sykepengesoknad)
-
-        verify(sakConsumer).opprettSak(ArgumentMatchers.anyString())
-        verify(innsendingDAO).oppdaterSaksId("innsending-guid", "ny-sak-fra-gsak")
-    }
-
-    @Test
-    fun brukerEksisterendeSakOmSoknadErPafolgendeMedHelg() {
-        val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
-            .copy(fom = LocalDate.of(2019, 3, 11), tom = LocalDate.of(2019, 3, 20))
-
-        given(innsendingDAO.finnTidligereInnsendinger(aktorId)).willReturn(listOf(TidligereInnsending(aktorId, "sak1", LocalDate.now(), LocalDate.of(2019, 3, 1), LocalDate.of(2019, 3, 8))))
-        saksbehandlingsService.behandleSoknad(sykepengesoknad)
-
-        verify(sakConsumer, never()).opprettSak(ArgumentMatchers.anyString())
-        verify(innsendingDAO).oppdaterSaksId("innsending-guid", "sak1")
-    }
-
-    @Test
-    fun brukerIkkeEksisterendeSakOmSoknadInnenforToDagerMenIkkeHelg() {
-        val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
-            .copy(fom = LocalDate.of(2019, 3, 12), tom = LocalDate.of(2019, 3, 21))
-
-        given(innsendingDAO.finnTidligereInnsendinger(aktorId)).willReturn(listOf(TidligereInnsending(aktorId, "sak1", LocalDate.now(), LocalDate.of(2019, 3, 1), LocalDate.of(2019, 3, 10))))
-        saksbehandlingsService.behandleSoknad(sykepengesoknad)
-
-        verify(sakConsumer).opprettSak(ArgumentMatchers.anyString())
-        verify(innsendingDAO).oppdaterSaksId("innsending-guid", "ny-sak-fra-gsak")
-    }
-
-    @Test
-    fun brukerIkkeEksisterendeSakOmViIkkeHarTidligereInnsending() {
-        val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
-            .copy(fom = LocalDate.of(2019, 3, 12), tom = LocalDate.of(2019, 3, 21))
-
-        given(innsendingDAO.finnTidligereInnsendinger(aktorId)).willReturn(emptyList())
-        saksbehandlingsService.behandleSoknad(sykepengesoknad)
-
-        verify(sakConsumer).opprettSak(ArgumentMatchers.anyString())
-        verify(innsendingDAO).oppdaterSaksId("innsending-guid", "ny-sak-fra-gsak")
-    }
-
-    @Test
-    fun brukerIkkeEksistrendeSakOmInnsendingErEtterSoknad() {
-        val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
-            .copy(fom = LocalDate.of(2019, 2, 11), tom = LocalDate.of(2019, 2, 21))
-
-        given(innsendingDAO.finnTidligereInnsendinger(aktorId)).willReturn(listOf(TidligereInnsending(aktorId, "sak1", LocalDate.now(), LocalDate.of(2019, 3, 1), LocalDate.of(2019, 3, 10))))
-        saksbehandlingsService.behandleSoknad(sykepengesoknad)
-
-        verify(sakConsumer).opprettSak(ArgumentMatchers.anyString())
-        verify(innsendingDAO).oppdaterSaksId("innsending-guid", "ny-sak-fra-gsak")
-    }
-
-    @Test
-    fun brukerEksisterendeSakOmSoknadErPafolgendeMedHelgFlereInnsendinger() {
-        val sykepengesoknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadSelvstendigMedNeisvar.json"), Sykepengesoknad::class.java)
-            .copy(fom = LocalDate.of(2019, 3, 11), tom = LocalDate.of(2019, 3, 20))
-
-        given(innsendingDAO.finnTidligereInnsendinger(aktorId)).willReturn(
-            listOf(
-                TidligereInnsending(aktorId, "sak1", LocalDate.now(), LocalDate.of(2019, 2, 1), LocalDate.of(2019, 2, 8)),
-                TidligereInnsending(aktorId, "sak2", LocalDate.now(), LocalDate.of(2019, 3, 1), LocalDate.of(2019, 3, 8)),
-                TidligereInnsending(aktorId, "sak3", LocalDate.now(), LocalDate.of(2018, 3, 1), LocalDate.of(2018, 3, 8))
-            )
-        )
-        saksbehandlingsService.behandleSoknad(sykepengesoknad)
-
-        verify(sakConsumer, never()).opprettSak(ArgumentMatchers.anyString())
-        verify(innsendingDAO).oppdaterSaksId("innsending-guid", "sak2")
-    }
-
-    @Test
     fun `oppretter oppgave med korrekte felter`() {
         val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
         val søknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
         saksbehandlingsService.opprettOppgave(søknad, innsending(søknad))
-        verify(oppgaveConsumer).opprettOppgave(captor.capture())
+        verify(oppgaveService).opprettOppgave(captor.capture())
         val oppgaveRequest = captor.firstValue
         Assertions.assertThat(oppgaveRequest.aktoerId).isEqualTo(aktorId)
         Assertions.assertThat(oppgaveRequest.journalpostId).isEqualTo("journalpostId")
-        Assertions.assertThat(oppgaveRequest.saksreferanse).isEqualTo("ny-sak-fra-gsak")
         Assertions.assertThat(oppgaveRequest.beskrivelse).isEqualTo(
             """
 Søknad om sykepenger for perioden 16.10.2018 - 24.10.2018

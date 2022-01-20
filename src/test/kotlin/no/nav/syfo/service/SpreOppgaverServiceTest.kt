@@ -8,11 +8,11 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.syfo.TestApplication
-import no.nav.syfo.consumer.repository.OppgavestyringDAO
 import no.nav.syfo.domain.Innsending
 import no.nav.syfo.domain.dto.Arbeidssituasjon
 import no.nav.syfo.domain.dto.Soknadstype
 import no.nav.syfo.domain.dto.Sykepengesoknad
+import no.nav.syfo.repository.OppgavestyringDAO
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
