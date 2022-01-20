@@ -40,7 +40,6 @@ class AivenSpreOppgaverListener(
             val oppgaveDTO = cr.value().tilSpreOppgaveDTO()
 
             if (oppgaveDTO.dokumentType == DokumentTypeDTO.Søknad) {
-                log.info("Mottok spre oppgave på aiven: $oppgaveDTO")
                 spreOppgaverService.prosesserOppgave(oppgaveDTO, OppgaveKilde.Saksbehandling)
                 tellOppgave(oppgaveDTO)
             } else {

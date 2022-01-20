@@ -8,14 +8,10 @@ import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import no.nav.syfo.AbstractContainerBaseTest
 import no.nav.syfo.TestApplication
 import no.nav.syfo.any
+import no.nav.syfo.arkivering.Arkivaren
+import no.nav.syfo.client.DokArkivClient
+import no.nav.syfo.client.SyfosoknadClient
 import no.nav.syfo.client.pdl.PdlClient
-import no.nav.syfo.consumer.oppgave.OppgaveConsumer
-import no.nav.syfo.consumer.oppgave.OppgaveRequest
-import no.nav.syfo.consumer.oppgave.OppgaveResponse
-import no.nav.syfo.consumer.repository.OppgavestyringDAO
-import no.nav.syfo.consumer.sak.SakConsumer
-import no.nav.syfo.consumer.syfosoknad.SyfosoknadConsumer
-import no.nav.syfo.consumer.ws.BehandleJournalConsumer
 import no.nav.syfo.domain.DokumentTypeDTO
 import no.nav.syfo.domain.OppdateringstypeDTO
 import no.nav.syfo.domain.OppgaveDTO
@@ -29,9 +25,7 @@ import no.nav.syfo.kafka.felles.SvartypeDTO
 import no.nav.syfo.kafka.felles.SykepengesoknadDTO
 import no.nav.syfo.objectMapper
 import no.nav.syfo.serialisertTilString
-import no.nav.syfo.service.BehandleVedTimeoutService
-import no.nav.syfo.service.BehandlendeEnhetService
-import no.nav.syfo.service.IdentService
+import no.nav.syfo.service.*
 import no.nav.syfo.skapConsumerRecord
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -53,17 +47,13 @@ class OpprettSpeilrelatertTest : AbstractContainerBaseTest() {
     companion object {
         val aktørId = "aktørId"
         val fnr = "fnr"
-        val omFireTimer = LocalDateTime.now().plusHours(4)
     }
 
     @MockBean
-    lateinit var sakConsumer: SakConsumer
+    lateinit var oppgaveService: OppgaveService
 
     @MockBean
-    lateinit var oppgaveConsumer: OppgaveConsumer
-
-    @MockBean
-    lateinit var behandleJournalConsumer: BehandleJournalConsumer
+    lateinit var arkivaren: Arkivaren
 
     @MockBean
     lateinit var behandlendeEnhetService: BehandlendeEnhetService
@@ -75,19 +65,19 @@ class OpprettSpeilrelatertTest : AbstractContainerBaseTest() {
     lateinit var pdlClient: PdlClient
 
     @MockBean
+    lateinit var dokArkivClient: DokArkivClient
+
+    @MockBean
     lateinit var acknowledgment: Acknowledgment
 
     @MockBean
-    lateinit var syfosoknadConsumer: SyfosoknadConsumer
+    lateinit var syfosoknadConsumer: SyfosoknadClient
 
     @Autowired
     lateinit var aivenSoknadSendtListener: AivenSoknadSendtListener
 
     @Autowired
     lateinit var aivenSpreOppgaverListener: AivenSpreOppgaverListener
-
-    @Autowired
-    lateinit var spreOppgavestyringDAO: OppgavestyringDAO
 
     @Autowired
     lateinit var behandleVedTimeoutService: BehandleVedTimeoutService
@@ -97,10 +87,8 @@ class OpprettSpeilrelatertTest : AbstractContainerBaseTest() {
         whenever(identService.hentAktorIdForFnr(any())).thenReturn(aktørId)
         whenever(identService.hentFnrForAktorId(any())).thenReturn(fnr)
         whenever(pdlClient.hentFormattertNavn(any())).thenReturn("Kalle Klovn")
-        val saksid = "123456"
-        whenever(sakConsumer.opprettSak(aktørId)).thenReturn(saksid)
-        whenever(behandleJournalConsumer.opprettJournalpost(any(), any())).thenReturn("jpost1234")
-        whenever(oppgaveConsumer.opprettOppgave(any())).thenReturn(OppgaveResponse(123))
+        whenever(arkivaren.opprettJournalpost(any())).thenReturn("jpost1234")
+        whenever(oppgaveService.opprettOppgave(any())).thenReturn(OppgaveResponse(123))
         whenever(syfosoknadConsumer.hentSoknad(any())).thenReturn(
             objectMapper.readValue(
                 søknad().serialisertTilString(),
@@ -118,7 +106,7 @@ class OpprettSpeilrelatertTest : AbstractContainerBaseTest() {
         behandleVedTimeoutService.behandleTimeout()
         val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
 
-        verify(oppgaveConsumer).opprettOppgave(captor.capture())
+        verify(oppgaveService).opprettOppgave(captor.capture())
         assertThat(captor.firstValue.behandlingstema).isEqualTo("ab0455")
     }
 
@@ -131,7 +119,7 @@ class OpprettSpeilrelatertTest : AbstractContainerBaseTest() {
         behandleVedTimeoutService.behandleTimeout()
         val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
 
-        verify(oppgaveConsumer).opprettOppgave(captor.capture())
+        verify(oppgaveService).opprettOppgave(captor.capture())
         assertThat(captor.firstValue.behandlingstema).isEqualTo("ab0061")
     }
 

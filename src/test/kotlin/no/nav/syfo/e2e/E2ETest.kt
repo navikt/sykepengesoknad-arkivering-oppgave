@@ -5,9 +5,7 @@ import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import no.nav.syfo.AbstractContainerBaseTest
 import no.nav.syfo.TestApplication
 import no.nav.syfo.any
-import no.nav.syfo.consumer.repository.OppgaveStatus
-import no.nav.syfo.consumer.repository.OppgavestyringDAO
-import no.nav.syfo.consumer.syfosoknad.SyfosoknadConsumer
+import no.nav.syfo.client.SyfosoknadClient
 import no.nav.syfo.domain.DokumentTypeDTO
 import no.nav.syfo.domain.Innsending
 import no.nav.syfo.domain.OppdateringstypeDTO
@@ -21,6 +19,8 @@ import no.nav.syfo.kafka.felles.SvarDTO
 import no.nav.syfo.kafka.felles.SvartypeDTO
 import no.nav.syfo.kafka.felles.SykepengesoknadDTO
 import no.nav.syfo.objectMapper
+import no.nav.syfo.repository.OppgaveStatus
+import no.nav.syfo.repository.OppgavestyringDAO
 import no.nav.syfo.serialisertTilString
 import no.nav.syfo.service.BehandleVedTimeoutService
 import no.nav.syfo.service.SaksbehandlingsService
@@ -55,7 +55,7 @@ class E2ETest : AbstractContainerBaseTest() {
     lateinit var acknowledgment: Acknowledgment
 
     @MockBean
-    lateinit var syfosoknadConsumer: SyfosoknadConsumer
+    lateinit var syfosoknadClient: SyfosoknadClient
 
     @Autowired
     lateinit var aivenSoknadSendtListener: AivenSoknadSendtListener
@@ -80,7 +80,7 @@ class E2ETest : AbstractContainerBaseTest() {
                 journalpostId = "journalpost"
             )
         }
-        whenever(syfosoknadConsumer.hentSoknad(any())).thenReturn(
+        whenever(syfosoknadClient.hentSoknad(any())).thenReturn(
             objectMapper.readValue(
                 søknad().serialisertTilString(),
                 SykepengesoknadDTO::class.java
