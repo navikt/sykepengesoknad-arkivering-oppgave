@@ -79,40 +79,6 @@ class PdlClient(
         throw FunctionalPdlError("Fant ikke person, ingen body eller data. ${parsedResponse.hentErrors()}")
     }
 
-    @Retryable(exclude = [FunctionalPdlError::class])
-    fun hentGeografiskTilknytning(fnr: String): HentGeografiskTilknytningResponseData {
-
-        val graphQLRequest = GraphQLRequest(
-            query = HENT_GEOGRAFISK_TILKNYTNING_QUERY,
-            variables = Collections.singletonMap(IDENT, fnr)
-        )
-
-        val responseEntity = pdlRestTemplate.exchange(
-            "$pdlApiUrl/graphql",
-            HttpMethod.POST,
-            HttpEntity(requestToJson(graphQLRequest), createHeaderWithTema()),
-            String::class.java
-        )
-
-        if (responseEntity.statusCode != HttpStatus.OK) {
-            throw RuntimeException("PDL svarer med status ${responseEntity.statusCode} - ${responseEntity.body}")
-        }
-
-        val parsedResponse: HentGeografiskTilknytningResponse? = responseEntity.body?.let { objectMapper.readValue(it) }
-
-        if (parsedResponse?.errors != null) {
-            throw FunctionalPdlError("PDL hentGeografiskTilknytning kastet error: ${parsedResponse.hentErrors()}")
-        }
-        if (parsedResponse?.data == null) {
-            throw FunctionalPdlError("Klarte ikke hente ut data fra fra PDL kall")
-        }
-        if (parsedResponse.data.hentPerson?.adressebeskyttelse == null) {
-            throw FunctionalPdlError("Klarte ikke hente ut Person fra PDL")
-        }
-
-        return parsedResponse.data
-    }
-
     private fun createHeaderWithTema(): HttpHeaders {
         val headers = createHeader()
         headers[TEMA] = TEMA_SYK
@@ -138,10 +104,6 @@ class PdlClient(
     }
 
     private fun HentNavnResponse?.hentErrors(): String? {
-        return this?.errors?.map { it.message }?.joinToString(" - ")
-    }
-
-    private fun HentGeografiskTilknytningResponse?.hentErrors(): String? {
         return this?.errors?.map { it.message }?.joinToString(" - ")
     }
 

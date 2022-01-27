@@ -20,7 +20,6 @@ import java.util.*
 class SaksbehandlingsService(
     private val oppgaveService: OppgaveService,
     private val arkivaren: Arkivaren,
-    private val behandlendeEnhetService: BehandlendeEnhetService,
     private val innsendingDAO: InnsendingDAO,
     private val registry: MeterRegistry,
     private val rebehandleSykepengesoknadProducer: RebehandleSykepengesoknadProducer,
@@ -55,10 +54,8 @@ class SaksbehandlingsService(
 
         val soknad = opprettSoknad(sykepengesoknad, fnr)
 
-        val behandlendeEnhet = behandlendeEnhetService.hentBehandlendeEnhet(fnr, soknad.soknadstype)
         val requestBody = OppgaveService.lagRequestBody(
             aktorId = sykepengesoknad.aktorId,
-            behandlendeEnhet = behandlendeEnhet,
             journalpostId = innsending.journalpostId!!,
             soknad = soknad,
             harRedusertVenteperiode = sykepengesoknad.harRedusertVenteperiode,

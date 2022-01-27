@@ -281,7 +281,7 @@ Nei
         assertThat(oppgaveRequest.prioritet).isEqualTo("NORM")
         assertThat(oppgaveRequest.behandlingstema).isEqualTo("ab0237")
         assertThat(oppgaveRequest.behandlingstype).isNull()
-        assertThat(oppgaveRequest.tildeltEnhetsnr).isEqualTo("4488")
+        assertThat(oppgaveRequest.tildeltEnhetsnr).isEqualTo(null)
 
         val innsendingIDatabase = innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id)!!
         assertThat(innsendingIDatabase.ressursId).isEqualTo(soknad.id)
@@ -384,7 +384,7 @@ Nei
         assertThat(oppgaveRequest.prioritet).isEqualTo("NORM")
         assertThat(oppgaveRequest.behandlingstema).isEqualTo("ab0237")
         assertThat(oppgaveRequest.behandlingstype).isNull()
-        assertThat(oppgaveRequest.tildeltEnhetsnr).isEqualTo("4488")
+        assertThat(oppgaveRequest.tildeltEnhetsnr).isEqualTo(null)
 
         val innsendingIDatabase = innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id)!!
         assertThat(innsendingIDatabase.ressursId).isEqualTo(soknad.id)
@@ -440,7 +440,7 @@ Nei
 
         val oppgaveRequest = captor.firstValue
 
-        assertThat(oppgaveRequest.tildeltEnhetsnr).isEqualTo("2103")
+        assertThat(oppgaveRequest.tildeltEnhetsnr).isEqualTo(null)
 
         pdlClient.returnerKode6 = false
     }

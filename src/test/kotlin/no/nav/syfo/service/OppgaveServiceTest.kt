@@ -33,7 +33,6 @@ import java.time.temporal.TemporalAdjusters.next
 @MockitoSettings(strictness = Strictness.LENIENT)
 class OppgaveServiceTest {
     private val aktorId = "aktorId"
-    private val behandlendeEnhet = "0101"
     private val saksId = "123"
     private val journalpostId = "145"
 
@@ -87,7 +86,7 @@ class OppgaveServiceTest {
                 )
             ).willReturn(ResponseEntity(HttpStatus.SERVICE_UNAVAILABLE))
 
-            val oppgaveRequest = OppgaveService.lagRequestBody(aktorId, behandlendeEnhet, journalpostId, lagSoknad(Soknadstype.ARBEIDSTAKERE))
+            val oppgaveRequest = OppgaveService.lagRequestBody(aktorId, journalpostId, lagSoknad(Soknadstype.ARBEIDSTAKERE))
             oppgaveService.opprettOppgave(oppgaveRequest)
         }
     }
@@ -101,9 +100,9 @@ class OppgaveServiceTest {
 
     @Test
     fun lagRequestBodyLagerRequestMedRiktigeFelter() {
-        val body = OppgaveService.lagRequestBody(aktorId, behandlendeEnhet, journalpostId, lagSoknad(Soknadstype.ARBEIDSTAKERE))
+        val body = OppgaveService.lagRequestBody(aktorId, journalpostId, lagSoknad(Soknadstype.ARBEIDSTAKERE))
 
-        assertThat(body.tildeltEnhetsnr).isEqualTo(behandlendeEnhet)
+        assertThat(body.tildeltEnhetsnr).isEqualTo(null)
         assertThat(body.opprettetAvEnhetsnr).isEqualTo("9999")
         assertThat(body.aktoerId).isEqualTo(aktorId)
         assertThat(body.journalpostId).isEqualTo(journalpostId)
@@ -118,11 +117,11 @@ class OppgaveServiceTest {
 
     @Test
     fun lagRequestBodySetterRiktigBehandlingstema() {
-        val utland = OppgaveService.lagRequestBody(aktorId, behandlendeEnhet, journalpostId, lagSoknad(Soknadstype.OPPHOLD_UTLAND))
-        val arbeidstaker = OppgaveService.lagRequestBody(aktorId, behandlendeEnhet, journalpostId, lagSoknad(Soknadstype.ARBEIDSTAKERE))
-        val arbeidsledig = OppgaveService.lagRequestBody(aktorId, behandlendeEnhet, journalpostId, lagSoknad(Soknadstype.ARBEIDSLEDIG))
-        val behandlingsdager = OppgaveService.lagRequestBody(aktorId, behandlendeEnhet, journalpostId, lagSoknad(Soknadstype.BEHANDLINGSDAGER))
-        val redusertVenteperiode = OppgaveService.lagRequestBody(aktorId, behandlendeEnhet, journalpostId, lagSoknad(Soknadstype.SELVSTENDIGE_OG_FRILANSERE), harRedusertVenteperiode = true)
+        val utland = OppgaveService.lagRequestBody(aktorId, journalpostId, lagSoknad(Soknadstype.OPPHOLD_UTLAND))
+        val arbeidstaker = OppgaveService.lagRequestBody(aktorId, journalpostId, lagSoknad(Soknadstype.ARBEIDSTAKERE))
+        val arbeidsledig = OppgaveService.lagRequestBody(aktorId, journalpostId, lagSoknad(Soknadstype.ARBEIDSLEDIG))
+        val behandlingsdager = OppgaveService.lagRequestBody(aktorId, journalpostId, lagSoknad(Soknadstype.BEHANDLINGSDAGER))
+        val redusertVenteperiode = OppgaveService.lagRequestBody(aktorId, journalpostId, lagSoknad(Soknadstype.SELVSTENDIGE_OG_FRILANSERE), harRedusertVenteperiode = true)
 
         assertThat(utland.behandlingstema).isEqualTo("ab0314")
         assertThat(arbeidstaker.behandlingstema).isEqualTo("ab0061")

@@ -61,7 +61,6 @@ class OppgaveService(
 
         fun lagRequestBody(
             aktorId: String,
-            behandlendeEnhet: String?,
             journalpostId: String,
             soknad: Soknad,
             harRedusertVenteperiode: Boolean = false,
@@ -78,10 +77,6 @@ class OppgaveService(
                 fristFerdigstillelse = omTreUkedager(now()).format(oppgaveDato),
                 prioritet = "NORM"
             ).apply {
-                if (behandlendeEnhet != null) {
-                    this.tildeltEnhetsnr = behandlendeEnhet
-                }
-
                 if (harRedusertVenteperiode) {
                     this.behandlingstype = "ae0247"
                 } else if (speilRelatert) {

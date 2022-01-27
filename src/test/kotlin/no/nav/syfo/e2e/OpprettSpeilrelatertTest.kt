@@ -56,9 +56,6 @@ class OpprettSpeilrelatertTest : AbstractContainerBaseTest() {
     lateinit var arkivaren: Arkivaren
 
     @MockBean
-    lateinit var behandlendeEnhetService: BehandlendeEnhetService
-
-    @MockBean
     lateinit var identService: IdentService
 
     @MockBean

@@ -13,7 +13,6 @@ import no.nav.syfo.arkivering.Arkivaren
 import no.nav.syfo.client.FlexBucketUploaderClient
 import no.nav.syfo.client.pdl.PdlClient
 import no.nav.syfo.domain.Innsending
-import no.nav.syfo.domain.dto.Soknadstype.ARBEIDSTAKERE
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.syfo.kafka.producer.RebehandleSykepengesoknadProducer
 import no.nav.syfo.repository.InnsendingDAO
@@ -49,8 +48,6 @@ class SaksbehandlingsServiceTest {
     @Mock
     lateinit var arkivaren: Arkivaren
     @Mock
-    lateinit var behandlendeEnhetService: BehandlendeEnhetService
-    @Mock
     lateinit var flexBucketUploaderClient: FlexBucketUploaderClient
     @Mock
     lateinit var registry: MeterRegistry
@@ -70,7 +67,6 @@ class SaksbehandlingsServiceTest {
         given(identService.hentAktorIdForFnr(any())).willReturn(aktorId)
         given(identService.hentFnrForAktorId(any())).willReturn(fnr)
         given(arkivaren.opprettJournalpost(any())).willReturn("journalpostId")
-        given(behandlendeEnhetService.hentBehandlendeEnhet("12345678901", ARBEIDSTAKERE)).willReturn("2017")
         given(oppgaveService.opprettOppgave(any())).willReturn(OppgaveResponse(1234))
         given(registry.counter(ArgumentMatchers.anyString(), ArgumentMatchers.anyIterable())).willReturn(mock(Counter::class.java))
         given(innsendingDAO.opprettInnsending(any(), any(), any(), any())).willReturn("innsending-guid")

@@ -24,20 +24,4 @@ class PdlClient {
             mellomnavn = null,
             etternavn = "Eke"
         ).format()
-
-    fun hentGeografiskTilknytning(fnr: String) = HentGeografiskTilknytningResponseData(
-        HentGeografiskTilknytning(
-            gtType = "KOMMUNE",
-            gtKommune = "0301",
-            gtBydel = null,
-            gtLand = null
-        ),
-        HentPerson(
-            listOf(
-                Adressebeskyttelse(
-                    gradering = if (returnerKode6) Gradering.STRENGT_FORTROLIG else Gradering.UGRADERT
-                )
-            )
-        )
-    )
 }
