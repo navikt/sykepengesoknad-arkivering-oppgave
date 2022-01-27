@@ -37,7 +37,7 @@ spec:
       enabled: true
       tenant: "trygdeetaten.no"
   envFrom:
-    - secret: sykepengesoknad-arkivering-oppgave-serviceuser
+    - secret: sykepengesoknad-arkivering-oppgave-sericeuser
   kafka:
     pool: nav-dev
   env:
