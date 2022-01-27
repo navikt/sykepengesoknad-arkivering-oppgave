@@ -103,8 +103,8 @@ class PdlClient(
         if (parsedResponse?.errors != null) {
             throw FunctionalPdlError("PDL hentGeografiskTilknytning kastet error: ${parsedResponse.hentErrors()}")
         }
-        if (parsedResponse?.data?.hentGeografiskTilknytning == null) {
-            throw FunctionalPdlError("Klarte ikke hente ut GeografiskTilknytning fra PDL")
+        if (parsedResponse?.data == null) {
+            throw FunctionalPdlError("Klarte ikke hente ut data fra fra PDL kall")
         }
         if (parsedResponse.data.hentPerson?.adressebeskyttelse == null) {
             throw FunctionalPdlError("Klarte ikke hente ut Person fra PDL")
