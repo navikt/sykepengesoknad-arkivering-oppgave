@@ -18,8 +18,8 @@ aiven-kafka:
 no.nav.security.jwt:
   issuer:
     aad:
-      discoveryurl: ${AAD_WELL_KNOWN_URL}
-      accepted_audience: ${AAD_SYFOGSAK_CLIENT_ID}
+      discoveryurl: ${AZURE_APP_WELL_KNOWN_URL}
+      accepted_audience: ${AZURE_APP_CLIENT_ID}
   client:
     registration:
       flex-bucket-uploader-client-credentials:
