@@ -1,3 +1,22 @@
 {
-  "kafkaPool": "nav-prod"
+  "azureTenant": "nav.no",
+  "kafkaPool": "nav-prod",
+  "environment": "prod",
+  "externalHosts": [
+    "flex-fss-proxy.prod-fss-pub.nais.io",
+    "dokarkiv.prod-fss-pub.nais.io",
+    "oppgave.prod-fss-pub.nais.io"
+  ],
+  "env": {
+    "PDL_BASE_URL": "https://pdl-api.prod-fss-pub.nais.io",
+    "PDL_API_AAD_CLIENT_ID": "prod-fss.pdl.pdl-api",
+    "DOKARKIV_AAD_CLIENT_ID": "162b3255-2f72-4399-8f7a-244add9ffaac",
+    "DOKARKIV_URL": "https://dokarkiv.prod-fss-pub.nais.io",
+    "BUCKET_UPLOADER_URL": "http://flex-bucket-uploader",
+    "OPPGAVE_CLIENT_ID": "41ca50ba-e44f-4bc8-9e31-b745a0041926",
+    "OPPGAVE_URL": "https://oppgave.prod-fss-pub.nais.io",
+    "OPPGAVE_AAD_CLIENT_ID": "50346823-61a0-49e7-ad89-ea2b1a0e90f8",
+    "DEFAULT_TIMEOUT_TIMER": "1"
+  }
+
 }

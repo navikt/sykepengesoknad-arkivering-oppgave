@@ -1,1 +1,1 @@
-rootProject.name = "syfogsak"
+rootProject.name = "sykepengesoknad-arkivering-oppgave"
