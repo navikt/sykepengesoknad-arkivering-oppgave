@@ -39,8 +39,6 @@ spec:
       tenant: {{azureTenant}}
   kafka:
     pool: {{kafkaPool}}
-  envFrom:
-    - secret: sykepengesoknad-arkivering-oppgave-sericeuser
   accessPolicy:
     outbound:
       rules:
