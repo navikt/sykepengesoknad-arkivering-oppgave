@@ -17,8 +17,8 @@ jobs:
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-gcp
-          RESOURCE: nais/topics/syfogsak-retry-topic.yaml
-          VARS: nais/topics/dev.json
+          RESOURCE: nais/topics/sykepengesoknad-arkivering-oppgave-retry-topic.yaml
+          VARS: nais/topics/retry-topic-dev.json
 
   deploy-topic-to-prod:
     if: github.ref == 'refs/heads/master'
@@ -32,5 +32,5 @@ jobs:
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: prod-gcp
-          RESOURCE: nais/topics/syfogsak-retry-topic.yaml
-          VARS: nais/topics/prod.json
+          RESOURCE: nais/topics/sykepengesoknad-arkivering-oppgave-retry-topic.yaml
+          VARS: nais/topics/retry-topic-prod.json
