@@ -22,9 +22,9 @@ security.token.service.token.url: "https://sts-q1.preprod.local:8080/SecurityTok
 
 oppgave.oppgaver.url: "http://oppgave.oppgaver.url"
 
-pdfgen.url: "http://pdf"
+PDFGEN_URL: "http://pdf"
 pdl.api.url: "http://pdl-api.pdl"
-dokarkiv.url: "http://dokarkiv"
+DOKARKIV_URL: "http://dokarkiv"
 
 spring:
   profiles:
@@ -47,7 +47,7 @@ spring:
     enabled: true
 
 syfosoknad_url: http://syfosoknad
-flex.bucket.uploader.url: http://flex-bucket
+BUCKET_UPLOADER_URL: http://flex-bucket
 
 no.nav.security.jwt:
   issuer:

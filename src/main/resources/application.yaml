@@ -1,19 +1,12 @@
+spring:
+  main.banner-mode: 'off'
+  jta.atomikos.datasource:
+    max-pool-size: 32
+    min-pool-size: 8
+  flyway:
+    enabled: true
+
 logging.config: classpath:logback.xml
-
-management:
-  endpoint.prometheus.enabled: true
-  endpoints.web:
-    base-path: /internal
-    exposure.include: prometheus
-    path-mapping.prometheus: /prometheus
-
-KAFKA_TRUSTSTORE_PATH: ""
-KAFKA_CREDSTORE_PASSWORD: ""
-KAFKA_KEYSTORE_PATH: ""
-
-aiven-kafka:
-  auto-offset-reset: none
-  security-protocol: SSL
 
 no.nav.security.jwt:
   issuer:
@@ -63,13 +56,20 @@ no.nav.security.jwt:
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
 
-spring:
-  main.banner-mode: 'off'
-  jta.atomikos.datasource:
-    max-pool-size: 32
-    min-pool-size: 8
-  flyway:
-    enabled: true
+management:
+  endpoint.prometheus.enabled: true
+  endpoints.web:
+    base-path: /internal
+    exposure.include: prometheus
+    path-mapping.prometheus: /prometheus
+
+aiven-kafka:
+  auto-offset-reset: none
+  security-protocol: SSL
+
+KAFKA_TRUSTSTORE_PATH: ""
+KAFKA_CREDSTORE_PASSWORD: ""
+KAFKA_KEYSTORE_PATH: ""
 
 rebehandling.delay.sekunder: 240 # 4 minutter. Må være mindre enn max.poll.interval.ms
 pdl.api.url: "http://pdl-api.pdl"
