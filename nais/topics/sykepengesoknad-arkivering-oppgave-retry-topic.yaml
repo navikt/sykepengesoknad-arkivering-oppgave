@@ -1,7 +1,7 @@
 apiVersion: kafka.nais.io/v1
 kind: Topic
 metadata:
-  name: syfogsak-retry
+  name: sykepengesoknad-arkivering-oppgave-retry
   namespace: flex
   labels:
     team: flex
@@ -16,6 +16,6 @@ spec:
     retentionHours: 336  # 2 uker
   acl:
     - team: flex
-      application: syfogsak
+      application: sykepengesoknad-arkivering-oppgave
       access: readwrite
 

@@ -1,0 +1,23 @@
+{
+  "azureTenant": "trygdeetaten.no",
+  "kafkaPool": "nav-dev",
+  "environment": "dev",
+  "externalHosts": [
+    "flex-fss-proxy.dev-fss-pub.nais.io",
+    "dokarkiv.dev-fss-pub.nais.io",
+    "oppgave-q1.dev-fss-pub.nais.io"
+  ],
+  "env": {
+    "PDL_URL": "https://pdl-api.dev-fss-pub.nais.io",
+    "PDL_API_AAD_CLIENT_ID": "dev-fss.pdl.pdl-api",
+    "DOKARKIV_URL": "https://dokarkiv.dev-fss-pub.nais.io",
+    "DOKARKIV_AAD_CLIENT_ID": "972814f3-8bdf-44f8-a191-c2ed00020b54",
+    "OPPGAVE_URL": "https://oppgave.dev-fss-pub.nais.io",
+    "OPPGAVE_AAD_CLIENT_ID": "dev-fss.oppgavehandtering.oppgave-q1",
+    "OPPGAVE_CLIENT_ID": "41ca50ba-e44f-4bc8-9e31-b745a0041926",
+    "BUCKET_UPLOADER_URL": "http://flex-bucket-uploader",
+    "PDFGEN_URL":"http://flex-sykepengesoknad-pdfgen",
+    "DEFAULT_TIMEOUT_TIMER": "1"
+  }
+
+}
