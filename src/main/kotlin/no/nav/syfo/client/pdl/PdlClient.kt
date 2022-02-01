@@ -15,7 +15,7 @@ import java.util.*
 @Component
 @Profile("remote")
 class PdlClient(
-    @Value("\${PDL_BASE_URL}")
+    @Value("\${PDL_URL}")
     private val pdlApiUrl: String,
     private val pdlRestTemplate: RestTemplate
 ) {

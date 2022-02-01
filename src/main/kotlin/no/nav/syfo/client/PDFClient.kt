@@ -16,8 +16,9 @@ import org.springframework.web.client.RestTemplate
 
 @Component
 class PDFClient(
-    private val restTemplate: RestTemplate,
-    @Value("\${pdfgen.url}") private val pdfgenUrl: String
+    @Value("\${PDFGEN_URL}")
+    private val pdfgenUrl: String,
+    private val restTemplate: RestTemplate
 ) {
 
     val log = logger()

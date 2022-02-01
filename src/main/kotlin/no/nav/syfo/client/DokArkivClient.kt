@@ -14,8 +14,9 @@ import org.springframework.web.client.RestTemplate
 
 @Component
 class DokArkivClient(
-    private val dokArkivRestTemplate: RestTemplate,
-    @Value("\${dokarkiv.url}") private val dokarkivUrl: String
+    @Value("\${DOKARKIV_URL}")
+    private val dokarkivUrl: String,
+    private val dokArkivRestTemplate: RestTemplate
 ) {
 
     @Retryable(backoff = Backoff(delay = 5000))
