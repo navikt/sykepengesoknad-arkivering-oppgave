@@ -3,7 +3,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE INNSENDING
 (
     id                 VARCHAR(36) DEFAULT UUID_GENERATE_V4() PRIMARY KEY,
-    sykepengesoknad_id VARCHAR(100) NOT NULL,
+    sykepengesoknad_id VARCHAR(100),
     journalpost_id     VARCHAR(20),
     oppgave_id         VARCHAR(20),
     behandlet          TIMESTAMP WITH TIME ZONE,
