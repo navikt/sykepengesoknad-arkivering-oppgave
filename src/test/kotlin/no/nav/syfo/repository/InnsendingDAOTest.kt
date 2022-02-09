@@ -77,5 +77,3 @@ class InnsendingDAOTest : AbstractContainerBaseTest() {
         assertThat(innsending2).isNull()
     }
 }
-
-
