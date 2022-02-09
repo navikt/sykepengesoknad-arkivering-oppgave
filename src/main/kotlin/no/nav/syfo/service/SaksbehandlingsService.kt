@@ -54,7 +54,7 @@ class SaksbehandlingsService(
         val soknad = opprettSoknad(sykepengesoknad, fnr)
 
         val requestBody = OppgaveService.lagRequestBody(
-            aktoerId = sykepengesoknad.aktorId,
+            aktorId = sykepengesoknad.aktorId,
             journalpostId = innsending.journalpostId!!,
             soknad = soknad,
             harRedusertVenteperiode = sykepengesoknad.harRedusertVenteperiode,
