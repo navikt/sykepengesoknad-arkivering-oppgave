@@ -88,7 +88,7 @@ class BehandleVedTimeoutServiceTest {
         whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
             listOf(
                 SpreOppgave(
-                    søknadsId = UUID.randomUUID().toString(),
+                    sykepengesoknadId = UUID.randomUUID().toString(),
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
                     opprettet = LocalDateTime.now().minusHours(2),
@@ -107,7 +107,7 @@ class BehandleVedTimeoutServiceTest {
         whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
             listOf(
                 SpreOppgave(
-                    søknadsId = UUID.randomUUID().toString(),
+                    sykepengesoknadId = UUID.randomUUID().toString(),
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
                     opprettet = LocalDateTime.now().minusHours(2),
@@ -128,7 +128,7 @@ class BehandleVedTimeoutServiceTest {
         whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
             listOf(
                 SpreOppgave(
-                    søknadsId = UUID.randomUUID().toString(),
+                    sykepengesoknadId = UUID.randomUUID().toString(),
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
                     opprettet = LocalDateTime.now().minusDays(2),
@@ -150,7 +150,7 @@ class BehandleVedTimeoutServiceTest {
         whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
             listOf(
                 SpreOppgave(
-                    søknadsId = søknadsId,
+                    sykepengesoknadId = søknadsId,
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
                     opprettet = LocalDateTime.now().minusHours(2),
@@ -161,10 +161,8 @@ class BehandleVedTimeoutServiceTest {
         )
         whenever(saksbehandlingsService.finnEksisterendeInnsending(søknadsId)).thenReturn(
             Innsending(
-                innsendingsId = "iid",
-                ressursId = søknadsId,
-                aktorId = "aktor",
-                saksId = "saksId",
+                id = "iid",
+                sykepengesoknadId = søknadsId,
                 journalpostId = "journalpost"
             )
         )
@@ -183,7 +181,7 @@ class BehandleVedTimeoutServiceTest {
         whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
             listOf(
                 SpreOppgave(
-                    søknadsId = søknadsId1.toString(),
+                    sykepengesoknadId = søknadsId1.toString(),
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
                     opprettet = LocalDateTime.now().minusHours(2),
@@ -191,7 +189,7 @@ class BehandleVedTimeoutServiceTest {
                     avstemt = true
                 ),
                 SpreOppgave(
-                    søknadsId = søknadsId2.toString(),
+                    sykepengesoknadId = søknadsId2.toString(),
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
                     opprettet = LocalDateTime.now().minusHours(2),
@@ -199,7 +197,7 @@ class BehandleVedTimeoutServiceTest {
                     avstemt = true
                 ),
                 SpreOppgave(
-                    søknadsId = søknadsId3.toString(),
+                    sykepengesoknadId = søknadsId3.toString(),
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
                     opprettet = LocalDateTime.now().minusHours(2),
@@ -210,10 +208,8 @@ class BehandleVedTimeoutServiceTest {
         )
         whenever(saksbehandlingsService.finnEksisterendeInnsending(any())).thenAnswer {
             Innsending(
-                innsendingsId = "iid",
-                ressursId = it.arguments[0].toString(),
-                aktorId = "aktor",
-                saksId = "saksId",
+                id = "iid",
+                sykepengesoknadId = it.arguments[0].toString(),
                 journalpostId = "journalpost"
             )
         }
@@ -230,7 +226,7 @@ class BehandleVedTimeoutServiceTest {
         whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
             listOf(
                 SpreOppgave(
-                    søknadsId = søknadsId1.toString(),
+                    sykepengesoknadId = søknadsId1.toString(),
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
                     opprettet = LocalDateTime.now().minusHours(2),
@@ -241,10 +237,8 @@ class BehandleVedTimeoutServiceTest {
         )
         whenever(saksbehandlingsService.finnEksisterendeInnsending(søknadsId1.toString())).thenReturn(
             Innsending(
-                innsendingsId = "iid",
-                ressursId = søknadsId1.toString(),
-                aktorId = "aktor",
-                saksId = "saksId",
+                id = "iid",
+                sykepengesoknadId = søknadsId1.toString(),
                 journalpostId = "journalpost"
             )
         )
@@ -261,7 +255,7 @@ class BehandleVedTimeoutServiceTest {
         whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
             listOf(
                 SpreOppgave(
-                    søknadsId = søknadsId1.toString(),
+                    sykepengesoknadId = søknadsId1.toString(),
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
                     opprettet = LocalDateTime.now().minusHours(2),
@@ -272,10 +266,8 @@ class BehandleVedTimeoutServiceTest {
         )
         whenever(saksbehandlingsService.finnEksisterendeInnsending(søknadsId1.toString())).thenReturn(
             Innsending(
-                innsendingsId = "iid",
-                ressursId = søknadsId1.toString(),
-                aktorId = "aktor",
-                saksId = "saksId",
+                id = "iid",
+                sykepengesoknadId = søknadsId1.toString(),
                 journalpostId = "journalpost"
             )
         )

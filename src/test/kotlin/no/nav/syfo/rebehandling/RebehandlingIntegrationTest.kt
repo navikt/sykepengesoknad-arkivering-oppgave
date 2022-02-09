@@ -49,7 +49,6 @@ class RebehandlingIntegrationTest : AbstractContainerBaseTest() {
 
     @Test
     fun `Behandling av søknad feiler og rebehandles`() {
-        val aktorId = "298374918"
         val fnr = "fnr"
 
         whenever(pdfClient.getPDF(any(), any())).thenThrow(RuntimeException("OOOPS")).thenReturn("pdf".toByteArray())
@@ -82,12 +81,11 @@ class RebehandlingIntegrationTest : AbstractContainerBaseTest() {
 
         val innsending = innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id)
         innsending?.behandlet shouldNotBe null
-        innsending!!.aktorId shouldBeEqualTo aktorId
-        innsending.ressursId shouldBeEqualTo soknad.id
+        innsending!!.sykepengesoknadId shouldBeEqualTo soknad.id
         innsending.oppgaveId shouldBeEqualTo null
 
         val spreOppgave = oppgavestyringDAO.hentSpreOppgave(soknad.id)
-        spreOppgave!!.søknadsId shouldBeEqualTo soknad.id
+        spreOppgave!!.sykepengesoknadId shouldBeEqualTo soknad.id
         spreOppgave.status shouldBeEqualTo OppgaveStatus.Utsett
 
         verify(pdfClient, times(2)).getPDF(any(), any())

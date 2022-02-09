@@ -29,54 +29,54 @@ class OppgavestyringDAOTest : AbstractContainerBaseTest() {
     @BeforeEach
     fun setup() {
         namedParaJdbcTemplate.update(
-            "INSERT INTO OPPGAVESTYRING (SYKEPENGESOKNAD_ID, TIMEOUT, STATUS, OPPRETTET, MODIFISERT, AVSTEMT) values (:soknadsId, :timeout, :status, :opprettet, :modifisert, :avstemt)",
+            "INSERT INTO OPPGAVESTYRING (SYKEPENGESOKNAD_ID, TIMEOUT, STATUS, OPPRETTET, MODIFISERT, AVSTEMT) values (:sykepengesoknadId, :timeout, :status, :opprettet, :modifisert, :avstemt)",
             MapSqlParameterSource()
-                .addValue("soknadsId", "uuid")
+                .addValue("sykepengesoknadId", "uuid")
                 .addValue("timeout", null)
                 .addValue("status", OppgaveStatus.Opprettet.name)
                 .addValue("opprettet", LocalDateTime.now().minusDays(2))
                 .addValue("modifisert", LocalDateTime.now().minusDays(2))
-                .addValue("avstemt", 1)
+                .addValue("avstemt", true)
         )
         namedParaJdbcTemplate.update(
-            "INSERT INTO OPPGAVESTYRING (SYKEPENGESOKNAD_ID, TIMEOUT, STATUS, OPPRETTET, MODIFISERT, AVSTEMT) values (:soknadsId, :timeout, :status, :opprettet, :modifisert, :avstemt)",
+            "INSERT INTO OPPGAVESTYRING (SYKEPENGESOKNAD_ID, TIMEOUT, STATUS, OPPRETTET, MODIFISERT, AVSTEMT) values (:sykepengesoknadId, :timeout, :status, :opprettet, :modifisert, :avstemt)",
             MapSqlParameterSource()
-                .addValue("soknadsId", "uuid-1")
+                .addValue("sykepengesoknadId", "uuid-1")
                 .addValue("timeout", null)
                 .addValue("status", OppgaveStatus.Opprettet.name)
                 .addValue("opprettet", LocalDateTime.now().minusMonths(4))
                 .addValue("modifisert", LocalDateTime.now().minusMonths(4).plusHours(2))
-                .addValue("avstemt", 1)
+                .addValue("avstemt", true)
         )
         namedParaJdbcTemplate.update(
-            "INSERT INTO OPPGAVESTYRING (SYKEPENGESOKNAD_ID, TIMEOUT, STATUS, OPPRETTET, MODIFISERT, AVSTEMT) values (:soknadsId, :timeout, :status, :opprettet, :modifisert, :avstemt)",
+            "INSERT INTO OPPGAVESTYRING (SYKEPENGESOKNAD_ID, TIMEOUT, STATUS, OPPRETTET, MODIFISERT, AVSTEMT) values (:sykepengesoknadId, :timeout, :status, :opprettet, :modifisert, :avstemt)",
             MapSqlParameterSource()
-                .addValue("soknadsId", "uuid-2")
+                .addValue("sykepengesoknadId", "uuid-2")
                 .addValue("timeout", null)
                 .addValue("status", OppgaveStatus.Opprettet.name)
                 .addValue("opprettet", LocalDateTime.now().minusMonths(12))
                 .addValue("modifisert", LocalDateTime.now().minusDays(2))
-                .addValue("avstemt", 1)
+                .addValue("avstemt", true)
         )
         namedParaJdbcTemplate.update(
-            "INSERT INTO OPPGAVESTYRING (SYKEPENGESOKNAD_ID, TIMEOUT, STATUS, OPPRETTET, MODIFISERT, AVSTEMT) values (:soknadsId, :timeout, :status, :opprettet, :modifisert, :avstemt)",
+            "INSERT INTO OPPGAVESTYRING (SYKEPENGESOKNAD_ID, TIMEOUT, STATUS, OPPRETTET, MODIFISERT, AVSTEMT) values (:sykepengesoknadId, :timeout, :status, :opprettet, :modifisert, :avstemt)",
             MapSqlParameterSource()
-                .addValue("soknadsId", "uuid-3")
+                .addValue("sykepengesoknadId", "uuid-3")
                 .addValue("timeout", LocalDateTime.now().minusHours(1))
                 .addValue("status", OppgaveStatus.Utsett.name)
                 .addValue("opprettet", LocalDateTime.now())
                 .addValue("modifisert", LocalDateTime.now())
-                .addValue("avstemt", 0)
+                .addValue("avstemt", false)
         )
         namedParaJdbcTemplate.update(
-            "INSERT INTO OPPGAVESTYRING (SYKEPENGESOKNAD_ID, TIMEOUT, STATUS, OPPRETTET, MODIFISERT, AVSTEMT) values (:soknadsId, :timeout, :status, :opprettet, :modifisert, :avstemt)",
+            "INSERT INTO OPPGAVESTYRING (SYKEPENGESOKNAD_ID, TIMEOUT, STATUS, OPPRETTET, MODIFISERT, AVSTEMT) values (:sykepengesoknadId, :timeout, :status, :opprettet, :modifisert, :avstemt)",
             MapSqlParameterSource()
-                .addValue("soknadsId", "uuid-4")
+                .addValue("sykepengesoknadId", "uuid-4")
                 .addValue("timeout", LocalDateTime.now().minusHours(1))
                 .addValue("status", OppgaveStatus.Utsett.name)
                 .addValue("opprettet", LocalDateTime.now())
                 .addValue("modifisert", LocalDateTime.now())
-                .addValue("avstemt", 1)
+                .addValue("avstemt", true)
         )
     }
 
@@ -90,16 +90,16 @@ class OppgavestyringDAOTest : AbstractContainerBaseTest() {
         oppgavestyringDAO.slettGamleSpreOppgaver()
         val oppgaver = hentAlleOppgaver()
         assertEquals(3, oppgaver.size)
-        assertEquals("uuid", oppgaver[0].søknadsId)
-        assertEquals("uuid-3", oppgaver[1].søknadsId)
-        assertEquals("uuid-4", oppgaver[2].søknadsId)
+        assertEquals("uuid", oppgaver[0].sykepengesoknadId)
+        assertEquals("uuid-3", oppgaver[1].sykepengesoknadId)
+        assertEquals("uuid-4", oppgaver[2].sykepengesoknadId)
     }
 
     @Test
     fun `henter oppgaver til opprettelse`() {
         val oppgaver = oppgavestyringDAO.hentOppgaverTilOpprettelse()
         assertEquals(1, oppgaver.size)
-        assertEquals("uuid-4", oppgaver.first().søknadsId)
+        assertEquals("uuid-4", oppgaver.first().sykepengesoknadId)
     }
 
     private fun hentAlleOppgaver() =

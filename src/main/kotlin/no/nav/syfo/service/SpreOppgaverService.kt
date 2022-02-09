@@ -41,7 +41,7 @@ class SpreOppgaverService(
         oppgave: OppgaveDTO
     ) {
         if (eksisterendeOppgave != null) {
-            oppgavestyringDAO.avstem(eksisterendeOppgave.søknadsId)
+            oppgavestyringDAO.avstem(eksisterendeOppgave.sykepengesoknadId)
         } else {
             oppgavestyringDAO.nySpreOppgave(
                 oppgave.dokumentId,

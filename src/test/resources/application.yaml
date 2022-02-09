@@ -31,10 +31,9 @@ spring:
     active: test
   jackson.serialization.WRITE_DATES_AS_TIMESTAMPS: false
   datasource:
-    url: 'jdbc:h2:mem:testdb;MODE=Oracle'
-    driver-class-name: org.h2.Driver
-    username: 'sa'
-    password:
+    hikari:
+      minimum-idle: 1
+      maximum-pool-size: 3
   jta.atomikos:
     datasource:
       max-pool-size: 32

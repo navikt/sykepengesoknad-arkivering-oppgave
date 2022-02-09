@@ -36,9 +36,9 @@ class BehandleVedTimeoutService(
 
         oppgaver.forEach {
             try {
-                val innsending = saksbehandlingsService.finnEksisterendeInnsending(it.søknadsId)
+                val innsending = saksbehandlingsService.finnEksisterendeInnsending(it.sykepengesoknadId)
                 if (innsending != null) {
-                    val soknadDTO = syfosoknadClient.hentSoknad(it.søknadsId)
+                    val soknadDTO = syfosoknadClient.hentSoknad(it.sykepengesoknadId)
                     val aktorId = identService.hentAktorIdForFnr(soknadDTO.fnr)
                     val soknad = soknadDTO.toSykepengesoknad(aktorId)
                     saksbehandlingsService.opprettOppgave(
@@ -46,30 +46,30 @@ class BehandleVedTimeoutService(
                         innsending = innsending,
                         speilRelatert = it.status == OppgaveStatus.OpprettSpeilRelatert
                     )
-                    oppgavestyringDAO.oppdaterOppgave(UUID.fromString(it.søknadsId), null, OppgaveStatus.Opprettet)
+                    oppgavestyringDAO.oppdaterOppgave(UUID.fromString(it.sykepengesoknadId), null, OppgaveStatus.Opprettet)
                 } else {
-                    log.info("Fant ikke eksisterende innsending, ignorerer søknad med id ${it.søknadsId}")
+                    log.info("Fant ikke eksisterende innsending, ignorerer søknad med id ${it.sykepengesoknadId}")
                     if (toggle.isQ() && it.opprettet < LocalDateTime.now().minusDays(1)) {
                         // Dette skjer hvis bømlo selv mocker opp søknader som ikke går gjennom syfosoknad
                         log.info("Sletter oppgave fra ${it.opprettet} som ikke har en tilhørende søknad")
-                        oppgavestyringDAO.slettSpreOppgave(it.søknadsId)
+                        oppgavestyringDAO.slettSpreOppgave(it.sykepengesoknadId)
                     }
                 }
                 if (it.status == OppgaveStatus.Utsett) {
                     val tidBrukt = Duration.between(it.opprettet, it.timeout ?: LocalDateTime.now())
-                    log.info("Soknad ${it.søknadsId}  timet ut. Total ventetid: ${tidBrukt.toHours()} timer")
+                    log.info("Soknad ${it.sykepengesoknadId}  timet ut. Total ventetid: ${tidBrukt.toHours()} timer")
                     tellTimeout()
                 }
             } catch (e: SøknadIkkeFunnetException) {
                 if (toggle.isQ()) {
-                    log.warn("Søknaden ${it.søknadsId} finnes ikke i Q, hopper over oppgaveopprettelse og fortsetter")
-                    oppgavestyringDAO.oppdaterOppgave(UUID.fromString(it.søknadsId), null, OppgaveStatus.IkkeOpprett)
+                    log.warn("Søknaden ${it.sykepengesoknadId} finnes ikke i Q, hopper over oppgaveopprettelse og fortsetter")
+                    oppgavestyringDAO.oppdaterOppgave(UUID.fromString(it.sykepengesoknadId), null, OppgaveStatus.IkkeOpprett)
                 } else {
-                    log.error("SøknadIkkeFunnetException ved opprettelse av oppgave ${it.søknadsId}", e)
+                    log.error("SøknadIkkeFunnetException ved opprettelse av oppgave ${it.sykepengesoknadId}", e)
                     throw e
                 }
             } catch (e: RuntimeException) {
-                log.error("Runtime-feil ved opprettelse av oppgave ${it.søknadsId}", e)
+                log.error("Runtime-feil ved opprettelse av oppgave ${it.sykepengesoknadId}", e)
             }
         }
     }

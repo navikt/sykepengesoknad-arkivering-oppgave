@@ -28,7 +28,7 @@ class OppgavestyringDAO(private val namedParameterJdbcTemplate: NamedParameterJd
                 .addValue("status", status.name)
                 .addValue("opprettet", opprettet)
                 .addValue("modifisert", opprettet)
-                .addValue("avstemt", if (avstemt) 1 else 0)
+                .addValue("avstemt", avstemt)
         )
     }
 
@@ -59,7 +59,7 @@ class OppgavestyringDAO(private val namedParameterJdbcTemplate: NamedParameterJd
 
     fun hentOppgaverTilOpprettelse(): List<SpreOppgave> {
         return namedParameterJdbcTemplate.query(
-            "SELECT * FROM OPPGAVESTYRING WHERE AVSTEMT = 1 AND (STATUS = 'Opprett' OR STATUS = 'OpprettSpeilRelatert' OR (STATUS = 'Utsett' AND TIMEOUT < :now))",
+            "SELECT * FROM OPPGAVESTYRING WHERE AVSTEMT = true AND (STATUS = 'Opprett' OR STATUS = 'OpprettSpeilRelatert' OR (STATUS = 'Utsett' AND TIMEOUT < :now))",
             MapSqlParameterSource()
                 .addValue("now", LocalDateTime.now()),
             oppgavestyringRowMapper
@@ -80,7 +80,7 @@ class OppgavestyringDAO(private val namedParameterJdbcTemplate: NamedParameterJd
 
     fun avstem(søknadsId: String) {
         namedParameterJdbcTemplate.update(
-            "UPDATE OPPGAVESTYRING SET AVSTEMT = 1 WHERE SYKEPENGESOKNAD_ID = :soknadsId",
+            "UPDATE OPPGAVESTYRING SET AVSTEMT = true WHERE SYKEPENGESOKNAD_ID = :soknadsId",
             MapSqlParameterSource()
                 .addValue("soknadsId", søknadsId)
         )
@@ -93,7 +93,7 @@ enum class OppgaveStatus {
 }
 
 data class SpreOppgave(
-    val søknadsId: String,
+    val sykepengesoknadId: String,
     val timeout: LocalDateTime?,
     val status: OppgaveStatus,
     val opprettet: LocalDateTime,
@@ -103,11 +103,11 @@ data class SpreOppgave(
 
 val oppgavestyringRowMapper: (ResultSet, Int) -> SpreOppgave = { resultSet, _ ->
     SpreOppgave(
-        søknadsId = resultSet.getString("SYKEPENGESOKNAD_ID"),
-        timeout = resultSet.getObject("TIMEOUT", LocalDateTime::class.java),
+        sykepengesoknadId = resultSet.getString("SYKEPENGESOKNAD_ID"),
+        timeout  = resultSet.getTimestamp("TIMEOUT").toLocalDateTime(),
         status = OppgaveStatus.valueOf(resultSet.getString("STATUS")),
-        opprettet = resultSet.getObject("OPPRETTET", LocalDateTime::class.java),
-        modifisert = resultSet.getObject("MODIFISERT", LocalDateTime::class.java),
-        avstemt = resultSet.getInt("AVSTEMT") == 1
+        opprettet = resultSet.getTimestamp("OPPRETTET").toLocalDateTime(),
+        modifisert = resultSet.getTimestamp("MODIFISERT").toLocalDateTime(),
+        avstemt = resultSet.getBoolean("AVSTEMT")
     )
 }

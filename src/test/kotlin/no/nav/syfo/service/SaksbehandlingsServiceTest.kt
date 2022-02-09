@@ -69,7 +69,7 @@ class SaksbehandlingsServiceTest {
         given(arkivaren.opprettJournalpost(any())).willReturn("journalpostId")
         given(oppgaveService.opprettOppgave(any())).willReturn(OppgaveResponse(1234))
         given(registry.counter(ArgumentMatchers.anyString(), ArgumentMatchers.anyIterable())).willReturn(mock(Counter::class.java))
-        given(innsendingDAO.opprettInnsending(any(), any(), any(), any())).willReturn("innsending-guid")
+        given(innsendingDAO.opprettInnsending(any(), any(), any())).willReturn("innsending-guid")
     }
 
     @Test
@@ -97,10 +97,8 @@ class SaksbehandlingsServiceTest {
         sykepengesoknadUtenOppgave: Sykepengesoknad
     ): Innsending {
         return Innsending(
-            innsendingsId = "innsending-guid",
-            ressursId = sykepengesoknadUtenOppgave.id,
-            aktorId = sykepengesoknadUtenOppgave.aktorId,
-            saksId = "ny-sak-fra-gsak",
+            id = "innsending-guid",
+            sykepengesoknadId = sykepengesoknadUtenOppgave.id,
             journalpostId = "journalpostId",
             oppgaveId = null,
             behandlet = LocalDate.now(),
@@ -116,7 +114,6 @@ class SaksbehandlingsServiceTest {
         saksbehandlingsService.opprettOppgave(søknad, innsending(søknad))
         verify(oppgaveService).opprettOppgave(captor.capture())
         val oppgaveRequest = captor.firstValue
-        Assertions.assertThat(oppgaveRequest.aktoerId).isEqualTo(aktorId)
         Assertions.assertThat(oppgaveRequest.journalpostId).isEqualTo("journalpostId")
         Assertions.assertThat(oppgaveRequest.beskrivelse).isEqualTo(
             """

@@ -45,9 +45,7 @@ class SpreOppgaverServiceTest {
     private val now = LocalDateTime.now()
     private fun innsending(soknadsId: String) = Innsending(
         "id",
-        ressursId = soknadsId,
-        aktorId = "aktor",
-        saksId = "sak",
+        sykepengesoknadId = soknadsId,
         journalpostId = "journalpost",
         oppgaveId = null,
         behandlet = null,

@@ -32,12 +32,11 @@ class SaksbehandlingsService(
 
     fun behandleSoknad(sykepengesoknad: Sykepengesoknad): String {
         val eksisterendeInnsending = finnEksisterendeInnsending(sykepengesoknad.id)
-        val innsendingId = eksisterendeInnsending?.innsendingsId
+        val innsendingId = eksisterendeInnsending?.id
             ?: innsendingDAO.opprettInnsending(
-                sykepengesoknad.id,
-                sykepengesoknad.aktorId,
-                sykepengesoknad.fom,
-                sykepengesoknad.tom
+                sykepengesoknadId = sykepengesoknad.id,
+                soknadFom = sykepengesoknad.fom,
+                soknadTom = sykepengesoknad.tom
             )
         val fnr = identService.hentFnrForAktorId(sykepengesoknad.aktorId)
 
@@ -55,7 +54,6 @@ class SaksbehandlingsService(
         val soknad = opprettSoknad(sykepengesoknad, fnr)
 
         val requestBody = OppgaveService.lagRequestBody(
-            aktorId = sykepengesoknad.aktorId,
             journalpostId = innsending.journalpostId!!,
             soknad = soknad,
             harRedusertVenteperiode = sykepengesoknad.harRedusertVenteperiode,
@@ -63,10 +61,10 @@ class SaksbehandlingsService(
         )
         val oppgaveId = oppgaveService.opprettOppgave(requestBody).id.toString()
 
-        innsendingDAO.oppdaterOppgaveId(uuid = innsending.innsendingsId, oppgaveId = oppgaveId)
+        innsendingDAO.oppdaterOppgaveId(uuid = innsending.id, oppgaveId = oppgaveId)
 
         tellInnsendingBehandlet(soknad.soknadstype)
-        log.info("Oppretter oppgave ${innsending.innsendingsId} for ${soknad.soknadstype.name.lowercase()} søknad: ${soknad.soknadsId}")
+        log.info("Oppretter oppgave ${innsending.id} for ${soknad.soknadstype.name.lowercase()} søknad: ${soknad.soknadsId}")
     }
 
     fun settFerdigbehandlet(innsendingsId: String) {
@@ -87,7 +85,7 @@ class SaksbehandlingsService(
         tellInnsendingFeilet(sykepengesoknad.soknadstype)
         log.error(
             "Kunne ikke fullføre innsending av søknad med innsending id: {} og sykepengesøknad id: {}, legger på intern rebehandling-topic",
-            eksisterendeInnsending?.innsendingsId,
+            eksisterendeInnsending?.id,
             sykepengesoknad.id,
             e
         )
