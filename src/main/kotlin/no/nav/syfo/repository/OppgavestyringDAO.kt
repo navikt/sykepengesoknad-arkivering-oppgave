@@ -104,7 +104,7 @@ data class SpreOppgave(
 val oppgavestyringRowMapper: (ResultSet, Int) -> SpreOppgave = { resultSet, _ ->
     SpreOppgave(
         sykepengesoknadId = resultSet.getString("SYKEPENGESOKNAD_ID"),
-        timeout  = resultSet.getTimestamp("TIMEOUT").toLocalDateTime(),
+        timeout = resultSet.getTimestamp("TIMEOUT")?.toLocalDateTime(),
         status = OppgaveStatus.valueOf(resultSet.getString("STATUS")),
         opprettet = resultSet.getTimestamp("OPPRETTET").toLocalDateTime(),
         modifisert = resultSet.getTimestamp("MODIFISERT").toLocalDateTime(),
