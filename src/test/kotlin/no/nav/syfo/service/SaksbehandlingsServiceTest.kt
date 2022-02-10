@@ -13,9 +13,9 @@ import no.nav.syfo.arkivering.Arkivaren
 import no.nav.syfo.client.FlexBucketUploaderClient
 import no.nav.syfo.client.pdl.PdlClient
 import no.nav.syfo.domain.dto.Sykepengesoknad
-import no.nav.syfo.innsending.InnsendingDbRecord
-import no.nav.syfo.innsending.InnsendingRepository
 import no.nav.syfo.kafka.producer.RebehandleSykepengesoknadProducer
+import no.nav.syfo.repository.InnsendingDbRecord
+import no.nav.syfo.repository.InnsendingRepository
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -32,6 +32,7 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.junit.jupiter.MockitoSettings
 import org.mockito.quality.Strictness
 import java.time.LocalDateTime
+import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -67,8 +68,18 @@ class SaksbehandlingsServiceTest {
         given(identService.hentFnrForAktorId(any())).willReturn(fnr)
         given(arkivaren.opprettJournalpost(any())).willReturn("journalpostId")
         given(oppgaveService.opprettOppgave(any())).willReturn(OppgaveResponse(1234))
-        given(registry.counter(ArgumentMatchers.anyString(), ArgumentMatchers.anyIterable())).willReturn(mock(Counter::class.java))
-        given(innsendingRepository.save(any())).willReturn(InnsendingDbRecord(sykepengesoknadId = "innsending-guid"))
+        given(
+            registry.counter(
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyIterable()
+            )
+        ).willReturn(mock(Counter::class.java))
+        given(innsendingRepository.save(any())).willReturn(
+            InnsendingDbRecord(
+                id = UUID.randomUUID().toString(),
+                sykepengesoknadId = "innsending-guid"
+            )
+        )
     }
 
     @Test

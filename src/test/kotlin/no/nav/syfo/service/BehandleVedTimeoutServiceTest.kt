@@ -6,8 +6,8 @@ import io.micrometer.core.instrument.Tag
 import no.nav.syfo.client.SyfosoknadClient
 import no.nav.syfo.client.SøknadIkkeFunnetException
 import no.nav.syfo.config.Toggle
-import no.nav.syfo.innsending.InnsendingDbRecord
 import no.nav.syfo.kafka.felles.*
+import no.nav.syfo.repository.InnsendingDbRecord
 import no.nav.syfo.repository.OppgaveStatus
 import no.nav.syfo.repository.OppgavestyringDAO
 import no.nav.syfo.repository.SpreOppgave

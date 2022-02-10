@@ -8,9 +8,9 @@ import no.nav.syfo.client.DokArkivClient
 import no.nav.syfo.client.PDFClient
 import no.nav.syfo.domain.DokumentInfo
 import no.nav.syfo.domain.JournalpostResponse
-import no.nav.syfo.innsending.InnsendingRepository
 import no.nav.syfo.kafka.consumer.SYKEPENGESOKNAD_TOPIC
 import no.nav.syfo.mockSykepengesoknadDTO
+import no.nav.syfo.repository.InnsendingRepository
 import no.nav.syfo.repository.OppgaveStatus
 import no.nav.syfo.repository.OppgavestyringDAO
 import no.nav.syfo.serialisertTilString
@@ -76,7 +76,7 @@ class RebehandlingIntegrationTest : AbstractContainerBaseTest() {
         // Det skal ta ca 10 sekunder grunnet rebehandlinga
         await().between(Duration.ofSeconds(8), Duration.ofSeconds(20))
             .until {
-                innsendingRepository.findBySykepengesoknadId(soknad.id) != null
+                innsendingRepository.findBySykepengesoknadId(soknad.id)?.behandlet != null
             }
 
         val innsending = innsendingRepository.findBySykepengesoknadId(soknad.id)!!

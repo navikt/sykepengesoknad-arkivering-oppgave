@@ -11,7 +11,7 @@ import no.nav.syfo.TestApplication
 import no.nav.syfo.domain.dto.Arbeidssituasjon
 import no.nav.syfo.domain.dto.Soknadstype
 import no.nav.syfo.domain.dto.Sykepengesoknad
-import no.nav.syfo.innsending.InnsendingDbRecord
+import no.nav.syfo.repository.InnsendingDbRecord
 import no.nav.syfo.repository.OppgavestyringDAO
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

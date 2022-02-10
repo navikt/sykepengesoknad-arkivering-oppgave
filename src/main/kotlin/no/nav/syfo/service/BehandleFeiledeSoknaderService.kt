@@ -1,8 +1,8 @@
 package no.nav.syfo.service
 
 import no.nav.syfo.domain.dto.Sykepengesoknad
-import no.nav.syfo.innsending.InnsendingDbRecord
 import no.nav.syfo.logger
+import no.nav.syfo.repository.InnsendingDbRecord
 import org.springframework.stereotype.Component
 import javax.inject.Inject
 

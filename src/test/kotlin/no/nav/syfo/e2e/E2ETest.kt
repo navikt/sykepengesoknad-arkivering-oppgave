@@ -9,7 +9,6 @@ import no.nav.syfo.client.SyfosoknadClient
 import no.nav.syfo.domain.DokumentTypeDTO
 import no.nav.syfo.domain.OppdateringstypeDTO
 import no.nav.syfo.domain.OppgaveDTO
-import no.nav.syfo.innsending.InnsendingDbRecord
 import no.nav.syfo.kafka.consumer.AivenSoknadSendtListener
 import no.nav.syfo.kafka.consumer.AivenSpreOppgaverListener
 import no.nav.syfo.kafka.felles.SoknadsstatusDTO
@@ -19,6 +18,7 @@ import no.nav.syfo.kafka.felles.SvarDTO
 import no.nav.syfo.kafka.felles.SvartypeDTO
 import no.nav.syfo.kafka.felles.SykepengesoknadDTO
 import no.nav.syfo.objectMapper
+import no.nav.syfo.repository.InnsendingDbRecord
 import no.nav.syfo.repository.OppgaveStatus
 import no.nav.syfo.repository.OppgavestyringDAO
 import no.nav.syfo.serialisertTilString

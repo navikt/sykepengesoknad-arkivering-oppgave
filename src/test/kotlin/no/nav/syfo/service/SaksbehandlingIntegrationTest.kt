@@ -11,11 +11,11 @@ import no.nav.syfo.client.pdl.PdlClient
 import no.nav.syfo.domain.*
 import no.nav.syfo.domain.dto.PDFTemplate
 import no.nav.syfo.domain.dto.Svartype
-import no.nav.syfo.innsending.InnsendingRepository
 import no.nav.syfo.kafka.consumer.SYKEPENGESOKNAD_TOPIC
 import no.nav.syfo.kafka.felles.*
 import no.nav.syfo.mockReisetilskuddDTO
 import no.nav.syfo.mockSykepengesoknadDTO
+import no.nav.syfo.repository.InnsendingRepository
 import no.nav.syfo.serialisertTilString
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord

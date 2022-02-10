@@ -9,10 +9,10 @@ import no.nav.syfo.domain.PdfKvittering
 import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.Soknadstype
 import no.nav.syfo.domain.dto.Sykepengesoknad
-import no.nav.syfo.innsending.InnsendingDbRecord
-import no.nav.syfo.innsending.InnsendingRepository
 import no.nav.syfo.kafka.producer.RebehandleSykepengesoknadProducer
 import no.nav.syfo.logger
+import no.nav.syfo.repository.InnsendingDbRecord
+import no.nav.syfo.repository.InnsendingRepository
 import org.springframework.stereotype.Component
 import java.util.*
 
@@ -42,10 +42,13 @@ class SaksbehandlingsService(
 
         val soknad = opprettSoknad(sykepengesoknad, fnr)
         if (eksisterendeInnsending?.journalpostId.isNullOrBlank()) {
-            val jouralpostId = opprettJournalpost(innsendingId, soknad)
+            val jouralpostId = opprettJournalpost(
+                innsendingId!!,
+                soknad
+            )
             log.info("Journalført søknad: ${sykepengesoknad.id} med journalpostId: $jouralpostId")
         }
-        return innsendingId
+        return innsendingId!!
     }
 
     fun opprettOppgave(sykepengesoknad: Sykepengesoknad, innsending: InnsendingDbRecord, speilRelatert: Boolean = false) {
@@ -62,7 +65,7 @@ class SaksbehandlingsService(
         )
         val oppgaveId = oppgaveService.opprettOppgave(requestBody).id.toString()
 
-        innsendingRepository.save(innsending.copy(oppgaveId = oppgaveId))
+        innsendingRepository.updateOppgaveId(id = innsending.id!!, oppgaveId = oppgaveId)
 
         tellInnsendingBehandlet(soknad.soknadstype)
         log.info("Oppretter oppgave ${innsending.id} for ${soknad.soknadstype.name.lowercase()} søknad: ${soknad.soknadsId}")
