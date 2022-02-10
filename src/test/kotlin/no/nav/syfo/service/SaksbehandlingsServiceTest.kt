@@ -12,10 +12,10 @@ import no.nav.syfo.any
 import no.nav.syfo.arkivering.Arkivaren
 import no.nav.syfo.client.FlexBucketUploaderClient
 import no.nav.syfo.client.pdl.PdlClient
-import no.nav.syfo.domain.Innsending
 import no.nav.syfo.domain.dto.Sykepengesoknad
+import no.nav.syfo.innsending.InnsendingDbRecord
+import no.nav.syfo.innsending.InnsendingRepository
 import no.nav.syfo.kafka.producer.RebehandleSykepengesoknadProducer
-import no.nav.syfo.repository.InnsendingDAO
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -31,7 +31,6 @@ import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.junit.jupiter.MockitoSettings
 import org.mockito.quality.Strictness
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 @ExtendWith(MockitoExtension::class)
@@ -42,7 +41,7 @@ class SaksbehandlingsServiceTest {
     @Mock
     lateinit var identService: IdentService
     @Mock
-    lateinit var innsendingDAO: InnsendingDAO
+    lateinit var innsendingRepository: InnsendingRepository
     @Mock
     lateinit var oppgaveService: OppgaveService
     @Mock
@@ -69,7 +68,7 @@ class SaksbehandlingsServiceTest {
         given(arkivaren.opprettJournalpost(any())).willReturn("journalpostId")
         given(oppgaveService.opprettOppgave(any())).willReturn(OppgaveResponse(1234))
         given(registry.counter(ArgumentMatchers.anyString(), ArgumentMatchers.anyIterable())).willReturn(mock(Counter::class.java))
-        given(innsendingDAO.opprettInnsending(any(), any(), any())).willReturn("innsending-guid")
+        given(innsendingRepository.save(any())).willReturn(InnsendingDbRecord(sykepengesoknadId = "innsending-guid"))
     }
 
     @Test
@@ -83,7 +82,7 @@ class SaksbehandlingsServiceTest {
         saksbehandlingsService.behandleSoknad(sykepengesoknadUtenOppgave)
         verify(arkivaren, times(1)).opprettJournalpost(any())
         verify(oppgaveService, never()).opprettOppgave(any())
-        given(innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknadUtenOppgave.id)).willReturn(
+        given(innsendingRepository.findBySykepengesoknadId(sykepengesoknadUtenOppgave.id)).willReturn(
             innsending(sykepengesoknadUtenOppgave)
         )
 
@@ -95,15 +94,13 @@ class SaksbehandlingsServiceTest {
 
     private fun innsending(
         sykepengesoknadUtenOppgave: Sykepengesoknad
-    ): Innsending {
-        return Innsending(
+    ): InnsendingDbRecord {
+        return InnsendingDbRecord(
             id = "innsending-guid",
             sykepengesoknadId = sykepengesoknadUtenOppgave.id,
             journalpostId = "journalpostId",
             oppgaveId = null,
-            behandlet = LocalDate.now(),
-            soknadFom = sykepengesoknadUtenOppgave.fom,
-            soknadTom = sykepengesoknadUtenOppgave.tom
+            behandlet = LocalDateTime.now()
         )
     }
 

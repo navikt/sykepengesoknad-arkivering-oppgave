@@ -7,9 +7,9 @@ import no.nav.syfo.TestApplication
 import no.nav.syfo.any
 import no.nav.syfo.client.SyfosoknadClient
 import no.nav.syfo.domain.DokumentTypeDTO
-import no.nav.syfo.domain.Innsending
 import no.nav.syfo.domain.OppdateringstypeDTO
 import no.nav.syfo.domain.OppgaveDTO
+import no.nav.syfo.innsending.InnsendingDbRecord
 import no.nav.syfo.kafka.consumer.AivenSoknadSendtListener
 import no.nav.syfo.kafka.consumer.AivenSpreOppgaverListener
 import no.nav.syfo.kafka.felles.SoknadsstatusDTO
@@ -72,7 +72,7 @@ class E2ETest : AbstractContainerBaseTest() {
     @BeforeEach
     fun setup() {
         whenever(saksbehandlingsService.finnEksisterendeInnsending(any())).thenAnswer {
-            Innsending(
+            InnsendingDbRecord(
                 id = "iid",
                 sykepengesoknadId = it.arguments[0].toString(),
                 journalpostId = "journalpost"

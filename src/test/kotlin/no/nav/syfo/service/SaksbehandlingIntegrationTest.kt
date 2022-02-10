@@ -11,11 +11,11 @@ import no.nav.syfo.client.pdl.PdlClient
 import no.nav.syfo.domain.*
 import no.nav.syfo.domain.dto.PDFTemplate
 import no.nav.syfo.domain.dto.Svartype
+import no.nav.syfo.innsending.InnsendingRepository
 import no.nav.syfo.kafka.consumer.SYKEPENGESOKNAD_TOPIC
 import no.nav.syfo.kafka.felles.*
 import no.nav.syfo.mockReisetilskuddDTO
 import no.nav.syfo.mockSykepengesoknadDTO
-import no.nav.syfo.repository.InnsendingDAO
 import no.nav.syfo.serialisertTilString
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
@@ -52,7 +52,7 @@ class SaksbehandlingIntegrationTest : AbstractContainerBaseTest() {
     private lateinit var pdlClient: PdlClient
 
     @Autowired
-    private lateinit var innsendingDAO: InnsendingDAO
+    private lateinit var innsendingRepository: InnsendingRepository
 
     @Autowired
     private lateinit var aivenKafkaProducer: KafkaProducer<String, String>
@@ -105,14 +105,14 @@ class SaksbehandlingIntegrationTest : AbstractContainerBaseTest() {
         )
 
         await().atMost(Duration.ofSeconds(10)).until {
-            innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id) != null
+            innsendingRepository.findBySykepengesoknadId(soknad.id) != null
         }
 
         val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
         verify(oppgaveService, never()).opprettOppgave(captor.capture())
 
         await().atMost(Duration.ofSeconds(10)).untilAsserted {
-            val innsendingIDatabase = innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id)!!
+            val innsendingIDatabase = innsendingRepository.findBySykepengesoknadId(soknad.id)!!
             assertThat(innsendingIDatabase.sykepengesoknadId).isEqualTo(soknad.id)
             assertThat(innsendingIDatabase.oppgaveId).isNull()
             assertThat(innsendingIDatabase.behandlet).isNotNull
@@ -168,7 +168,7 @@ class SaksbehandlingIntegrationTest : AbstractContainerBaseTest() {
         )
 
         await().atMost(Duration.ofSeconds(10)).until {
-            innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id)?.oppgaveId != null
+            innsendingRepository.findBySykepengesoknadId(soknad.id)?.oppgaveId != null
         }
 
         val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
@@ -190,7 +190,7 @@ Ja
         assertThat(oppgaveRequest.behandlingstema).isNull()
         assertThat(oppgaveRequest.behandlingstype).isEqualTo("ae0247")
 
-        val innsendingIDatabase = innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id)!!
+        val innsendingIDatabase = innsendingRepository.findBySykepengesoknadId(soknad.id)!!
         assertThat(innsendingIDatabase.sykepengesoknadId).isEqualTo(soknad.id)
         assertThat(innsendingIDatabase.oppgaveId).isEqualTo(oppgaveID.toString())
         assertThat(innsendingIDatabase.behandlet).isNotNull
@@ -226,7 +226,7 @@ Ja
         )
 
         await().atMost(Duration.ofSeconds(10)).until {
-            innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id)?.oppgaveId != null
+            innsendingRepository.findBySykepengesoknadId(soknad.id)?.oppgaveId != null
         }
 
         val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
@@ -279,7 +279,7 @@ Nei
         assertThat(oppgaveRequest.behandlingstype).isNull()
         assertThat(oppgaveRequest.tildeltEnhetsnr).isEqualTo(null)
 
-        val innsendingIDatabase = innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id)!!
+        val innsendingIDatabase = innsendingRepository.findBySykepengesoknadId(soknad.id)!!
         assertThat(innsendingIDatabase.sykepengesoknadId).isEqualTo(soknad.id)
         assertThat(innsendingIDatabase.oppgaveId).isEqualTo(oppgaveID.toString())
         assertThat(innsendingIDatabase.behandlet).isNotNull
@@ -326,7 +326,7 @@ Nei
         )
 
         await().atMost(Duration.ofSeconds(10)).until {
-            innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id)?.oppgaveId != null
+            innsendingRepository.findBySykepengesoknadId(soknad.id)?.oppgaveId != null
         }
 
         val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
@@ -380,7 +380,7 @@ Nei
         assertThat(oppgaveRequest.behandlingstype).isNull()
         assertThat(oppgaveRequest.tildeltEnhetsnr).isEqualTo(null)
 
-        val innsendingIDatabase = innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id)!!
+        val innsendingIDatabase = innsendingRepository.findBySykepengesoknadId(soknad.id)!!
         assertThat(innsendingIDatabase.sykepengesoknadId).isEqualTo(soknad.id)
         assertThat(innsendingIDatabase.oppgaveId).isEqualTo(oppgaveID.toString())
         assertThat(innsendingIDatabase.behandlet).isNotNull
@@ -425,7 +425,7 @@ Nei
         )
 
         await().atMost(Duration.ofSeconds(10)).until {
-            innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id)?.oppgaveId != null
+            innsendingRepository.findBySykepengesoknadId(soknad.id)?.oppgaveId != null
         }
 
         val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()

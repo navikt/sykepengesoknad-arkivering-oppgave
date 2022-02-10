@@ -6,7 +6,7 @@ import io.micrometer.core.instrument.Tag
 import no.nav.syfo.client.SyfosoknadClient
 import no.nav.syfo.client.SøknadIkkeFunnetException
 import no.nav.syfo.config.Toggle
-import no.nav.syfo.domain.Innsending
+import no.nav.syfo.innsending.InnsendingDbRecord
 import no.nav.syfo.kafka.felles.*
 import no.nav.syfo.repository.OppgaveStatus
 import no.nav.syfo.repository.OppgavestyringDAO
@@ -160,7 +160,7 @@ class BehandleVedTimeoutServiceTest {
             )
         )
         whenever(saksbehandlingsService.finnEksisterendeInnsending(søknadsId)).thenReturn(
-            Innsending(
+            InnsendingDbRecord(
                 id = "iid",
                 sykepengesoknadId = søknadsId,
                 journalpostId = "journalpost"
@@ -207,7 +207,7 @@ class BehandleVedTimeoutServiceTest {
             )
         )
         whenever(saksbehandlingsService.finnEksisterendeInnsending(any())).thenAnswer {
-            Innsending(
+            InnsendingDbRecord(
                 id = "iid",
                 sykepengesoknadId = it.arguments[0].toString(),
                 journalpostId = "journalpost"
@@ -236,7 +236,7 @@ class BehandleVedTimeoutServiceTest {
             )
         )
         whenever(saksbehandlingsService.finnEksisterendeInnsending(søknadsId1.toString())).thenReturn(
-            Innsending(
+            InnsendingDbRecord(
                 id = "iid",
                 sykepengesoknadId = søknadsId1.toString(),
                 journalpostId = "journalpost"
@@ -265,7 +265,7 @@ class BehandleVedTimeoutServiceTest {
             )
         )
         whenever(saksbehandlingsService.finnEksisterendeInnsending(søknadsId1.toString())).thenReturn(
-            Innsending(
+            InnsendingDbRecord(
                 id = "iid",
                 sykepengesoknadId = søknadsId1.toString(),
                 journalpostId = "journalpost"
