@@ -24,9 +24,6 @@ class BehandleVedTimeoutServiceTest {
     lateinit var saksbehandlingsService: SaksbehandlingsService
 
     @Mock
-    lateinit var oppgavestyringDAO: OppgavestyringDAO
-
-    @Mock
     lateinit var oppgaveRepository: OppgaveRepository
 
     @Mock
@@ -118,7 +115,7 @@ class BehandleVedTimeoutServiceTest {
         )
         behandleVedTimeoutService.behandleTimeout()
         verify(saksbehandlingsService, never()).opprettOppgave(any(), any(), any())
-        verify(oppgavestyringDAO, never()).slettSpreOppgave(any())
+        verify(oppgaveRepository, never()).deleteOppgaveBySykepengesoknadId(any())
     }
 
     @Test
@@ -139,7 +136,7 @@ class BehandleVedTimeoutServiceTest {
         )
         behandleVedTimeoutService.behandleTimeout()
         verify(saksbehandlingsService, never()).opprettOppgave(any(), any(), any())
-        verify(oppgavestyringDAO, times(1)).slettSpreOppgave(any())
+        verify(oppgaveRepository, times(1)).deleteOppgaveBySykepengesoknadId(any())
     }
 
     @Test

@@ -9,7 +9,6 @@ import no.nav.syfo.domain.OppgaveDTO
 import no.nav.syfo.kafka.consumer.AivenSpreOppgaverListener
 import no.nav.syfo.repository.OppgaveRepository
 import no.nav.syfo.repository.OppgaveStatus
-import no.nav.syfo.repository.OppgavestyringDAO
 import no.nav.syfo.serialisertTilString
 import no.nav.syfo.skapConsumerRecord
 import org.amshove.kluent.shouldBeEqualTo
@@ -36,9 +35,6 @@ class JulegateTest : AbstractContainerBaseTest() {
 
     @Autowired
     lateinit var aivenSpreOppgaverListener: AivenSpreOppgaverListener
-
-    @Autowired
-    lateinit var oppgavestyringDAO: OppgavestyringDAO
 
     @Autowired
     lateinit var oppgaveRepository: OppgaveRepository

@@ -19,7 +19,6 @@ import java.time.LocalDateTime
 @Profile("test")
 @Component
 class BehandleVedTimeoutService(
-    private val oppgavestyringDAO: OppgavestyringDAO,
     private val oppgaveRepository: OppgaveRepository,
     private val saksbehandlingsService: SaksbehandlingsService,
     private val syfosoknadClient: SyfosoknadClient,
@@ -59,7 +58,7 @@ class BehandleVedTimeoutService(
                     if (toggle.isQ() && it.opprettet < LocalDateTime.now().minusDays(1)) {
                         // Dette skjer hvis bømlo selv mocker opp søknader som ikke går gjennom syfosoknad
                         log.info("Sletter oppgave fra ${it.opprettet} som ikke har en tilhørende søknad")
-                        oppgavestyringDAO.slettSpreOppgave(it.sykepengesoknadId)
+                        oppgaveRepository.deleteOppgaveBySykepengesoknadId(it.sykepengesoknadId)
                     }
                 }
                 if (it.status == OppgaveStatus.Utsett) {
@@ -94,7 +93,7 @@ class BehandleVedTimeoutService(
 
     @Scheduled(cron = "0 6 * * * *")
     fun slettGamleOppgaver() {
-        val antall = oppgavestyringDAO.slettGamleSpreOppgaver()
+        val antall = oppgaveRepository.deleteGamleOppgaver()
         log.info("Slettet $antall innslag på utgåtte oppgaver")
     }
 }

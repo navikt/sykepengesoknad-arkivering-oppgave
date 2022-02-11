@@ -10,7 +10,6 @@ import no.nav.syfo.logger
 import no.nav.syfo.repository.OppgaveDbRecord
 import no.nav.syfo.repository.OppgaveRepository
 import no.nav.syfo.repository.OppgaveStatus
-import no.nav.syfo.repository.OppgavestyringDAO
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
@@ -20,7 +19,6 @@ import java.util.UUID
 class SpreOppgaverService(
     @Value("\${default.timeout.timer}") private val defaultTimeoutTimer: String,
     private val saksbehandlingsService: SaksbehandlingsService,
-    private val oppgavestyringDAO: OppgavestyringDAO,
     private val oppgaveRepository: OppgaveRepository,
     registry: MeterRegistry,
 ) {

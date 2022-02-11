@@ -23,6 +23,13 @@ interface OppgaveRepository : CrudRepository<OppgaveDbRecord, String> {
     @Query("""update oppgavestyring set avstemt = true where sykepengesoknad_id = :sykepengesoknadId""")
     fun updateAvstemtBySykepengesoknadId(sykepengesoknadId: String): Boolean
 
+    @Modifying
+    @Query("""delete from oppgavestyring where sykepengesoknad_id = :sykepengesoknadId""")
+    fun deleteOppgaveBySykepengesoknadId(sykepengesoknadId: String): Long
+
+    @Modifying
+    @Query("""delete from oppgavestyring where opprettet < (now() - interval '90 days')""")
+    fun deleteGamleOppgaver(): Long
 }
 
 @Table("oppgavestyring")
