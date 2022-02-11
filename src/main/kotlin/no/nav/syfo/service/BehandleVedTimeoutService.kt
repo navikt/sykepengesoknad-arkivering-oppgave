@@ -31,7 +31,7 @@ class BehandleVedTimeoutService(
 
     @Scheduled(fixedDelay = 1000L * 60 * 1, initialDelay = 1000L * 60 * 10)
     fun behandleTimeout() {
-        val oppgaver = oppgavestyringDAO.hentOppgaverTilOpprettelse()
+        val oppgaver = oppgaveRepository.findOppgaverTilOpprettelse()
 
         if (oppgaver.isNotEmpty()) {
             log.info("Behandler ${oppgaver.size} oppgaver som skal opprettes")

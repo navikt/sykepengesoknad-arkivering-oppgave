@@ -16,17 +16,8 @@ interface OppgaveRepository : CrudRepository<OppgaveDbRecord, String> {
     @Query("""update oppgavestyring set timeout = :timeout, status = :status where sykepengesoknad_id = :sykepengesoknadId""")
     fun updateOppgaveBySykepengesoknadId(sykepengesoknadId: String, timeout: LocalDateTime?, status: OppgaveStatus): Boolean
 
-    @Modifying
-    @Query("""delete from oppgavestyring where sykepengesoknad_id = :sykepengesoknadId""")
-    fun deleteOppgaveBySykepengesoknadId(sykepengesoknadId: String): Long
-
-    @Modifying
-    @Query("""delete from oppgavestyring where opprettet < :foreldet""")
-    fun deleteGamleOppgaver(): Long
-
-    @Modifying
-    @Query("""update oppgavestyring set avstemt = true where id = :id""")
-    fun updateAvstem(id: String): Boolean
+    @Query("""select * from oppgavestyring where avstemt = true and (status = 'Opprett' or status = 'OpprettSpeilRelatert' OR (status = 'Utsett' AND timeout < now()))""")
+    fun findOppgaverTilOpprettelse(): List<OppgaveDbRecord>
 }
 
 @Table("oppgavestyring")

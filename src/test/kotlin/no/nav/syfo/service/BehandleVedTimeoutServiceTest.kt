@@ -85,7 +85,7 @@ class BehandleVedTimeoutServiceTest {
     @Test
     fun `har noe å behandle men mangler innsending`() {
         mockRegistry()
-        whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
+        whenever(oppgaveRepository.findOppgaverTilOpprettelse()).thenReturn(
             listOf(
                 OppgaveDbRecord(
                     sykepengesoknadId = UUID.randomUUID().toString(),
@@ -104,7 +104,7 @@ class BehandleVedTimeoutServiceTest {
     @Test
     fun `sletter ikke oppgave(i test) om vi mangler innsending og den er fersk`() {
         mockRegistry()
-        whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
+        whenever(oppgaveRepository.findOppgaverTilOpprettelse()).thenReturn(
             listOf(
                 OppgaveDbRecord(
                     sykepengesoknadId = UUID.randomUUID().toString(),
@@ -125,7 +125,7 @@ class BehandleVedTimeoutServiceTest {
     fun `sletter oppgave(i test) om vi mangler innsending og den er gammel`() {
         mockRegistry()
         whenever(toggle.isQ()).thenReturn(true)
-        whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
+        whenever(oppgaveRepository.findOppgaverTilOpprettelse()).thenReturn(
             listOf(
                 OppgaveDbRecord(
                     sykepengesoknadId = UUID.randomUUID().toString(),
@@ -147,7 +147,7 @@ class BehandleVedTimeoutServiceTest {
         mockHenting()
         mockRegistry()
         val søknadsId = UUID.randomUUID().toString()
-        whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
+        whenever(oppgaveRepository.findOppgaverTilOpprettelse()).thenReturn(
             listOf(
                 OppgaveDbRecord(
                     sykepengesoknadId = søknadsId,
@@ -183,7 +183,7 @@ class BehandleVedTimeoutServiceTest {
         val søknadsId1 = UUID.randomUUID()
         val søknadsId2 = UUID.randomUUID()
         val søknadsId3 = UUID.randomUUID()
-        whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
+        whenever(oppgaveRepository.findOppgaverTilOpprettelse()).thenReturn(
             listOf(
                 OppgaveDbRecord(
                     sykepengesoknadId = søknadsId1.toString(),
@@ -238,7 +238,7 @@ class BehandleVedTimeoutServiceTest {
     @Test
     fun `Finner ikke søknad, skippes i Q`() {
         val søknadsId1 = UUID.randomUUID()
-        whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
+        whenever(oppgaveRepository.findOppgaverTilOpprettelse()).thenReturn(
             listOf(
                 OppgaveDbRecord(
                     sykepengesoknadId = søknadsId1.toString(),
@@ -272,7 +272,7 @@ class BehandleVedTimeoutServiceTest {
     @Test
     fun `Finner ikke søknad, skippes ikke i P`() {
         val søknadsId1 = UUID.randomUUID()
-        whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
+        whenever(oppgaveRepository.findOppgaverTilOpprettelse()).thenReturn(
             listOf(
                 OppgaveDbRecord(
                     sykepengesoknadId = søknadsId1.toString(),
