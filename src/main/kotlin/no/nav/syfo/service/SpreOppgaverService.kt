@@ -73,19 +73,19 @@ class SpreOppgaverService(
                 )
             }
             eksisterendeOppgave.status == OppgaveStatus.Utsett -> {
-                oppgavestyringDAO.oppdaterOppgave(
-                    oppgave.dokumentId,
-                    timeout(oppgave),
-                    oppgave.oppdateringstype.tilOppgaveStatus()
+                oppgaveRepository.updateOppgaveBySykepengesoknadId(
+                    sykepengesoknadId = oppgave.dokumentId.toString(),
+                    timeout = timeout(oppgave),
+                    status = oppgave.oppdateringstype.tilOppgaveStatus()
                 )
             }
             eksisterendeOppgave.status == OppgaveStatus.IkkeOpprett && oppgave.oppdateringstype == OppdateringstypeDTO.Opprett -> {
                 log.info("Vil opprette oppgave for søknad ${oppgave.dokumentId} som vi tidligere ble bedt om å ikke opprette")
                 gjenopplivetCounter.increment()
-                oppgavestyringDAO.oppdaterOppgave(
-                    oppgave.dokumentId,
-                    timeout(oppgave),
-                    oppgave.oppdateringstype.tilOppgaveStatus()
+                oppgaveRepository.updateOppgaveBySykepengesoknadId(
+                    sykepengesoknadId = oppgave.dokumentId.toString(),
+                    timeout = timeout(oppgave),
+                    status = oppgave.oppdateringstype.tilOppgaveStatus()
                 )
             }
             else -> {

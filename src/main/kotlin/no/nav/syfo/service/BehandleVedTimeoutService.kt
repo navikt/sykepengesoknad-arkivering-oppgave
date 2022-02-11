@@ -7,6 +7,7 @@ import no.nav.syfo.client.SøknadIkkeFunnetException
 import no.nav.syfo.config.Toggle
 import no.nav.syfo.kafka.mapper.toSykepengesoknad
 import no.nav.syfo.logger
+import no.nav.syfo.repository.OppgaveRepository
 import no.nav.syfo.repository.OppgaveStatus
 import no.nav.syfo.repository.OppgavestyringDAO
 import org.springframework.context.annotation.Profile
@@ -14,12 +15,12 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.time.Duration
 import java.time.LocalDateTime
-import java.util.UUID
 
 @Profile("test")
 @Component
 class BehandleVedTimeoutService(
     private val oppgavestyringDAO: OppgavestyringDAO,
+    private val oppgaveRepository: OppgaveRepository,
     private val saksbehandlingsService: SaksbehandlingsService,
     private val syfosoknadClient: SyfosoknadClient,
     private val toggle: Toggle,
@@ -48,7 +49,11 @@ class BehandleVedTimeoutService(
                         innsending = innsending,
                         speilRelatert = it.status == OppgaveStatus.OpprettSpeilRelatert
                     )
-                    oppgavestyringDAO.oppdaterOppgave(UUID.fromString(it.sykepengesoknadId), null, OppgaveStatus.Opprettet)
+                    oppgaveRepository.updateOppgaveBySykepengesoknadId(
+                        sykepengesoknadId = it.sykepengesoknadId,
+                        timeout = null,
+                        status = OppgaveStatus.Opprettet
+                    )
                 } else {
                     log.info("Fant ikke eksisterende innsending, ignorerer søknad med id ${it.sykepengesoknadId}")
                     if (toggle.isQ() && it.opprettet < LocalDateTime.now().minusDays(1)) {
@@ -65,7 +70,11 @@ class BehandleVedTimeoutService(
             } catch (e: SøknadIkkeFunnetException) {
                 if (toggle.isQ()) {
                     log.warn("Søknaden ${it.sykepengesoknadId} finnes ikke i Q, hopper over oppgaveopprettelse og fortsetter")
-                    oppgavestyringDAO.oppdaterOppgave(UUID.fromString(it.sykepengesoknadId), null, OppgaveStatus.IkkeOpprett)
+                    oppgaveRepository.updateOppgaveBySykepengesoknadId(
+                        sykepengesoknadId = it.sykepengesoknadId,
+                        timeout = null,
+                        status = OppgaveStatus.IkkeOpprett
+                    )
                 } else {
                     log.error("SøknadIkkeFunnetException ved opprettelse av oppgave ${it.sykepengesoknadId}", e)
                     throw e

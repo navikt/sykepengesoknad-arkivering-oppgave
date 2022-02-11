@@ -27,6 +27,9 @@ class BehandleVedTimeoutServiceTest {
     lateinit var oppgavestyringDAO: OppgavestyringDAO
 
     @Mock
+    lateinit var oppgaveRepository: OppgaveRepository
+
+    @Mock
     lateinit var syfosoknadConsumer: SyfosoknadClient
 
     @Mock
@@ -165,7 +168,12 @@ class BehandleVedTimeoutServiceTest {
         )
         behandleVedTimeoutService.behandleTimeout()
         verify(saksbehandlingsService, times(1)).opprettOppgave(any(), any(), any())
-        verify(oppgavestyringDAO, times(1)).oppdaterOppgave(UUID.fromString(søknadsId), null, OppgaveStatus.Opprettet)
+        verify(oppgaveRepository, times(1))
+            .updateOppgaveBySykepengesoknadId(
+                sykepengesoknadId = søknadsId,
+                timeout = null,
+                status = OppgaveStatus.Opprettet
+            )
     }
 
     @Test
@@ -213,8 +221,18 @@ class BehandleVedTimeoutServiceTest {
         whenever(syfosoknadConsumer.hentSoknad(søknadsId2.toString())).thenThrow(RuntimeException("I AM ERROR"))
         behandleVedTimeoutService.behandleTimeout()
         verify(saksbehandlingsService, times(2)).opprettOppgave(any(), any(), any())
-        verify(oppgavestyringDAO, times(1)).oppdaterOppgave(søknadsId1, null, OppgaveStatus.Opprettet)
-        verify(oppgavestyringDAO, times(1)).oppdaterOppgave(søknadsId3, null, OppgaveStatus.Opprettet)
+        verify(oppgaveRepository, times(1))
+            .updateOppgaveBySykepengesoknadId(
+                sykepengesoknadId = søknadsId1.toString(),
+                timeout = null,
+                status = OppgaveStatus.Opprettet
+            )
+        verify(oppgaveRepository, times(1))
+            .updateOppgaveBySykepengesoknadId(
+                sykepengesoknadId = søknadsId3.toString(),
+                timeout = null,
+                status = OppgaveStatus.Opprettet
+            )
     }
 
     @Test
@@ -243,7 +261,12 @@ class BehandleVedTimeoutServiceTest {
         whenever(syfosoknadConsumer.hentSoknad(søknadsId1.toString())).thenThrow(SøknadIkkeFunnetException("finner ikke"))
         behandleVedTimeoutService.behandleTimeout()
 
-        verify(oppgavestyringDAO, times(1)).oppdaterOppgave(søknadsId1, null, OppgaveStatus.IkkeOpprett)
+        verify(oppgaveRepository, times(1))
+            .updateOppgaveBySykepengesoknadId(
+                sykepengesoknadId = søknadsId1.toString(),
+                timeout = null,
+                status = OppgaveStatus.IkkeOpprett
+            )
     }
 
     @Test
@@ -273,6 +296,6 @@ class BehandleVedTimeoutServiceTest {
         assertThrows(SøknadIkkeFunnetException::class.java) {
             behandleVedTimeoutService.behandleTimeout()
         }
-        verify(oppgavestyringDAO, never()).oppdaterOppgave(any(), any(), any())
+        verify(oppgaveRepository, never()).updateOppgaveBySykepengesoknadId(any(), any(), any())
     }
 }

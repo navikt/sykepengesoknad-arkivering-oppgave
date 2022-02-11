@@ -59,10 +59,10 @@ class JulegateTest : AbstractContainerBaseTest() {
         val søknadsId = UUID.randomUUID()
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId))
         oppgaveRepository.findBySykepengesoknadId(søknadsId.toString())!!.status shouldBeEqualTo OppgaveStatus.Utsett
-        oppgavestyringDAO.oppdaterOppgave(
-            søknadsId,
-            LocalDateTime.now(),
-            OppgaveStatus.Opprettet
+        oppgaveRepository.updateOppgaveBySykepengesoknadId(
+            sykepengesoknadId = søknadsId.toString(),
+            timeout = LocalDateTime.now(),
+            status = OppgaveStatus.Opprettet
         )
         oppgaveRepository.findBySykepengesoknadId(søknadsId.toString())!!.status shouldBeEqualTo OppgaveStatus.Opprettet
 

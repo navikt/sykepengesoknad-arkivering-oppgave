@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.sql.ResultSet
 import java.time.LocalDateTime
-import java.util.UUID
 
 @Service
 @Transactional
@@ -39,18 +38,6 @@ class OppgavestyringDAO(private val namedParameterJdbcTemplate: NamedParameterJd
             MapSqlParameterSource()
                 .addValue("now", LocalDateTime.now()),
             oppgavestyringRowMapper
-        )
-    }
-
-    fun oppdaterOppgave(søknadsId: UUID, timeout: LocalDateTime?, status: OppgaveStatus) {
-        log.info("Oppdaterer SpreOppgave på søknad: $søknadsId med verdier: timeout: $timeout og status: ${status.name}")
-        namedParameterJdbcTemplate.update(
-            "UPDATE OPPGAVESTYRING SET STATUS = :status, MODIFISERT = :modifisert, timeout = :timeout WHERE SYKEPENGESOKNAD_ID = :soknadsId",
-            MapSqlParameterSource()
-                .addValue("status", status.name)
-                .addValue("timeout", timeout)
-                .addValue("soknadsId", søknadsId.toString())
-                .addValue("modifisert", LocalDateTime.now())
         )
     }
 
