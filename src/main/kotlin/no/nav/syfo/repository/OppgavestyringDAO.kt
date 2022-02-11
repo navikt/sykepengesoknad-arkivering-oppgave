@@ -30,13 +30,4 @@ class OppgavestyringDAO(private val namedParameterJdbcTemplate: NamedParameterJd
                 .addValue("foreldet", LocalDateTime.now().minusMonths(3))
         )
     }
-
-    fun avstem(søknadsId: String) {
-        namedParameterJdbcTemplate.update(
-            "UPDATE OPPGAVESTYRING SET AVSTEMT = true WHERE SYKEPENGESOKNAD_ID = :soknadsId",
-            MapSqlParameterSource()
-                .addValue("soknadsId", søknadsId)
-        )
-        log.info("Avstemte oppgave på søknad: $søknadsId")
-    }
 }

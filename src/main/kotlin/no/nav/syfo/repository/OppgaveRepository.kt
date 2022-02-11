@@ -12,12 +12,17 @@ import java.time.LocalDateTime
 interface OppgaveRepository : CrudRepository<OppgaveDbRecord, String> {
     fun findBySykepengesoknadId(sykepengesoknadId: String): OppgaveDbRecord?
 
+    @Query("""select * from oppgavestyring where avstemt = true and (status = 'Opprett' or status = 'OpprettSpeilRelatert' OR (status = 'Utsett' AND timeout < now()))""")
+    fun findOppgaverTilOpprettelse(): List<OppgaveDbRecord>
+
     @Modifying
     @Query("""update oppgavestyring set timeout = :timeout, status = :status where sykepengesoknad_id = :sykepengesoknadId""")
     fun updateOppgaveBySykepengesoknadId(sykepengesoknadId: String, timeout: LocalDateTime?, status: OppgaveStatus): Boolean
 
-    @Query("""select * from oppgavestyring where avstemt = true and (status = 'Opprett' or status = 'OpprettSpeilRelatert' OR (status = 'Utsett' AND timeout < now()))""")
-    fun findOppgaverTilOpprettelse(): List<OppgaveDbRecord>
+    @Modifying
+    @Query("""update oppgavestyring set avstemt = true where sykepengesoknad_id = :sykepengesoknadId""")
+    fun updateAvstemtBySykepengesoknadId(sykepengesoknadId: String): Boolean
+
 }
 
 @Table("oppgavestyring")

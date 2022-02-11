@@ -43,7 +43,7 @@ class SpreOppgaverService(
         oppgave: OppgaveDTO
     ) {
         if (eksisterendeOppgave != null) {
-            oppgavestyringDAO.avstem(eksisterendeOppgave.sykepengesoknadId)
+            oppgaveRepository.updateAvstemtBySykepengesoknadId(eksisterendeOppgave.sykepengesoknadId)
         } else {
             oppgaveRepository.save(
                 OppgaveDbRecord(
