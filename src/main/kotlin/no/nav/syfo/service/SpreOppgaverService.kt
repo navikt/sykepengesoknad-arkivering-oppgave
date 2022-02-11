@@ -7,9 +7,10 @@ import no.nav.syfo.domain.OppgaveDTO
 import no.nav.syfo.domain.dto.Soknadstype.ARBEIDSTAKERE
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.syfo.logger
+import no.nav.syfo.repository.OppgaveDbRecord
+import no.nav.syfo.repository.OppgaveRepository
 import no.nav.syfo.repository.OppgaveStatus
 import no.nav.syfo.repository.OppgavestyringDAO
-import no.nav.syfo.repository.SpreOppgave
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
@@ -20,6 +21,7 @@ class SpreOppgaverService(
     @Value("\${default.timeout.timer}") private val defaultTimeoutTimer: String,
     private val saksbehandlingsService: SaksbehandlingsService,
     private val oppgavestyringDAO: OppgavestyringDAO,
+    private val oppgaveRepository: OppgaveRepository,
     registry: MeterRegistry,
 ) {
     private val log = logger()
@@ -29,7 +31,7 @@ class SpreOppgaverService(
     // Er Synchronized pga. race condition mellom saksbehandling i vårt system og saksbehandling i Bømlo's system
     @Synchronized
     fun prosesserOppgave(oppgave: OppgaveDTO, kilde: OppgaveKilde) {
-        val eksisterendeOppgave = oppgavestyringDAO.hentSpreOppgave(oppgave.dokumentId.toString())
+        val eksisterendeOppgave = oppgaveRepository.findBySykepengesoknadId(oppgave.dokumentId.toString())
         when (kilde) {
             OppgaveKilde.Søknad -> håndterOppgaveFraSøknad(eksisterendeOppgave, oppgave)
             OppgaveKilde.Saksbehandling -> håndterOppgaveFraBømlo(eksisterendeOppgave, oppgave)
@@ -37,17 +39,19 @@ class SpreOppgaverService(
     }
 
     private fun håndterOppgaveFraSøknad(
-        eksisterendeOppgave: SpreOppgave?,
+        eksisterendeOppgave: OppgaveDbRecord?,
         oppgave: OppgaveDTO
     ) {
         if (eksisterendeOppgave != null) {
             oppgavestyringDAO.avstem(eksisterendeOppgave.sykepengesoknadId)
         } else {
-            oppgavestyringDAO.nySpreOppgave(
-                oppgave.dokumentId,
-                LocalDateTime.now().plusHours(48),
-                OppgaveStatus.Utsett,
-                avstemt = true
+            oppgaveRepository.save(
+                OppgaveDbRecord(
+                    sykepengesoknadId = oppgave.dokumentId.toString(),
+                    timeout = LocalDateTime.now().plusHours(48),
+                    status = OppgaveStatus.Utsett,
+                    avstemt = true
+                )
             )
         }
     }
@@ -55,15 +59,17 @@ class SpreOppgaverService(
     // Dersom on-prem og aiven konsumering slåss om kallet
     @Synchronized
     private fun håndterOppgaveFraBømlo(
-        eksisterendeOppgave: SpreOppgave?,
+        eksisterendeOppgave: OppgaveDbRecord?,
         oppgave: OppgaveDTO
     ) {
         when {
             eksisterendeOppgave == null -> {
-                oppgavestyringDAO.nySpreOppgave(
-                    oppgave.dokumentId,
-                    timeout(oppgave),
-                    oppgave.oppdateringstype.tilOppgaveStatus()
+                oppgaveRepository.save(
+                    OppgaveDbRecord(
+                        sykepengesoknadId = oppgave.dokumentId.toString(),
+                        timeout = timeout(oppgave),
+                        status = oppgave.oppdateringstype.tilOppgaveStatus()
+                    )
                 )
             }
             eksisterendeOppgave.status == OppgaveStatus.Utsett -> {

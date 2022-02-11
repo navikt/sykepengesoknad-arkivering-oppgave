@@ -7,6 +7,7 @@ import no.nav.syfo.domain.DokumentTypeDTO
 import no.nav.syfo.domain.OppdateringstypeDTO
 import no.nav.syfo.domain.OppgaveDTO
 import no.nav.syfo.kafka.consumer.AivenSpreOppgaverListener
+import no.nav.syfo.repository.OppgaveRepository
 import no.nav.syfo.repository.OppgaveStatus
 import no.nav.syfo.repository.OppgavestyringDAO
 import no.nav.syfo.serialisertTilString
@@ -39,33 +40,36 @@ class JulegateTest : AbstractContainerBaseTest() {
     @Autowired
     lateinit var oppgavestyringDAO: OppgavestyringDAO
 
+    @Autowired
+    lateinit var oppgaveRepository: OppgaveRepository
+
     @Test
     fun `Utsett til Ferdig til Opprett`() {
         val søknadsId = UUID.randomUUID()
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId))
-        oppgavestyringDAO.hentSpreOppgave(søknadsId.toString())!!.status shouldBeEqualTo OppgaveStatus.Utsett
+        oppgaveRepository.findBySykepengesoknadId(søknadsId.toString())!!.status shouldBeEqualTo OppgaveStatus.Utsett
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Ferdigbehandlet, søknadsId))
-        oppgavestyringDAO.hentSpreOppgave(søknadsId.toString())!!.status shouldBeEqualTo OppgaveStatus.IkkeOpprett
+        oppgaveRepository.findBySykepengesoknadId(søknadsId.toString())!!.status shouldBeEqualTo OppgaveStatus.IkkeOpprett
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, søknadsId))
-        oppgavestyringDAO.hentSpreOppgave(søknadsId.toString())!!.status shouldBeEqualTo OppgaveStatus.Opprett
+        oppgaveRepository.findBySykepengesoknadId(søknadsId.toString())!!.status shouldBeEqualTo OppgaveStatus.Opprett
     }
 
     @Test
     fun `Oppretter ikke en som er allerede opprettet`() {
         val søknadsId = UUID.randomUUID()
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId))
-        oppgavestyringDAO.hentSpreOppgave(søknadsId.toString())!!.status shouldBeEqualTo OppgaveStatus.Utsett
+        oppgaveRepository.findBySykepengesoknadId(søknadsId.toString())!!.status shouldBeEqualTo OppgaveStatus.Utsett
         oppgavestyringDAO.oppdaterOppgave(
             søknadsId,
             LocalDateTime.now(),
             OppgaveStatus.Opprettet
         )
-        oppgavestyringDAO.hentSpreOppgave(søknadsId.toString())!!.status shouldBeEqualTo OppgaveStatus.Opprettet
+        oppgaveRepository.findBySykepengesoknadId(søknadsId.toString())!!.status shouldBeEqualTo OppgaveStatus.Opprettet
 
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, søknadsId))
 
         // Fortsatt opprettet
-        oppgavestyringDAO.hentSpreOppgave(søknadsId.toString())!!.status shouldBeEqualTo OppgaveStatus.Opprettet
+        oppgaveRepository.findBySykepengesoknadId(søknadsId.toString())!!.status shouldBeEqualTo OppgaveStatus.Opprettet
     }
 
     private fun leggOppgavePåAivenKafka(oppgave: OppgaveDTO) =

@@ -17,21 +17,6 @@ class OppgavestyringDAO(private val namedParameterJdbcTemplate: NamedParameterJd
 
     private val log = logger()
 
-    fun nySpreOppgave(søknadsId: UUID, timeout: LocalDateTime?, status: OppgaveStatus, avstemt: Boolean = false) {
-        log.info("Oppretter ny SpreOppgave for id $søknadsId og timeout $timeout")
-        val opprettet = LocalDateTime.now()
-        namedParameterJdbcTemplate.update(
-            "INSERT INTO OPPGAVESTYRING (SYKEPENGESOKNAD_ID, TIMEOUT, STATUS, OPPRETTET, MODIFISERT, AVSTEMT) values (:soknadsId, :timeout, :status, :opprettet, :modifisert, :avstemt)",
-            MapSqlParameterSource()
-                .addValue("soknadsId", søknadsId.toString())
-                .addValue("timeout", timeout)
-                .addValue("status", status.name)
-                .addValue("opprettet", opprettet)
-                .addValue("modifisert", opprettet)
-                .addValue("avstemt", avstemt)
-        )
-    }
-
     fun slettSpreOppgave(søknadsId: String) {
         namedParameterJdbcTemplate.update(
             "DELETE FROM OPPGAVESTYRING WHERE SYKEPENGESOKNAD_ID = :soknadsId",
@@ -48,16 +33,7 @@ class OppgavestyringDAO(private val namedParameterJdbcTemplate: NamedParameterJd
         )
     }
 
-    fun hentSpreOppgave(søknadsId: String): SpreOppgave? {
-        return namedParameterJdbcTemplate.query(
-            "SELECT * FROM OPPGAVESTYRING WHERE SYKEPENGESOKNAD_ID = :soknadsId",
-            MapSqlParameterSource()
-                .addValue("soknadsId", søknadsId),
-            oppgavestyringRowMapper
-        ).firstOrNull()
-    }
-
-    fun hentOppgaverTilOpprettelse(): List<SpreOppgave> {
+    fun hentOppgaverTilOpprettelse(): List<OppgaveDbRecord> {
         return namedParameterJdbcTemplate.query(
             "SELECT * FROM OPPGAVESTYRING WHERE AVSTEMT = true AND (STATUS = 'Opprett' OR STATUS = 'OpprettSpeilRelatert' OR (STATUS = 'Utsett' AND TIMEOUT < :now))",
             MapSqlParameterSource()
@@ -88,21 +64,8 @@ class OppgavestyringDAO(private val namedParameterJdbcTemplate: NamedParameterJd
     }
 }
 
-enum class OppgaveStatus {
-    Utsett, Opprett, IkkeOpprett, Opprettet, OpprettSpeilRelatert
-}
-
-data class SpreOppgave(
-    val sykepengesoknadId: String,
-    val timeout: LocalDateTime?,
-    val status: OppgaveStatus,
-    val opprettet: LocalDateTime,
-    val modifisert: LocalDateTime,
-    val avstemt: Boolean
-)
-
-val oppgavestyringRowMapper: (ResultSet, Int) -> SpreOppgave = { resultSet, _ ->
-    SpreOppgave(
+val oppgavestyringRowMapper: (ResultSet, Int) -> OppgaveDbRecord = { resultSet, _ ->
+    OppgaveDbRecord(
         sykepengesoknadId = resultSet.getString("SYKEPENGESOKNAD_ID"),
         timeout = resultSet.getTimestamp("TIMEOUT")?.toLocalDateTime(),
         status = OppgaveStatus.valueOf(resultSet.getString("STATUS")),

@@ -7,10 +7,7 @@ import no.nav.syfo.client.SyfosoknadClient
 import no.nav.syfo.client.SøknadIkkeFunnetException
 import no.nav.syfo.config.Toggle
 import no.nav.syfo.kafka.felles.*
-import no.nav.syfo.repository.InnsendingDbRecord
-import no.nav.syfo.repository.OppgaveStatus
-import no.nav.syfo.repository.OppgavestyringDAO
-import no.nav.syfo.repository.SpreOppgave
+import no.nav.syfo.repository.*
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -87,7 +84,7 @@ class BehandleVedTimeoutServiceTest {
         mockRegistry()
         whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
             listOf(
-                SpreOppgave(
+                OppgaveDbRecord(
                     sykepengesoknadId = UUID.randomUUID().toString(),
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
@@ -106,7 +103,7 @@ class BehandleVedTimeoutServiceTest {
         mockRegistry()
         whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
             listOf(
-                SpreOppgave(
+                OppgaveDbRecord(
                     sykepengesoknadId = UUID.randomUUID().toString(),
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
@@ -127,7 +124,7 @@ class BehandleVedTimeoutServiceTest {
         whenever(toggle.isQ()).thenReturn(true)
         whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
             listOf(
-                SpreOppgave(
+                OppgaveDbRecord(
                     sykepengesoknadId = UUID.randomUUID().toString(),
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
@@ -149,7 +146,7 @@ class BehandleVedTimeoutServiceTest {
         val søknadsId = UUID.randomUUID().toString()
         whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
             listOf(
-                SpreOppgave(
+                OppgaveDbRecord(
                     sykepengesoknadId = søknadsId,
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
@@ -180,7 +177,7 @@ class BehandleVedTimeoutServiceTest {
         val søknadsId3 = UUID.randomUUID()
         whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
             listOf(
-                SpreOppgave(
+                OppgaveDbRecord(
                     sykepengesoknadId = søknadsId1.toString(),
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
@@ -188,7 +185,7 @@ class BehandleVedTimeoutServiceTest {
                     modifisert = LocalDateTime.now().minusHours(1),
                     avstemt = true
                 ),
-                SpreOppgave(
+                OppgaveDbRecord(
                     sykepengesoknadId = søknadsId2.toString(),
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
@@ -196,7 +193,7 @@ class BehandleVedTimeoutServiceTest {
                     modifisert = LocalDateTime.now().minusHours(1),
                     avstemt = true
                 ),
-                SpreOppgave(
+                OppgaveDbRecord(
                     sykepengesoknadId = søknadsId3.toString(),
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
@@ -225,7 +222,7 @@ class BehandleVedTimeoutServiceTest {
         val søknadsId1 = UUID.randomUUID()
         whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
             listOf(
-                SpreOppgave(
+                OppgaveDbRecord(
                     sykepengesoknadId = søknadsId1.toString(),
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
@@ -254,7 +251,7 @@ class BehandleVedTimeoutServiceTest {
         val søknadsId1 = UUID.randomUUID()
         whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
             listOf(
-                SpreOppgave(
+                OppgaveDbRecord(
                     sykepengesoknadId = søknadsId1.toString(),
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
