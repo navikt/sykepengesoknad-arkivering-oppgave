@@ -18,7 +18,7 @@ import java.time.Instant
 import java.time.ZoneOffset
 import javax.inject.Inject
 
-const val RETRY_TOPIC = "flex." + "syfogsak-retry"
+const val RETRY_TOPIC = "flex." + "sykepengesoknad-arkivering-oppgave-retry"
 
 @Profile("test")
 @Component
