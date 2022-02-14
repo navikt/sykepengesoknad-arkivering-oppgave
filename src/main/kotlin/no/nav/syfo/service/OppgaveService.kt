@@ -42,9 +42,9 @@ class OppgaveService(
             }
 
             result.body
-                ?: throw RuntimeException("Oppgave-respons mangler ved oppretting av oppgave for ${request.journalpostId}")
+                ?: throw RuntimeException("Oppgave-respons mangler ved oppretting av oppgave for journalpostId ${request.journalpostId}")
         } catch (e: HttpClientErrorException) {
-            throw RuntimeException("Feil ved oppretting av oppgave for aktør ${request.journalpostId}", e)
+            throw RuntimeException("Feil ved oppretting av oppgave for journalpostId ${request.journalpostId}", e)
         }
     }
 
