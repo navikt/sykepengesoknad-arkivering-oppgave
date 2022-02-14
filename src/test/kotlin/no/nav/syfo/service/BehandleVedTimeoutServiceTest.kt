@@ -6,11 +6,8 @@ import io.micrometer.core.instrument.Tag
 import no.nav.syfo.client.SyfosoknadClient
 import no.nav.syfo.client.SøknadIkkeFunnetException
 import no.nav.syfo.config.Toggle
-import no.nav.syfo.domain.Innsending
 import no.nav.syfo.kafka.felles.*
-import no.nav.syfo.repository.OppgaveStatus
-import no.nav.syfo.repository.OppgavestyringDAO
-import no.nav.syfo.repository.SpreOppgave
+import no.nav.syfo.repository.*
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -27,7 +24,7 @@ class BehandleVedTimeoutServiceTest {
     lateinit var saksbehandlingsService: SaksbehandlingsService
 
     @Mock
-    lateinit var oppgavestyringDAO: OppgavestyringDAO
+    lateinit var spreOppgaveRepository: SpreOppgaveRepository
 
     @Mock
     lateinit var syfosoknadConsumer: SyfosoknadClient
@@ -85,9 +82,9 @@ class BehandleVedTimeoutServiceTest {
     @Test
     fun `har noe å behandle men mangler innsending`() {
         mockRegistry()
-        whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
+        whenever(spreOppgaveRepository.findOppgaverTilOpprettelse()).thenReturn(
             listOf(
-                SpreOppgave(
+                SpreOppgaveDbRecord(
                     sykepengesoknadId = UUID.randomUUID().toString(),
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
@@ -104,9 +101,9 @@ class BehandleVedTimeoutServiceTest {
     @Test
     fun `sletter ikke oppgave(i test) om vi mangler innsending og den er fersk`() {
         mockRegistry()
-        whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
+        whenever(spreOppgaveRepository.findOppgaverTilOpprettelse()).thenReturn(
             listOf(
-                SpreOppgave(
+                SpreOppgaveDbRecord(
                     sykepengesoknadId = UUID.randomUUID().toString(),
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
@@ -118,16 +115,16 @@ class BehandleVedTimeoutServiceTest {
         )
         behandleVedTimeoutService.behandleTimeout()
         verify(saksbehandlingsService, never()).opprettOppgave(any(), any(), any())
-        verify(oppgavestyringDAO, never()).slettSpreOppgave(any())
+        verify(spreOppgaveRepository, never()).deleteOppgaveBySykepengesoknadId(any())
     }
 
     @Test
     fun `sletter oppgave(i test) om vi mangler innsending og den er gammel`() {
         mockRegistry()
         whenever(toggle.isQ()).thenReturn(true)
-        whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
+        whenever(spreOppgaveRepository.findOppgaverTilOpprettelse()).thenReturn(
             listOf(
-                SpreOppgave(
+                SpreOppgaveDbRecord(
                     sykepengesoknadId = UUID.randomUUID().toString(),
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
@@ -139,7 +136,7 @@ class BehandleVedTimeoutServiceTest {
         )
         behandleVedTimeoutService.behandleTimeout()
         verify(saksbehandlingsService, never()).opprettOppgave(any(), any(), any())
-        verify(oppgavestyringDAO, times(1)).slettSpreOppgave(any())
+        verify(spreOppgaveRepository, times(1)).deleteOppgaveBySykepengesoknadId(any())
     }
 
     @Test
@@ -147,9 +144,9 @@ class BehandleVedTimeoutServiceTest {
         mockHenting()
         mockRegistry()
         val søknadsId = UUID.randomUUID().toString()
-        whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
+        whenever(spreOppgaveRepository.findOppgaverTilOpprettelse()).thenReturn(
             listOf(
-                SpreOppgave(
+                SpreOppgaveDbRecord(
                     sykepengesoknadId = søknadsId,
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
@@ -160,7 +157,7 @@ class BehandleVedTimeoutServiceTest {
             )
         )
         whenever(saksbehandlingsService.finnEksisterendeInnsending(søknadsId)).thenReturn(
-            Innsending(
+            InnsendingDbRecord(
                 id = "iid",
                 sykepengesoknadId = søknadsId,
                 journalpostId = "journalpost"
@@ -168,7 +165,12 @@ class BehandleVedTimeoutServiceTest {
         )
         behandleVedTimeoutService.behandleTimeout()
         verify(saksbehandlingsService, times(1)).opprettOppgave(any(), any(), any())
-        verify(oppgavestyringDAO, times(1)).oppdaterOppgave(UUID.fromString(søknadsId), null, OppgaveStatus.Opprettet)
+        verify(spreOppgaveRepository, times(1))
+            .updateOppgaveBySykepengesoknadId(
+                sykepengesoknadId = søknadsId,
+                timeout = null,
+                status = OppgaveStatus.Opprettet
+            )
     }
 
     @Test
@@ -178,9 +180,9 @@ class BehandleVedTimeoutServiceTest {
         val søknadsId1 = UUID.randomUUID()
         val søknadsId2 = UUID.randomUUID()
         val søknadsId3 = UUID.randomUUID()
-        whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
+        whenever(spreOppgaveRepository.findOppgaverTilOpprettelse()).thenReturn(
             listOf(
-                SpreOppgave(
+                SpreOppgaveDbRecord(
                     sykepengesoknadId = søknadsId1.toString(),
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
@@ -188,7 +190,7 @@ class BehandleVedTimeoutServiceTest {
                     modifisert = LocalDateTime.now().minusHours(1),
                     avstemt = true
                 ),
-                SpreOppgave(
+                SpreOppgaveDbRecord(
                     sykepengesoknadId = søknadsId2.toString(),
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
@@ -196,7 +198,7 @@ class BehandleVedTimeoutServiceTest {
                     modifisert = LocalDateTime.now().minusHours(1),
                     avstemt = true
                 ),
-                SpreOppgave(
+                SpreOppgaveDbRecord(
                     sykepengesoknadId = søknadsId3.toString(),
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
@@ -207,7 +209,7 @@ class BehandleVedTimeoutServiceTest {
             )
         )
         whenever(saksbehandlingsService.finnEksisterendeInnsending(any())).thenAnswer {
-            Innsending(
+            InnsendingDbRecord(
                 id = "iid",
                 sykepengesoknadId = it.arguments[0].toString(),
                 journalpostId = "journalpost"
@@ -216,16 +218,26 @@ class BehandleVedTimeoutServiceTest {
         whenever(syfosoknadConsumer.hentSoknad(søknadsId2.toString())).thenThrow(RuntimeException("I AM ERROR"))
         behandleVedTimeoutService.behandleTimeout()
         verify(saksbehandlingsService, times(2)).opprettOppgave(any(), any(), any())
-        verify(oppgavestyringDAO, times(1)).oppdaterOppgave(søknadsId1, null, OppgaveStatus.Opprettet)
-        verify(oppgavestyringDAO, times(1)).oppdaterOppgave(søknadsId3, null, OppgaveStatus.Opprettet)
+        verify(spreOppgaveRepository, times(1))
+            .updateOppgaveBySykepengesoknadId(
+                sykepengesoknadId = søknadsId1.toString(),
+                timeout = null,
+                status = OppgaveStatus.Opprettet
+            )
+        verify(spreOppgaveRepository, times(1))
+            .updateOppgaveBySykepengesoknadId(
+                sykepengesoknadId = søknadsId3.toString(),
+                timeout = null,
+                status = OppgaveStatus.Opprettet
+            )
     }
 
     @Test
     fun `Finner ikke søknad, skippes i Q`() {
         val søknadsId1 = UUID.randomUUID()
-        whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
+        whenever(spreOppgaveRepository.findOppgaverTilOpprettelse()).thenReturn(
             listOf(
-                SpreOppgave(
+                SpreOppgaveDbRecord(
                     sykepengesoknadId = søknadsId1.toString(),
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
@@ -236,7 +248,7 @@ class BehandleVedTimeoutServiceTest {
             )
         )
         whenever(saksbehandlingsService.finnEksisterendeInnsending(søknadsId1.toString())).thenReturn(
-            Innsending(
+            InnsendingDbRecord(
                 id = "iid",
                 sykepengesoknadId = søknadsId1.toString(),
                 journalpostId = "journalpost"
@@ -246,15 +258,20 @@ class BehandleVedTimeoutServiceTest {
         whenever(syfosoknadConsumer.hentSoknad(søknadsId1.toString())).thenThrow(SøknadIkkeFunnetException("finner ikke"))
         behandleVedTimeoutService.behandleTimeout()
 
-        verify(oppgavestyringDAO, times(1)).oppdaterOppgave(søknadsId1, null, OppgaveStatus.IkkeOpprett)
+        verify(spreOppgaveRepository, times(1))
+            .updateOppgaveBySykepengesoknadId(
+                sykepengesoknadId = søknadsId1.toString(),
+                timeout = null,
+                status = OppgaveStatus.IkkeOpprett
+            )
     }
 
     @Test
     fun `Finner ikke søknad, skippes ikke i P`() {
         val søknadsId1 = UUID.randomUUID()
-        whenever(oppgavestyringDAO.hentOppgaverTilOpprettelse()).thenReturn(
+        whenever(spreOppgaveRepository.findOppgaverTilOpprettelse()).thenReturn(
             listOf(
-                SpreOppgave(
+                SpreOppgaveDbRecord(
                     sykepengesoknadId = søknadsId1.toString(),
                     timeout = LocalDateTime.now().minusHours(1),
                     status = OppgaveStatus.Utsett,
@@ -265,7 +282,7 @@ class BehandleVedTimeoutServiceTest {
             )
         )
         whenever(saksbehandlingsService.finnEksisterendeInnsending(søknadsId1.toString())).thenReturn(
-            Innsending(
+            InnsendingDbRecord(
                 id = "iid",
                 sykepengesoknadId = søknadsId1.toString(),
                 journalpostId = "journalpost"
@@ -276,6 +293,6 @@ class BehandleVedTimeoutServiceTest {
         assertThrows(SøknadIkkeFunnetException::class.java) {
             behandleVedTimeoutService.behandleTimeout()
         }
-        verify(oppgavestyringDAO, never()).oppdaterOppgave(any(), any(), any())
+        verify(spreOppgaveRepository, never()).updateOppgaveBySykepengesoknadId(any(), any(), any())
     }
 }

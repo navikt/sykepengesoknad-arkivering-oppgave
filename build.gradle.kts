@@ -1,3 +1,4 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -52,28 +53,29 @@ val testContainersVersion = "1.16.0"
 val kluentVersion = "1.68"
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("javax.jws:javax.jws-api:1.1")
-    implementation("javax.inject:javax.inject:1")
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.hibernate.validator:hibernate-validator")
-    implementation("org.springframework.kafka:spring-kafka")
-    implementation("no.nav.syfo.kafka:kafkautils:$syfoKafkaVersion")
-    implementation("no.nav.syfo.kafka:legacy-serialisering:$syfoKafkaVersion")
-    implementation("no.nav.syfo.kafka:felles:$syfoKafkaVersion")
-    implementation("org.apache.httpcomponents:httpclient:4.5.13")
-    implementation("org.apache.commons:commons-text:1.9")
-    implementation("io.micrometer:micrometer-registry-prometheus")
+    implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-jta-atomikos")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springframework.kafka:spring-kafka")
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.postgresql:postgresql")
     implementation("org.flywaydb:flyway-core")
     implementation("org.slf4j:slf4j-api")
+    implementation("org.hibernate.validator:hibernate-validator")
+    implementation("org.apache.httpcomponents:httpclient:4.5.13")
+    implementation("org.apache.commons:commons-text:1.9")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashLogbackEncoderVersion")
+    implementation("javax.jws:javax.jws-api:1.1")
+    implementation("javax.inject:javax.inject:1")
+    implementation("io.micrometer:micrometer-registry-prometheus")
+    implementation("no.nav.syfo.kafka:kafkautils:$syfoKafkaVersion")
+    implementation("no.nav.syfo.kafka:legacy-serialisering:$syfoKafkaVersion")
+    implementation("no.nav.syfo.kafka:felles:$syfoKafkaVersion")
     implementation("no.nav.tjenestespesifikasjoner:nav-fim-behandleJournal-v2-tjenestespesifikasjon:$tjenestespesifikasjonerVersion")
     implementation("no.nav.security:token-validation-spring:$tokenSupportVersion")
     implementation("no.nav.security:token-client-spring:$tokenSupportVersion")
@@ -108,6 +110,8 @@ tasks.withType<KotlinCompile> {
 tasks.withType<Test> {
     useJUnitPlatform()
     testLogging {
-        events("PASSED", "FAILED", "SKIPPED")
+        events("STARTED", "PASSED", "FAILED", "SKIPPED")
+        exceptionFormat = FULL
     }
+    failFast = false
 }

@@ -6,9 +6,7 @@ CREATE TABLE INNSENDING
     sykepengesoknad_id VARCHAR(100),
     journalpost_id     VARCHAR(20),
     oppgave_id         VARCHAR(20),
-    behandlet          TIMESTAMP WITH TIME ZONE,
-    soknad_fom         TIMESTAMP WITH TIME ZONE,
-    soknad_tom         TIMESTAMP WITH TIME ZONE
+    behandlet          TIMESTAMP WITH TIME ZONE
 );
 
 CREATE TABLE OPPGAVESTYRING

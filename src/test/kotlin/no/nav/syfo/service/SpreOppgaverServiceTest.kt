@@ -8,11 +8,11 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.syfo.TestApplication
-import no.nav.syfo.domain.Innsending
 import no.nav.syfo.domain.dto.Arbeidssituasjon
 import no.nav.syfo.domain.dto.Soknadstype
 import no.nav.syfo.domain.dto.Sykepengesoknad
-import no.nav.syfo.repository.OppgavestyringDAO
+import no.nav.syfo.repository.InnsendingDbRecord
+import no.nav.syfo.repository.SpreOppgaveRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -29,7 +29,7 @@ class SpreOppgaverServiceTest {
     lateinit var spreOppgaverService: SpreOppgaverService
 
     @Mock
-    lateinit var oppgavestyringDAO: OppgavestyringDAO
+    lateinit var spreOppgaveRepository: SpreOppgaveRepository
 
     @Mock
     lateinit var registry: MeterRegistry
@@ -43,20 +43,18 @@ class SpreOppgaverServiceTest {
         Sykepengesoknad::class.java
     )
     private val now = LocalDateTime.now()
-    private fun innsending(soknadsId: String) = Innsending(
+    private fun innsending(soknadsId: String) = InnsendingDbRecord(
         "id",
         sykepengesoknadId = soknadsId,
         journalpostId = "journalpost",
         oppgaveId = null,
         behandlet = null,
-        soknadFom = null,
-        soknadTom = null
     )
 
     @BeforeEach
     fun setup() {
         whenever(registry.counter(any())).thenReturn(counter)
-        spreOppgaverService = SpreOppgaverService("1", saksbehandlingsService, oppgavestyringDAO, registry)
+        spreOppgaverService = SpreOppgaverService("1", saksbehandlingsService, spreOppgaveRepository, registry)
     }
 
     @Test

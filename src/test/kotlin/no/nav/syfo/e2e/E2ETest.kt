@@ -7,7 +7,6 @@ import no.nav.syfo.TestApplication
 import no.nav.syfo.any
 import no.nav.syfo.client.SyfosoknadClient
 import no.nav.syfo.domain.DokumentTypeDTO
-import no.nav.syfo.domain.Innsending
 import no.nav.syfo.domain.OppdateringstypeDTO
 import no.nav.syfo.domain.OppgaveDTO
 import no.nav.syfo.kafka.consumer.AivenSoknadSendtListener
@@ -19,8 +18,9 @@ import no.nav.syfo.kafka.felles.SvarDTO
 import no.nav.syfo.kafka.felles.SvartypeDTO
 import no.nav.syfo.kafka.felles.SykepengesoknadDTO
 import no.nav.syfo.objectMapper
+import no.nav.syfo.repository.InnsendingDbRecord
 import no.nav.syfo.repository.OppgaveStatus
-import no.nav.syfo.repository.OppgavestyringDAO
+import no.nav.syfo.repository.SpreOppgaveRepository
 import no.nav.syfo.serialisertTilString
 import no.nav.syfo.service.BehandleVedTimeoutService
 import no.nav.syfo.service.SaksbehandlingsService
@@ -64,7 +64,7 @@ class E2ETest : AbstractContainerBaseTest() {
     lateinit var aivenSpreOppgaverListener: AivenSpreOppgaverListener
 
     @Autowired
-    lateinit var spreOppgavestyringDAO: OppgavestyringDAO
+    lateinit var spreOppgaveRepository: SpreOppgaveRepository
 
     @Autowired
     lateinit var behandleVedTimeoutService: BehandleVedTimeoutService
@@ -72,7 +72,7 @@ class E2ETest : AbstractContainerBaseTest() {
     @BeforeEach
     fun setup() {
         whenever(saksbehandlingsService.finnEksisterendeInnsending(any())).thenAnswer {
-            Innsending(
+            InnsendingDbRecord(
                 id = "iid",
                 sykepengesoknadId = it.arguments[0].toString(),
                 journalpostId = "journalpost"
@@ -91,12 +91,12 @@ class E2ETest : AbstractContainerBaseTest() {
         val søknadsId = UUID.randomUUID()
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, søknadsId, null))
 
-        val oppgave = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
+        val oppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Opprett).isEqualTo(oppgave.status)
         assertThat(oppgave.timeout).isNull()
         assertThat(oppgave.avstemt).isFalse
 
-        val oppgaveFraAiven = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
+        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Opprett).isEqualTo(oppgaveFraAiven.status)
         assertThat(oppgaveFraAiven.timeout).isNull()
         assertThat(oppgaveFraAiven.avstemt).isFalse
@@ -107,12 +107,12 @@ class E2ETest : AbstractContainerBaseTest() {
         val søknadsId = UUID.randomUUID()
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, omFireTimer))
 
-        val oppgave = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
+        val oppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgave.status)
         assertThat(omFireTimer).isEqualTo(oppgave.timeout)
         assertThat(oppgave.avstemt).isFalse
 
-        val oppgaveFraAiven = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
+        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgaveFraAiven.status)
         assertThat(omFireTimer).isEqualTo(oppgaveFraAiven.timeout)
         assertThat(oppgaveFraAiven.avstemt).isFalse
@@ -123,12 +123,12 @@ class E2ETest : AbstractContainerBaseTest() {
         val søknadsId = UUID.randomUUID()
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Ferdigbehandlet, søknadsId, null))
 
-        val oppgave = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
+        val oppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.IkkeOpprett).isEqualTo(oppgave.status)
         assertThat(oppgave.timeout).isNull()
         assertThat(oppgave.avstemt).isFalse
 
-        val oppgaveFraAiven = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
+        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.IkkeOpprett).isEqualTo(oppgaveFraAiven.status)
         assertThat(oppgaveFraAiven.timeout).isNull()
         assertThat(oppgaveFraAiven.avstemt).isFalse
@@ -140,12 +140,12 @@ class E2ETest : AbstractContainerBaseTest() {
         leggSøknadPåKafka(søknad(søknadsId))
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, omFireTimer))
 
-        val oppgave = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
+        val oppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgave.status)
         assertThat(omFireTimer).isEqualTo(oppgave.timeout)
         assertThat(oppgave.avstemt).isTrue
 
-        val oppgaveFraAiven = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
+        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgaveFraAiven.status)
         assertThat(omFireTimer).isEqualTo(oppgaveFraAiven.timeout)
         assertThat(oppgaveFraAiven.avstemt).isTrue
@@ -157,7 +157,7 @@ class E2ETest : AbstractContainerBaseTest() {
         leggSøknadPåKafka(søknad(søknadsId))
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, søknadsId))
 
-        val oppgaveFraAiven = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
+        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Opprett).isEqualTo(oppgaveFraAiven.status)
         assertThat(oppgaveFraAiven.timeout).isNull()
         assertThat(oppgaveFraAiven.avstemt).isTrue
@@ -169,7 +169,7 @@ class E2ETest : AbstractContainerBaseTest() {
         leggSøknadPåKafka(søknad(søknadsId))
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Ferdigbehandlet, søknadsId))
 
-        val oppgaveFraAiven = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
+        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.IkkeOpprett).isEqualTo(oppgaveFraAiven.status)
         assertThat(oppgaveFraAiven.timeout).isNull()
         assertThat(oppgaveFraAiven.avstemt).isTrue
@@ -181,7 +181,7 @@ class E2ETest : AbstractContainerBaseTest() {
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, omFireTimer))
         leggSøknadPåKafka(søknad(søknadsId))
 
-        val oppgaveFraAiven = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
+        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgaveFraAiven.status)
         assertThat(omFireTimer).isEqualTo(oppgaveFraAiven.timeout)
         assertThat(oppgaveFraAiven.avstemt).isTrue
@@ -197,7 +197,7 @@ class E2ETest : AbstractContainerBaseTest() {
         behandleVedTimeoutService.behandleTimeout()
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, omFireTimer))
 
-        val oppgaveFraAiven = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
+        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Opprettet).isEqualTo(oppgaveFraAiven.status)
         assertThat(oppgaveFraAiven.timeout).isNull()
     }
@@ -209,7 +209,7 @@ class E2ETest : AbstractContainerBaseTest() {
         leggSøknadPåKafka(søknad(søknadsId))
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, omFireTimer))
 
-        val oppgaveFraAiven = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
+        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.IkkeOpprett).isEqualTo(oppgaveFraAiven.status)
         assertThat(oppgaveFraAiven.timeout).isNull()
     }
@@ -227,14 +227,14 @@ class E2ETest : AbstractContainerBaseTest() {
         )
         leggSøknadPåKafka(søknad(søknadsId = søknadsId, sendtNav = null, sendtArbeidsgiver = LocalDateTime.now()))
 
-        val oppgaveFørJob = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
+        val oppgaveFørJob = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgaveFørJob.status)
 
         assertThat(oppgaveFørJob.avstemt).isFalse
 
         behandleVedTimeoutService.behandleTimeout()
 
-        val oppgaveEtterJob = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
+        val oppgaveEtterJob = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgaveEtterJob.status)
         assertThat(oppgaveEtterJob.avstemt).isFalse
     }
@@ -252,12 +252,12 @@ class E2ETest : AbstractContainerBaseTest() {
             )
         )
 
-        val oppgave = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
+        val oppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgave.status)
         assertThat(omFireTimer).isEqualTo(oppgave.timeout)
         assertThat(oppgave.avstemt).isFalse
 
-        val oppgaveFraAiven = requireNotNull(spreOppgavestyringDAO.hentSpreOppgave(søknadsId.toString()))
+        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgaveFraAiven.status)
         assertThat(omFireTimer).isEqualTo(oppgaveFraAiven.timeout)
         assertThat(oppgaveFraAiven.avstemt).isFalse

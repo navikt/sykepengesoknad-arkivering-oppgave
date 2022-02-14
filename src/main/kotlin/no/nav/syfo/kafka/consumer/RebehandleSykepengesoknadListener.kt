@@ -6,7 +6,7 @@ import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.syfo.kafka.producer.RebehandleSykepengesoknadProducer
 import no.nav.syfo.logger
 import no.nav.syfo.objectMapper
-import no.nav.syfo.repository.InnsendingDAO
+import no.nav.syfo.repository.InnsendingRepository
 import no.nav.syfo.service.BehandleFeiledeSoknaderService
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.springframework.context.annotation.Profile
@@ -18,14 +18,14 @@ import java.time.Instant
 import java.time.ZoneOffset
 import javax.inject.Inject
 
-const val RETRY_TOPIC = "flex." + "syfogsak-retry"
+const val RETRY_TOPIC = "flex." + "sykepengesoknad-arkivering-oppgave-retry"
 
 @Profile("test")
 @Component
 class RebehandleSykepengesoknadListener @Inject
 constructor(
     private val behandleFeiledeSoknaderService: BehandleFeiledeSoknaderService,
-    private val innsendingDAO: InnsendingDAO,
+    private val innsendingRepository: InnsendingRepository,
     private val rebebehandleSykepengesoknadProducer: RebehandleSykepengesoknadProducer
 ) {
     val log = logger()
@@ -55,7 +55,7 @@ constructor(
                 )
                 acknowledgment.nack(sovetid)
             } else {
-                val innsending = innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknad.id)
+                val innsending = innsendingRepository.findBySykepengesoknadId(sykepengesoknad.id)
                 behandleFeiledeSoknaderService.behandleFeiletSoknad(innsending, sykepengesoknad)
                 acknowledgment.acknowledge()
             }

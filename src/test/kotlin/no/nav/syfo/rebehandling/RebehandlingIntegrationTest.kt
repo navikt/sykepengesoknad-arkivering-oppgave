@@ -10,9 +10,9 @@ import no.nav.syfo.domain.DokumentInfo
 import no.nav.syfo.domain.JournalpostResponse
 import no.nav.syfo.kafka.consumer.SYKEPENGESOKNAD_TOPIC
 import no.nav.syfo.mockSykepengesoknadDTO
-import no.nav.syfo.repository.InnsendingDAO
+import no.nav.syfo.repository.InnsendingRepository
 import no.nav.syfo.repository.OppgaveStatus
-import no.nav.syfo.repository.OppgavestyringDAO
+import no.nav.syfo.repository.SpreOppgaveRepository
 import no.nav.syfo.serialisertTilString
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldNotBe
@@ -42,10 +42,10 @@ class RebehandlingIntegrationTest : AbstractContainerBaseTest() {
     private lateinit var aivenKafkaProducer: KafkaProducer<String, String>
 
     @Autowired
-    private lateinit var innsendingDAO: InnsendingDAO
+    private lateinit var innsendingRepository: InnsendingRepository
 
     @Autowired
-    private lateinit var oppgavestyringDAO: OppgavestyringDAO
+    private lateinit var spreOppgaveRepository: SpreOppgaveRepository
 
     @Test
     fun `Behandling av søknad feiler og rebehandles`() {
@@ -74,17 +74,17 @@ class RebehandlingIntegrationTest : AbstractContainerBaseTest() {
         )
 
         // Det skal ta ca 10 sekunder grunnet rebehandlinga
-        await().between(Duration.ofSeconds(8), Duration.ofSeconds(12))
+        await().between(Duration.ofSeconds(8), Duration.ofSeconds(20))
             .until {
-                innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id)?.behandlet != null
+                innsendingRepository.findBySykepengesoknadId(soknad.id)?.behandlet != null
             }
 
-        val innsending = innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id)
-        innsending?.behandlet shouldNotBe null
-        innsending!!.sykepengesoknadId shouldBeEqualTo soknad.id
+        val innsending = innsendingRepository.findBySykepengesoknadId(soknad.id)!!
+        innsending.behandlet shouldNotBe null
+        innsending.sykepengesoknadId shouldBeEqualTo soknad.id
         innsending.oppgaveId shouldBeEqualTo null
 
-        val spreOppgave = oppgavestyringDAO.hentSpreOppgave(soknad.id)
+        val spreOppgave = spreOppgaveRepository.findBySykepengesoknadId(soknad.id)
         spreOppgave!!.sykepengesoknadId shouldBeEqualTo soknad.id
         spreOppgave.status shouldBeEqualTo OppgaveStatus.Utsett
 

@@ -8,8 +8,8 @@ import no.nav.syfo.domain.dto.Soknadstype.ARBEIDSTAKERE
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.syfo.logger
 import no.nav.syfo.repository.OppgaveStatus
-import no.nav.syfo.repository.OppgavestyringDAO
-import no.nav.syfo.repository.SpreOppgave
+import no.nav.syfo.repository.SpreOppgaveDbRecord
+import no.nav.syfo.repository.SpreOppgaveRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
@@ -19,7 +19,7 @@ import java.util.UUID
 class SpreOppgaverService(
     @Value("\${default.timeout.timer}") private val defaultTimeoutTimer: String,
     private val saksbehandlingsService: SaksbehandlingsService,
-    private val oppgavestyringDAO: OppgavestyringDAO,
+    private val spreOppgaveRepository: SpreOppgaveRepository,
     registry: MeterRegistry,
 ) {
     private val log = logger()
@@ -29,7 +29,7 @@ class SpreOppgaverService(
     // Er Synchronized pga. race condition mellom saksbehandling i vårt system og saksbehandling i Bømlo's system
     @Synchronized
     fun prosesserOppgave(oppgave: OppgaveDTO, kilde: OppgaveKilde) {
-        val eksisterendeOppgave = oppgavestyringDAO.hentSpreOppgave(oppgave.dokumentId.toString())
+        val eksisterendeOppgave = spreOppgaveRepository.findBySykepengesoknadId(oppgave.dokumentId.toString())
         when (kilde) {
             OppgaveKilde.Søknad -> håndterOppgaveFraSøknad(eksisterendeOppgave, oppgave)
             OppgaveKilde.Saksbehandling -> håndterOppgaveFraBømlo(eksisterendeOppgave, oppgave)
@@ -37,17 +37,19 @@ class SpreOppgaverService(
     }
 
     private fun håndterOppgaveFraSøknad(
-        eksisterendeOppgave: SpreOppgave?,
+        eksisterendeOppgave: SpreOppgaveDbRecord?,
         oppgave: OppgaveDTO
     ) {
         if (eksisterendeOppgave != null) {
-            oppgavestyringDAO.avstem(eksisterendeOppgave.sykepengesoknadId)
+            spreOppgaveRepository.updateAvstemtBySykepengesoknadId(eksisterendeOppgave.sykepengesoknadId)
         } else {
-            oppgavestyringDAO.nySpreOppgave(
-                oppgave.dokumentId,
-                LocalDateTime.now().plusHours(48),
-                OppgaveStatus.Utsett,
-                avstemt = true
+            spreOppgaveRepository.save(
+                SpreOppgaveDbRecord(
+                    sykepengesoknadId = oppgave.dokumentId.toString(),
+                    timeout = LocalDateTime.now().plusHours(48),
+                    status = OppgaveStatus.Utsett,
+                    avstemt = true
+                )
             )
         }
     }
@@ -55,31 +57,33 @@ class SpreOppgaverService(
     // Dersom on-prem og aiven konsumering slåss om kallet
     @Synchronized
     private fun håndterOppgaveFraBømlo(
-        eksisterendeOppgave: SpreOppgave?,
+        eksisterendeOppgave: SpreOppgaveDbRecord?,
         oppgave: OppgaveDTO
     ) {
         when {
             eksisterendeOppgave == null -> {
-                oppgavestyringDAO.nySpreOppgave(
-                    oppgave.dokumentId,
-                    timeout(oppgave),
-                    oppgave.oppdateringstype.tilOppgaveStatus()
+                spreOppgaveRepository.save(
+                    SpreOppgaveDbRecord(
+                        sykepengesoknadId = oppgave.dokumentId.toString(),
+                        timeout = timeout(oppgave),
+                        status = oppgave.oppdateringstype.tilOppgaveStatus()
+                    )
                 )
             }
             eksisterendeOppgave.status == OppgaveStatus.Utsett -> {
-                oppgavestyringDAO.oppdaterOppgave(
-                    oppgave.dokumentId,
-                    timeout(oppgave),
-                    oppgave.oppdateringstype.tilOppgaveStatus()
+                spreOppgaveRepository.updateOppgaveBySykepengesoknadId(
+                    sykepengesoknadId = oppgave.dokumentId.toString(),
+                    timeout = timeout(oppgave),
+                    status = oppgave.oppdateringstype.tilOppgaveStatus()
                 )
             }
             eksisterendeOppgave.status == OppgaveStatus.IkkeOpprett && oppgave.oppdateringstype == OppdateringstypeDTO.Opprett -> {
                 log.info("Vil opprette oppgave for søknad ${oppgave.dokumentId} som vi tidligere ble bedt om å ikke opprette")
                 gjenopplivetCounter.increment()
-                oppgavestyringDAO.oppdaterOppgave(
-                    oppgave.dokumentId,
-                    timeout(oppgave),
-                    oppgave.oppdateringstype.tilOppgaveStatus()
+                spreOppgaveRepository.updateOppgaveBySykepengesoknadId(
+                    sykepengesoknadId = oppgave.dokumentId.toString(),
+                    timeout = timeout(oppgave),
+                    status = oppgave.oppdateringstype.tilOppgaveStatus()
                 )
             }
             else -> {

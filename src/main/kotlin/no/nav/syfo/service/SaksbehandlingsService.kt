@@ -5,14 +5,14 @@ import io.micrometer.core.instrument.Tags
 import no.nav.syfo.arkivering.Arkivaren
 import no.nav.syfo.client.FlexBucketUploaderClient
 import no.nav.syfo.client.pdl.PdlClient
-import no.nav.syfo.domain.Innsending
 import no.nav.syfo.domain.PdfKvittering
 import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.Soknadstype
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.syfo.kafka.producer.RebehandleSykepengesoknadProducer
 import no.nav.syfo.logger
-import no.nav.syfo.repository.InnsendingDAO
+import no.nav.syfo.repository.InnsendingDbRecord
+import no.nav.syfo.repository.InnsendingRepository
 import org.springframework.stereotype.Component
 import java.util.*
 
@@ -20,7 +20,7 @@ import java.util.*
 class SaksbehandlingsService(
     private val oppgaveService: OppgaveService,
     private val arkivaren: Arkivaren,
-    private val innsendingDAO: InnsendingDAO,
+    private val innsendingRepository: InnsendingRepository,
     private val registry: MeterRegistry,
     private val rebehandleSykepengesoknadProducer: RebehandleSykepengesoknadProducer,
     private val flexBucketUploaderClient: FlexBucketUploaderClient,
@@ -33,28 +33,31 @@ class SaksbehandlingsService(
     fun behandleSoknad(sykepengesoknad: Sykepengesoknad): String {
         val eksisterendeInnsending = finnEksisterendeInnsending(sykepengesoknad.id)
         val innsendingId = eksisterendeInnsending?.id
-            ?: innsendingDAO.opprettInnsending(
-                sykepengesoknadId = sykepengesoknad.id,
-                soknadFom = sykepengesoknad.fom,
-                soknadTom = sykepengesoknad.tom
-            )
+            ?: innsendingRepository.save(
+                InnsendingDbRecord(
+                    sykepengesoknadId = sykepengesoknad.id
+                )
+            ).id
         val fnr = identService.hentFnrForAktorId(sykepengesoknad.aktorId)
 
         val soknad = opprettSoknad(sykepengesoknad, fnr)
         if (eksisterendeInnsending?.journalpostId.isNullOrBlank()) {
-            val jouralpostId = opprettJournalpost(innsendingId, soknad)
+            val jouralpostId = opprettJournalpost(
+                innsendingId!!,
+                soknad
+            )
             log.info("Journalført søknad: ${sykepengesoknad.id} med journalpostId: $jouralpostId")
         }
-        return innsendingId
+        return innsendingId!!
     }
 
-    fun opprettOppgave(sykepengesoknad: Sykepengesoknad, innsending: Innsending, speilRelatert: Boolean = false) {
+    fun opprettOppgave(sykepengesoknad: Sykepengesoknad, innsending: InnsendingDbRecord, speilRelatert: Boolean = false) {
         val fnr = identService.hentFnrForAktorId(sykepengesoknad.aktorId)
 
         val soknad = opprettSoknad(sykepengesoknad, fnr)
 
         val requestBody = OppgaveService.lagRequestBody(
-            aktoerId = sykepengesoknad.aktorId,
+            aktorId = sykepengesoknad.aktorId,
             journalpostId = innsending.journalpostId!!,
             soknad = soknad,
             harRedusertVenteperiode = sykepengesoknad.harRedusertVenteperiode,
@@ -62,24 +65,24 @@ class SaksbehandlingsService(
         )
         val oppgaveId = oppgaveService.opprettOppgave(requestBody).id.toString()
 
-        innsendingDAO.oppdaterOppgaveId(uuid = innsending.id, oppgaveId = oppgaveId)
+        innsendingRepository.updateOppgaveId(id = innsending.id!!, oppgaveId = oppgaveId)
 
         tellInnsendingBehandlet(soknad.soknadstype)
         log.info("Oppretter oppgave ${innsending.id} for ${soknad.soknadstype.name.lowercase()} søknad: ${soknad.soknadsId}")
     }
 
     fun settFerdigbehandlet(innsendingsId: String) {
-        innsendingDAO.settBehandlet(innsendingsId)
+        innsendingRepository.updateBehandlet(innsendingsId)
     }
 
     fun opprettJournalpost(innsendingId: String, soknad: Soknad): String {
         val journalpostId = arkivaren.opprettJournalpost(soknad = soknad)
-        innsendingDAO.oppdaterJournalpostId(innsendingId, journalpostId)
+        innsendingRepository.updateJournalpostId(id = innsendingId, journalpostId = journalpostId)
         return journalpostId
     }
 
     fun finnEksisterendeInnsending(sykepengesoknadId: String) =
-        innsendingDAO.finnInnsendingForSykepengesoknad(sykepengesoknadId)
+        innsendingRepository.findBySykepengesoknadId(sykepengesoknadId)
 
     fun innsendingFeilet(sykepengesoknad: Sykepengesoknad, e: Exception) {
         val eksisterendeInnsending = finnEksisterendeInnsending(sykepengesoknad.id)
