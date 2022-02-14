@@ -11,8 +11,8 @@ import no.nav.syfo.domain.JournalpostResponse
 import no.nav.syfo.kafka.consumer.SYKEPENGESOKNAD_TOPIC
 import no.nav.syfo.mockSykepengesoknadDTO
 import no.nav.syfo.repository.InnsendingRepository
-import no.nav.syfo.repository.SpreOppgaveRepository
 import no.nav.syfo.repository.OppgaveStatus
+import no.nav.syfo.repository.SpreOppgaveRepository
 import no.nav.syfo.serialisertTilString
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldNotBe

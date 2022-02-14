@@ -29,7 +29,7 @@ interface InnsendingRepository : CrudRepository<InnsendingDbRecord, String> {
 data class InnsendingDbRecord(
     @Id
     val id: String? = null,
-    val sykepengesoknadId: String? = null,
+    val sykepengesoknadId: String,
     val journalpostId: String? = null,
     val oppgaveId: String? = null,
     val behandlet: LocalDateTime? = null,

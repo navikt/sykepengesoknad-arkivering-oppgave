@@ -19,8 +19,8 @@ import no.nav.syfo.kafka.felles.SvartypeDTO
 import no.nav.syfo.kafka.felles.SykepengesoknadDTO
 import no.nav.syfo.objectMapper
 import no.nav.syfo.repository.InnsendingDbRecord
-import no.nav.syfo.repository.SpreOppgaveRepository
 import no.nav.syfo.repository.OppgaveStatus
+import no.nav.syfo.repository.SpreOppgaveRepository
 import no.nav.syfo.serialisertTilString
 import no.nav.syfo.service.BehandleVedTimeoutService
 import no.nav.syfo.service.SaksbehandlingsService

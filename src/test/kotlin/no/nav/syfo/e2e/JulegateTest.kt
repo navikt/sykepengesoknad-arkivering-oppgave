@@ -7,8 +7,8 @@ import no.nav.syfo.domain.DokumentTypeDTO
 import no.nav.syfo.domain.OppdateringstypeDTO
 import no.nav.syfo.domain.OppgaveDTO
 import no.nav.syfo.kafka.consumer.AivenSpreOppgaverListener
-import no.nav.syfo.repository.SpreOppgaveRepository
 import no.nav.syfo.repository.OppgaveStatus
+import no.nav.syfo.repository.SpreOppgaveRepository
 import no.nav.syfo.serialisertTilString
 import no.nav.syfo.skapConsumerRecord
 import org.amshove.kluent.shouldBeEqualTo
