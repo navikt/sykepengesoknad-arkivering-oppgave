@@ -46,6 +46,7 @@ class OppgaveServiceTest {
     fun setup() {
         oppgaveService = OppgaveService(
             tokenConsumer = tokenConsumer,
+            username = "username",
             url = "https://oppgave.nav.no",
             restTemplate = restTemplate
         )
