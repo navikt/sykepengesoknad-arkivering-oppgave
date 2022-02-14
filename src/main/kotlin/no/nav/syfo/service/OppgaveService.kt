@@ -60,6 +60,7 @@ class OppgaveService(
         val oppgaveDato: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
         fun lagRequestBody(
+            aktoerId: String,
             journalpostId: String,
             soknad: Soknad,
             harRedusertVenteperiode: Boolean = false,
@@ -68,6 +69,7 @@ class OppgaveService(
             OppgaveRequest(
                 opprettetAvEnhetsnr = "9999",
                 journalpostId = journalpostId,
+                aktoerId = aktoerId,
                 beskrivelse = lagBeskrivelse(soknad),
                 tema = "SYK",
                 oppgavetype = "SOK",
@@ -101,6 +103,7 @@ class OppgaveService(
 data class OppgaveRequest(
     var tildeltEnhetsnr: String? = null,
     val opprettetAvEnhetsnr: String,
+    val aktoerId: String,
     val journalpostId: String,
     val beskrivelse: String,
     val tema: String,
