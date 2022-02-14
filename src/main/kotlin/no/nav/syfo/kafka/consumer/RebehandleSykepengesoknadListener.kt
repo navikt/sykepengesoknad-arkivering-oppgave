@@ -9,6 +9,7 @@ import no.nav.syfo.objectMapper
 import no.nav.syfo.repository.InnsendingDAO
 import no.nav.syfo.service.BehandleFeiledeSoknaderService
 import org.apache.kafka.clients.consumer.ConsumerRecord
+import org.springframework.context.annotation.Profile
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
@@ -19,6 +20,7 @@ import javax.inject.Inject
 
 const val RETRY_TOPIC = "flex." + "syfogsak-retry"
 
+@Profile("test")
 @Component
 class RebehandleSykepengesoknadListener @Inject
 constructor(
