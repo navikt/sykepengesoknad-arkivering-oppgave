@@ -12,7 +12,7 @@ import no.nav.syfo.domain.dto.Arbeidssituasjon
 import no.nav.syfo.domain.dto.Soknadstype
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.syfo.repository.InnsendingDbRecord
-import no.nav.syfo.repository.OppgaveRepository
+import no.nav.syfo.repository.SpreOppgaveRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -29,7 +29,7 @@ class SpreOppgaverServiceTest {
     lateinit var spreOppgaverService: SpreOppgaverService
 
     @Mock
-    lateinit var oppgaveRepository: OppgaveRepository
+    lateinit var spreOppgaveRepository: SpreOppgaveRepository
 
     @Mock
     lateinit var registry: MeterRegistry
@@ -54,7 +54,7 @@ class SpreOppgaverServiceTest {
     @BeforeEach
     fun setup() {
         whenever(registry.counter(any())).thenReturn(counter)
-        spreOppgaverService = SpreOppgaverService("1", saksbehandlingsService, oppgaveRepository, registry)
+        spreOppgaverService = SpreOppgaverService("1", saksbehandlingsService, spreOppgaveRepository, registry)
     }
 
     @Test

@@ -7,7 +7,7 @@ import no.nav.syfo.client.SøknadIkkeFunnetException
 import no.nav.syfo.config.Toggle
 import no.nav.syfo.kafka.mapper.toSykepengesoknad
 import no.nav.syfo.logger
-import no.nav.syfo.repository.OppgaveRepository
+import no.nav.syfo.repository.SpreOppgaveRepository
 import no.nav.syfo.repository.OppgaveStatus
 import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.annotation.Scheduled
@@ -18,7 +18,7 @@ import java.time.LocalDateTime
 @Profile("test")
 @Component
 class BehandleVedTimeoutService(
-    private val oppgaveRepository: OppgaveRepository,
+    private val spreOppgaveRepository: SpreOppgaveRepository,
     private val saksbehandlingsService: SaksbehandlingsService,
     private val syfosoknadClient: SyfosoknadClient,
     private val toggle: Toggle,
@@ -29,7 +29,7 @@ class BehandleVedTimeoutService(
 
     @Scheduled(fixedDelay = 1000L * 60 * 1, initialDelay = 1000L * 60 * 10)
     fun behandleTimeout() {
-        val oppgaver = oppgaveRepository.findOppgaverTilOpprettelse()
+        val oppgaver = spreOppgaveRepository.findOppgaverTilOpprettelse()
 
         if (oppgaver.isNotEmpty()) {
             log.info("Behandler ${oppgaver.size} oppgaver som skal opprettes")
@@ -47,7 +47,7 @@ class BehandleVedTimeoutService(
                         innsending = innsending,
                         speilRelatert = it.status == OppgaveStatus.OpprettSpeilRelatert
                     )
-                    oppgaveRepository.updateOppgaveBySykepengesoknadId(
+                    spreOppgaveRepository.updateOppgaveBySykepengesoknadId(
                         sykepengesoknadId = it.sykepengesoknadId,
                         timeout = null,
                         status = OppgaveStatus.Opprettet
@@ -57,7 +57,7 @@ class BehandleVedTimeoutService(
                     if (toggle.isQ() && it.opprettet < LocalDateTime.now().minusDays(1)) {
                         // Dette skjer hvis bømlo selv mocker opp søknader som ikke går gjennom syfosoknad
                         log.info("Sletter oppgave fra ${it.opprettet} som ikke har en tilhørende søknad")
-                        oppgaveRepository.deleteOppgaveBySykepengesoknadId(it.sykepengesoknadId)
+                        spreOppgaveRepository.deleteOppgaveBySykepengesoknadId(it.sykepengesoknadId)
                     }
                 }
                 if (it.status == OppgaveStatus.Utsett) {
@@ -68,7 +68,7 @@ class BehandleVedTimeoutService(
             } catch (e: SøknadIkkeFunnetException) {
                 if (toggle.isQ()) {
                     log.warn("Søknaden ${it.sykepengesoknadId} finnes ikke i Q, hopper over oppgaveopprettelse og fortsetter")
-                    oppgaveRepository.updateOppgaveBySykepengesoknadId(
+                    spreOppgaveRepository.updateOppgaveBySykepengesoknadId(
                         sykepengesoknadId = it.sykepengesoknadId,
                         timeout = null,
                         status = OppgaveStatus.IkkeOpprett
@@ -92,7 +92,7 @@ class BehandleVedTimeoutService(
 
     @Scheduled(cron = "0 6 * * * *")
     fun slettGamleOppgaver() {
-        val antall = oppgaveRepository.deleteGamleOppgaver()
+        val antall = spreOppgaveRepository.deleteGamleOppgaver()
         log.info("Slettet $antall innslag på utgåtte oppgaver")
     }
 }

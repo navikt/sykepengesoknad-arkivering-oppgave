@@ -9,11 +9,11 @@ import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
 
 @Repository
-interface OppgaveRepository : CrudRepository<OppgaveDbRecord, String> {
-    fun findBySykepengesoknadId(sykepengesoknadId: String): OppgaveDbRecord?
+interface SpreOppgaveRepository : CrudRepository<SpreOppgaveDbRecord, String> {
+    fun findBySykepengesoknadId(sykepengesoknadId: String): SpreOppgaveDbRecord?
 
     @Query("""select * from oppgavestyring where avstemt = true and (status = 'Opprett' or status = 'OpprettSpeilRelatert' OR (status = 'Utsett' AND timeout < now()))""")
-    fun findOppgaverTilOpprettelse(): List<OppgaveDbRecord>
+    fun findOppgaverTilOpprettelse(): List<SpreOppgaveDbRecord>
 
     @Modifying
     @Query("""update oppgavestyring set timeout = :timeout, status = :status where sykepengesoknad_id = :sykepengesoknadId""")
@@ -33,7 +33,7 @@ interface OppgaveRepository : CrudRepository<OppgaveDbRecord, String> {
 }
 
 @Table("oppgavestyring")
-data class OppgaveDbRecord(
+data class SpreOppgaveDbRecord(
     @Id
     val id: String? = null,
     val sykepengesoknadId: String,

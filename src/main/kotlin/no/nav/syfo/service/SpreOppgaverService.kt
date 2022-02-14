@@ -7,8 +7,8 @@ import no.nav.syfo.domain.OppgaveDTO
 import no.nav.syfo.domain.dto.Soknadstype.ARBEIDSTAKERE
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.syfo.logger
-import no.nav.syfo.repository.OppgaveDbRecord
-import no.nav.syfo.repository.OppgaveRepository
+import no.nav.syfo.repository.SpreOppgaveDbRecord
+import no.nav.syfo.repository.SpreOppgaveRepository
 import no.nav.syfo.repository.OppgaveStatus
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
@@ -19,7 +19,7 @@ import java.util.UUID
 class SpreOppgaverService(
     @Value("\${default.timeout.timer}") private val defaultTimeoutTimer: String,
     private val saksbehandlingsService: SaksbehandlingsService,
-    private val oppgaveRepository: OppgaveRepository,
+    private val spreOppgaveRepository: SpreOppgaveRepository,
     registry: MeterRegistry,
 ) {
     private val log = logger()
@@ -29,7 +29,7 @@ class SpreOppgaverService(
     // Er Synchronized pga. race condition mellom saksbehandling i vårt system og saksbehandling i Bømlo's system
     @Synchronized
     fun prosesserOppgave(oppgave: OppgaveDTO, kilde: OppgaveKilde) {
-        val eksisterendeOppgave = oppgaveRepository.findBySykepengesoknadId(oppgave.dokumentId.toString())
+        val eksisterendeOppgave = spreOppgaveRepository.findBySykepengesoknadId(oppgave.dokumentId.toString())
         when (kilde) {
             OppgaveKilde.Søknad -> håndterOppgaveFraSøknad(eksisterendeOppgave, oppgave)
             OppgaveKilde.Saksbehandling -> håndterOppgaveFraBømlo(eksisterendeOppgave, oppgave)
@@ -37,14 +37,14 @@ class SpreOppgaverService(
     }
 
     private fun håndterOppgaveFraSøknad(
-        eksisterendeOppgave: OppgaveDbRecord?,
+        eksisterendeOppgave: SpreOppgaveDbRecord?,
         oppgave: OppgaveDTO
     ) {
         if (eksisterendeOppgave != null) {
-            oppgaveRepository.updateAvstemtBySykepengesoknadId(eksisterendeOppgave.sykepengesoknadId)
+            spreOppgaveRepository.updateAvstemtBySykepengesoknadId(eksisterendeOppgave.sykepengesoknadId)
         } else {
-            oppgaveRepository.save(
-                OppgaveDbRecord(
+            spreOppgaveRepository.save(
+                SpreOppgaveDbRecord(
                     sykepengesoknadId = oppgave.dokumentId.toString(),
                     timeout = LocalDateTime.now().plusHours(48),
                     status = OppgaveStatus.Utsett,
@@ -57,13 +57,13 @@ class SpreOppgaverService(
     // Dersom on-prem og aiven konsumering slåss om kallet
     @Synchronized
     private fun håndterOppgaveFraBømlo(
-        eksisterendeOppgave: OppgaveDbRecord?,
+        eksisterendeOppgave: SpreOppgaveDbRecord?,
         oppgave: OppgaveDTO
     ) {
         when {
             eksisterendeOppgave == null -> {
-                oppgaveRepository.save(
-                    OppgaveDbRecord(
+                spreOppgaveRepository.save(
+                    SpreOppgaveDbRecord(
                         sykepengesoknadId = oppgave.dokumentId.toString(),
                         timeout = timeout(oppgave),
                         status = oppgave.oppdateringstype.tilOppgaveStatus()
@@ -71,7 +71,7 @@ class SpreOppgaverService(
                 )
             }
             eksisterendeOppgave.status == OppgaveStatus.Utsett -> {
-                oppgaveRepository.updateOppgaveBySykepengesoknadId(
+                spreOppgaveRepository.updateOppgaveBySykepengesoknadId(
                     sykepengesoknadId = oppgave.dokumentId.toString(),
                     timeout = timeout(oppgave),
                     status = oppgave.oppdateringstype.tilOppgaveStatus()
@@ -80,7 +80,7 @@ class SpreOppgaverService(
             eksisterendeOppgave.status == OppgaveStatus.IkkeOpprett && oppgave.oppdateringstype == OppdateringstypeDTO.Opprett -> {
                 log.info("Vil opprette oppgave for søknad ${oppgave.dokumentId} som vi tidligere ble bedt om å ikke opprette")
                 gjenopplivetCounter.increment()
-                oppgaveRepository.updateOppgaveBySykepengesoknadId(
+                spreOppgaveRepository.updateOppgaveBySykepengesoknadId(
                     sykepengesoknadId = oppgave.dokumentId.toString(),
                     timeout = timeout(oppgave),
                     status = oppgave.oppdateringstype.tilOppgaveStatus()

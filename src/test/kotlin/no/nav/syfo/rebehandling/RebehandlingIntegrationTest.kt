@@ -11,7 +11,7 @@ import no.nav.syfo.domain.JournalpostResponse
 import no.nav.syfo.kafka.consumer.SYKEPENGESOKNAD_TOPIC
 import no.nav.syfo.mockSykepengesoknadDTO
 import no.nav.syfo.repository.InnsendingRepository
-import no.nav.syfo.repository.OppgaveRepository
+import no.nav.syfo.repository.SpreOppgaveRepository
 import no.nav.syfo.repository.OppgaveStatus
 import no.nav.syfo.serialisertTilString
 import org.amshove.kluent.shouldBeEqualTo
@@ -45,7 +45,7 @@ class RebehandlingIntegrationTest : AbstractContainerBaseTest() {
     private lateinit var innsendingRepository: InnsendingRepository
 
     @Autowired
-    private lateinit var oppgaveRepository: OppgaveRepository
+    private lateinit var spreOppgaveRepository: SpreOppgaveRepository
 
     @Test
     fun `Behandling av søknad feiler og rebehandles`() {
@@ -84,7 +84,7 @@ class RebehandlingIntegrationTest : AbstractContainerBaseTest() {
         innsending.sykepengesoknadId shouldBeEqualTo soknad.id
         innsending.oppgaveId shouldBeEqualTo null
 
-        val spreOppgave = oppgaveRepository.findBySykepengesoknadId(soknad.id)
+        val spreOppgave = spreOppgaveRepository.findBySykepengesoknadId(soknad.id)
         spreOppgave!!.sykepengesoknadId shouldBeEqualTo soknad.id
         spreOppgave.status shouldBeEqualTo OppgaveStatus.Utsett
 
