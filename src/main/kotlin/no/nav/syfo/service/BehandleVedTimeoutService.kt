@@ -9,7 +9,6 @@ import no.nav.syfo.kafka.mapper.toSykepengesoknad
 import no.nav.syfo.logger
 import no.nav.syfo.repository.OppgaveRepository
 import no.nav.syfo.repository.OppgaveStatus
-import no.nav.syfo.repository.OppgavestyringDAO
 import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
