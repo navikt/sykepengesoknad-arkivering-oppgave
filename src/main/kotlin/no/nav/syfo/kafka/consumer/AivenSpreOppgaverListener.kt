@@ -50,7 +50,7 @@ class AivenSpreOppgaverListener(
             acknowledgment.acknowledge()
         } catch (e: Exception) {
             log.error("Uventet feil ved prosessering av oppgave", e)
-            throw RuntimeException("Uventet feil ved rosessering av oppgave")
+            throw RuntimeException("Uventet feil ved prosessering av oppgave")
         } finally {
             MDC.remove(NAV_CALLID)
         }
