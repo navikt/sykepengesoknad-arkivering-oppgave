@@ -70,14 +70,13 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-jta-atomikos")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-    implementation("com.oracle.ojdbc:ojdbc8:$ojdbc8Version")
+    implementation("org.postgresql:postgresql")
     implementation("org.flywaydb:flyway-core")
     implementation("org.slf4j:slf4j-api")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashLogbackEncoderVersion")
     implementation("no.nav.tjenestespesifikasjoner:nav-fim-behandleJournal-v2-tjenestespesifikasjon:$tjenestespesifikasjonerVersion")
     implementation("no.nav.security:token-validation-spring:$tokenSupportVersion")
     implementation("no.nav.security:token-client-spring:$tokenSupportVersion")
-    implementation("com.h2database:h2")
 
     testImplementation("org.amshove.kluent:kluent:$kluentVersion")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -88,6 +87,7 @@ dependencies {
     testImplementation("no.nav.security:token-validation-spring-test:$tokenSupportVersion")
     testImplementation("org.assertj:assertj-core:$assertjVersion")
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlinVersion")
+    testImplementation("org.testcontainers:postgresql:$testContainersVersion")
     testImplementation("org.mockito:mockito-core:$mockitoCoreVersion")
     testImplementation("org.awaitility:awaitility")
 }

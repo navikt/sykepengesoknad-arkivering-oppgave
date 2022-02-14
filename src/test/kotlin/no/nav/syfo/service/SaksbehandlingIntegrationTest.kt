@@ -113,7 +113,7 @@ class SaksbehandlingIntegrationTest : AbstractContainerBaseTest() {
 
         await().atMost(Duration.ofSeconds(10)).untilAsserted {
             val innsendingIDatabase = innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id)!!
-            assertThat(innsendingIDatabase.ressursId).isEqualTo(soknad.id)
+            assertThat(innsendingIDatabase.sykepengesoknadId).isEqualTo(soknad.id)
             assertThat(innsendingIDatabase.oppgaveId).isNull()
             assertThat(innsendingIDatabase.behandlet).isNotNull
             verify(pdfClient).getPDF(any(), eq(PDFTemplate.ARBEIDSTAKERE))
@@ -122,7 +122,6 @@ class SaksbehandlingIntegrationTest : AbstractContainerBaseTest() {
 
     @Test
     fun `kafkamelding med redusertVenteperiode setter riktig behandlingstema`() {
-        val aktorId = "298374918"
         val oppgaveID = 2
         whenever(oppgaveService.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
 
@@ -176,7 +175,6 @@ class SaksbehandlingIntegrationTest : AbstractContainerBaseTest() {
         verify(oppgaveService).opprettOppgave(captor.capture())
 
         val oppgaveRequest = captor.firstValue
-        assertThat(oppgaveRequest.aktoerId).isEqualTo(aktorId)
         assertThat(oppgaveRequest.journalpostId).isEqualTo("1")
         assertThat(oppgaveRequest.beskrivelse).isEqualTo(
             """
@@ -193,7 +191,7 @@ Ja
         assertThat(oppgaveRequest.behandlingstype).isEqualTo("ae0247")
 
         val innsendingIDatabase = innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id)!!
-        assertThat(innsendingIDatabase.ressursId).isEqualTo(soknad.id)
+        assertThat(innsendingIDatabase.sykepengesoknadId).isEqualTo(soknad.id)
         assertThat(innsendingIDatabase.oppgaveId).isEqualTo(oppgaveID.toString())
         assertThat(innsendingIDatabase.behandlet).isNotNull
         verify(pdfClient).getPDF(any(), eq(PDFTemplate.SELVSTENDIGNAERINGSDRIVENDE))
@@ -201,7 +199,6 @@ Ja
 
     @Test
     fun `reisetilskudd søknad behandles korrekt`() {
-        val aktorId = "298374918"
         val oppgaveID = 3
         whenever(flexBucketUploaderClient.hentVedlegg(any())).thenReturn("123".encodeToByteArray())
         whenever(oppgaveService.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
@@ -236,7 +233,6 @@ Ja
         verify(oppgaveService).opprettOppgave(captor.capture())
 
         val oppgaveRequest = captor.firstValue
-        assertThat(oppgaveRequest.aktoerId).isEqualTo(aktorId)
         assertThat(oppgaveRequest.journalpostId).isEqualTo("1")
         assertThat(oppgaveRequest.beskrivelse).isEqualTo(
             """
@@ -284,7 +280,7 @@ Nei
         assertThat(oppgaveRequest.tildeltEnhetsnr).isEqualTo(null)
 
         val innsendingIDatabase = innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id)!!
-        assertThat(innsendingIDatabase.ressursId).isEqualTo(soknad.id)
+        assertThat(innsendingIDatabase.sykepengesoknadId).isEqualTo(soknad.id)
         assertThat(innsendingIDatabase.oppgaveId).isEqualTo(oppgaveID.toString())
         assertThat(innsendingIDatabase.behandlet).isNotNull
 
@@ -300,7 +296,6 @@ Nei
 
     @Test
     fun `gradert reisetilskudd søknad behandles korrekt`() {
-        val aktorId = "298374918"
         val oppgaveID = 3
         whenever(flexBucketUploaderClient.hentVedlegg(any())).thenReturn("123".encodeToByteArray())
         whenever(oppgaveService.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
@@ -338,7 +333,6 @@ Nei
         verify(oppgaveService).opprettOppgave(captor.capture())
 
         val oppgaveRequest = captor.firstValue
-        assertThat(oppgaveRequest.aktoerId).isEqualTo(aktorId)
         assertThat(oppgaveRequest.journalpostId).isEqualTo("1")
         assertThat(oppgaveRequest.beskrivelse).isEqualTo(
             """
@@ -387,7 +381,7 @@ Nei
         assertThat(oppgaveRequest.tildeltEnhetsnr).isEqualTo(null)
 
         val innsendingIDatabase = innsendingDAO.finnInnsendingForSykepengesoknad(soknad.id)!!
-        assertThat(innsendingIDatabase.ressursId).isEqualTo(soknad.id)
+        assertThat(innsendingIDatabase.sykepengesoknadId).isEqualTo(soknad.id)
         assertThat(innsendingIDatabase.oppgaveId).isEqualTo(oppgaveID.toString())
         assertThat(innsendingIDatabase.behandlet).isNotNull
 

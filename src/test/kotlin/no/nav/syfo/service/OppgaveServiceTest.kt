@@ -33,7 +33,6 @@ import java.time.temporal.TemporalAdjusters.next
 @MockitoSettings(strictness = Strictness.LENIENT)
 class OppgaveServiceTest {
     private val aktorId = "aktorId"
-    private val saksId = "123"
     private val journalpostId = "145"
 
     @Mock

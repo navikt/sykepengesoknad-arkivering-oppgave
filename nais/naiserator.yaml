@@ -39,6 +39,13 @@ spec:
       tenant: {{azureTenant}}
   kafka:
     pool: {{kafkaPool}}
+  gcp:
+    sqlInstances:
+      - type: POSTGRES_12
+        diskAutoresize: true
+        databases:
+          - name: sykepengesoknad-arkivering-oppgave-db
+          - envVarPrefix: DB
   accessPolicy:
     outbound:
       rules:

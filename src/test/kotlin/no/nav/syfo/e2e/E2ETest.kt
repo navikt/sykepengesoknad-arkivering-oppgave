@@ -73,10 +73,8 @@ class E2ETest : AbstractContainerBaseTest() {
     fun setup() {
         whenever(saksbehandlingsService.finnEksisterendeInnsending(any())).thenAnswer {
             Innsending(
-                innsendingsId = "iid",
-                ressursId = it.arguments[0].toString(),
-                aktorId = aktørId,
-                saksId = "saksId",
+                id = "iid",
+                sykepengesoknadId = it.arguments[0].toString(),
                 journalpostId = "journalpost"
             )
         }

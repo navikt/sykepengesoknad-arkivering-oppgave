@@ -13,12 +13,14 @@ import no.nav.syfo.service.OppgaveKilde
 import no.nav.syfo.service.SpreOppgaverService
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.MDC
+import org.springframework.context.annotation.Profile
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
 
 const val SPREOPPGAVER_TOPIC = "tbd." + "spre-oppgaver"
 
+@Profile("test")
 @Component
 class AivenSpreOppgaverListener(
     private val spreOppgaverService: SpreOppgaverService,

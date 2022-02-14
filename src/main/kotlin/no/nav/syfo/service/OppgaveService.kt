@@ -38,13 +38,13 @@ class OppgaveService(
             )
 
             if (!result.statusCode.is2xxSuccessful) {
-                throw RuntimeException("Oppretting av oppgave for aktør ${request.aktoerId} feiler med HTTP-${result.statusCode}")
+                throw RuntimeException("Oppretting av oppgave feiler med HTTP-${result.statusCode}")
             }
 
             result.body
-                ?: throw RuntimeException("Oppgave-respons mangler ved oppretting av oppgave for ${request.aktoerId}")
+                ?: throw RuntimeException("Oppgave-respons mangler ved oppretting av oppgave for journalpostId ${request.journalpostId}")
         } catch (e: HttpClientErrorException) {
-            throw RuntimeException("Feil ved oppretting av oppgave for aktør ${request.aktoerId}", e)
+            throw RuntimeException("Feil ved oppretting av oppgave for journalpostId ${request.journalpostId}", e)
         }
     }
 
@@ -60,7 +60,7 @@ class OppgaveService(
         val oppgaveDato: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
         fun lagRequestBody(
-            aktorId: String,
+            aktoerId: String,
             journalpostId: String,
             soknad: Soknad,
             harRedusertVenteperiode: Boolean = false,
@@ -68,8 +68,8 @@ class OppgaveService(
         ): OppgaveRequest =
             OppgaveRequest(
                 opprettetAvEnhetsnr = "9999",
-                aktoerId = aktorId,
                 journalpostId = journalpostId,
+                aktoerId = aktoerId,
                 beskrivelse = lagBeskrivelse(soknad),
                 tema = "SYK",
                 oppgavetype = "SOK",

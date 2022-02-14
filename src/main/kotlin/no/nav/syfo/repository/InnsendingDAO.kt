@@ -17,18 +17,16 @@ class InnsendingDAO(private val namedParameterJdbcTemplate: NamedParameterJdbcTe
 
     fun opprettInnsending(
         sykepengesoknadId: String,
-        aktorId: String,
         soknadFom: LocalDate?,
         soknadTom: LocalDate?
     ): String {
         val uuid = UUID.randomUUID().toString()
 
         namedParameterJdbcTemplate.update(
-            "INSERT INTO INNSENDING (INNSENDING_UUID, RESSURS_ID, AKTOR_ID, SOKNAD_FOM, SOKNAD_TOM) VALUES (:uuid, :ressursId, :aktorId, :fom, :tom)",
+            "INSERT INTO INNSENDING (ID, SYKEPENGESOKNAD_ID, SOKNAD_FOM, SOKNAD_TOM) VALUES (:id, :sykepengesoknadId, :fom, :tom)",
             MapSqlParameterSource()
-                .addValue("uuid", uuid)
-                .addValue("ressursId", sykepengesoknadId)
-                .addValue("aktorId", aktorId)
+                .addValue("id", uuid)
+                .addValue("sykepengesoknadId", sykepengesoknadId)
                 .addValue("fom", soknadFom)
                 .addValue("tom", soknadTom)
         )
@@ -38,7 +36,7 @@ class InnsendingDAO(private val namedParameterJdbcTemplate: NamedParameterJdbcTe
 
     fun oppdaterJournalpostId(uuid: String, journalpostId: String) {
         namedParameterJdbcTemplate.update(
-            "UPDATE INNSENDING SET JOURNALPOST_ID = :journalpostId WHERE INNSENDING_UUID = :uuid",
+            "UPDATE INNSENDING SET JOURNALPOST_ID = :journalpostId WHERE ID = :uuid",
             MapSqlParameterSource()
                 .addValue("journalpostId", journalpostId)
                 .addValue("uuid", uuid)
@@ -47,7 +45,7 @@ class InnsendingDAO(private val namedParameterJdbcTemplate: NamedParameterJdbcTe
 
     fun oppdaterOppgaveId(uuid: String, oppgaveId: String) {
         namedParameterJdbcTemplate.update(
-            "UPDATE INNSENDING SET OPPGAVE_ID = :oppgaveId WHERE INNSENDING_UUID = :uuid",
+            "UPDATE INNSENDING SET OPPGAVE_ID = :oppgaveId WHERE ID = :uuid",
             MapSqlParameterSource()
                 .addValue("oppgaveId", oppgaveId)
                 .addValue("uuid", uuid)
@@ -56,7 +54,7 @@ class InnsendingDAO(private val namedParameterJdbcTemplate: NamedParameterJdbcTe
 
     fun settBehandlet(uuid: String) {
         namedParameterJdbcTemplate.update(
-            "UPDATE INNSENDING SET BEHANDLET = CURRENT_TIMESTAMP WHERE INNSENDING_UUID = :uuid",
+            "UPDATE INNSENDING SET BEHANDLET = CURRENT_TIMESTAMP WHERE ID = :uuid",
             MapSqlParameterSource()
                 .addValue("uuid", uuid)
         )
@@ -64,8 +62,8 @@ class InnsendingDAO(private val namedParameterJdbcTemplate: NamedParameterJdbcTe
 
     fun finnInnsendingForSykepengesoknad(sykepengesoknadId: String): Innsending? {
         return namedParameterJdbcTemplate.query(
-            "SELECT * FROM INNSENDING WHERE RESSURS_ID = :ressursId",
-            MapSqlParameterSource().addValue("ressursId", sykepengesoknadId),
+            "SELECT * FROM INNSENDING WHERE SYKEPENGESOKNAD_ID = :sykepengesoknadId",
+            MapSqlParameterSource().addValue("sykepengesoknadId", sykepengesoknadId),
             innsendingRowMapper
         ).firstOrNull()
     }
@@ -73,10 +71,8 @@ class InnsendingDAO(private val namedParameterJdbcTemplate: NamedParameterJdbcTe
 
 val innsendingRowMapper: (ResultSet, Int) -> Innsending = { resultSet, _ ->
     Innsending(
-        innsendingsId = resultSet.getString("INNSENDING_UUID"),
-        ressursId = resultSet.getString("RESSURS_ID"),
-        aktorId = resultSet.getString("AKTOR_ID"),
-        saksId = resultSet.getString("SAKS_ID"),
+        id = resultSet.getString("ID"),
+        sykepengesoknadId = resultSet.getString("SYKEPENGESOKNAD_ID"),
         journalpostId = resultSet.getString("JOURNALPOST_ID"),
         oppgaveId = resultSet.getString("OPPGAVE_ID"),
         behandlet = resultSet.getDate("BEHANDLET")?.toLocalDate(),

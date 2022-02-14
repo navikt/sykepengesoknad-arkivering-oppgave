@@ -11,12 +11,14 @@ import no.nav.syfo.service.IdentService
 import no.nav.syfo.service.SpreOppgaverService
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.MDC
+import org.springframework.context.annotation.Profile
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
 
 const val SYKEPENGESOKNAD_TOPIC = "flex." + "sykepengesoknad"
 
+@Profile("test")
 @Component
 class AivenSoknadSendtListener(
     private val spreOppgaverService: SpreOppgaverService,
