@@ -7,9 +7,9 @@ import no.nav.syfo.domain.OppgaveDTO
 import no.nav.syfo.domain.dto.Soknadstype.ARBEIDSTAKERE
 import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.syfo.logger
+import no.nav.syfo.repository.OppgaveStatus
 import no.nav.syfo.repository.SpreOppgaveDbRecord
 import no.nav.syfo.repository.SpreOppgaveRepository
-import no.nav.syfo.repository.OppgaveStatus
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime

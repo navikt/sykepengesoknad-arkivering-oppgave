@@ -7,8 +7,8 @@ import no.nav.syfo.client.SøknadIkkeFunnetException
 import no.nav.syfo.config.Toggle
 import no.nav.syfo.kafka.mapper.toSykepengesoknad
 import no.nav.syfo.logger
-import no.nav.syfo.repository.SpreOppgaveRepository
 import no.nav.syfo.repository.OppgaveStatus
+import no.nav.syfo.repository.SpreOppgaveRepository
 import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
