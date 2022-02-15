@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.syfo.objectMapper
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Profile
 import org.springframework.http.*
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
@@ -12,6 +13,7 @@ import org.springframework.web.client.RestTemplate
 import java.util.*
 
 @Component
+@Profile("remote")
 class PdlClient(
     @Value("\${PDL_URL}")
     private val pdlApiUrl: String,
