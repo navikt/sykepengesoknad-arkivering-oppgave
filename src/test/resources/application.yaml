@@ -24,6 +24,7 @@ OPPGAVE_URL: "http://oppgave.oppgaver.url"
 PDFGEN_URL: "http://pdf"
 pdl.api.url: "http://pdl-api.pdl"
 DOKARKIV_URL: "http://dokarkiv"
+FLEX_FSS_PROXY_URL: "http://flex-proxy"
 
 spring:
   profiles:
@@ -44,7 +45,6 @@ spring:
   flyway:
     enabled: true
 
-syfosoknad_url: http://syfosoknad
 BUCKET_UPLOADER_URL: http://flex-bucket
 
 no.nav.security.jwt:
