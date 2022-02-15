@@ -3,6 +3,7 @@
   "kafkaPool": "nav-dev",
   "environment": "dev",
   "externalHosts": [
+    "login.microsoftonline.com",
     "flex-fss-proxy.dev-fss-pub.nais.io",
     "dokarkiv.dev-fss-pub.nais.io",
     "oppgave-q1.dev-fss-pub.nais.io"
