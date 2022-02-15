@@ -59,8 +59,8 @@ spec:
          - host: {{url}}
       {{/each}}
   env:
-    {{#each env}}
-      - name: {{@key}}
-    value: {{this}}
-    {{/each}}
+  {{#each env}}
+    - name: {{@key}}
+      value: {{this}}
+  {{/each}}
 
