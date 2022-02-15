@@ -3,10 +3,10 @@ package no.nav.syfo.service
 import com.nhaarman.mockitokotlin2.*
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tag
+import no.nav.helse.flex.sykepengesoknad.kafka.*
 import no.nav.syfo.client.SyfosoknadClient
 import no.nav.syfo.client.SøknadIkkeFunnetException
 import no.nav.syfo.config.Toggle
-import no.nav.syfo.kafka.felles.*
 import no.nav.syfo.repository.*
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
