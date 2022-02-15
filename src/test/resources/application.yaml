@@ -20,8 +20,7 @@ javax.net.ssl:
 servicegateway.url: http://servicegateway.url
 security.token.service.token.url: "https://sts-q1.preprod.local:8080/SecurityTokenServiceProvider/"
 
-oppgave.oppgaver.url: "http://oppgave.oppgaver.url"
-
+OPPGAVE_URL: "http://oppgave.oppgaver.url"
 PDFGEN_URL: "http://pdf"
 pdl.api.url: "http://pdl-api.pdl"
 DOKARKIV_URL: "http://dokarkiv"
