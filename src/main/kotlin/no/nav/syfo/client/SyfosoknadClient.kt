@@ -1,7 +1,7 @@
 package no.nav.syfo.client
 
+import no.nav.helse.flex.sykepengesoknad.kafka.SykepengesoknadDTO
 import no.nav.syfo.kafka.NAV_CALLID
-import no.nav.syfo.kafka.felles.SykepengesoknadDTO
 import no.nav.syfo.logger
 import no.nav.syfo.util.callId
 import org.springframework.beans.factory.annotation.Value

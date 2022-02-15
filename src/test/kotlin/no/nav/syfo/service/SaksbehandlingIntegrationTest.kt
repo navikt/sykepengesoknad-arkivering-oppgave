@@ -1,6 +1,7 @@
 package no.nav.syfo.service
 
 import com.nhaarman.mockitokotlin2.*
+import no.nav.helse.flex.sykepengesoknad.kafka.*
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import no.nav.syfo.AbstractContainerBaseTest
 import no.nav.syfo.TestApplication
@@ -12,7 +13,6 @@ import no.nav.syfo.domain.*
 import no.nav.syfo.domain.dto.PDFTemplate
 import no.nav.syfo.domain.dto.Svartype
 import no.nav.syfo.kafka.consumer.SYKEPENGESOKNAD_TOPIC
-import no.nav.syfo.kafka.felles.*
 import no.nav.syfo.mockReisetilskuddDTO
 import no.nav.syfo.mockSykepengesoknadDTO
 import no.nav.syfo.repository.InnsendingRepository

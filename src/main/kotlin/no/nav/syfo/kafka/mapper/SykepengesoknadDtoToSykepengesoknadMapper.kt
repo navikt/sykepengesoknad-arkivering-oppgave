@@ -1,7 +1,7 @@
 package no.nav.syfo.kafka.mapper
 
+import no.nav.helse.flex.sykepengesoknad.kafka.*
 import no.nav.syfo.domain.dto.*
-import no.nav.syfo.kafka.felles.*
 
 private inline fun <T : Enum<*>, reified U : Enum<*>> T?.enumValueOrNull(): U? =
     U::class.java.enumConstants.firstOrNull { it.name == this?.name }

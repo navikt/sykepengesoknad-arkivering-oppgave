@@ -1,8 +1,8 @@
 package no.nav.syfo.kafka.consumer
 
 import com.fasterxml.jackson.module.kotlin.readValue
+import no.nav.helse.flex.sykepengesoknad.kafka.SykepengesoknadDTO
 import no.nav.syfo.kafka.NAV_CALLID
-import no.nav.syfo.kafka.felles.SykepengesoknadDTO
 import no.nav.syfo.kafka.getSafeNavCallIdHeaderAsString
 import no.nav.syfo.kafka.mapper.toSykepengesoknad
 import no.nav.syfo.logger

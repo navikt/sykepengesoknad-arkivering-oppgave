@@ -42,6 +42,7 @@ repositories {
 }
 
 val syfoKafkaVersion = "2021.07.20-09.39-6be2c52c"
+val sykepengesoknadKafkaVersion = "2022.02.10-16.07-0892e94a"
 val mockitoKotlinVersion = "2.2.0"
 val ojdbc8Version = "19.3.0.0"
 val logstashLogbackEncoderVersion = "6.6"
@@ -75,7 +76,7 @@ dependencies {
     implementation("io.micrometer:micrometer-registry-prometheus")
     implementation("no.nav.syfo.kafka:kafkautils:$syfoKafkaVersion")
     implementation("no.nav.syfo.kafka:legacy-serialisering:$syfoKafkaVersion")
-    implementation("no.nav.syfo.kafka:felles:$syfoKafkaVersion")
+    implementation("no.nav.helse.flex:sykepengesoknad-kafka:$sykepengesoknadKafkaVersion")
     implementation("no.nav.tjenestespesifikasjoner:nav-fim-behandleJournal-v2-tjenestespesifikasjon:$tjenestespesifikasjonerVersion")
     implementation("no.nav.security:token-validation-spring:$tokenSupportVersion")
     implementation("no.nav.security:token-client-spring:$tokenSupportVersion")

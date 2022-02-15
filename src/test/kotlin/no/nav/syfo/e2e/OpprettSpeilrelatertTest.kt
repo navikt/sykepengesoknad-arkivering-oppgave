@@ -4,6 +4,12 @@ import com.nhaarman.mockitokotlin2.KArgumentCaptor
 import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import no.nav.helse.flex.sykepengesoknad.kafka.SoknadsstatusDTO
+import no.nav.helse.flex.sykepengesoknad.kafka.SoknadstypeDTO
+import no.nav.helse.flex.sykepengesoknad.kafka.SporsmalDTO
+import no.nav.helse.flex.sykepengesoknad.kafka.SvarDTO
+import no.nav.helse.flex.sykepengesoknad.kafka.SvartypeDTO
+import no.nav.helse.flex.sykepengesoknad.kafka.SykepengesoknadDTO
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import no.nav.syfo.AbstractContainerBaseTest
 import no.nav.syfo.TestApplication
@@ -17,12 +23,6 @@ import no.nav.syfo.domain.OppdateringstypeDTO
 import no.nav.syfo.domain.OppgaveDTO
 import no.nav.syfo.kafka.consumer.AivenSoknadSendtListener
 import no.nav.syfo.kafka.consumer.AivenSpreOppgaverListener
-import no.nav.syfo.kafka.felles.SoknadsstatusDTO
-import no.nav.syfo.kafka.felles.SoknadstypeDTO
-import no.nav.syfo.kafka.felles.SporsmalDTO
-import no.nav.syfo.kafka.felles.SvarDTO
-import no.nav.syfo.kafka.felles.SvartypeDTO
-import no.nav.syfo.kafka.felles.SykepengesoknadDTO
 import no.nav.syfo.objectMapper
 import no.nav.syfo.serialisertTilString
 import no.nav.syfo.service.*
