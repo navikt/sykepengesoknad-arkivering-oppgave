@@ -49,7 +49,7 @@ val logstashLogbackEncoderVersion = "6.6"
 val mockitoCoreVersion = "3.11.2"
 val assertjVersion = "3.20.2"
 val tjenestespesifikasjonerVersion = "1.2019.08.16-13.46-35cbdfd492d4"
-val tokenSupportVersion = "1.3.8"
+val tokenSupportVersion = "1.3.10"
 val testContainersVersion = "1.16.0"
 val kluentVersion = "1.68"
 
