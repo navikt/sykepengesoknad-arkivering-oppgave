@@ -25,6 +25,7 @@ PDFGEN_URL: "http://pdf"
 pdl.api.url: "http://pdl-api.pdl"
 DOKARKIV_URL: "http://dokarkiv"
 FLEX_FSS_PROXY_URL: "http://flex-proxy"
+DEFAULT_TIMEOUT_TIMER: "24"
 
 spring:
   profiles:
@@ -60,9 +61,6 @@ aad_accesstoken_url: http://azure
 aad_syfogsak_client_id: syfogsak-client-id
 aad_syfogsak_client_secret: min-hemmelighet
 aad_syfosoknad_clientid: syfosoknad-yo
-
-
-default.timeout.timer: "24"
 
 
 KAFKA_TRUSTSTORE_PATH: ""

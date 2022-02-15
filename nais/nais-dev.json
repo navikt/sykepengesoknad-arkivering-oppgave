@@ -18,7 +18,8 @@
     "BUCKET_UPLOADER_URL": "http://flex-bucket-uploader",
     "PDFGEN_URL":"http://flex-sykepengesoknad-pdfgen",
     "FLEX_FSS_PROXY_AAD_CLIENT_ID": "dev-fss.flex.flex-fss-proxy",
-    "FLEX_FSS_PROXY_URL": "https://flex-fss-proxy.dev-fss-pub.nais.io"
+    "FLEX_FSS_PROXY_URL": "https://flex-fss-proxy.dev-fss-pub.nais.io",
+    "DEFAULT_TIMEOUT_TIMER": "1"
   }
 
 }

@@ -17,7 +17,7 @@ import java.util.UUID
 
 @Component
 class SpreOppgaverService(
-    @Value("\${default.timeout.timer}")
+    @Value("\${DEFAULT_TIMEOUT_TIMER}")
     private val defaultTimeoutTimer: String,
     private val saksbehandlingsService: SaksbehandlingsService,
     private val spreOppgaveRepository: SpreOppgaveRepository,
