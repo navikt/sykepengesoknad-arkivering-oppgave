@@ -45,7 +45,7 @@ spec:
         diskAutoresize: true
         databases:
           - name: sykepengesoknad-arkivering-oppgave-db
-          - envVarPrefix: DB
+            envVarPrefix: DB
   accessPolicy:
     outbound:
       rules:
