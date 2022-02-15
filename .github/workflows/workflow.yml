@@ -89,7 +89,7 @@ jobs:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-gcp
           RESOURCE: nais/naiserator.yaml
-          VARS: nais/dev.json
+          VARS: nais/nais-dev.json
 
 #  deploy-to-prod-gcp:
 #    if: github.ref == 'refs/heads/master'
