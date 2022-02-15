@@ -17,7 +17,8 @@
     "OPPGAVE_CLIENT_ID": "41ca50ba-e44f-4bc8-9e31-b745a0041926",
     "BUCKET_UPLOADER_URL": "http://flex-bucket-uploader",
     "PDFGEN_URL":"http://flex-sykepengesoknad-pdfgen",
-    "DEFAULT_TIMEOUT_TIMER": 1
+    "FLEX_FSS_PROXY_AAD_CLIENT_ID": "prod-fss.flex.flex-fss-proxy",
+    "FLEX_FSS_PROXY_URL": "https://flex-fss-proxy.prod-fss-pub.nais.io"
   }
 
 }

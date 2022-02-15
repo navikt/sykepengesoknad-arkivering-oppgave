@@ -17,8 +17,9 @@ import org.springframework.web.util.UriComponentsBuilder
 
 @Component
 class SyfosoknadClient(
-    private val syfosoknadRestTemplate: RestTemplate,
-    @param:Value("\${syfosoknad_url}") private val url: String
+    @Value("\${FLEX_FSS_PROXY_URL}")
+    private val url: String,
+    private val syfosoknadRestTemplate: RestTemplate
 ) {
 
     private val log = logger()
