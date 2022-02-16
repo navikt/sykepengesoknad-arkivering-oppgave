@@ -8,6 +8,7 @@ import no.nav.helse.flex.sykepengesoknad.kafka.SvarDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SvartypeDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SykepengesoknadDTO
 import no.nav.syfo.FellesTestoppsett
+import no.nav.syfo.`should be equal to ignoring nano and zone`
 import no.nav.syfo.any
 import no.nav.syfo.client.SyfosoknadClient
 import no.nav.syfo.domain.DokumentTypeDTO
@@ -105,12 +106,12 @@ class E2ETest : FellesTestoppsett() {
 
         val oppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgave.status)
-        assertThat(omFireTimer.tilOsloZone().toInstant()).isEqualTo(oppgave.timeout)
+        omFireTimer.tilOsloZone() `should be equal to ignoring nano and zone` oppgave.timeout
         assertThat(oppgave.avstemt).isFalse
 
         val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgaveFraAiven.status)
-        assertThat(omFireTimer.tilOsloZone().toInstant()).isEqualTo(oppgaveFraAiven.timeout)
+        omFireTimer.tilOsloZone() `should be equal to ignoring nano and zone` oppgaveFraAiven.timeout
         assertThat(oppgaveFraAiven.avstemt).isFalse
     }
 
@@ -138,12 +139,12 @@ class E2ETest : FellesTestoppsett() {
 
         val oppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgave.status)
-        assertThat(omFireTimer.tilOsloZone().toInstant()).isEqualTo(oppgave.timeout)
+        omFireTimer.tilOsloZone() `should be equal to ignoring nano and zone` oppgave.timeout
         assertThat(oppgave.avstemt).isTrue
 
         val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgaveFraAiven.status)
-        assertThat(omFireTimer.tilOsloZone().toInstant()).isEqualTo(oppgaveFraAiven.timeout)
+        omFireTimer.tilOsloZone() `should be equal to ignoring nano and zone` oppgaveFraAiven.timeout
         assertThat(oppgaveFraAiven.avstemt).isTrue
     }
 
@@ -179,7 +180,7 @@ class E2ETest : FellesTestoppsett() {
 
         val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgaveFraAiven.status)
-        assertThat(omFireTimer.tilOsloZone().toInstant()).isEqualTo(oppgaveFraAiven.timeout)
+        omFireTimer.tilOsloZone() `should be equal to ignoring nano and zone` oppgaveFraAiven.timeout!!
         assertThat(oppgaveFraAiven.avstemt).isTrue
     }
 
@@ -250,12 +251,12 @@ class E2ETest : FellesTestoppsett() {
 
         val oppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgave.status)
-        assertThat(omFireTimer.tilOsloZone().toInstant()).isEqualTo(oppgave.timeout)
+        omFireTimer.tilOsloZone() `should be equal to ignoring nano and zone` oppgave.timeout
         assertThat(oppgave.avstemt).isFalse
 
         val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgaveFraAiven.status)
-        assertThat(omFireTimer.tilOsloZone().toInstant()).isEqualTo(oppgaveFraAiven.timeout)
+        omFireTimer.tilOsloZone() `should be equal to ignoring nano and zone` oppgaveFraAiven.timeout
         assertThat(oppgaveFraAiven.avstemt).isFalse
     }
 
