@@ -18,7 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.test.annotation.DirtiesContext
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.UUID
 
 @SpringBootTest(classes = [TestApplication::class])
@@ -57,7 +57,7 @@ class JulegateTest : AbstractContainerBaseTest() {
         spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString())!!.status shouldBeEqualTo OppgaveStatus.Utsett
         spreOppgaveRepository.updateOppgaveBySykepengesoknadId(
             sykepengesoknadId = søknadsId.toString(),
-            timeout = LocalDateTime.now(),
+            timeout = Instant.now(),
             status = OppgaveStatus.Opprettet
         )
         spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString())!!.status shouldBeEqualTo OppgaveStatus.Opprettet

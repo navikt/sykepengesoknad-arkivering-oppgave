@@ -14,6 +14,7 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.time.Duration
 import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 @Profile("test")
 @Component
@@ -54,7 +55,7 @@ class BehandleVedTimeoutService(
                     )
                 } else {
                     log.info("Fant ikke eksisterende innsending, ignorerer søknad med id ${it.sykepengesoknadId}")
-                    if (toggle.isQ() && it.opprettet < LocalDateTime.now().minusDays(1)) {
+                    if (toggle.isQ() && it.opprettet < OffsetDateTime.now().minusDays(1).toInstant()) {
                         // Dette skjer hvis bømlo selv mocker opp søknader som ikke går gjennom syfosoknad
                         log.info("Sletter oppgave fra ${it.opprettet} som ikke har en tilhørende søknad")
                         spreOppgaveRepository.deleteOppgaveBySykepengesoknadId(it.sykepengesoknadId)

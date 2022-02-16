@@ -55,8 +55,6 @@ val kluentVersion = "1.68"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-jta-atomikos")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.kafka:spring-kafka")
@@ -72,7 +70,8 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashLogbackEncoderVersion")
     implementation("javax.jws:javax.jws-api:1.1")
-    implementation("javax.inject:javax.inject:1")
+    implementation("org.aspectj:aspectjrt")
+    implementation("org.aspectj:aspectjweaver")
     implementation("io.micrometer:micrometer-registry-prometheus")
     implementation("no.nav.syfo.kafka:kafkautils:$syfoKafkaVersion")
     implementation("no.nav.syfo.kafka:legacy-serialisering:$syfoKafkaVersion")

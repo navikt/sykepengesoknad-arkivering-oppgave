@@ -6,7 +6,7 @@ import org.springframework.data.jdbc.repository.query.Query
 import org.springframework.data.relational.core.mapping.Table
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
-import java.time.LocalDateTime
+import java.time.Instant
 
 @Repository
 interface InnsendingRepository : CrudRepository<InnsendingDbRecord, String> {
@@ -32,5 +32,5 @@ data class InnsendingDbRecord(
     val sykepengesoknadId: String,
     val journalpostId: String? = null,
     val oppgaveId: String? = null,
-    val behandlet: LocalDateTime? = null,
+    val behandlet: Instant? = null,
 )

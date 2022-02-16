@@ -10,9 +10,11 @@ import no.nav.syfo.logger
 import no.nav.syfo.repository.OppgaveStatus
 import no.nav.syfo.repository.SpreOppgaveDbRecord
 import no.nav.syfo.repository.SpreOppgaveRepository
+import no.nav.syfo.util.tilOsloZone
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import java.util.UUID
 
 @Component
@@ -47,7 +49,7 @@ class SpreOppgaverService(
             spreOppgaveRepository.save(
                 SpreOppgaveDbRecord(
                     sykepengesoknadId = oppgave.dokumentId.toString(),
-                    timeout = LocalDateTime.now().plusHours(48),
+                    timeout = OffsetDateTime.now().plusHours(48).toInstant(),
                     status = OppgaveStatus.Utsett,
                     avstemt = true
                 )
@@ -94,7 +96,7 @@ class SpreOppgaverService(
     }
 
     private fun timeout(oppgave: OppgaveDTO) =
-        if (oppgave.oppdateringstype == OppdateringstypeDTO.Utsett) oppgave.timeout else null
+        if (oppgave.oppdateringstype == OppdateringstypeDTO.Utsett) oppgave.timeout?.tilOsloZone()?.toInstant() else null
 
     fun soknadSendt(sykepengesoknad: Sykepengesoknad) {
         try {

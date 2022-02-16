@@ -31,6 +31,7 @@ import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.junit.jupiter.MockitoSettings
 import org.mockito.quality.Strictness
+import java.time.Instant
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -111,7 +112,7 @@ class SaksbehandlingsServiceTest {
             sykepengesoknadId = sykepengesoknadUtenOppgave.id,
             journalpostId = "journalpostId",
             oppgaveId = null,
-            behandlet = LocalDateTime.now()
+            behandlet = Instant.now()
         )
     }
 
