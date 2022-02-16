@@ -7,6 +7,7 @@ import no.nav.syfo.repository.SpreOppgaveRepository
 import no.nav.syfo.serialisertTilString
 import no.nav.syfo.skapConsumerRecord
 import org.amshove.kluent.`should be equal to`
+import org.amshove.kluent.`should be null`
 import org.amshove.kluent.shouldBeEmpty
 import org.amshove.kluent.shouldHaveSize
 import org.junit.jupiter.api.BeforeEach
@@ -71,7 +72,7 @@ class ImportTest : FellesTestoppsett() {
             sykepengesoknadId = "1234",
             status = OppgaveStatus.Opprettet,
             avstemt = true,
-            timeout = OffsetDateTime.now(),
+            timeout = null,
             opprettet = OffsetDateTime.now(),
             modifisert = OffsetDateTime.now(),
         )
@@ -82,6 +83,7 @@ class ImportTest : FellesTestoppsett() {
         records.first().sykepengesoknadId `should be equal to` oppgave.sykepengesoknadId
         records.first().status `should be equal to` oppgave.status
         records.first().avstemt `should be equal to` oppgave.avstemt
+        records.first().timeout.`should be null`()
     }
 
     private fun leggInnsendingPaKafka(innsending: InnsendingKafkaDto) =

@@ -5,7 +5,6 @@ import io.micrometer.core.instrument.MeterRegistry
 import no.nav.syfo.logger
 import no.nav.syfo.objectMapper
 import no.nav.syfo.repository.InnsendingDbRecord
-import no.nav.syfo.repository.InnsendingRepository
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
@@ -17,7 +16,7 @@ const val INNSENDING_MIGRERING_TOPIC = "flex." + "syfogsak-innsending-migrering"
 
 @Component
 class InnsendingImportListener(
-    private val innsendingRepository: InnsendingRepository,
+    private val innsendingRepository: BatchInsertDAO,
     registry: MeterRegistry,
 ) {
 
@@ -41,7 +40,7 @@ class InnsendingImportListener(
         }
 
         val elapsed = measureTimeMillis {
-            innsendingRepository.saveAll(raderFraKafka)
+            innsendingRepository.batchInsertInnsending(raderFraKafka)
             counter.increment(raderFraKafka.size.toDouble())
         }
         log.info("Behandlet ${raderFraKafka.size} innsending rader fra kafka i $elapsed millis")

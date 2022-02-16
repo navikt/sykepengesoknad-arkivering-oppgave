@@ -6,7 +6,6 @@ import no.nav.syfo.logger
 import no.nav.syfo.objectMapper
 import no.nav.syfo.repository.OppgaveStatus
 import no.nav.syfo.repository.SpreOppgaveDbRecord
-import no.nav.syfo.repository.SpreOppgaveRepository
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
@@ -18,7 +17,7 @@ const val OPPGAVESTYRING_MIGRERING_TOPIC = "flex." + "syfogsak-oppgavestyring-mi
 
 @Component
 class OppgavestyringImportListener(
-    private val spreOppgaveRepository: SpreOppgaveRepository,
+    private val spreOppgaveRepository: BatchInsertDAO,
     registry: MeterRegistry,
 
 ) {
@@ -43,7 +42,7 @@ class OppgavestyringImportListener(
         }
 
         val elapsed = measureTimeMillis {
-            spreOppgaveRepository.saveAll(raderFraKafka)
+            spreOppgaveRepository.batchInsertSpreOppgave(raderFraKafka)
             counter.increment(raderFraKafka.size.toDouble())
         }
         log.info("Behandlet ${raderFraKafka.size} oppgavestyring rader fra kafka i $elapsed millis")
