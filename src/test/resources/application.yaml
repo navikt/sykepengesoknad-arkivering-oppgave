@@ -35,12 +35,6 @@ spring:
     hikari:
       minimum-idle: 1
       maximum-pool-size: 3
-  jta.atomikos:
-    datasource:
-      max-pool-size: 32
-      min-pool-size: 8
-    properties:
-      log-base-dir: transaction-logs/test
   main:
     banner-mode: off
   flyway:
