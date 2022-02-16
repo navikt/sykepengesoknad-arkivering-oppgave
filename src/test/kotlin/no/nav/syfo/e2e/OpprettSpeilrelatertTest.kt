@@ -10,9 +10,7 @@ import no.nav.helse.flex.sykepengesoknad.kafka.SporsmalDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SvarDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SvartypeDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SykepengesoknadDTO
-import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
-import no.nav.syfo.AbstractContainerBaseTest
-import no.nav.syfo.TestApplication
+import no.nav.syfo.FellesTestoppsett
 import no.nav.syfo.any
 import no.nav.syfo.arkivering.Arkivaren
 import no.nav.syfo.client.DokArkivClient
@@ -31,7 +29,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.test.annotation.DirtiesContext
@@ -39,10 +36,8 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
 
-@SpringBootTest(classes = [TestApplication::class])
 @DirtiesContext
-@EnableMockOAuth2Server
-class OpprettSpeilrelatertTest : AbstractContainerBaseTest() {
+class OpprettSpeilrelatertTest : FellesTestoppsett() {
 
     companion object {
         val aktørId = "aktørId"

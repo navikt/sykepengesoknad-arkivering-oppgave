@@ -2,6 +2,8 @@ package no.nav.syfo.util
 
 import java.time.Duration
 import java.time.LocalDateTime
+import java.time.OffsetDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 object DatoUtil {
@@ -13,3 +15,5 @@ object DatoUtil {
         return "$dager dager og $timer timer"
     }
 }
+
+fun LocalDateTime.tilOsloZone(): OffsetDateTime = this.atZone(ZoneId.of("Europe/Oslo")).toOffsetDateTime()

@@ -16,14 +16,12 @@ import org.springframework.stereotype.Component
 import java.nio.charset.StandardCharsets
 import java.time.Instant
 import java.time.ZoneOffset
-import javax.inject.Inject
 
 const val RETRY_TOPIC = "flex." + "sykepengesoknad-arkivering-oppgave-retry"
 
 @Profile("test")
 @Component
-class RebehandleSykepengesoknadListener @Inject
-constructor(
+class RebehandleSykepengesoknadListener(
     private val behandleFeiledeSoknaderService: BehandleFeiledeSoknaderService,
     private val innsendingRepository: InnsendingRepository,
     private val rebebehandleSykepengesoknadProducer: RebehandleSykepengesoknadProducer

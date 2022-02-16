@@ -16,6 +16,7 @@ import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import java.util.*
 
 @ExtendWith(MockitoExtension::class)
@@ -86,10 +87,10 @@ class BehandleVedTimeoutServiceTest {
             listOf(
                 SpreOppgaveDbRecord(
                     sykepengesoknadId = UUID.randomUUID().toString(),
-                    timeout = LocalDateTime.now().minusHours(1),
+                    timeout = OffsetDateTime.now().minusHours(1).toInstant(),
                     status = OppgaveStatus.Utsett,
-                    opprettet = LocalDateTime.now().minusHours(2),
-                    modifisert = LocalDateTime.now().minusHours(1),
+                    opprettet = OffsetDateTime.now().minusHours(2).toInstant(),
+                    modifisert = OffsetDateTime.now().minusHours(1).toInstant(),
                     avstemt = false
                 )
             )
@@ -105,10 +106,10 @@ class BehandleVedTimeoutServiceTest {
             listOf(
                 SpreOppgaveDbRecord(
                     sykepengesoknadId = UUID.randomUUID().toString(),
-                    timeout = LocalDateTime.now().minusHours(1),
+                    timeout = OffsetDateTime.now().minusHours(1).toInstant(),
                     status = OppgaveStatus.Utsett,
-                    opprettet = LocalDateTime.now().minusHours(2),
-                    modifisert = LocalDateTime.now().minusHours(1),
+                    opprettet = OffsetDateTime.now().minusHours(2).toInstant(),
+                    modifisert = OffsetDateTime.now().minusHours(1).toInstant(),
                     avstemt = false
                 )
             )
@@ -126,10 +127,10 @@ class BehandleVedTimeoutServiceTest {
             listOf(
                 SpreOppgaveDbRecord(
                     sykepengesoknadId = UUID.randomUUID().toString(),
-                    timeout = LocalDateTime.now().minusHours(1),
+                    timeout = OffsetDateTime.now().minusHours(1).toInstant(),
                     status = OppgaveStatus.Utsett,
-                    opprettet = LocalDateTime.now().minusDays(2),
-                    modifisert = LocalDateTime.now().minusHours(1),
+                    opprettet = OffsetDateTime.now().minusDays(2).toInstant(),
+                    modifisert = OffsetDateTime.now().minusHours(1).toInstant(),
                     avstemt = false
                 )
             )
@@ -148,10 +149,10 @@ class BehandleVedTimeoutServiceTest {
             listOf(
                 SpreOppgaveDbRecord(
                     sykepengesoknadId = søknadsId,
-                    timeout = LocalDateTime.now().minusHours(1),
+                    timeout = OffsetDateTime.now().minusHours(1).toInstant(),
                     status = OppgaveStatus.Utsett,
-                    opprettet = LocalDateTime.now().minusHours(2),
-                    modifisert = LocalDateTime.now().minusHours(1),
+                    opprettet = OffsetDateTime.now().minusHours(2).toInstant(),
+                    modifisert = OffsetDateTime.now().minusHours(1).toInstant(),
                     avstemt = true
                 )
             )
@@ -184,26 +185,26 @@ class BehandleVedTimeoutServiceTest {
             listOf(
                 SpreOppgaveDbRecord(
                     sykepengesoknadId = søknadsId1.toString(),
-                    timeout = LocalDateTime.now().minusHours(1),
+                    timeout = OffsetDateTime.now().minusHours(1).toInstant(),
                     status = OppgaveStatus.Utsett,
-                    opprettet = LocalDateTime.now().minusHours(2),
-                    modifisert = LocalDateTime.now().minusHours(1),
+                    opprettet = OffsetDateTime.now().minusHours(2).toInstant(),
+                    modifisert = OffsetDateTime.now().minusHours(1).toInstant(),
                     avstemt = true
                 ),
                 SpreOppgaveDbRecord(
                     sykepengesoknadId = søknadsId2.toString(),
-                    timeout = LocalDateTime.now().minusHours(1),
+                    timeout = OffsetDateTime.now().minusHours(1).toInstant(),
                     status = OppgaveStatus.Utsett,
-                    opprettet = LocalDateTime.now().minusHours(2),
-                    modifisert = LocalDateTime.now().minusHours(1),
+                    opprettet = OffsetDateTime.now().minusHours(2).toInstant(),
+                    modifisert = OffsetDateTime.now().minusHours(1).toInstant(),
                     avstemt = true
                 ),
                 SpreOppgaveDbRecord(
                     sykepengesoknadId = søknadsId3.toString(),
-                    timeout = LocalDateTime.now().minusHours(1),
+                    timeout = OffsetDateTime.now().minusHours(1).toInstant(),
                     status = OppgaveStatus.Utsett,
-                    opprettet = LocalDateTime.now().minusHours(2),
-                    modifisert = LocalDateTime.now().minusHours(1),
+                    opprettet = OffsetDateTime.now().minusHours(2).toInstant(),
+                    modifisert = OffsetDateTime.now().minusHours(1).toInstant(),
                     avstemt = true
                 )
             )
@@ -239,10 +240,10 @@ class BehandleVedTimeoutServiceTest {
             listOf(
                 SpreOppgaveDbRecord(
                     sykepengesoknadId = søknadsId1.toString(),
-                    timeout = LocalDateTime.now().minusHours(1),
+                    timeout = OffsetDateTime.now().minusHours(1).toInstant(),
                     status = OppgaveStatus.Utsett,
-                    opprettet = LocalDateTime.now().minusHours(2),
-                    modifisert = LocalDateTime.now().minusHours(1),
+                    opprettet = OffsetDateTime.now().minusHours(2).toInstant(),
+                    modifisert = OffsetDateTime.now().minusHours(1).toInstant(),
                     avstemt = true
                 )
             )
@@ -273,10 +274,10 @@ class BehandleVedTimeoutServiceTest {
             listOf(
                 SpreOppgaveDbRecord(
                     sykepengesoknadId = søknadsId1.toString(),
-                    timeout = LocalDateTime.now().minusHours(1),
+                    timeout = OffsetDateTime.now().minusHours(1).toInstant(),
                     status = OppgaveStatus.Utsett,
-                    opprettet = LocalDateTime.now().minusHours(2),
-                    modifisert = LocalDateTime.now().minusHours(1),
+                    opprettet = OffsetDateTime.now().minusHours(2).toInstant(),
+                    modifisert = OffsetDateTime.now().minusHours(1).toInstant(),
                     avstemt = true
                 )
             )

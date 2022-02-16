@@ -7,9 +7,7 @@ import no.nav.helse.flex.sykepengesoknad.kafka.SporsmalDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SvarDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SvartypeDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SykepengesoknadDTO
-import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
-import no.nav.syfo.AbstractContainerBaseTest
-import no.nav.syfo.TestApplication
+import no.nav.syfo.FellesTestoppsett
 import no.nav.syfo.any
 import no.nav.syfo.client.SyfosoknadClient
 import no.nav.syfo.domain.DokumentTypeDTO
@@ -25,11 +23,11 @@ import no.nav.syfo.serialisertTilString
 import no.nav.syfo.service.BehandleVedTimeoutService
 import no.nav.syfo.service.SaksbehandlingsService
 import no.nav.syfo.skapConsumerRecord
+import no.nav.syfo.util.tilOsloZone
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.test.annotation.DirtiesContext
@@ -37,10 +35,8 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
 
-@SpringBootTest(classes = [TestApplication::class])
 @DirtiesContext
-@EnableMockOAuth2Server
-class E2ETest : AbstractContainerBaseTest() {
+class E2ETest : FellesTestoppsett() {
 
     companion object {
         val aktørId = "aktørId"
@@ -109,12 +105,12 @@ class E2ETest : AbstractContainerBaseTest() {
 
         val oppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgave.status)
-        assertThat(omFireTimer).isEqualTo(oppgave.timeout)
+        assertThat(omFireTimer.tilOsloZone().toInstant()).isEqualTo(oppgave.timeout)
         assertThat(oppgave.avstemt).isFalse
 
         val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgaveFraAiven.status)
-        assertThat(omFireTimer).isEqualTo(oppgaveFraAiven.timeout)
+        assertThat(omFireTimer.tilOsloZone().toInstant()).isEqualTo(oppgaveFraAiven.timeout)
         assertThat(oppgaveFraAiven.avstemt).isFalse
     }
 
@@ -142,12 +138,12 @@ class E2ETest : AbstractContainerBaseTest() {
 
         val oppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgave.status)
-        assertThat(omFireTimer).isEqualTo(oppgave.timeout)
+        assertThat(omFireTimer.tilOsloZone().toInstant()).isEqualTo(oppgave.timeout)
         assertThat(oppgave.avstemt).isTrue
 
         val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgaveFraAiven.status)
-        assertThat(omFireTimer).isEqualTo(oppgaveFraAiven.timeout)
+        assertThat(omFireTimer.tilOsloZone().toInstant()).isEqualTo(oppgaveFraAiven.timeout)
         assertThat(oppgaveFraAiven.avstemt).isTrue
     }
 
@@ -183,7 +179,7 @@ class E2ETest : AbstractContainerBaseTest() {
 
         val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgaveFraAiven.status)
-        assertThat(omFireTimer).isEqualTo(oppgaveFraAiven.timeout)
+        assertThat(omFireTimer.tilOsloZone().toInstant()).isEqualTo(oppgaveFraAiven.timeout)
         assertThat(oppgaveFraAiven.avstemt).isTrue
     }
 
@@ -254,12 +250,12 @@ class E2ETest : AbstractContainerBaseTest() {
 
         val oppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgave.status)
-        assertThat(omFireTimer).isEqualTo(oppgave.timeout)
+        assertThat(omFireTimer.tilOsloZone().toInstant()).isEqualTo(oppgave.timeout)
         assertThat(oppgave.avstemt).isFalse
 
         val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgaveFraAiven.status)
-        assertThat(omFireTimer).isEqualTo(oppgaveFraAiven.timeout)
+        assertThat(omFireTimer.tilOsloZone().toInstant()).isEqualTo(oppgaveFraAiven.timeout)
         assertThat(oppgaveFraAiven.avstemt).isFalse
     }
 

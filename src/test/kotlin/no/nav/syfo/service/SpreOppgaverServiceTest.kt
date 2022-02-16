@@ -7,7 +7,6 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
-import no.nav.syfo.TestApplication
 import no.nav.syfo.domain.dto.Arbeidssituasjon
 import no.nav.syfo.domain.dto.Soknadstype
 import no.nav.syfo.domain.dto.Sykepengesoknad
@@ -39,7 +38,7 @@ class SpreOppgaverServiceTest {
 
     private val objectMapper = ObjectMapper().registerModules(JavaTimeModule(), KotlinModule())
     private val sok = objectMapper.readValue(
-        TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"),
+        SpreOppgaverServiceTest::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"),
         Sykepengesoknad::class.java
     )
     private val now = LocalDateTime.now()
@@ -120,7 +119,7 @@ class SpreOppgaverServiceTest {
         whenever(saksbehandlingsService.finnEksisterendeInnsending(any())).thenAnswer { innsending(it.arguments[0].toString()) }
 
         val arbeidstaker = objectMapper.readValue(
-            TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"),
+            SpreOppgaverServiceTest::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"),
             Sykepengesoknad::class.java
         )
         val frilanser = arbeidstaker.copy(

@@ -6,7 +6,7 @@ import org.springframework.data.jdbc.repository.query.Query
 import org.springframework.data.relational.core.mapping.Table
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
-import java.time.LocalDateTime
+import java.time.Instant
 
 @Repository
 interface SpreOppgaveRepository : CrudRepository<SpreOppgaveDbRecord, String> {
@@ -17,7 +17,7 @@ interface SpreOppgaveRepository : CrudRepository<SpreOppgaveDbRecord, String> {
 
     @Modifying
     @Query("""update oppgavestyring set timeout = :timeout, status = :status where sykepengesoknad_id = :sykepengesoknadId""")
-    fun updateOppgaveBySykepengesoknadId(sykepengesoknadId: String, timeout: LocalDateTime?, status: OppgaveStatus): Boolean
+    fun updateOppgaveBySykepengesoknadId(sykepengesoknadId: String, timeout: Instant?, status: OppgaveStatus): Boolean
 
     @Modifying
     @Query("""update oppgavestyring set avstemt = true where sykepengesoknad_id = :sykepengesoknadId""")
@@ -38,9 +38,9 @@ data class SpreOppgaveDbRecord(
     val id: String? = null,
     val sykepengesoknadId: String,
     val status: OppgaveStatus,
-    val opprettet: LocalDateTime = LocalDateTime.now(),
-    val modifisert: LocalDateTime = LocalDateTime.now(),
-    val timeout: LocalDateTime? = null,
+    val opprettet: Instant = Instant.now(),
+    val modifisert: Instant = Instant.now(),
+    val timeout: Instant? = null,
     val avstemt: Boolean? = false
 )
 

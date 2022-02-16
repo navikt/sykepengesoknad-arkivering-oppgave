@@ -4,11 +4,9 @@ import no.nav.syfo.domain.dto.Sykepengesoknad
 import no.nav.syfo.logger
 import no.nav.syfo.repository.InnsendingDbRecord
 import org.springframework.stereotype.Component
-import javax.inject.Inject
 
 @Component
-class BehandleFeiledeSoknaderService @Inject
-constructor(private val spreOppgaverService: SpreOppgaverService) {
+class BehandleFeiledeSoknaderService(private val spreOppgaverService: SpreOppgaverService) {
     private val log = logger()
 
     fun behandleFeiletSoknad(innsending: InnsendingDbRecord?, sykepengesoknad: Sykepengesoknad) {

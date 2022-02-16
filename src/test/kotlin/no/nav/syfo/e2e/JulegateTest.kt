@@ -1,8 +1,6 @@
 package no.nav.syfo.e2e
 
-import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
-import no.nav.syfo.AbstractContainerBaseTest
-import no.nav.syfo.TestApplication
+import no.nav.syfo.FellesTestoppsett
 import no.nav.syfo.domain.DokumentTypeDTO
 import no.nav.syfo.domain.OppdateringstypeDTO
 import no.nav.syfo.domain.OppgaveDTO
@@ -14,17 +12,14 @@ import no.nav.syfo.skapConsumerRecord
 import org.amshove.kluent.shouldBeEqualTo
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.test.annotation.DirtiesContext
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.UUID
 
-@SpringBootTest(classes = [TestApplication::class])
 @DirtiesContext
-@EnableMockOAuth2Server
-class JulegateTest : AbstractContainerBaseTest() {
+class JulegateTest : FellesTestoppsett() {
 
     companion object {
         val fnr = "fnr"
@@ -57,7 +52,7 @@ class JulegateTest : AbstractContainerBaseTest() {
         spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString())!!.status shouldBeEqualTo OppgaveStatus.Utsett
         spreOppgaveRepository.updateOppgaveBySykepengesoknadId(
             sykepengesoknadId = søknadsId.toString(),
-            timeout = LocalDateTime.now(),
+            timeout = Instant.now(),
             status = OppgaveStatus.Opprettet
         )
         spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString())!!.status shouldBeEqualTo OppgaveStatus.Opprettet
