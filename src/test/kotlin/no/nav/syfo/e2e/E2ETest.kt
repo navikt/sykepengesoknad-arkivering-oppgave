@@ -25,6 +25,7 @@ import no.nav.syfo.serialisertTilString
 import no.nav.syfo.service.BehandleVedTimeoutService
 import no.nav.syfo.service.SaksbehandlingsService
 import no.nav.syfo.skapConsumerRecord
+import no.nav.syfo.util.tilOsloZone
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -109,12 +110,12 @@ class E2ETest : AbstractContainerBaseTest() {
 
         val oppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgave.status)
-        assertThat(omFireTimer).isEqualTo(oppgave.timeout)
+        assertThat(omFireTimer.tilOsloZone().toInstant()).isEqualTo(oppgave.timeout)
         assertThat(oppgave.avstemt).isFalse
 
         val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgaveFraAiven.status)
-        assertThat(omFireTimer).isEqualTo(oppgaveFraAiven.timeout)
+        assertThat(omFireTimer.tilOsloZone().toInstant()).isEqualTo(oppgaveFraAiven.timeout)
         assertThat(oppgaveFraAiven.avstemt).isFalse
     }
 
@@ -142,12 +143,12 @@ class E2ETest : AbstractContainerBaseTest() {
 
         val oppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgave.status)
-        assertThat(omFireTimer).isEqualTo(oppgave.timeout)
+        assertThat(omFireTimer.tilOsloZone().toInstant()).isEqualTo(oppgave.timeout)
         assertThat(oppgave.avstemt).isTrue
 
         val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgaveFraAiven.status)
-        assertThat(omFireTimer).isEqualTo(oppgaveFraAiven.timeout)
+        assertThat(omFireTimer.tilOsloZone().toInstant()).isEqualTo(oppgaveFraAiven.timeout)
         assertThat(oppgaveFraAiven.avstemt).isTrue
     }
 
@@ -183,7 +184,7 @@ class E2ETest : AbstractContainerBaseTest() {
 
         val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgaveFraAiven.status)
-        assertThat(omFireTimer).isEqualTo(oppgaveFraAiven.timeout)
+        assertThat(omFireTimer.tilOsloZone().toInstant()).isEqualTo(oppgaveFraAiven.timeout)
         assertThat(oppgaveFraAiven.avstemt).isTrue
     }
 
@@ -254,12 +255,12 @@ class E2ETest : AbstractContainerBaseTest() {
 
         val oppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgave.status)
-        assertThat(omFireTimer).isEqualTo(oppgave.timeout)
+        assertThat(omFireTimer.tilOsloZone().toInstant()).isEqualTo(oppgave.timeout)
         assertThat(oppgave.avstemt).isFalse
 
         val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgaveFraAiven.status)
-        assertThat(omFireTimer).isEqualTo(oppgaveFraAiven.timeout)
+        assertThat(omFireTimer.tilOsloZone().toInstant()).isEqualTo(oppgaveFraAiven.timeout)
         assertThat(oppgaveFraAiven.avstemt).isFalse
     }
 

@@ -81,7 +81,7 @@ class AivenKafkaConfig(
 
     @Bean
     fun importKafkaListenerContainerFactory(
-        kafkaErrorHandler: AivenKafkaErrorHandler
+        kafkaErrorHandler: AivenKafkaBatchErrorHandler
     ): ConcurrentKafkaListenerContainerFactory<String, String> {
         val config = mapOf(
             ConsumerConfig.GROUP_ID_CONFIG to "sykepengesoknad-arkivering-oppgave",
@@ -97,7 +97,7 @@ class AivenKafkaConfig(
         val factory = ConcurrentKafkaListenerContainerFactory<String, String>()
         factory.consumerFactory = consumerFactory
         factory.isBatchListener = true
-        factory.setErrorHandler(kafkaErrorHandler)
+        factory.setBatchErrorHandler(kafkaErrorHandler)
         factory.containerProperties.ackMode = ContainerProperties.AckMode.MANUAL_IMMEDIATE
         return factory
     }
