@@ -2,8 +2,6 @@ package no.nav.syfo.service
 
 import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.Soknadstype
-import no.nav.syfo.token.Token
-import no.nav.syfo.token.TokenConsumer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
@@ -36,8 +34,6 @@ class OppgaveServiceTest {
     private val journalpostId = "145"
 
     @Mock
-    lateinit var tokenConsumer: TokenConsumer
-    @Mock
     lateinit var restTemplate: RestTemplate
     @Mock
     private lateinit var oppgaveService: OppgaveService
@@ -45,12 +41,9 @@ class OppgaveServiceTest {
     @BeforeEach
     fun setup() {
         oppgaveService = OppgaveService(
-            tokenConsumer = tokenConsumer,
-            username = "username",
             url = "https://oppgave.nav.no",
             restTemplate = restTemplate
         )
-        BDDMockito.given(tokenConsumer.token).willReturn(Token("token", "Bearer", 3600))
     }
 
     @Test
@@ -88,13 +81,6 @@ class OppgaveServiceTest {
             val oppgaveRequest = OppgaveService.lagRequestBody(aktorId, journalpostId, lagSoknad(Soknadstype.ARBEIDSTAKERE))
             oppgaveService.opprettOppgave(oppgaveRequest)
         }
-    }
-
-    @Test
-    fun lagRequestHeadersHarMedPaakrevdCorrelationId() {
-        val headers = oppgaveService.lagRequestHeaders()
-
-        assertThat(headers["X-Correlation-ID"]).isNotEmpty
     }
 
     @Test

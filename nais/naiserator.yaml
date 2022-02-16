@@ -45,7 +45,7 @@ spec:
         diskAutoresize: true
         databases:
           - name: sykepengesoknad-arkivering-oppgave-db
-          - envVarPrefix: DB
+            envVarPrefix: DB
   accessPolicy:
     outbound:
       rules:
@@ -59,8 +59,8 @@ spec:
          - host: {{url}}
       {{/each}}
   env:
-    {{#each env}}
-      - name: {{@key}}
-    value: {{this}}
-    {{/each}}
+  {{#each env}}
+    - name: {{@key}}
+      value: "{{this}}"
+  {{/each}}
 

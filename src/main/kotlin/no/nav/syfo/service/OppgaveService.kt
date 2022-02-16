@@ -3,8 +3,6 @@ package no.nav.syfo.service
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import no.nav.syfo.domain.Soknad
 import no.nav.syfo.domain.dto.Soknadstype
-import no.nav.syfo.token.TokenConsumer
-import no.nav.syfo.util.callId
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -21,21 +19,25 @@ import java.time.format.DateTimeFormatter
 
 @Service
 class OppgaveService(
-    private val tokenConsumer: TokenConsumer,
-    @Value("\${srvsyfogsak.username}") private val username: String,
-    @Value("\${oppgave.oppgaver.url}") private val url: String,
+    @Value("\${OPPGAVE_URL}")
+    private val url: String,
     private val restTemplate: RestTemplate
 ) {
-    private val uriString = UriComponentsBuilder.fromHttpUrl(url).toUriString()
-
     fun opprettOppgave(request: OppgaveRequest): OppgaveResponse {
+
         return try {
-            val result = restTemplate.exchange(
-                uriString,
-                HttpMethod.POST,
-                HttpEntity(request, lagRequestHeaders()),
-                OppgaveResponse::class.java
-            )
+            val uriString = UriComponentsBuilder.fromHttpUrl(url)
+
+            val headers = HttpHeaders()
+            headers.contentType = MediaType.APPLICATION_JSON
+
+            val result = restTemplate
+                .exchange(
+                    uriString.toUriString(),
+                    HttpMethod.POST,
+                    HttpEntity<Any>(request, headers),
+                    OppgaveResponse::class.java
+                )
 
             if (!result.statusCode.is2xxSuccessful) {
                 throw RuntimeException("Oppretting av oppgave feiler med HTTP-${result.statusCode}")
@@ -46,14 +48,6 @@ class OppgaveService(
         } catch (e: HttpClientErrorException) {
             throw RuntimeException("Feil ved oppretting av oppgave for journalpostId ${request.journalpostId}", e)
         }
-    }
-
-    fun lagRequestHeaders(): HttpHeaders = HttpHeaders().also { headers ->
-        headers.contentType = MediaType.APPLICATION_JSON
-        headers["Authorization"] = "Bearer ${tokenConsumer.token.access_token}"
-        headers["Nav-Call-Id"] = callId()
-        headers["X-Correlation-ID"] = callId()
-        headers["Nav-Consumer-Id"] = username
     }
 
     companion object {
