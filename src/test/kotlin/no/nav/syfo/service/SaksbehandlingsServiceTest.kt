@@ -7,7 +7,6 @@ import com.nhaarman.mockitokotlin2.KArgumentCaptor
 import com.nhaarman.mockitokotlin2.argumentCaptor
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
-import no.nav.syfo.TestApplication
 import no.nav.syfo.any
 import no.nav.syfo.arkivering.Arkivaren
 import no.nav.syfo.client.FlexBucketUploaderClient
@@ -86,9 +85,9 @@ class SaksbehandlingsServiceTest {
     @Test
     fun behandlerSoknaderSomEttersendesTilNavDerDetManglerOppgave() {
         val now = LocalDateTime.now()
-        val sykepengesoknadUtenOppgave = objectMapper.readValue(TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
+        val sykepengesoknadUtenOppgave = objectMapper.readValue(SaksbehandlingsServiceTest::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
             .copy(sendtNav = null, sendtArbeidsgiver = now)
-        val sykepengesoknadEttersendingTilNAV = objectMapper.readValue(TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
+        val sykepengesoknadEttersendingTilNAV = objectMapper.readValue(SaksbehandlingsServiceTest::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
             .copy(sendtNav = now, sendtArbeidsgiver = now)
 
         saksbehandlingsService.behandleSoknad(sykepengesoknadUtenOppgave)
@@ -119,7 +118,7 @@ class SaksbehandlingsServiceTest {
     @Test
     fun `oppretter oppgave med korrekte felter`() {
         val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
-        val søknad = objectMapper.readValue(TestApplication::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
+        val søknad = objectMapper.readValue(SaksbehandlingsServiceTest::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
         saksbehandlingsService.opprettOppgave(søknad, innsending(søknad))
         verify(oppgaveService).opprettOppgave(captor.capture())
         val oppgaveRequest = captor.firstValue

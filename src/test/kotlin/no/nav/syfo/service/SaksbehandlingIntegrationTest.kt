@@ -2,9 +2,7 @@ package no.nav.syfo.service
 
 import com.nhaarman.mockitokotlin2.*
 import no.nav.helse.flex.sykepengesoknad.kafka.*
-import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
-import no.nav.syfo.AbstractContainerBaseTest
-import no.nav.syfo.TestApplication
+import no.nav.syfo.FellesTestoppsett
 import no.nav.syfo.client.DokArkivClient
 import no.nav.syfo.client.FlexBucketUploaderClient
 import no.nav.syfo.client.PDFClient
@@ -23,7 +21,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.Awaitility.await
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.annotation.DirtiesContext
 import java.time.Duration
@@ -31,10 +28,8 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
-@SpringBootTest(classes = [TestApplication::class])
 @DirtiesContext
-@EnableMockOAuth2Server
-class SaksbehandlingIntegrationTest : AbstractContainerBaseTest() {
+class SaksbehandlingIntegrationTest : FellesTestoppsett() {
 
     @MockBean
     private lateinit var pdfClient: PDFClient

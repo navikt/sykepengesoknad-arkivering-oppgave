@@ -2,20 +2,16 @@ package no.nav.syfo.client.pdl
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
-import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
-import no.nav.syfo.TestApplication
+import no.nav.syfo.FellesTestoppsett
 import no.nav.syfo.service.IdentService
 import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.annotation.DirtiesContext
 
-@SpringBootTest(classes = [TestApplication::class])
-@EnableMockOAuth2Server
 @DirtiesContext
-class PdlTest {
+class PdlTest : FellesTestoppsett() {
 
     @MockBean
     private lateinit var pdlClient: PdlClient

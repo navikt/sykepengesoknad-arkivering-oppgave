@@ -1,9 +1,7 @@
 package no.nav.syfo.rebehandling
 
 import com.nhaarman.mockitokotlin2.*
-import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
-import no.nav.syfo.AbstractContainerBaseTest
-import no.nav.syfo.TestApplication
+import no.nav.syfo.FellesTestoppsett
 import no.nav.syfo.client.DokArkivClient
 import no.nav.syfo.client.PDFClient
 import no.nav.syfo.domain.DokumentInfo
@@ -21,16 +19,13 @@ import org.apache.kafka.clients.producer.ProducerRecord
 import org.awaitility.Awaitility.await
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.annotation.DirtiesContext
 import java.time.Duration
 import java.util.*
 
-@SpringBootTest(classes = [TestApplication::class])
-@EnableMockOAuth2Server
 @DirtiesContext
-class RebehandlingIntegrationTest : AbstractContainerBaseTest() {
+class RebehandlingIntegrationTest : FellesTestoppsett() {
 
     @MockBean
     private lateinit var pdfClient: PDFClient
