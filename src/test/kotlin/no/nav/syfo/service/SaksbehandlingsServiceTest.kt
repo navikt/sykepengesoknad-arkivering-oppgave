@@ -2,7 +2,7 @@ package no.nav.syfo.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.nhaarman.mockitokotlin2.KArgumentCaptor
 import com.nhaarman.mockitokotlin2.argumentCaptor
 import io.micrometer.core.instrument.Counter
@@ -57,7 +57,7 @@ class SaksbehandlingsServiceTest {
     @InjectMocks
     lateinit var saksbehandlingsService: SaksbehandlingsService
 
-    private val objectMapper = ObjectMapper().registerModules(JavaTimeModule(), KotlinModule())
+    private val objectMapper = ObjectMapper().registerKotlinModule().registerModules(JavaTimeModule())
     private val aktorId = "aktorId-745463060"
     private val fnr = "12345678901"
 

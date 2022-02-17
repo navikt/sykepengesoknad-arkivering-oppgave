@@ -2,7 +2,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.springframework.boot") version "2.5.3"
+    id("org.springframework.boot") version "2.6.3"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
     kotlin("jvm") version "1.6.10"
     kotlin("plugin.spring") version "1.6.10"
@@ -18,7 +18,7 @@ buildscript {
         maven("https://plugins.gradle.org/m2/")
     }
     dependencies {
-        classpath("org.jlleitschuh.gradle:ktlint-gradle:10.1.0")
+        classpath("org.jlleitschuh.gradle:ktlint-gradle:10.2.1")
     }
 }
 
@@ -44,12 +44,9 @@ repositories {
 val syfoKafkaVersion = "2021.07.20-09.39-6be2c52c"
 val sykepengesoknadKafkaVersion = "2022.02.10-16.07-0892e94a"
 val mockitoKotlinVersion = "2.2.0"
-val logstashLogbackEncoderVersion = "6.6"
-val mockitoCoreVersion = "3.11.2"
-val assertjVersion = "3.20.2"
-val tjenestespesifikasjonerVersion = "1.2019.08.16-13.46-35cbdfd492d4"
-val tokenSupportVersion = "1.3.8"
-val testContainersVersion = "1.16.0"
+val logstashLogbackEncoderVersion = "7.0.1"
+val tokenSupportVersion = "1.3.16"
+val testContainersVersion = "1.16.3"
 val kluentVersion = "1.68"
 
 dependencies {
@@ -75,7 +72,6 @@ dependencies {
     implementation("no.nav.syfo.kafka:kafkautils:$syfoKafkaVersion")
     implementation("no.nav.syfo.kafka:legacy-serialisering:$syfoKafkaVersion")
     implementation("no.nav.helse.flex:sykepengesoknad-kafka:$sykepengesoknadKafkaVersion")
-    implementation("no.nav.tjenestespesifikasjoner:nav-fim-behandleJournal-v2-tjenestespesifikasjon:$tjenestespesifikasjonerVersion")
     implementation("no.nav.security:token-validation-spring:$tokenSupportVersion")
     implementation("no.nav.security:token-client-spring:$tokenSupportVersion")
 
@@ -86,10 +82,10 @@ dependencies {
     testImplementation("org.springframework.kafka:spring-kafka-test")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("no.nav.security:token-validation-spring-test:$tokenSupportVersion")
-    testImplementation("org.assertj:assertj-core:$assertjVersion")
+    testImplementation("org.assertj:assertj-core")
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlinVersion")
     testImplementation("org.testcontainers:postgresql:$testContainersVersion")
-    testImplementation("org.mockito:mockito-core:$mockitoCoreVersion")
+    testImplementation("org.mockito:mockito-core")
     testImplementation("org.awaitility:awaitility")
 }
 
