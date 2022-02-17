@@ -12,7 +12,6 @@ import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.retry.annotation.EnableRetry
 
-const val AAD = "aad"
 const val BEHANDLINGSTIDSPUNKT = "behandlingstidspunkt"
 
 @SpringBootApplication

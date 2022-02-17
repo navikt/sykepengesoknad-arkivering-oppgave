@@ -3,7 +3,6 @@ package no.nav.helse.arkivering
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.helse.client.DokArkivClient
 import no.nav.helse.client.PDFClient
-import no.nav.helse.client.pdl.PdlClient
 import no.nav.helse.domain.JournalpostRequest
 import no.nav.helse.domain.JournalpostResponse
 import no.nav.helse.domain.Soknad
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Component
 class Arkivaren(
     val pdfClient: PDFClient,
     val dokArkivClient: DokArkivClient,
-    val pdlClient: PdlClient,
     val registry: MeterRegistry,
 ) {
 
