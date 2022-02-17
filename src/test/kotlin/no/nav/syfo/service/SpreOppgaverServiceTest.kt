@@ -2,7 +2,7 @@ package no.nav.syfo.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
 import io.micrometer.core.instrument.Counter
@@ -36,7 +36,7 @@ class SpreOppgaverServiceTest {
     @Mock
     lateinit var counter: Counter
 
-    private val objectMapper = ObjectMapper().registerModules(JavaTimeModule(), KotlinModule())
+    private val objectMapper = ObjectMapper().registerKotlinModule().registerModules(JavaTimeModule())
     private val sok = objectMapper.readValue(
         SpreOppgaverServiceTest::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"),
         Sykepengesoknad::class.java

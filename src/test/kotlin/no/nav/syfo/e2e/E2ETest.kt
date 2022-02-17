@@ -8,7 +8,6 @@ import no.nav.helse.flex.sykepengesoknad.kafka.SvarDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SvartypeDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SykepengesoknadDTO
 import no.nav.syfo.FellesTestoppsett
-import no.nav.syfo.`should be equal to ignoring nano and zone`
 import no.nav.syfo.any
 import no.nav.syfo.client.SyfosoknadClient
 import no.nav.syfo.domain.DokumentTypeDTO
@@ -23,6 +22,7 @@ import no.nav.syfo.repository.SpreOppgaveRepository
 import no.nav.syfo.serialisertTilString
 import no.nav.syfo.service.BehandleVedTimeoutService
 import no.nav.syfo.service.SaksbehandlingsService
+import no.nav.syfo.`should be equal to ignoring nano and zone`
 import no.nav.syfo.skapConsumerRecord
 import no.nav.syfo.util.tilOsloZone
 import org.assertj.core.api.Assertions.assertThat
