@@ -44,7 +44,7 @@ class AivenSoknadSendtListener(
 
             acknowledgment.acknowledge()
         } catch (e: Exception) {
-            log.error("Uventet feil ved behandling av søknad", e)
+            log.error("Uventet feil ved behandling av søknad ${cr.key()}", e)
             throw RuntimeException("Uventet feil ved behandling av søknad")
         } finally {
             MDC.remove(NAV_CALLID)
