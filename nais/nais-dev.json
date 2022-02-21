@@ -12,7 +12,7 @@
     "PDL_API_AAD_CLIENT_ID": "dev-fss.pdl.pdl-api",
     "DOKARKIV_URL": "https://dokarkiv.dev-fss-pub.nais.io",
     "DOKARKIV_AAD_CLIENT_ID": "972814f3-8bdf-44f8-a191-c2ed00020b54",
-    "OPPGAVE_URL": "https://oppgave.dev-fss-pub.nais.io/api/v1/oppgaver",
+    "OPPGAVE_URL": "https://oppgave-q1.dev-fss-pub.nais.io/api/v1/oppgaver",
     "OPPGAVE_AAD_CLIENT_ID": "dev-fss.oppgavehandtering.oppgave-q1",
     "BUCKET_UPLOADER_URL": "http://flex-bucket-uploader",
     "PDFGEN_URL":"http://flex-sykepengesoknad-pdfgen",
