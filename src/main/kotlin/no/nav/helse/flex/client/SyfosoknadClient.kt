@@ -26,7 +26,7 @@ class SyfosoknadClient(
 
     fun hentSoknad(soknadId: String): SykepengesoknadDTO {
         try {
-            val uriBuilder = UriComponentsBuilder.fromHttpUrl("$url/api/v3/soknader/$soknadId/kafkaformat")
+            val uriBuilder = UriComponentsBuilder.fromHttpUrl("$url/syfosoknad/api/v3/soknader/$soknadId/kafkaformat")
 
             val headers = HttpHeaders()
             headers.contentType = MediaType.APPLICATION_JSON
