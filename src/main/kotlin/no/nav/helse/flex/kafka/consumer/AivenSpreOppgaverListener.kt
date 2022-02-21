@@ -58,7 +58,7 @@ class AivenSpreOppgaverListener(
 
     private fun tellOppgave(oppgave: OppgaveDTO) {
         registry.counter(
-            "syfogsak.spre.oppgave",
+            "spre.oppgave",
             Tags.of(
                 "type", "info",
                 "oppdateringstype", oppgave.oppdateringstype.name

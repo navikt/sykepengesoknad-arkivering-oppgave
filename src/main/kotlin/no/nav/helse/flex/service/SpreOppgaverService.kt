@@ -27,7 +27,7 @@ class SpreOppgaverService(
 ) {
     private val log = logger()
     private val timeout = defaultTimeoutTimer.toLong()
-    private val gjenopplivetCounter = registry.counter("syfogsak_gjenopplivet_oppgave")
+    private val gjenopplivetCounter = registry.counter("gjenopplivet_oppgave")
 
     // Er Synchronized pga. race condition mellom saksbehandling i vårt system og saksbehandling i Bømlo's system
     @Synchronized

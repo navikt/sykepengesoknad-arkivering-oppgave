@@ -1,5 +1,5 @@
 
-syfogsak.iml
+*.iml
 .idea
 target
 **/application-local.yaml
