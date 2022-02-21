@@ -9,7 +9,6 @@ import no.nav.helse.flex.objectMapper
 import no.nav.helse.flex.repository.InnsendingRepository
 import no.nav.helse.flex.service.BehandleFeiledeSoknaderService
 import org.apache.kafka.clients.consumer.ConsumerRecord
-import org.springframework.context.annotation.Profile
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
@@ -19,7 +18,6 @@ import java.time.ZoneOffset
 
 const val RETRY_TOPIC = "flex." + "sykepengesoknad-arkivering-oppgave-retry"
 
-@Profile("test")
 @Component
 class RebehandleSykepengesoknadListener(
     private val behandleFeiledeSoknaderService: BehandleFeiledeSoknaderService,
