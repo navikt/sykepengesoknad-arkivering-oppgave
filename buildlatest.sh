@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Bygger syfogsak latest for docker compose utvikling"
+echo "Bygger sykepengesoknad-arkivering-oppgave latest for docker compose utvikling"
 rm -rf ./build
 ./gradlew bootJar
-docker build -t syfogsak:latest .
+docker build -t sykepengesoknad-arkivering-oppgave:latest .

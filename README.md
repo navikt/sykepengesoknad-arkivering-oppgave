@@ -1,4 +1,3 @@
-# Syfogsak
+# Sykepengesoknad-arkivering-oppgave
 
-## Om syfogsak
-Syfogsak er ansvarlig for å oppdatere gsak med relevant informasjon etter innsending av søknader og sykmeldinger.
+## Om sykepengesoknad-arkivering-oppgave

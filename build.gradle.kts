@@ -10,7 +10,7 @@ plugins {
 
 group = "no.nav.helse.flex"
 version = "0.0.1-SNAPSHOT"
-description = "syfogsak"
+description = "sykepengesoknad-arkivering-oppgave"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 buildscript {
