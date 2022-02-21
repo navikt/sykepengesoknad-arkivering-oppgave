@@ -26,7 +26,7 @@ class BehandleVedTimeoutService(
 ) {
     private val log = logger()
 
-    @Scheduled(fixedDelay = 1000L * 60 * 1, initialDelay = 1000L * 60 * 10)
+    @Scheduled(fixedDelay = 1000L * 60 * 1, initialDelay = 1000L * 60 * 1)
     fun behandleTimeout() {
         val oppgaver = spreOppgaveRepository.findOppgaverTilOpprettelse()
 
