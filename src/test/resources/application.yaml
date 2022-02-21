@@ -1,5 +1,5 @@
 nais.app.name: sykepengesoknad-arkivering-oppgave
-nais.cluster: local
+NAIS_CLUSTER_NAME: local
 server.port: 8081
 
 management:
