@@ -11,7 +11,6 @@ import no.nav.syfo.kafka.NAV_CALLID
 import no.nav.syfo.kafka.getSafeNavCallIdHeaderAsString
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.MDC
-import org.springframework.context.annotation.Profile
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Component
 const val SYKEPENGESOKNAD_TOPIC = "flex." + "sykepengesoknad"
 
 @Component
-@Profile("test")
 class AivenSoknadSendtListener(
     private val spreOppgaverService: SpreOppgaverService,
     private val identService: IdentService,
