@@ -18,8 +18,8 @@ import org.springframework.stereotype.Component
 
 const val SYKEPENGESOKNAD_TOPIC = "flex." + "sykepengesoknad"
 
-@Profile("test")
 @Component
+@Profile("test")
 class AivenSoknadSendtListener(
     private val spreOppgaverService: SpreOppgaverService,
     private val identService: IdentService,
@@ -46,7 +46,7 @@ class AivenSoknadSendtListener(
 
             acknowledgment.acknowledge()
         } catch (e: Exception) {
-            log.error("Uventet feil ved behandling av søknad", e)
+            log.error("Uventet feil ved behandling av søknad ${cr.key()}", e)
             throw RuntimeException("Uventet feil ved behandling av søknad")
         } finally {
             MDC.remove(NAV_CALLID)

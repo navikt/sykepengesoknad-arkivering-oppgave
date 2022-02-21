@@ -16,7 +16,7 @@ import org.springframework.web.client.RestTemplate
 class ApplicationConfig {
 
     @Bean
-    fun restTemplate(): RestTemplate = RestTemplate().apply {
+    fun pdfGenRestTemplate(): RestTemplate = RestTemplate().apply {
         messageConverters
             .mapNotNull { it as? AbstractJackson2HttpMessageConverter }
             .forEach { it.objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false) }

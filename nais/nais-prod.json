@@ -12,14 +12,13 @@
     "PDL_API_AAD_CLIENT_ID": "prod-fss.pdl.pdl-api",
     "DOKARKIV_URL": "https://dokarkiv.prod-fss-pub.nais.io",
     "DOKARKIV_AAD_CLIENT_ID": "162b3255-2f72-4399-8f7a-244add9ffaac",
-    "OPPGAVE_URL": "https://oppgave.prod-fss-pub.nais.io",
-    "OPPGAVE_AAD_CLIENT_ID": "50346823-61a0-49e7-ad89-ea2b1a0e90f8",
-    "OPPGAVE_CLIENT_ID": "41ca50ba-e44f-4bc8-9e31-b745a0041926",
+    "OPPGAVE_URL": "https://oppgave.prod-fss-pub.nais.io/api/v1/oppgaver",
+    "OPPGAVE_AAD_CLIENT_ID": "prod-fss.oppgavehandtering.oppgave",
     "BUCKET_UPLOADER_URL": "http://flex-bucket-uploader",
+    "FLEX_BUCKET_UPLOADER_AAD_CLIENT_ID": "prod-gcp.flex.flex-bucket-uploader",
     "PDFGEN_URL":"http://flex-sykepengesoknad-pdfgen",
     "FLEX_FSS_PROXY_AAD_CLIENT_ID": "prod-fss.flex.flex-fss-proxy",
     "FLEX_FSS_PROXY_URL": "https://flex-fss-proxy.prod-fss-pub.nais.io",
     "DEFAULT_TIMEOUT_TIMER": "1"
   }
-
 }

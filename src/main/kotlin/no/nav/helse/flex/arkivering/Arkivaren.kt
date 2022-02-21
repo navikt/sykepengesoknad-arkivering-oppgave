@@ -25,7 +25,7 @@ class Arkivaren(
         val soknadsPDF: ByteArray = pdfClient.getPDF(soknad = soknad, template = hentPDFTemplateEtterSoknadstype(soknad.soknadstype))
 
         val request: JournalpostRequest =
-            no.nav.helse.flex.arkivering.skapJournalpostRequest(pdf = soknadsPDF, soknad = soknad)
+            skapJournalpostRequest(pdf = soknadsPDF, soknad = soknad)
         val journalpostResponse: JournalpostResponse = dokArkivClient.opprettJournalpost(request, soknad.soknadsId!!)
 
         if (!journalpostResponse.journalpostferdigstilt) {

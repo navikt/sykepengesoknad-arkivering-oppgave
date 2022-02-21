@@ -20,8 +20,8 @@ import org.springframework.stereotype.Component
 
 const val SPREOPPGAVER_TOPIC = "tbd." + "spre-oppgaver"
 
-@Profile("test")
 @Component
+@Profile("test")
 class AivenSpreOppgaverListener(
     private val spreOppgaverService: SpreOppgaverService,
     private val registry: MeterRegistry,

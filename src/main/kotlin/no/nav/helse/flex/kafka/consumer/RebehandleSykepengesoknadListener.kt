@@ -19,8 +19,8 @@ import java.time.ZoneOffset
 
 const val RETRY_TOPIC = "flex." + "sykepengesoknad-arkivering-oppgave-retry"
 
-@Profile("test")
 @Component
+@Profile("test")
 class RebehandleSykepengesoknadListener(
     private val behandleFeiledeSoknaderService: BehandleFeiledeSoknaderService,
     private val innsendingRepository: InnsendingRepository,

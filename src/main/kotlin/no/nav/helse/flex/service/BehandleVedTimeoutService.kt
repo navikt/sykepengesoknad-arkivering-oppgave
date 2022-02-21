@@ -4,7 +4,7 @@ import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tags
 import no.nav.helse.flex.client.SyfosoknadClient
 import no.nav.helse.flex.client.SøknadIkkeFunnetException
-import no.nav.helse.flex.config.Toggle
+import no.nav.helse.flex.config.EnvironmentToggles
 import no.nav.helse.flex.kafka.mapper.toSykepengesoknad
 import no.nav.helse.flex.logger
 import no.nav.helse.flex.repository.OppgaveStatus
@@ -16,19 +16,19 @@ import java.time.Duration
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
 
-@Profile("test")
 @Component
+@Profile("test")
 class BehandleVedTimeoutService(
     private val spreOppgaveRepository: SpreOppgaveRepository,
     private val saksbehandlingsService: SaksbehandlingsService,
     private val syfosoknadClient: SyfosoknadClient,
-    private val toggle: Toggle,
+    private val environmentToggles: EnvironmentToggles,
     private val registry: MeterRegistry,
     private val identService: IdentService
 ) {
     private val log = logger()
 
-    @Scheduled(fixedDelay = 1000L * 60 * 1, initialDelay = 1000L * 60 * 10)
+    @Scheduled(fixedDelay = 1000L * 60 * 1, initialDelay = 1000L * 60 * 1)
     fun behandleTimeout() {
         val oppgaver = spreOppgaveRepository.findOppgaverTilOpprettelse()
 
@@ -55,7 +55,7 @@ class BehandleVedTimeoutService(
                     )
                 } else {
                     log.info("Fant ikke eksisterende innsending, ignorerer søknad med id ${it.sykepengesoknadId}")
-                    if (toggle.isQ() && it.opprettet < OffsetDateTime.now().minusDays(1).toInstant()) {
+                    if (environmentToggles.isQ() && it.opprettet < OffsetDateTime.now().minusDays(1).toInstant()) {
                         // Dette skjer hvis bømlo selv mocker opp søknader som ikke går gjennom syfosoknad
                         log.info("Sletter oppgave fra ${it.opprettet} som ikke har en tilhørende søknad")
                         spreOppgaveRepository.deleteOppgaveBySykepengesoknadId(it.sykepengesoknadId)
@@ -67,7 +67,7 @@ class BehandleVedTimeoutService(
                     tellTimeout()
                 }
             } catch (e: SøknadIkkeFunnetException) {
-                if (toggle.isQ()) {
+                if (environmentToggles.isQ()) {
                     log.warn("Søknaden ${it.sykepengesoknadId} finnes ikke i Q, hopper over oppgaveopprettelse og fortsetter")
                     spreOppgaveRepository.updateOppgaveBySykepengesoknadId(
                         sykepengesoknadId = it.sykepengesoknadId,

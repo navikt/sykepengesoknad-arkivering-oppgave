@@ -42,7 +42,7 @@ class OppgaveServiceTest {
     fun setup() {
         oppgaveService = OppgaveService(
             url = "https://oppgave.nav.no",
-            restTemplate = restTemplate
+            oppgaveRestTemplate = restTemplate
         )
     }
 

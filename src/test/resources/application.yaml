@@ -1,6 +1,4 @@
-nais.app.name: sykepengesoknad-arkivering-oppgave
-fasit.environment.name: local
-server.port: 8081
+NAIS_CLUSTER_NAME: local
 
 management:
   endpoint.prometheus.enabled: true
@@ -9,16 +7,6 @@ management:
     exposure.include: prometheus
     path-mapping.prometheus: /prometheus
 
-srvsyfogsak:
-  username: username
-  password: password
-
-javax.net.ssl:
-  trustStore: truststore
-  trustStorePassword: truststorepassword
-
-servicegateway.url: http://servicegateway.url
-security.token.service.token.url: "https://sts-q1.preprod.local:8080/SecurityTokenServiceProvider/"
 
 OPPGAVE_URL: "http://oppgave.oppgaver.url"
 PDFGEN_URL: "http://pdf"
@@ -42,19 +30,6 @@ spring:
 
 BUCKET_UPLOADER_URL: http://flex-bucket
 
-no.nav.security.jwt:
-  issuer:
-    aad:
-      discoveryurl: http://localhost:${mock-oauth2-server.port}/aad/.well-known/openid-configuration
-      accepted_audience: syfogsak-client-id
-
-
-aad_syfoinntektsmelding_clientid_username: syfoinntektsmelding_clientid
-
-aad_accesstoken_url: http://azure
-aad_syfogsak_client_id: syfogsak-client-id
-aad_syfogsak_client_secret: min-hemmelighet
-aad_syfosoknad_clientid: syfosoknad-yo
 
 
 KAFKA_TRUSTSTORE_PATH: ""
