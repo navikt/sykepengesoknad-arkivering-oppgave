@@ -18,7 +18,7 @@ import org.springframework.web.client.RestTemplate
 class PDFClient(
     @Value("\${PDFGEN_URL}")
     private val pdfgenUrl: String,
-    private val restTemplate: RestTemplate
+    private val pdfGenRestTemplate: RestTemplate
 ) {
 
     val log = logger()
@@ -32,7 +32,7 @@ class PDFClient(
 
         val entity = HttpEntity(soknad, headers)
 
-        val result = restTemplate.exchange(url, HttpMethod.POST, entity, ByteArray::class.java)
+        val result = pdfGenRestTemplate.exchange(url, HttpMethod.POST, entity, ByteArray::class.java)
 
         if (result.statusCode != OK) {
             throw RuntimeException("getPDF feiler med HTTP-" + result.statusCode + " for søknad om utenlandsopphold med id: " + soknad.soknadsId)

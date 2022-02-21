@@ -22,7 +22,7 @@ import java.time.format.DateTimeFormatter
 class OppgaveService(
     @Value("\${OPPGAVE_URL}")
     private val url: String,
-    private val restTemplate: RestTemplate
+    private val oppgaveRestTemplate: RestTemplate
 ) {
     fun opprettOppgave(request: OppgaveRequest): OppgaveResponse {
 
@@ -33,7 +33,7 @@ class OppgaveService(
             headers.contentType = MediaType.APPLICATION_JSON
             headers["X-Correlation-ID"] = callId()
 
-            val result = restTemplate
+            val result = oppgaveRestTemplate
                 .exchange(
                     uriString.toUriString(),
                     HttpMethod.POST,

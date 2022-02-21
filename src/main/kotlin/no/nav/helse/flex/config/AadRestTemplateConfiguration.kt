@@ -56,6 +56,19 @@ class AadRestTemplateConfiguration {
         )
 
     @Bean
+    fun oppgaveRestTemplate(
+        restTemplateBuilder: RestTemplateBuilder,
+        clientConfigurationProperties: ClientConfigurationProperties,
+        oAuth2AccessTokenService: OAuth2AccessTokenService
+    ): RestTemplate =
+        downstreamRestTemplate(
+            registrationName = "oppgave-client-credentials",
+            restTemplateBuilder = restTemplateBuilder,
+            clientConfigurationProperties = clientConfigurationProperties,
+            oAuth2AccessTokenService = oAuth2AccessTokenService,
+        )
+
+    @Bean
     fun dokArkivRestTemplate(
         restTemplateBuilder: RestTemplateBuilder,
         clientConfigurationProperties: ClientConfigurationProperties,
