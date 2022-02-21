@@ -4,9 +4,8 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 
 @Component
-class Toggle(
-    @Value("\${fasit.environment.name:p}") val fasitEnvironmentName: String
+class EnvironmentToggles(
+    @Value("\${nais.cluster}") private val naisCluster: String
 ) {
-    fun isQ(): Boolean =
-        fasitEnvironmentName == "q1"
+    fun isQ() = "dev-gcp" == naisCluster
 }

@@ -5,7 +5,7 @@ import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tag
 import no.nav.helse.flex.client.SyfosoknadClient
 import no.nav.helse.flex.client.SøknadIkkeFunnetException
-import no.nav.helse.flex.config.Toggle
+import no.nav.helse.flex.config.EnvironmentToggles
 import no.nav.helse.flex.repository.*
 import no.nav.helse.flex.sykepengesoknad.kafka.*
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -31,7 +31,7 @@ class BehandleVedTimeoutServiceTest {
     lateinit var syfosoknadConsumer: SyfosoknadClient
 
     @Mock
-    lateinit var toggle: Toggle
+    lateinit var environmentToggles: EnvironmentToggles
 
     @Mock
     lateinit var registry: MeterRegistry
@@ -122,7 +122,7 @@ class BehandleVedTimeoutServiceTest {
     @Test
     fun `sletter oppgave(i test) om vi mangler innsending og den er gammel`() {
         mockRegistry()
-        whenever(toggle.isQ()).thenReturn(true)
+        whenever(environmentToggles.isQ()).thenReturn(true)
         whenever(spreOppgaveRepository.findOppgaverTilOpprettelse()).thenReturn(
             listOf(
                 SpreOppgaveDbRecord(
@@ -255,7 +255,7 @@ class BehandleVedTimeoutServiceTest {
                 journalpostId = "journalpost"
             )
         )
-        whenever(toggle.isQ()).thenReturn(true)
+        whenever(environmentToggles.isQ()).thenReturn(true)
         whenever(syfosoknadConsumer.hentSoknad(søknadsId1.toString())).thenThrow(SøknadIkkeFunnetException("finner ikke"))
         behandleVedTimeoutService.behandleTimeout()
 
@@ -289,7 +289,7 @@ class BehandleVedTimeoutServiceTest {
                 journalpostId = "journalpost"
             )
         )
-        whenever(toggle.isQ()).thenReturn(false)
+        whenever(environmentToggles.isQ()).thenReturn(false)
         whenever(syfosoknadConsumer.hentSoknad(søknadsId1.toString())).thenThrow(SøknadIkkeFunnetException("msg"))
         assertThrows(SøknadIkkeFunnetException::class.java) {
             behandleVedTimeoutService.behandleTimeout()

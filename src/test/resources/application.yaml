@@ -1,5 +1,5 @@
 nais.app.name: sykepengesoknad-arkivering-oppgave
-fasit.environment.name: local
+nais.cluster: local
 server.port: 8081
 
 management:
