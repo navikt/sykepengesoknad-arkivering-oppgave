@@ -112,7 +112,7 @@ class SaksbehandlingsService(
 
     private fun tellInnsendingBehandlet(soknadstype: Soknadstype?) {
         registry.counter(
-            "syfogsak.innsending.behandlet",
+            "innsending.behandlet",
             Tags.of(
                 "type", "info",
                 "soknadstype", soknadstype?.name ?: "UKJENT",
@@ -123,7 +123,7 @@ class SaksbehandlingsService(
 
     private fun tellInnsendingFeilet(soknadstype: Soknadstype?) {
         registry.counter(
-            "syfogsak.innsending.feilet",
+            "innsending.feilet",
             Tags.of(
                 "type", "info",
                 "soknadstype", soknadstype?.name ?: "UKJENT",

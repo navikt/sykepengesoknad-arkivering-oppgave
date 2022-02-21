@@ -86,7 +86,7 @@ class BehandleVedTimeoutService(
 
     private fun tellTimeout() {
         registry.counter(
-            "syfogsak.bomlo.timeout",
+            "bomlo.timeout",
             Tags.of("type", "info")
         ).increment()
     }
