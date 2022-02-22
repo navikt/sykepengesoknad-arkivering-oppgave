@@ -22,7 +22,7 @@ INSERT INTO INNSENDING
     "oppgave_id",
     "behandlet")
 VALUES
-  (?,?,?,?);"""
+  (?,?,?,?) ON CONFLICT ON CONSTRAINT innsending_sykepengesoknad_id_key DO NOTHING;"""
 
         return jdbcTemplate.batchUpdate(
             sql,
