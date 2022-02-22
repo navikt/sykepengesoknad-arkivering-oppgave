@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
 import java.sql.PreparedStatement
 import java.sql.Timestamp
+import java.util.*
 
 @Repository
 class BatchInsertDAO(
@@ -20,9 +21,10 @@ INSERT INTO INNSENDING
     ("sykepengesoknad_id",
     "journalpost_id",
     "oppgave_id",
-    "behandlet")
+    "behandlet",
+    "id")
 VALUES
-  (?,?,?,?) ON CONFLICT ON CONSTRAINT innsending_sykepengesoknad_id_key DO NOTHING;"""
+  (?,?,?,?,?) ON CONFLICT ON CONSTRAINT innsending_sykepengesoknad_id_key DO NOTHING;"""
 
         return jdbcTemplate.batchUpdate(
             sql,
@@ -39,6 +41,7 @@ VALUES
                             Timestamp.from(records[i].behandlet)
                         }
                     )
+                    ps.setString(5, UUID.randomUUID().toString())
                 }
 
                 override fun getBatchSize() = records.size
