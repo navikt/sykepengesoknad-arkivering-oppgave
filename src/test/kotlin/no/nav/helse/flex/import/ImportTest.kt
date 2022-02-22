@@ -53,14 +53,21 @@ class ImportTest : FellesTestoppsett() {
             oppgaveId = "12fq43",
             behandlet = OffsetDateTime.now()
         )
+        val innsending2 = InnsendingKafkaDto(
+            sykepengesoknadId = "123465",
+            journalpostId = "123",
+            oppgaveId = "12fq43",
+            behandlet = OffsetDateTime.now()
+        )
         leggInnsendingPaKafka(innsending)
+        leggInnsendingPaKafka(innsending2)
 
         val records = innsendingRepository.findAll().iterator().asSequence().toList()
-        records.shouldHaveSize(1)
-        records.first().sykepengesoknadId `should be equal to` innsending.sykepengesoknadId
-        records.first().journalpostId `should be equal to` innsending.journalpostId
-        records.first().oppgaveId `should be equal to` innsending.oppgaveId
-        records.first().behandlet!!.truncatedTo(ChronoUnit.SECONDS) `should be equal to` innsending.behandlet!!.toInstant()
+        records.shouldHaveSize(2)
+        records.first { it.sykepengesoknadId == innsending.sykepengesoknadId }.sykepengesoknadId `should be equal to` innsending.sykepengesoknadId
+        records.first { it.sykepengesoknadId == innsending.sykepengesoknadId }.journalpostId `should be equal to` innsending.journalpostId
+        records.first { it.sykepengesoknadId == innsending.sykepengesoknadId }.oppgaveId `should be equal to` innsending.oppgaveId
+        records.first { it.sykepengesoknadId == innsending.sykepengesoknadId }.behandlet!!.truncatedTo(ChronoUnit.SECONDS) `should be equal to` innsending.behandlet!!.toInstant()
             .truncatedTo(ChronoUnit.SECONDS)
     }
 
