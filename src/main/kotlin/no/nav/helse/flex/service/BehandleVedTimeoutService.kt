@@ -9,6 +9,7 @@ import no.nav.helse.flex.kafka.mapper.toSykepengesoknad
 import no.nav.helse.flex.logger
 import no.nav.helse.flex.repository.OppgaveStatus
 import no.nav.helse.flex.repository.SpreOppgaveRepository
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.time.Duration
 import java.time.LocalDateTime
@@ -25,7 +26,7 @@ class BehandleVedTimeoutService(
 ) {
     private val log = logger()
 
-    // @Scheduled(fixedDelay = 1000L * 60 * 1, initialDelay = 1000L * 60 * 1)
+    @Scheduled(fixedDelay = 1000L * 60 * 1, initialDelay = 1000L * 60 * 1)
     fun behandleTimeout() {
         val oppgaver = spreOppgaveRepository.findOppgaverTilOpprettelse()
 
