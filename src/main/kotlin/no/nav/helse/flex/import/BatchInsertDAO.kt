@@ -22,7 +22,7 @@ INSERT INTO INNSENDING
     "oppgave_id",
     "behandlet")
 VALUES
-  (?,?,?,?) ON CONFLICT ON CONSTRAINT oppgavestyring_sykepengesoknad_id_key DO NOTHING;"""
+  (?,?,?,?);"""
 
         return jdbcTemplate.batchUpdate(
             sql,
@@ -57,7 +57,7 @@ INSERT INTO  OPPGAVESTYRING
     "timeout",
     "avstemt")
 VALUES
-  (?,?,?,?,?,?);"""
+  (?,?,?,?,?,?) ON CONFLICT ON CONSTRAINT oppgavestyring_sykepengesoknad_id_key DO NOTHING;"""
 
         return jdbcTemplate.batchUpdate(
             sql,
