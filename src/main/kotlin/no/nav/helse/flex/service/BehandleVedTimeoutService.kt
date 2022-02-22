@@ -88,10 +88,4 @@ class BehandleVedTimeoutService(
             Tags.of("type", "info")
         ).increment()
     }
-
-    @Scheduled(cron = "0 6 * * * *")
-    fun slettGamleOppgaver() {
-        val antall = spreOppgaveRepository.deleteGamleOppgaver()
-        log.info("Slettet $antall innslag på utgåtte oppgaver")
-    }
 }

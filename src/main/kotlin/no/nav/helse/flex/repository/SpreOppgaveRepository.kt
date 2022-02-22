@@ -26,10 +26,6 @@ interface SpreOppgaveRepository : CrudRepository<SpreOppgaveDbRecord, String> {
     @Modifying
     @Query("""delete from oppgavestyring where sykepengesoknad_id = :sykepengesoknadId""")
     fun deleteOppgaveBySykepengesoknadId(sykepengesoknadId: String): Long
-
-    @Modifying
-    @Query("""delete from oppgavestyring where opprettet < (now() - interval '90 days')""")
-    fun deleteGamleOppgaver(): Long
 }
 
 @Table("oppgavestyring")
