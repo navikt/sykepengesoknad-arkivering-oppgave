@@ -9,15 +9,12 @@ import no.nav.helse.flex.kafka.mapper.toSykepengesoknad
 import no.nav.helse.flex.logger
 import no.nav.helse.flex.repository.OppgaveStatus
 import no.nav.helse.flex.repository.SpreOppgaveRepository
-import org.springframework.context.annotation.Profile
-import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
 
 @Component
-@Profile("test")
 class BehandleVedTimeoutService(
     private val spreOppgaveRepository: SpreOppgaveRepository,
     private val saksbehandlingsService: SaksbehandlingsService,
@@ -28,7 +25,7 @@ class BehandleVedTimeoutService(
 ) {
     private val log = logger()
 
-    @Scheduled(fixedDelay = 1000L * 60 * 1, initialDelay = 1000L * 60 * 1)
+    // @Scheduled(fixedDelay = 1000L * 60 * 1, initialDelay = 1000L * 60 * 1)
     fun behandleTimeout() {
         val oppgaver = spreOppgaveRepository.findOppgaverTilOpprettelse()
 
@@ -89,11 +86,5 @@ class BehandleVedTimeoutService(
             "bomlo.timeout",
             Tags.of("type", "info")
         ).increment()
-    }
-
-    @Scheduled(cron = "0 6 * * * *")
-    fun slettGamleOppgaver() {
-        val antall = spreOppgaveRepository.deleteGamleOppgaver()
-        log.info("Slettet $antall innslag på utgåtte oppgaver")
     }
 }

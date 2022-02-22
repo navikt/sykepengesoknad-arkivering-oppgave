@@ -13,7 +13,6 @@ import no.nav.syfo.kafka.NAV_CALLID
 import no.nav.syfo.kafka.getSafeNavCallIdHeaderAsString
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.MDC
-import org.springframework.context.annotation.Profile
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
@@ -21,7 +20,6 @@ import org.springframework.stereotype.Component
 const val SPREOPPGAVER_TOPIC = "tbd." + "spre-oppgaver"
 
 @Component
-@Profile("test")
 class AivenSpreOppgaverListener(
     private val spreOppgaverService: SpreOppgaverService,
     private val registry: MeterRegistry,
