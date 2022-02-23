@@ -17,10 +17,6 @@ interface InnsendingRepository : CrudRepository<InnsendingDbRecord, String> {
     fun updateBehandlet(id: String): Boolean
 
     @Modifying
-    @Query("""update innsending set behandlet = :behandlet where sykepengesoknad_id = :sykepengesoknadId and behandlet is null""")
-    fun updateBehandletBySykepengesoknadid(sykepengesoknadId: String, behandlet: Instant): Boolean
-
-    @Modifying
     @Query("""update innsending set oppgave_id = :oppgaveId where id = :id""")
     fun updateOppgaveId(id: String, oppgaveId: String): Boolean
 
