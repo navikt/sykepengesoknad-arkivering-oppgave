@@ -1,4 +1,4 @@
-package no.nav.helse.flex.service
+package no.nav.helse.flex.oppgave
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper

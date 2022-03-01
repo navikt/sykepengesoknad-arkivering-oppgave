@@ -3,6 +3,7 @@ package no.nav.helse.flex.service
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import no.nav.helse.flex.domain.Soknad
 import no.nav.helse.flex.domain.dto.Soknadstype
+import no.nav.helse.flex.oppgave.lagBeskrivelse
 import no.nav.helse.flex.util.callId
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity

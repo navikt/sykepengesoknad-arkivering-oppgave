@@ -102,7 +102,7 @@ class SpreOppgaverService(
         try {
             if (sykepengesoknad.status == "SENDT" && !ettersendtTilArbeidsgiver(sykepengesoknad)) {
                 val innsendingsId = saksbehandlingsService.behandleSoknad(sykepengesoknad)
-                if (sykepengesoknad.soknadstype == ARBEIDSTAKERE && skalBehandlesAvNav(sykepengesoknad)) {
+                if (sykepengesoknad.skalSynkeOppgaveOpprettelseMedBomlo()) {
                     prosesserOppgave(
                         OppgaveDTO(
                             dokumentId = UUID.fromString(sykepengesoknad.id),
@@ -114,7 +114,7 @@ class SpreOppgaverService(
                         OppgaveKilde.Søknad
                     )
                 } else {
-                    if (skalBehandlesAvNav(sykepengesoknad)) {
+                    if (sykepengesoknad.skalBehandlesAvNav()) {
                         val innsending = saksbehandlingsService.finnEksisterendeInnsending(sykepengesoknad.id)
                             ?: throw RuntimeException("Fant ikke eksisterende innsending")
                         saksbehandlingsService.opprettOppgave(sykepengesoknad, innsending)
@@ -127,8 +127,12 @@ class SpreOppgaverService(
         }
     }
 
-    private fun skalBehandlesAvNav(sykepengesoknad: Sykepengesoknad) =
-        sykepengesoknad.sendtNav != null
+    private fun Sykepengesoknad.skalSynkeOppgaveOpprettelseMedBomlo(): Boolean {
+        return soknadstype == ARBEIDSTAKERE && skalBehandlesAvNav() && this.sendTilGosys != true
+    }
+
+    private fun Sykepengesoknad.skalBehandlesAvNav() =
+        this.sendtNav != null
 
     private fun ettersendtTilArbeidsgiver(sykepengesoknad: Sykepengesoknad) =
         sykepengesoknad.sendtArbeidsgiver != null &&

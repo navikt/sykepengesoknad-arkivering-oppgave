@@ -1,5 +1,6 @@
-package no.nav.helse.flex.service
+package no.nav.helse.flex.oppgave
 
+import meldingDersomAvbruttFristFeil
 import no.nav.helse.flex.domain.Soknad
 import no.nav.helse.flex.domain.dto.Arbeidssituasjon.ARBEIDSTAKER
 import no.nav.helse.flex.domain.dto.Avsendertype.SYSTEM
@@ -14,10 +15,11 @@ import java.time.LocalDate
 import java.util.*
 import java.util.Collections.nCopies
 
-val log = LoggerFactory.getLogger("no.nav.helse.service.BeskrivelseService")
+val log = LoggerFactory.getLogger("no.nav.helse.oppgave.BeskrivelseService")
 
 fun lagBeskrivelse(soknad: Soknad): String {
-    return soknad.meldingDersomEgenmeldtSykmelding() +
+    return soknad.meldingDersomAvbruttFristFeil() +
+        soknad.meldingDersomEgenmeldtSykmelding() +
         soknad.meldingDersomAvsendertypeErSystem() +
         soknad.lagTittel() +
         soknad.erKorrigert() + "\n" +
