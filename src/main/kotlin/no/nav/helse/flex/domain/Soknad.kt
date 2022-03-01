@@ -5,6 +5,7 @@ import no.nav.helse.flex.domain.dto.*
 import no.nav.helse.flex.util.OBJECT_MAPPER
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 data class Soknad(
     var aktorId: String? = null,
@@ -15,6 +16,7 @@ data class Soknad(
     val soknadstype: Soknadstype,
     var fom: LocalDate? = null,
     var tom: LocalDate? = null,
+    val opprettet: LocalDateTime,
     var innsendtDato: LocalDate? = null,
     var sendtArbeidsgiver: LocalDate? = null,
     var startSykeforlop: LocalDate? = null,
@@ -28,9 +30,10 @@ data class Soknad(
     var avsendertype: Avsendertype? = null,
     var egenmeldtSykmelding: Boolean? = null,
     var orgNummer: String? = null,
-    val merknaderFraSykmelding: List<Merknad>?,
+    val merknaderFraSykmelding: List<Merknad>? = null,
     val kvitteringSum: Int? = null,
     val kvitteringer: List<PdfKvittering>? = null,
+    val merknader: List<String>? = null,
 ) {
 
     companion object {
@@ -44,6 +47,7 @@ data class Soknad(
                 soknadstype = sykepengesoknad.soknadstype,
                 fom = sykepengesoknad.fom,
                 tom = sykepengesoknad.tom,
+                opprettet = sykepengesoknad.opprettet,
                 innsendtDato = sykepengesoknad.sendtNav?.toLocalDate(),
                 sendtArbeidsgiver = sykepengesoknad.sendtArbeidsgiver?.toLocalDate(),
                 startSykeforlop = sykepengesoknad.startSykeforlop,
@@ -59,7 +63,8 @@ data class Soknad(
                 orgNummer = sykepengesoknad.orgNummer,
                 merknaderFraSykmelding = sykepengesoknad.merknaderFraSykmelding,
                 kvitteringSum = sykepengesoknad.hentKvitteringSum(),
-                kvitteringer = sykepengesoknad.hentPdfKvitteringer()
+                kvitteringer = sykepengesoknad.hentPdfKvitteringer(),
+                merknader = sykepengesoknad.merknader,
             )
 
         private fun endreRekkefolgePaSporsmalForPDF(sporsmal: List<Sporsmal>) =

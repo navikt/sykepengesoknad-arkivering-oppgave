@@ -25,6 +25,7 @@ import java.time.DayOfWeek.THURSDAY
 import java.time.DayOfWeek.TUESDAY
 import java.time.DayOfWeek.WEDNESDAY
 import java.time.LocalDate.now
+import java.time.LocalDateTime
 import java.time.temporal.TemporalAdjusters.next
 
 @ExtendWith(MockitoExtension::class)
@@ -123,6 +124,7 @@ class OppgaveServiceTest {
             navn = "Navn",
             tilNav = true,
             soknadstype = soknadstype,
+            opprettet = LocalDateTime.now(),
             fom = now().minusWeeks(3),
             tom = now().minusDays(3),
             innsendtDato = null,

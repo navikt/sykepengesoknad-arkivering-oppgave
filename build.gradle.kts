@@ -42,7 +42,7 @@ repositories {
 }
 
 val syfoKafkaVersion = "2021.07.20-09.39-6be2c52c"
-val sykepengesoknadKafkaVersion = "2022.02.10-16.07-0892e94a"
+val sykepengesoknadKafkaVersion = "2022.03.01-07.45-064f3bb6"
 val mockitoKotlinVersion = "2.2.0"
 val logstashLogbackEncoderVersion = "7.0.1"
 val tokenSupportVersion = "1.3.19"
