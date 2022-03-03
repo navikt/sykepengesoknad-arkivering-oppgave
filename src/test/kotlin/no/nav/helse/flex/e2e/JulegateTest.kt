@@ -48,12 +48,14 @@ class JulegateTest : FellesTestoppsett() {
     @Test
     fun `Oppretter ikke en som er allerede opprettet`() {
         val søknadsId = UUID.randomUUID()
+        val tidspunkt = Instant.now()
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId))
         spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString())!!.status shouldBeEqualTo OppgaveStatus.Utsett
         spreOppgaveRepository.updateOppgaveBySykepengesoknadId(
             sykepengesoknadId = søknadsId.toString(),
             timeout = Instant.now(),
-            status = OppgaveStatus.Opprettet
+            status = OppgaveStatus.Opprettet,
+            tidspunkt
         )
         spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString())!!.status shouldBeEqualTo OppgaveStatus.Opprettet
 

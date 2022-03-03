@@ -28,11 +28,18 @@ interface SpreOppgaveRepository : CrudRepository<SpreOppgaveDbRecord, String> {
     @Query(
         """
         UPDATE oppgavestyring 
-        SET timeout = :timeout, status = :status 
+        SET timeout = :timeout, 
+            status = :status,
+            modifisert = :modifisert
         WHERE sykepengesoknad_id = :sykepengesoknadId
         """
     )
-    fun updateOppgaveBySykepengesoknadId(sykepengesoknadId: String, timeout: Instant?, status: OppgaveStatus): Boolean
+    fun updateOppgaveBySykepengesoknadId(
+        sykepengesoknadId: String,
+        timeout: Instant?,
+        status: OppgaveStatus,
+        modifisert: Instant,
+    ): Boolean
 
     @Modifying
     @Query("""UPDATE oppgavestyring SET avstemt = TRUE WHERE sykepengesoknad_id = :sykepengesoknadId""")

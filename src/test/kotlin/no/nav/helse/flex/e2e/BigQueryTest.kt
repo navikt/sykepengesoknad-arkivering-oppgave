@@ -88,9 +88,6 @@ class BigQueryTest : FellesTestoppsett() {
 
     @Test
     fun `test spørring brukt i BigQuery Federated Query`() {
-
-        jdbcTemplate.update("DELETE FROM oppgavestyring")
-
         val id1 = UUID.randomUUID()
         leggOppgavePaAivenKafka(
             OppgaveDTO(

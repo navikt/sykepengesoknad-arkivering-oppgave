@@ -12,6 +12,7 @@ import no.nav.helse.flex.repository.SpreOppgaveRepository
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.time.Duration
+import java.time.Instant
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.util.concurrent.TimeUnit
@@ -28,7 +29,12 @@ class BehandleVedTimeoutService(
     private val log = logger()
 
     @Scheduled(fixedDelay = 60, initialDelay = 60, timeUnit = TimeUnit.SECONDS)
-    fun behandleTimeout() {
+    // Only no-args methods can be Scheduled.
+    fun startBehandling() {
+        behandleTimeout()
+    }
+
+    fun behandleTimeout(modifisertTidspunkt: Instant = Instant.now()) {
         val oppgaver = spreOppgaveRepository.findOppgaverTilOpprettelse()
 
         if (oppgaver.isNotEmpty()) {
@@ -37,7 +43,6 @@ class BehandleVedTimeoutService(
 
         oppgaver.forEach {
             try {
-
                 val innsending = saksbehandlingsService.finnEksisterendeInnsending(it.sykepengesoknadId)
                 if (innsending != null) {
                     val soknadDTO = syfosoknadClient.hentSoknad(it.sykepengesoknadId)
@@ -51,7 +56,8 @@ class BehandleVedTimeoutService(
                     spreOppgaveRepository.updateOppgaveBySykepengesoknadId(
                         sykepengesoknadId = it.sykepengesoknadId,
                         timeout = null,
-                        status = tilOpprettetStatus(it.status)
+                        status = tilOpprettetStatus(it.status),
+                        modifisertTidspunkt
                     )
                 } else {
                     log.info("Fant ikke eksisterende innsending, ignorerer søknad med id ${it.sykepengesoknadId}")
@@ -72,7 +78,8 @@ class BehandleVedTimeoutService(
                     spreOppgaveRepository.updateOppgaveBySykepengesoknadId(
                         sykepengesoknadId = it.sykepengesoknadId,
                         timeout = null,
-                        status = OppgaveStatus.IkkeOpprett
+                        status = OppgaveStatus.IkkeOpprett,
+                        modifisertTidspunkt
                     )
                 } else {
                     log.error("SøknadIkkeFunnetException ved opprettelse av oppgave ${it.sykepengesoknadId}", e)

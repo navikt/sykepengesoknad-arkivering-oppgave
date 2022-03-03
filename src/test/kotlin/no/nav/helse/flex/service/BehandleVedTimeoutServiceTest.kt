@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
@@ -164,13 +165,17 @@ class BehandleVedTimeoutServiceTest {
                 journalpostId = "journalpost"
             )
         )
-        behandleVedTimeoutService.behandleTimeout()
+
+        val tidspunkt = Instant.now()
+        behandleVedTimeoutService.behandleTimeout(tidspunkt)
+
         verify(saksbehandlingsService, times(1)).opprettOppgave(any(), any(), any())
         verify(spreOppgaveRepository, times(1))
             .updateOppgaveBySykepengesoknadId(
                 sykepengesoknadId = søknadsId,
                 timeout = null,
-                status = OppgaveStatus.OpprettetTimeout
+                status = OppgaveStatus.OpprettetTimeout,
+                tidspunkt
             )
     }
 
@@ -217,19 +222,24 @@ class BehandleVedTimeoutServiceTest {
             )
         }
         whenever(syfosoknadConsumer.hentSoknad(søknadsId2.toString())).thenThrow(RuntimeException("I AM ERROR"))
-        behandleVedTimeoutService.behandleTimeout()
+
+        val tidspunkt = Instant.now()
+        behandleVedTimeoutService.behandleTimeout(tidspunkt)
+
         verify(saksbehandlingsService, times(2)).opprettOppgave(any(), any(), any())
         verify(spreOppgaveRepository, times(1))
             .updateOppgaveBySykepengesoknadId(
                 sykepengesoknadId = søknadsId1.toString(),
                 timeout = null,
-                status = OppgaveStatus.OpprettetTimeout
+                status = OppgaveStatus.OpprettetTimeout,
+                tidspunkt
             )
         verify(spreOppgaveRepository, times(1))
             .updateOppgaveBySykepengesoknadId(
                 sykepengesoknadId = søknadsId3.toString(),
                 timeout = null,
-                status = OppgaveStatus.OpprettetTimeout
+                status = OppgaveStatus.OpprettetTimeout,
+                tidspunkt
             )
     }
 
@@ -257,13 +267,15 @@ class BehandleVedTimeoutServiceTest {
         )
         whenever(environmentToggles.isQ()).thenReturn(true)
         whenever(syfosoknadConsumer.hentSoknad(søknadsId1.toString())).thenThrow(SøknadIkkeFunnetException("finner ikke"))
-        behandleVedTimeoutService.behandleTimeout()
+        val modifisertTidspunkt = Instant.now()
+        behandleVedTimeoutService.behandleTimeout(modifisertTidspunkt)
 
         verify(spreOppgaveRepository, times(1))
             .updateOppgaveBySykepengesoknadId(
                 sykepengesoknadId = søknadsId1.toString(),
                 timeout = null,
-                status = OppgaveStatus.IkkeOpprett
+                status = OppgaveStatus.IkkeOpprett,
+                modifisertTidspunkt
             )
     }
 
@@ -294,6 +306,6 @@ class BehandleVedTimeoutServiceTest {
         assertThrows(SøknadIkkeFunnetException::class.java) {
             behandleVedTimeoutService.behandleTimeout()
         }
-        verify(spreOppgaveRepository, never()).updateOppgaveBySykepengesoknadId(any(), any(), any())
+        verify(spreOppgaveRepository, never()).updateOppgaveBySykepengesoknadId(any(), any(), any(), any())
     }
 }

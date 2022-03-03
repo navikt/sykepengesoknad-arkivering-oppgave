@@ -25,6 +25,7 @@ import no.nav.helse.flex.sykepengesoknad.kafka.SvarDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SvartypeDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SykepengesoknadDTO
 import no.nav.helse.flex.util.tilOsloZone
+import org.amshove.kluent.`should be equal to`
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -32,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.test.annotation.DirtiesContext
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
@@ -309,6 +311,45 @@ class E2ETest : FellesTestoppsett() {
         assertThat(oppgaveFraAiven.status).isEqualTo(OppgaveStatus.Utsett)
         omFireTimer.tilOsloZone() `should be equal to ignoring nano and zone` oppgaveFraAiven.timeout
         assertThat(oppgaveFraAiven.avstemt).isFalse
+    }
+
+    @Test
+    fun `tidspunkt for opprettet og modifisert er likt etter opprettelse`() {
+        val soknadId = UUID.randomUUID()
+        leggOppgavePaAivenKafka(
+            OppgaveDTO(
+                DokumentTypeDTO.Søknad,
+                OppdateringstypeDTO.Opprett,
+                soknadId,
+                omFireTimer
+            )
+        )
+        leggSoknadPaKafka(lagSoknad(soknadId))
+
+        val opprettetOppgave = spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString())
+
+        opprettetOppgave?.opprettet `should be equal to` opprettetOppgave?.modifisert
+    }
+
+    @Test
+    fun `tidspunkt for modifisert blir oppdatert når det lages oppgave`() {
+        val soknadId = UUID.randomUUID()
+        leggOppgavePaAivenKafka(
+            OppgaveDTO(
+                DokumentTypeDTO.Søknad,
+                OppdateringstypeDTO.Opprett,
+                soknadId,
+                omFireTimer
+            )
+        )
+        leggSoknadPaKafka(lagSoknad(soknadId))
+
+        val modifisertTidspunkt = Instant.now()
+        behandleVedTimeoutService.behandleTimeout(modifisertTidspunkt)
+
+        val modifisertOppgave = spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString())
+
+        modifisertOppgave!!.modifisert `should be equal to ignoring nano and zone` modifisertTidspunkt
     }
 
     private fun leggSoknadPaKafka(soknad: SykepengesoknadDTO) =
