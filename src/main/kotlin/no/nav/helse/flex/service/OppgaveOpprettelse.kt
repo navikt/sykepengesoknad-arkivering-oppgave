@@ -18,7 +18,7 @@ import java.time.OffsetDateTime
 import java.util.concurrent.TimeUnit
 
 @Component
-class BehandleVedTimeoutService(
+class OppgaveOpprettelse(
     private val spreOppgaveRepository: SpreOppgaveRepository,
     private val saksbehandlingsService: SaksbehandlingsService,
     private val syfosoknadClient: SyfosoknadClient,
@@ -30,11 +30,11 @@ class BehandleVedTimeoutService(
 
     @Scheduled(fixedDelay = 60, initialDelay = 60, timeUnit = TimeUnit.SECONDS)
     // Only no-args methods can be Scheduled.
-    fun startBehandling() {
-        behandleTimeout()
+    fun startOppgaveBehandling() {
+        behandleOppgaver()
     }
 
-    fun behandleTimeout(modifisertTidspunkt: Instant = Instant.now()) {
+    fun behandleOppgaver(modifisertTidspunkt: Instant = Instant.now()) {
         val oppgaver = spreOppgaveRepository.findOppgaverTilOpprettelse()
 
         if (oppgaver.isNotEmpty()) {

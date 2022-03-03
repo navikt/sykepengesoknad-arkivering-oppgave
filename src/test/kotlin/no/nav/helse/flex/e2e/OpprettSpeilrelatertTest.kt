@@ -72,7 +72,7 @@ class OpprettSpeilrelatertTest : FellesTestoppsett() {
     lateinit var aivenSpreOppgaverListener: AivenSpreOppgaverListener
 
     @Autowired
-    lateinit var behandleVedTimeoutService: BehandleVedTimeoutService
+    lateinit var oppgaveOpprettelse: OppgaveOpprettelse
 
     @BeforeEach
     fun setup() {
@@ -95,7 +95,7 @@ class OpprettSpeilrelatertTest : FellesTestoppsett() {
         leggSøknadPåKafka(søknad(soknadId))
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.OpprettSpeilRelatert, soknadId))
 
-        behandleVedTimeoutService.behandleTimeout()
+        oppgaveOpprettelse.behandleOppgaver()
         val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
 
         verify(oppgaveService).opprettOppgave(captor.capture())
@@ -108,7 +108,7 @@ class OpprettSpeilrelatertTest : FellesTestoppsett() {
         leggSøknadPåKafka(søknad(soknadId))
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, soknadId))
 
-        behandleVedTimeoutService.behandleTimeout()
+        oppgaveOpprettelse.behandleOppgaver()
         val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
 
         verify(oppgaveService).opprettOppgave(captor.capture())

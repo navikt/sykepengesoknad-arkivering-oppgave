@@ -14,7 +14,7 @@ import no.nav.helse.flex.repository.InnsendingDbRecord
 import no.nav.helse.flex.repository.OppgaveStatus
 import no.nav.helse.flex.repository.SpreOppgaveRepository
 import no.nav.helse.flex.serialisertTilString
-import no.nav.helse.flex.service.BehandleVedTimeoutService
+import no.nav.helse.flex.service.OppgaveOpprettelse
 import no.nav.helse.flex.service.SaksbehandlingsService
 import no.nav.helse.flex.skapConsumerRecord
 import no.nav.helse.flex.sykepengesoknad.kafka.SoknadsstatusDTO
@@ -55,7 +55,7 @@ class BigQueryTest : FellesTestoppsett() {
     lateinit var spreOppgaveRepository: SpreOppgaveRepository
 
     @Autowired
-    lateinit var behandleVedTimeoutService: BehandleVedTimeoutService
+    lateinit var oppgaveOpprettelse: OppgaveOpprettelse
 
     @Autowired
     lateinit var aivenSoknadSendtListener: AivenSoknadSendtListener
@@ -153,7 +153,7 @@ class BigQueryTest : FellesTestoppsett() {
         )
         leggSoknadPaKafka(lagSoknad(id6))
 
-        behandleVedTimeoutService.behandleTimeout()
+        oppgaveOpprettelse.behandleOppgaver()
 
         val params = MapSqlParameterSource().addValue(
             "status",

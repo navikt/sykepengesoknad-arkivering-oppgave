@@ -14,7 +14,7 @@ import no.nav.helse.flex.repository.InnsendingDbRecord
 import no.nav.helse.flex.repository.OppgaveStatus
 import no.nav.helse.flex.repository.SpreOppgaveRepository
 import no.nav.helse.flex.serialisertTilString
-import no.nav.helse.flex.service.BehandleVedTimeoutService
+import no.nav.helse.flex.service.OppgaveOpprettelse
 import no.nav.helse.flex.service.SaksbehandlingsService
 import no.nav.helse.flex.`should be equal to ignoring nano and zone`
 import no.nav.helse.flex.skapConsumerRecord
@@ -66,7 +66,7 @@ class E2ETest : FellesTestoppsett() {
     lateinit var spreOppgaveRepository: SpreOppgaveRepository
 
     @Autowired
-    lateinit var behandleVedTimeoutService: BehandleVedTimeoutService
+    lateinit var oppgaveOpprettelse: OppgaveOpprettelse
 
     @BeforeEach
     fun setup() {
@@ -194,7 +194,7 @@ class E2ETest : FellesTestoppsett() {
         leggOppgavePaAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, soknadId, timeout))
         leggSoknadPaKafka(lagSoknad(soknadId))
 
-        behandleVedTimeoutService.behandleTimeout()
+        oppgaveOpprettelse.behandleOppgaver()
 
         val behandletOppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
         assertThat(behandletOppgave.status).isEqualTo(OppgaveStatus.OpprettetTimeout)
@@ -208,7 +208,7 @@ class E2ETest : FellesTestoppsett() {
         leggOppgavePaAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, soknadId, omFireTimer))
         leggSoknadPaKafka(lagSoknad(soknadId))
 
-        behandleVedTimeoutService.behandleTimeout()
+        oppgaveOpprettelse.behandleOppgaver()
 
         val behandletOppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
         assertThat(behandletOppgave.status).isEqualTo(OppgaveStatus.Opprettet)
@@ -229,7 +229,7 @@ class E2ETest : FellesTestoppsett() {
         )
         leggSoknadPaKafka(lagSoknad(soknadId))
 
-        behandleVedTimeoutService.behandleTimeout()
+        oppgaveOpprettelse.behandleOppgaver()
 
         val behandletOppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
         assertThat(behandletOppgave.status).isEqualTo(OppgaveStatus.OpprettetSpeilRelatert)
@@ -243,7 +243,7 @@ class E2ETest : FellesTestoppsett() {
         leggOppgavePaAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, soknadId, timeout))
         leggSoknadPaKafka(lagSoknad(soknadId))
 
-        behandleVedTimeoutService.behandleTimeout()
+        oppgaveOpprettelse.behandleOppgaver()
 
         leggOppgavePaAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, soknadId, omFireTimer))
 
@@ -282,7 +282,7 @@ class E2ETest : FellesTestoppsett() {
 
         assertThat(oppgave.avstemt).isFalse
 
-        behandleVedTimeoutService.behandleTimeout()
+        oppgaveOpprettelse.behandleOppgaver()
 
         val behandletOppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
         assertThat(behandletOppgave.status).isEqualTo(OppgaveStatus.Utsett)
@@ -345,7 +345,7 @@ class E2ETest : FellesTestoppsett() {
         leggSoknadPaKafka(lagSoknad(soknadId))
 
         val modifisertTidspunkt = Instant.now()
-        behandleVedTimeoutService.behandleTimeout(modifisertTidspunkt)
+        oppgaveOpprettelse.behandleOppgaver(modifisertTidspunkt)
 
         val modifisertOppgave = spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString())
 

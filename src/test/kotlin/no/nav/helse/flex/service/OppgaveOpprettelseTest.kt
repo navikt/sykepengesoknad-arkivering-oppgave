@@ -21,7 +21,7 @@ import java.time.OffsetDateTime
 import java.util.*
 
 @ExtendWith(MockitoExtension::class)
-class BehandleVedTimeoutServiceTest {
+class OppgaveOpprettelseTest {
     @Mock
     lateinit var saksbehandlingsService: SaksbehandlingsService
 
@@ -41,7 +41,7 @@ class BehandleVedTimeoutServiceTest {
     lateinit var identService: IdentService
 
     @InjectMocks
-    lateinit var behandleVedTimeoutService: BehandleVedTimeoutService
+    lateinit var oppgaveOpprettelse: OppgaveOpprettelse
 
     private fun mockRegistry() {
         whenever(registry.counter(any(), any<Iterable<Tag>>())).thenReturn(mock())
@@ -77,7 +77,7 @@ class BehandleVedTimeoutServiceTest {
 
     @Test
     fun `har ingenting å behandle`() {
-        behandleVedTimeoutService.behandleTimeout()
+        oppgaveOpprettelse.behandleOppgaver()
         verify(saksbehandlingsService, never()).opprettOppgave(any(), any(), any())
     }
 
@@ -96,7 +96,7 @@ class BehandleVedTimeoutServiceTest {
                 )
             )
         )
-        behandleVedTimeoutService.behandleTimeout()
+        oppgaveOpprettelse.behandleOppgaver()
         verify(saksbehandlingsService, never()).opprettOppgave(any(), any(), any())
     }
 
@@ -115,7 +115,7 @@ class BehandleVedTimeoutServiceTest {
                 )
             )
         )
-        behandleVedTimeoutService.behandleTimeout()
+        oppgaveOpprettelse.behandleOppgaver()
         verify(saksbehandlingsService, never()).opprettOppgave(any(), any(), any())
         verify(spreOppgaveRepository, never()).deleteOppgaveBySykepengesoknadId(any())
     }
@@ -136,7 +136,7 @@ class BehandleVedTimeoutServiceTest {
                 )
             )
         )
-        behandleVedTimeoutService.behandleTimeout()
+        oppgaveOpprettelse.behandleOppgaver()
         verify(saksbehandlingsService, never()).opprettOppgave(any(), any(), any())
         verify(spreOppgaveRepository, times(1)).deleteOppgaveBySykepengesoknadId(any())
     }
@@ -167,7 +167,7 @@ class BehandleVedTimeoutServiceTest {
         )
 
         val tidspunkt = Instant.now()
-        behandleVedTimeoutService.behandleTimeout(tidspunkt)
+        oppgaveOpprettelse.behandleOppgaver(tidspunkt)
 
         verify(saksbehandlingsService, times(1)).opprettOppgave(any(), any(), any())
         verify(spreOppgaveRepository, times(1))
@@ -224,7 +224,7 @@ class BehandleVedTimeoutServiceTest {
         whenever(syfosoknadConsumer.hentSoknad(soknadId2.toString())).thenThrow(RuntimeException("I AM ERROR"))
 
         val tidspunkt = Instant.now()
-        behandleVedTimeoutService.behandleTimeout(tidspunkt)
+        oppgaveOpprettelse.behandleOppgaver(tidspunkt)
 
         verify(saksbehandlingsService, times(2)).opprettOppgave(any(), any(), any())
         verify(spreOppgaveRepository, times(1))
@@ -268,7 +268,7 @@ class BehandleVedTimeoutServiceTest {
         whenever(environmentToggles.isQ()).thenReturn(true)
         whenever(syfosoknadConsumer.hentSoknad(soknadId.toString())).thenThrow(SøknadIkkeFunnetException("finner ikke"))
         val modifisertTidspunkt = Instant.now()
-        behandleVedTimeoutService.behandleTimeout(modifisertTidspunkt)
+        oppgaveOpprettelse.behandleOppgaver(modifisertTidspunkt)
 
         verify(spreOppgaveRepository, times(1))
             .updateOppgaveBySykepengesoknadId(
@@ -304,7 +304,7 @@ class BehandleVedTimeoutServiceTest {
         whenever(environmentToggles.isQ()).thenReturn(false)
         whenever(syfosoknadConsumer.hentSoknad(soknadId.toString())).thenThrow(SøknadIkkeFunnetException("msg"))
         assertThrows(SøknadIkkeFunnetException::class.java) {
-            behandleVedTimeoutService.behandleTimeout()
+            oppgaveOpprettelse.behandleOppgaver()
         }
         verify(spreOppgaveRepository, never()).updateOppgaveBySykepengesoknadId(any(), any(), any(), any())
     }
