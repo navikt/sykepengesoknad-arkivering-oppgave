@@ -40,9 +40,9 @@ import java.util.*
 class E2ETest : FellesTestoppsett() {
 
     companion object {
-        val aktørId = "aktørId"
-        val fnr = "fnr"
-        val omFireTimer = LocalDateTime.now().plusHours(4)
+        const val aktorId = "aktørId"
+        const val fnr = "fnr"
+        val omFireTimer: LocalDateTime = LocalDateTime.now().plusHours(4)
     }
 
     @MockBean
@@ -77,109 +77,109 @@ class E2ETest : FellesTestoppsett() {
         }
         whenever(syfosoknadClient.hentSoknad(any())).thenReturn(
             objectMapper.readValue(
-                søknad().serialisertTilString(),
+                lagSoknad().serialisertTilString(),
                 SykepengesoknadDTO::class.java
             )
         )
     }
 
     @Test
-    fun `bømlo sier opprett før vi behandler søknad`() {
-        val søknadsId = UUID.randomUUID()
-        leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, søknadsId, null))
+    fun `Bømlo sier Opprett før vi behandler søknad`() {
+        val soknadId = UUID.randomUUID()
+        leggOppgavePaAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, soknadId, null))
 
-        val oppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
+        val oppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
         assertThat(OppgaveStatus.Opprett).isEqualTo(oppgave.status)
         assertThat(oppgave.timeout).isNull()
         assertThat(oppgave.avstemt).isFalse
 
-        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
+        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
         assertThat(OppgaveStatus.Opprett).isEqualTo(oppgaveFraAiven.status)
         assertThat(oppgaveFraAiven.timeout).isNull()
         assertThat(oppgaveFraAiven.avstemt).isFalse
     }
 
     @Test
-    fun `bømlo sier utsett før vi behandler søknad`() {
-        val søknadsId = UUID.randomUUID()
-        leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, omFireTimer))
+    fun `Bømlo sier Utsett før vi behandler søknad`() {
+        val soknadId = UUID.randomUUID()
+        leggOppgavePaAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, soknadId, omFireTimer))
 
-        val oppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
+        val oppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgave.status)
         omFireTimer.tilOsloZone() `should be equal to ignoring nano and zone` oppgave.timeout
         assertThat(oppgave.avstemt).isFalse
 
-        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
+        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
         assertThat(OppgaveStatus.Utsett).isEqualTo(oppgaveFraAiven.status)
         omFireTimer.tilOsloZone() `should be equal to ignoring nano and zone` oppgaveFraAiven.timeout
         assertThat(oppgaveFraAiven.avstemt).isFalse
     }
 
     @Test
-    fun `bømlo sier ferdigbehandlet før vi behandler søknad`() {
-        val søknadsId = UUID.randomUUID()
-        leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Ferdigbehandlet, søknadsId, null))
+    fun `Bømlo sier Ferdigbehandlet før vi behandler søknad`() {
+        val soknadId = UUID.randomUUID()
+        leggOppgavePaAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Ferdigbehandlet, soknadId, null))
 
-        val oppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
+        val oppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
         assertThat(OppgaveStatus.IkkeOpprett).isEqualTo(oppgave.status)
         assertThat(oppgave.timeout).isNull()
         assertThat(oppgave.avstemt).isFalse
 
-        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
-        assertThat(OppgaveStatus.IkkeOpprett).isEqualTo(oppgaveFraAiven.status)
+        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
+        assertThat(oppgaveFraAiven.status).isEqualTo(OppgaveStatus.IkkeOpprett)
         assertThat(oppgaveFraAiven.timeout).isNull()
         assertThat(oppgaveFraAiven.avstemt).isFalse
     }
 
     @Test
-    fun `vi behandler søknad så kommer utsett fra bømlo`() {
-        val søknadsId = UUID.randomUUID()
-        leggSøknadPåKafka(søknad(søknadsId))
-        leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, omFireTimer))
+    fun `vi behandler søknad så kommer Utsett fra Bømlo`() {
+        val soknadId = UUID.randomUUID()
+        leggSoknadPaKafka(lagSoknad(soknadId))
+        leggOppgavePaAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, soknadId, omFireTimer))
 
-        val oppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
-        assertThat(OppgaveStatus.Utsett).isEqualTo(oppgave.status)
+        val oppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
+        assertThat(oppgave.status).isEqualTo(OppgaveStatus.Utsett)
         omFireTimer.tilOsloZone() `should be equal to ignoring nano and zone` oppgave.timeout
         assertThat(oppgave.avstemt).isTrue
 
-        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
-        assertThat(OppgaveStatus.Utsett).isEqualTo(oppgaveFraAiven.status)
+        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
+        assertThat(oppgaveFraAiven.status).isEqualTo(OppgaveStatus.Utsett)
         omFireTimer.tilOsloZone() `should be equal to ignoring nano and zone` oppgaveFraAiven.timeout
         assertThat(oppgaveFraAiven.avstemt).isTrue
     }
 
     @Test
-    fun `vi behandler søknad så kommer opprett fra bømlo`() {
-        val søknadsId = UUID.randomUUID()
-        leggSøknadPåKafka(søknad(søknadsId))
-        leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, søknadsId))
+    fun `vi behandler søknad så kommer Opprett fra Bømlo`() {
+        val soknadId = UUID.randomUUID()
+        leggSoknadPaKafka(lagSoknad(soknadId))
+        leggOppgavePaAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, soknadId))
 
-        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
-        assertThat(OppgaveStatus.Opprett).isEqualTo(oppgaveFraAiven.status)
+        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
+        assertThat(oppgaveFraAiven.status).isEqualTo(OppgaveStatus.Opprett)
         assertThat(oppgaveFraAiven.timeout).isNull()
         assertThat(oppgaveFraAiven.avstemt).isTrue
     }
 
     @Test
-    fun `vi behandler søknad så kommer ferdigbehandlet fra bømlo`() {
-        val søknadsId = UUID.randomUUID()
-        leggSøknadPåKafka(søknad(søknadsId))
-        leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Ferdigbehandlet, søknadsId))
+    fun `vi behandler søknad så kommer Ferdigbehandlet fra Bømlo`() {
+        val soknadId = UUID.randomUUID()
+        leggSoknadPaKafka(lagSoknad(soknadId))
+        leggOppgavePaAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Ferdigbehandlet, soknadId))
 
-        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
-        assertThat(OppgaveStatus.IkkeOpprett).isEqualTo(oppgaveFraAiven.status)
+        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
+        assertThat(oppgaveFraAiven.status).isEqualTo(OppgaveStatus.IkkeOpprett)
         assertThat(oppgaveFraAiven.timeout).isNull()
         assertThat(oppgaveFraAiven.avstemt).isTrue
     }
 
     @Test
-    fun `bømlo sier utsett så behandler vi søknaden og utsetter oppgave`() {
-        val søknadsId = UUID.randomUUID()
-        leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, omFireTimer))
-        leggSøknadPåKafka(søknad(søknadsId))
+    fun `Bømlo sier Utsett så behandler vi søknaden og utsetter oppgave`() {
+        val soknadId = UUID.randomUUID()
+        leggOppgavePaAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, soknadId, omFireTimer))
+        leggSoknadPaKafka(lagSoknad(soknadId))
 
-        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
-        assertThat(OppgaveStatus.Utsett).isEqualTo(oppgaveFraAiven.status)
+        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
+        assertThat(oppgaveFraAiven.status).isEqualTo(OppgaveStatus.Utsett)
         omFireTimer.tilOsloZone() `should be equal to ignoring nano and zone` oppgaveFraAiven.timeout!!
         assertThat(oppgaveFraAiven.avstemt).isTrue
     }
@@ -187,141 +187,138 @@ class E2ETest : FellesTestoppsett() {
 
     @Test
     fun `oppgaven timer ut og vi oppretter oppgave`() {
-        val søknadsId = UUID.randomUUID()
+        val soknadId = UUID.randomUUID()
         val timeout = LocalDateTime.now().minusHours(1)
 
-        leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, timeout))
-        leggSøknadPåKafka(søknad(søknadsId))
-
-        behandleVedTimeoutService.behandleTimeout()
-       // leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, omFireTimer))
-
-        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
-        assertThat(OppgaveStatus.OpprettetTimeout).isEqualTo(oppgaveFraAiven.status)
-        assertThat(oppgaveFraAiven.timeout).isNull()
-    }
-
-    @Test
-    fun `bømlo sier Opprett og oppgave får Opprettet status`() {
-        val søknadsId = UUID.randomUUID()
-
-        leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, søknadsId, omFireTimer))
-        leggSøknadPåKafka(søknad(søknadsId))
+        leggOppgavePaAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, soknadId, timeout))
+        leggSoknadPaKafka(lagSoknad(soknadId))
 
         behandleVedTimeoutService.behandleTimeout()
 
-        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
-
-        assertThat(oppgaveFraAiven.status).isEqualTo(OppgaveStatus.Opprettet)
-        assertThat(oppgaveFraAiven.timeout).isNull()
+        val behandletOppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
+        assertThat(behandletOppgave.status).isEqualTo(OppgaveStatus.OpprettetTimeout)
+        assertThat(behandletOppgave.timeout).isNull()
     }
 
     @Test
-    fun `bømlo sier OpprettSpeilRelatert og oppgave får OpprettetSpeilRelatert status`() {
-        val søknadsId = UUID.randomUUID()
+    fun `Bømlo sier Opprett og oppgave får Opprettet status`() {
+        val soknadId = UUID.randomUUID()
+
+        leggOppgavePaAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, soknadId, omFireTimer))
+        leggSoknadPaKafka(lagSoknad(soknadId))
+
+        behandleVedTimeoutService.behandleTimeout()
+
+        val behandletOppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
+        assertThat(behandletOppgave.status).isEqualTo(OppgaveStatus.Opprettet)
+        assertThat(behandletOppgave.timeout).isNull()
+    }
+
+    @Test
+    fun `Bømlo sier OpprettSpeilRelatert og oppgave får OpprettetSpeilRelatert status`() {
+        val soknadId = UUID.randomUUID()
         val timeout = LocalDateTime.now().minusHours(1)
 
-        leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.OpprettSpeilRelatert, søknadsId, omFireTimer))
-        leggSøknadPåKafka(søknad(søknadsId))
+        leggOppgavePaAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.OpprettSpeilRelatert, soknadId, omFireTimer))
+        leggSoknadPaKafka(lagSoknad(soknadId))
 
         behandleVedTimeoutService.behandleTimeout()
-        // leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, omFireTimer))
 
-        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
-
-        assertThat(oppgaveFraAiven.status).isEqualTo(OppgaveStatus.OpprettetSpeilRelatert)
-        assertThat(oppgaveFraAiven.timeout).isNull()
+        val behandletOppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
+        assertThat(behandletOppgave.status).isEqualTo(OppgaveStatus.OpprettetSpeilRelatert)
+        assertThat(behandletOppgave.timeout).isNull()
     }
 
     @Test
-    fun `bømlo sier utsett etter oppgaven er opprettet`() {
-        val søknadsId = UUID.randomUUID()
-        val førsteTimeout = LocalDateTime.now().minusHours(1)
-        leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, førsteTimeout))
-        leggSøknadPåKafka(søknad(søknadsId))
+    fun `Bømlo sier Utsett etter oppgaven er opprettet`() {
+        val soknadId = UUID.randomUUID()
+        val timeout = LocalDateTime.now().minusHours(1)
+        leggOppgavePaAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, soknadId, timeout))
+        leggSoknadPaKafka(lagSoknad(soknadId))
 
         behandleVedTimeoutService.behandleTimeout()
-        leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, omFireTimer))
 
-        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
-        assertThat(OppgaveStatus.OpprettetTimeout).isEqualTo(oppgaveFraAiven.status)
+        leggOppgavePaAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, soknadId, omFireTimer))
+
+        val behandletOppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
+        assertThat(behandletOppgave.status).isEqualTo(OppgaveStatus.OpprettetTimeout)
+        assertThat(behandletOppgave.timeout).isNull()
+    }
+
+    @Test
+    fun `Bømlo sier Utsett etter oppgaven er ferdigbehandlet`() {
+        val soknadId = UUID.randomUUID()
+        leggOppgavePaAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Ferdigbehandlet, soknadId))
+        leggSoknadPaKafka(lagSoknad(soknadId))
+        leggOppgavePaAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, soknadId, omFireTimer))
+
+        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
+        assertThat(oppgaveFraAiven.status).isEqualTo(OppgaveStatus.IkkeOpprett)
         assertThat(oppgaveFraAiven.timeout).isNull()
     }
 
     @Test
-    fun `bømlo sier utsett etter oppgaven er ferdigbehandlet`() {
-        val søknadsId = UUID.randomUUID()
-        leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Ferdigbehandlet, søknadsId))
-        leggSøknadPåKafka(søknad(søknadsId))
-        leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, omFireTimer))
-
-        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
-        assertThat(OppgaveStatus.IkkeOpprett).isEqualTo(oppgaveFraAiven.status)
-        assertThat(oppgaveFraAiven.timeout).isNull()
-    }
-
-    @Test
-    fun `bømlo sier utsett så behandler vi søknaden og ikke oppretter oppgave`() {
-        val søknadsId = UUID.randomUUID()
-        leggOppgavePåAivenKafka(
+    fun `Bømlo sier Utsett så behandler vi søknaden og ikke oppretter oppgave`() {
+        val soknadId = UUID.randomUUID()
+        leggOppgavePaAivenKafka(
             OppgaveDTO(
                 dokumentType = DokumentTypeDTO.Søknad,
                 oppdateringstype = OppdateringstypeDTO.Utsett,
-                dokumentId = søknadsId,
+                dokumentId = soknadId,
                 timeout = LocalDateTime.now().plusHours(1)
             )
         )
-        leggSøknadPåKafka(søknad(søknadsId = søknadsId, sendtNav = null, sendtArbeidsgiver = LocalDateTime.now()))
+        leggSoknadPaKafka(lagSoknad(soknadId = soknadId, sendtNav = null, sendtArbeidsgiver = LocalDateTime.now()))
 
-        val oppgaveFørJob = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
-        assertThat(OppgaveStatus.Utsett).isEqualTo(oppgaveFørJob.status)
+        val oppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
+        assertThat(oppgave.status).isEqualTo(OppgaveStatus.Utsett)
 
-        assertThat(oppgaveFørJob.avstemt).isFalse
+        assertThat(oppgave.avstemt).isFalse
 
         behandleVedTimeoutService.behandleTimeout()
 
-        val oppgaveEtterJob = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
-        assertThat(OppgaveStatus.Utsett).isEqualTo(oppgaveEtterJob.status)
-        assertThat(oppgaveEtterJob.avstemt).isFalse
+        val behandletOppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
+        assertThat(behandletOppgave.status).isEqualTo(OppgaveStatus.Utsett)
+        assertThat(behandletOppgave.avstemt).isFalse
     }
 
     @Test
-    fun `vi behandler søknaden uten oppgave så sender bømlo utsett`() {
-        val søknadsId = UUID.randomUUID()
-        leggSøknadPåKafka(søknad(søknadsId = søknadsId, sendtNav = null, sendtArbeidsgiver = LocalDateTime.now()))
-        leggOppgavePåAivenKafka(
+    fun `vi behandler søknaden uten oppgave så sender Bømlo Utsett`() {
+        val soknadId = UUID.randomUUID()
+        leggSoknadPaKafka(lagSoknad(soknadId = soknadId, sendtNav = null, sendtArbeidsgiver = LocalDateTime.now()))
+        leggOppgavePaAivenKafka(
             OppgaveDTO(
                 dokumentType = DokumentTypeDTO.Søknad,
                 oppdateringstype = OppdateringstypeDTO.Utsett,
-                dokumentId = søknadsId,
+                dokumentId = soknadId,
                 timeout = omFireTimer
             )
         )
 
-        val oppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
-        assertThat(OppgaveStatus.Utsett).isEqualTo(oppgave.status)
-        omFireTimer.tilOsloZone() `should be equal to ignoring nano and zone` oppgave.timeout
-        assertThat(oppgave.avstemt).isFalse
+        val behandletOppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
+        assertThat(behandletOppgave.status).isEqualTo(OppgaveStatus.Utsett)
+        omFireTimer.tilOsloZone() `should be equal to ignoring nano and zone` behandletOppgave.timeout
+        assertThat(behandletOppgave.avstemt).isFalse
 
-        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
-        assertThat(OppgaveStatus.Utsett).isEqualTo(oppgaveFraAiven.status)
+        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
+        assertThat(oppgaveFraAiven.status).isEqualTo(OppgaveStatus.Utsett)
         omFireTimer.tilOsloZone() `should be equal to ignoring nano and zone` oppgaveFraAiven.timeout
         assertThat(oppgaveFraAiven.avstemt).isFalse
     }
 
-    private fun leggSøknadPåKafka(søknad: SykepengesoknadDTO) =
-        aivenSoknadSendtListener.listen(skapConsumerRecord("key", søknad.serialisertTilString()), acknowledgment)
+    private fun leggSoknadPaKafka(soknad: SykepengesoknadDTO) =
+        aivenSoknadSendtListener.listen(skapConsumerRecord("key", soknad.serialisertTilString()), acknowledgment)
 
-    private fun leggOppgavePåAivenKafka(oppgave: OppgaveDTO) =
+    private fun leggOppgavePaAivenKafka(oppgave: OppgaveDTO) =
         aivenSpreOppgaverListener.listen(skapConsumerRecord("key", oppgave.serialisertTilString()), acknowledgment)
 
-    private fun søknad(
-        søknadsId: UUID = UUID.randomUUID(),
+    private fun lagSoknad(
+        soknadId: UUID = UUID.randomUUID(),
         sendtNav: LocalDateTime? = LocalDateTime.now(),
         sendtArbeidsgiver: LocalDateTime? = null
     ) = SykepengesoknadDTO(
         fnr = fnr,
-        id = søknadsId.toString(),
+        id = soknadId.toString(),
         opprettet = LocalDateTime.now(),
         fom = LocalDate.of(2019, 5, 4),
         tom = LocalDate.of(2019, 5, 8),
