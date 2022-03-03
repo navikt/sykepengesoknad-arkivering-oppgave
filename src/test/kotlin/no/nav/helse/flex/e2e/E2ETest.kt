@@ -2,6 +2,7 @@ package no.nav.helse.flex.e2e
 
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.helse.FellesTestoppsett
+import no.nav.helse.flex.`should be equal to ignoring nano and zone`
 import no.nav.helse.flex.any
 import no.nav.helse.flex.client.SyfosoknadClient
 import no.nav.helse.flex.domain.DokumentTypeDTO
@@ -16,7 +17,6 @@ import no.nav.helse.flex.repository.SpreOppgaveRepository
 import no.nav.helse.flex.serialisertTilString
 import no.nav.helse.flex.service.BehandleVedTimeoutService
 import no.nav.helse.flex.service.SaksbehandlingsService
-import no.nav.helse.flex.`should be equal to ignoring nano and zone`
 import no.nav.helse.flex.skapConsumerRecord
 import no.nav.helse.flex.sykepengesoknad.kafka.SoknadsstatusDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SoknadstypeDTO
@@ -34,7 +34,7 @@ import org.springframework.kafka.support.Acknowledgment
 import org.springframework.test.annotation.DirtiesContext
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 @DirtiesContext
 class E2ETest : FellesTestoppsett() {
@@ -184,6 +184,55 @@ class E2ETest : FellesTestoppsett() {
         assertThat(oppgaveFraAiven.avstemt).isTrue
     }
 
+
+    @Test
+    fun `oppgaven timer ut og vi oppretter oppgave`() {
+        val søknadsId = UUID.randomUUID()
+        val timeout = LocalDateTime.now().minusHours(1)
+
+        leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, timeout))
+        leggSøknadPåKafka(søknad(søknadsId))
+
+        behandleVedTimeoutService.behandleTimeout()
+       // leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, omFireTimer))
+
+        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
+        assertThat(OppgaveStatus.OpprettetTimeout).isEqualTo(oppgaveFraAiven.status)
+        assertThat(oppgaveFraAiven.timeout).isNull()
+    }
+
+    @Test
+    fun `bømlo sier Opprett og oppgave får Opprettet status`() {
+        val søknadsId = UUID.randomUUID()
+
+        leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, søknadsId, omFireTimer))
+        leggSøknadPåKafka(søknad(søknadsId))
+
+        behandleVedTimeoutService.behandleTimeout()
+
+        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
+
+        assertThat(oppgaveFraAiven.status).isEqualTo(OppgaveStatus.Opprettet)
+        assertThat(oppgaveFraAiven.timeout).isNull()
+    }
+
+    @Test
+    fun `bømlo sier OpprettSpeilRelatert og oppgave får OpprettetSpeilRelatert status`() {
+        val søknadsId = UUID.randomUUID()
+        val timeout = LocalDateTime.now().minusHours(1)
+
+        leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.OpprettSpeilRelatert, søknadsId, omFireTimer))
+        leggSøknadPåKafka(søknad(søknadsId))
+
+        behandleVedTimeoutService.behandleTimeout()
+        // leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, omFireTimer))
+
+        val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
+
+        assertThat(oppgaveFraAiven.status).isEqualTo(OppgaveStatus.OpprettetSpeilRelatert)
+        assertThat(oppgaveFraAiven.timeout).isNull()
+    }
+
     @Test
     fun `bømlo sier utsett etter oppgaven er opprettet`() {
         val søknadsId = UUID.randomUUID()
@@ -195,7 +244,7 @@ class E2ETest : FellesTestoppsett() {
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, søknadsId, omFireTimer))
 
         val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(søknadsId.toString()))
-        assertThat(OppgaveStatus.Opprettet).isEqualTo(oppgaveFraAiven.status)
+        assertThat(OppgaveStatus.OpprettetTimeout).isEqualTo(oppgaveFraAiven.status)
         assertThat(oppgaveFraAiven.timeout).isNull()
     }
 

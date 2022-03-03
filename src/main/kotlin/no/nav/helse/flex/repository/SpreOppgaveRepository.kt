@@ -41,5 +41,5 @@ data class SpreOppgaveDbRecord(
 )
 
 enum class OppgaveStatus {
-    Utsett, Opprett, IkkeOpprett, Opprettet, OpprettSpeilRelatert
+    Utsett, IkkeOpprett, Opprett, OpprettSpeilRelatert, Opprettet, OpprettetSpeilRelatert, OpprettetTimeout
 }

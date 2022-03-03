@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
+import java.util.concurrent.TimeUnit
 
 @Component
 class BehandleVedTimeoutService(
@@ -26,7 +27,7 @@ class BehandleVedTimeoutService(
 ) {
     private val log = logger()
 
-    @Scheduled(fixedDelay = 1000L * 60 * 1, initialDelay = 1000L * 60 * 1)
+    @Scheduled(fixedDelay = 60, initialDelay = 60, timeUnit = TimeUnit.SECONDS)
     fun behandleTimeout() {
         val oppgaver = spreOppgaveRepository.findOppgaverTilOpprettelse()
 
@@ -36,6 +37,7 @@ class BehandleVedTimeoutService(
 
         oppgaver.forEach {
             try {
+
                 val innsending = saksbehandlingsService.finnEksisterendeInnsending(it.sykepengesoknadId)
                 if (innsending != null) {
                     val soknadDTO = syfosoknadClient.hentSoknad(it.sykepengesoknadId)
@@ -46,22 +48,22 @@ class BehandleVedTimeoutService(
                         innsending = innsending,
                         speilRelatert = it.status == OppgaveStatus.OpprettSpeilRelatert
                     )
-                    spreOppgaveRepository.updateOppgaveBySykepengesoknadId(
+                    val oppdatert = spreOppgaveRepository.updateOppgaveBySykepengesoknadId(
                         sykepengesoknadId = it.sykepengesoknadId,
                         timeout = null,
-                        status = OppgaveStatus.Opprettet
+                        status = tilOpprettetStatus(it.status)
                     )
                 } else {
                     log.info("Fant ikke eksisterende innsending, ignorerer søknad med id ${it.sykepengesoknadId}")
                     if (environmentToggles.isQ() && it.opprettet < OffsetDateTime.now().minusDays(1).toInstant()) {
-                        // Dette skjer hvis bømlo selv mocker opp søknader som ikke går gjennom syfosoknad
-                        log.info("Sletter oppgave fra ${it.opprettet} som ikke har en tilhørende søknad")
+                        // Dette skjer hvis Bømlo selv mocker opp søknader som ikke går gjennom syfosoknad
+                        log.info("Sletter oppgave fra ${it.opprettet} siden den ikke har en tilhørende søknad")
                         spreOppgaveRepository.deleteOppgaveBySykepengesoknadId(it.sykepengesoknadId)
                     }
                 }
                 if (it.status == OppgaveStatus.Utsett) {
                     val tidBrukt = Duration.between(it.opprettet, it.timeout ?: LocalDateTime.now())
-                    log.info("Soknad ${it.sykepengesoknadId}  timet ut. Total ventetid: ${tidBrukt.toHours()} timer")
+                    log.info("Soknad ${it.sykepengesoknadId} timet ut. Total ventetid: ${tidBrukt.toHours()} timer")
                     tellTimeout()
                 }
             } catch (e: SøknadIkkeFunnetException) {
@@ -79,6 +81,15 @@ class BehandleVedTimeoutService(
             } catch (e: RuntimeException) {
                 log.error("Runtime-feil ved opprettelse av oppgave ${it.sykepengesoknadId}", e)
             }
+        }
+    }
+
+    private fun tilOpprettetStatus(oppgaveStatus: OppgaveStatus): OppgaveStatus {
+        return when (oppgaveStatus) {
+            OppgaveStatus.Opprett -> OppgaveStatus.Opprettet
+            OppgaveStatus.OpprettSpeilRelatert -> OppgaveStatus.OpprettetSpeilRelatert
+            // OppgaveStatus.Utsett  + timeout < now()
+            else -> OppgaveStatus.OpprettetTimeout
         }
     }
 

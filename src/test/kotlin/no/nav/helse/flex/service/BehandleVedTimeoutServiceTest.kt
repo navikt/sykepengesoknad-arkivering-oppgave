@@ -170,7 +170,7 @@ class BehandleVedTimeoutServiceTest {
             .updateOppgaveBySykepengesoknadId(
                 sykepengesoknadId = søknadsId,
                 timeout = null,
-                status = OppgaveStatus.Opprettet
+                status = OppgaveStatus.OpprettetTimeout
             )
     }
 
@@ -211,7 +211,7 @@ class BehandleVedTimeoutServiceTest {
         )
         whenever(saksbehandlingsService.finnEksisterendeInnsending(any())).thenAnswer {
             InnsendingDbRecord(
-                id = "iid",
+                id = "id",
                 sykepengesoknadId = it.arguments[0].toString(),
                 journalpostId = "journalpost"
             )
@@ -223,13 +223,13 @@ class BehandleVedTimeoutServiceTest {
             .updateOppgaveBySykepengesoknadId(
                 sykepengesoknadId = søknadsId1.toString(),
                 timeout = null,
-                status = OppgaveStatus.Opprettet
+                status = OppgaveStatus.OpprettetTimeout
             )
         verify(spreOppgaveRepository, times(1))
             .updateOppgaveBySykepengesoknadId(
                 sykepengesoknadId = søknadsId3.toString(),
                 timeout = null,
-                status = OppgaveStatus.Opprettet
+                status = OppgaveStatus.OpprettetTimeout
             )
     }
 
