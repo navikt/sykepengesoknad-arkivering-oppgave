@@ -13,15 +13,15 @@ interface InnsendingRepository : CrudRepository<InnsendingDbRecord, String> {
     fun findBySykepengesoknadId(sykepengesoknadId: String): InnsendingDbRecord?
 
     @Modifying
-    @Query("""update innsending set behandlet = current_timestamp where id = :id""")
+    @Query(""" UPDATE innsending SET behandlet = now() WHERE id = :id """)
     fun updateBehandlet(id: String): Boolean
 
     @Modifying
-    @Query("""update innsending set oppgave_id = :oppgaveId where id = :id""")
+    @Query("""UPDATE innsending SET oppgave_id = :oppgaveId WHERE id = :id""")
     fun updateOppgaveId(id: String, oppgaveId: String): Boolean
 
     @Modifying
-    @Query("""update innsending set journalpost_id = :journalpostId where id = :id""")
+    @Query("""UPDATE innsending SET journalpost_id = :journalpostId WHERE id = :id""")
     fun updateJournalpostId(id: String, journalpostId: String): Boolean
 }
 

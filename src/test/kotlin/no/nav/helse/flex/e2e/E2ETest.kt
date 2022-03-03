@@ -2,7 +2,6 @@ package no.nav.helse.flex.e2e
 
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.helse.FellesTestoppsett
-import no.nav.helse.flex.`should be equal to ignoring nano and zone`
 import no.nav.helse.flex.any
 import no.nav.helse.flex.client.SyfosoknadClient
 import no.nav.helse.flex.domain.DokumentTypeDTO
@@ -17,6 +16,7 @@ import no.nav.helse.flex.repository.SpreOppgaveRepository
 import no.nav.helse.flex.serialisertTilString
 import no.nav.helse.flex.service.BehandleVedTimeoutService
 import no.nav.helse.flex.service.SaksbehandlingsService
+import no.nav.helse.flex.`should be equal to ignoring nano and zone`
 import no.nav.helse.flex.skapConsumerRecord
 import no.nav.helse.flex.sykepengesoknad.kafka.SoknadsstatusDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SoknadstypeDTO
@@ -184,7 +184,6 @@ class E2ETest : FellesTestoppsett() {
         assertThat(oppgaveFraAiven.avstemt).isTrue
     }
 
-
     @Test
     fun `oppgaven timer ut og vi oppretter oppgave`() {
         val soknadId = UUID.randomUUID()
@@ -217,9 +216,15 @@ class E2ETest : FellesTestoppsett() {
     @Test
     fun `Bømlo sier OpprettSpeilRelatert og oppgave får OpprettetSpeilRelatert status`() {
         val soknadId = UUID.randomUUID()
-        val timeout = LocalDateTime.now().minusHours(1)
 
-        leggOppgavePaAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.OpprettSpeilRelatert, soknadId, omFireTimer))
+        leggOppgavePaAivenKafka(
+            OppgaveDTO(
+                DokumentTypeDTO.Søknad,
+                OppdateringstypeDTO.OpprettSpeilRelatert,
+                soknadId,
+                omFireTimer
+            )
+        )
         leggSoknadPaKafka(lagSoknad(soknadId))
 
         behandleVedTimeoutService.behandleTimeout()

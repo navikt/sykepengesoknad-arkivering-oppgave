@@ -12,19 +12,34 @@ import java.time.Instant
 interface SpreOppgaveRepository : CrudRepository<SpreOppgaveDbRecord, String> {
     fun findBySykepengesoknadId(sykepengesoknadId: String): SpreOppgaveDbRecord?
 
-    @Query("""select * from oppgavestyring where avstemt = true and (status = 'Opprett' or status = 'OpprettSpeilRelatert' OR (status = 'Utsett' AND timeout < now()))""")
+    @Query(
+        """
+        SELECT *
+        FROM   oppgavestyring
+        WHERE  avstemt = true
+          AND (status = 'Opprett'
+               OR status = 'OpprettSpeilRelatert'
+               OR (status = 'Utsett' AND timeout < now()))
+        """
+    )
     fun findOppgaverTilOpprettelse(): List<SpreOppgaveDbRecord>
 
     @Modifying
-    @Query("""update oppgavestyring set timeout = :timeout, status = :status where sykepengesoknad_id = :sykepengesoknadId""")
+    @Query(
+        """
+        UPDATE oppgavestyring 
+        SET timeout = :timeout, status = :status 
+        WHERE sykepengesoknad_id = :sykepengesoknadId
+        """
+    )
     fun updateOppgaveBySykepengesoknadId(sykepengesoknadId: String, timeout: Instant?, status: OppgaveStatus): Boolean
 
     @Modifying
-    @Query("""update oppgavestyring set avstemt = true where sykepengesoknad_id = :sykepengesoknadId""")
+    @Query("""UPDATE oppgavestyring SET avstemt = TRUE WHERE sykepengesoknad_id = :sykepengesoknadId""")
     fun updateAvstemtBySykepengesoknadId(sykepengesoknadId: String): Boolean
 
     @Modifying
-    @Query("""delete from oppgavestyring where sykepengesoknad_id = :sykepengesoknadId""")
+    @Query("""DELETE FROM oppgavestyring WHERE sykepengesoknad_id = :sykepengesoknadId""")
     fun deleteOppgaveBySykepengesoknadId(sykepengesoknadId: String): Long
 }
 

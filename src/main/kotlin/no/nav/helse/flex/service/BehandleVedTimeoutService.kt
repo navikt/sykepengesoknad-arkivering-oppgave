@@ -48,7 +48,7 @@ class BehandleVedTimeoutService(
                         innsending = innsending,
                         speilRelatert = it.status == OppgaveStatus.OpprettSpeilRelatert
                     )
-                    val oppdatert = spreOppgaveRepository.updateOppgaveBySykepengesoknadId(
+                    spreOppgaveRepository.updateOppgaveBySykepengesoknadId(
                         sykepengesoknadId = it.sykepengesoknadId,
                         timeout = null,
                         status = tilOpprettetStatus(it.status)
