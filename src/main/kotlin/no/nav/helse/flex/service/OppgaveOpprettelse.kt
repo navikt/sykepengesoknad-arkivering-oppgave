@@ -37,7 +37,9 @@ class OppgaveOpprettelse(
     fun behandleOppgaver(modifisertTidspunkt: Instant = Instant.now()) {
         val oppgaver = spreOppgaveRepository.findOppgaverTilOpprettelse()
 
-        log.info("Behandler ${oppgaver.size} oppgaver som skal opprettes")
+        if (oppgaver.isNotEmpty()) {
+            log.info("Behandler ${oppgaver.size} oppgaver som skal opprettes")
+        }
 
         oppgaver.forEach {
             try {
