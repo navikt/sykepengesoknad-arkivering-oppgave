@@ -28,7 +28,7 @@ class OppgaveOpprettelse(
 ) {
     private val log = logger()
 
-    @Scheduled(fixedDelay = 60, initialDelay = 60, timeUnit = TimeUnit.SECONDS)
+    @Scheduled(initialDelay = 120, fixedDelay = 60, timeUnit = TimeUnit.SECONDS)
     // Only no-args methods can be Scheduled.
     fun startOppgaveBehandling() {
         behandleOppgaver()
@@ -37,9 +37,7 @@ class OppgaveOpprettelse(
     fun behandleOppgaver(modifisertTidspunkt: Instant = Instant.now()) {
         val oppgaver = spreOppgaveRepository.findOppgaverTilOpprettelse()
 
-        if (oppgaver.isNotEmpty()) {
-            log.info("Behandler ${oppgaver.size} oppgaver som skal opprettes")
-        }
+        log.info("Behandler ${oppgaver.size} oppgaver som skal opprettes")
 
         oppgaver.forEach {
             try {
