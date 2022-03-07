@@ -13,6 +13,7 @@ import no.nav.helse.flex.repository.SpreOppgaveRepository
 import no.nav.helse.flex.util.tilOsloZone
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import java.time.Instant
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -46,12 +47,15 @@ class SpreOppgaverService(
         if (eksisterendeOppgave != null) {
             spreOppgaveRepository.updateAvstemtBySykepengesoknadId(eksisterendeOppgave.sykepengesoknadId)
         } else {
+            val now = Instant.now()
             spreOppgaveRepository.save(
                 SpreOppgaveDbRecord(
                     sykepengesoknadId = oppgave.dokumentId.toString(),
                     timeout = OffsetDateTime.now().plusHours(48).toInstant(),
                     status = OppgaveStatus.Utsett,
-                    avstemt = true
+                    avstemt = true,
+                    opprettet = now,
+                    modifisert = now
                 )
             )
         }
@@ -63,13 +67,16 @@ class SpreOppgaverService(
         eksisterendeOppgave: SpreOppgaveDbRecord?,
         oppgave: OppgaveDTO
     ) {
+        val tidspunkt = Instant.now()
         when {
             eksisterendeOppgave == null -> {
                 spreOppgaveRepository.save(
                     SpreOppgaveDbRecord(
                         sykepengesoknadId = oppgave.dokumentId.toString(),
                         timeout = timeout(oppgave),
-                        status = oppgave.oppdateringstype.tilOppgaveStatus()
+                        status = oppgave.oppdateringstype.tilOppgaveStatus(),
+                        opprettet = tidspunkt,
+                        modifisert = tidspunkt
                     )
                 )
             }
@@ -77,7 +84,8 @@ class SpreOppgaverService(
                 spreOppgaveRepository.updateOppgaveBySykepengesoknadId(
                     sykepengesoknadId = oppgave.dokumentId.toString(),
                     timeout = timeout(oppgave),
-                    status = oppgave.oppdateringstype.tilOppgaveStatus()
+                    status = oppgave.oppdateringstype.tilOppgaveStatus(),
+                    tidspunkt
                 )
             }
             eksisterendeOppgave.status == OppgaveStatus.IkkeOpprett && oppgave.oppdateringstype == OppdateringstypeDTO.Opprett -> {
@@ -86,7 +94,8 @@ class SpreOppgaverService(
                 spreOppgaveRepository.updateOppgaveBySykepengesoknadId(
                     sykepengesoknadId = oppgave.dokumentId.toString(),
                     timeout = timeout(oppgave),
-                    status = oppgave.oppdateringstype.tilOppgaveStatus()
+                    status = oppgave.oppdateringstype.tilOppgaveStatus(),
+                    tidspunkt
                 )
             }
             else -> {

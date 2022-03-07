@@ -12,11 +12,13 @@ import no.nav.helse.flex.repository.SpreOppgaveRepository
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.time.Duration
+import java.time.Instant
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
+import java.util.concurrent.TimeUnit
 
 @Component
-class BehandleVedTimeoutService(
+class OppgaveOpprettelse(
     private val spreOppgaveRepository: SpreOppgaveRepository,
     private val saksbehandlingsService: SaksbehandlingsService,
     private val syfosoknadClient: SyfosoknadClient,
@@ -26,8 +28,13 @@ class BehandleVedTimeoutService(
 ) {
     private val log = logger()
 
-    @Scheduled(fixedDelay = 1000L * 60 * 1, initialDelay = 1000L * 60 * 1)
-    fun behandleTimeout() {
+    @Scheduled(initialDelay = 120, fixedDelay = 60, timeUnit = TimeUnit.SECONDS)
+    // Only no-args methods can be Scheduled.
+    fun startOppgaveBehandling() {
+        behandleOppgaver()
+    }
+
+    fun behandleOppgaver(modifisertTidspunkt: Instant = Instant.now()) {
         val oppgaver = spreOppgaveRepository.findOppgaverTilOpprettelse()
 
         if (oppgaver.isNotEmpty()) {
@@ -49,19 +56,20 @@ class BehandleVedTimeoutService(
                     spreOppgaveRepository.updateOppgaveBySykepengesoknadId(
                         sykepengesoknadId = it.sykepengesoknadId,
                         timeout = null,
-                        status = OppgaveStatus.Opprettet
+                        status = tilOpprettetStatus(it.status),
+                        modifisertTidspunkt
                     )
                 } else {
                     log.info("Fant ikke eksisterende innsending, ignorerer søknad med id ${it.sykepengesoknadId}")
                     if (environmentToggles.isQ() && it.opprettet < OffsetDateTime.now().minusDays(1).toInstant()) {
-                        // Dette skjer hvis bømlo selv mocker opp søknader som ikke går gjennom syfosoknad
-                        log.info("Sletter oppgave fra ${it.opprettet} som ikke har en tilhørende søknad")
+                        // Dette skjer hvis Bømlo selv mocker opp søknader som ikke går gjennom syfosoknad
+                        log.info("Sletter oppgave fra ${it.opprettet} siden den ikke har en tilhørende søknad")
                         spreOppgaveRepository.deleteOppgaveBySykepengesoknadId(it.sykepengesoknadId)
                     }
                 }
                 if (it.status == OppgaveStatus.Utsett) {
                     val tidBrukt = Duration.between(it.opprettet, it.timeout ?: LocalDateTime.now())
-                    log.info("Soknad ${it.sykepengesoknadId}  timet ut. Total ventetid: ${tidBrukt.toHours()} timer")
+                    log.info("Soknad ${it.sykepengesoknadId} timet ut. Total ventetid: ${tidBrukt.toHours()} timer")
                     tellTimeout()
                 }
             } catch (e: SøknadIkkeFunnetException) {
@@ -70,7 +78,8 @@ class BehandleVedTimeoutService(
                     spreOppgaveRepository.updateOppgaveBySykepengesoknadId(
                         sykepengesoknadId = it.sykepengesoknadId,
                         timeout = null,
-                        status = OppgaveStatus.IkkeOpprett
+                        status = OppgaveStatus.IkkeOpprett,
+                        modifisertTidspunkt
                     )
                 } else {
                     log.error("SøknadIkkeFunnetException ved opprettelse av oppgave ${it.sykepengesoknadId}", e)
@@ -79,6 +88,15 @@ class BehandleVedTimeoutService(
             } catch (e: RuntimeException) {
                 log.error("Runtime-feil ved opprettelse av oppgave ${it.sykepengesoknadId}", e)
             }
+        }
+    }
+
+    private fun tilOpprettetStatus(oppgaveStatus: OppgaveStatus): OppgaveStatus {
+        return when (oppgaveStatus) {
+            OppgaveStatus.Opprett -> OppgaveStatus.Opprettet
+            OppgaveStatus.OpprettSpeilRelatert -> OppgaveStatus.OpprettetSpeilRelatert
+            // OppgaveStatus.Utsett  + timeout < now()
+            else -> OppgaveStatus.OpprettetTimeout
         }
     }
 

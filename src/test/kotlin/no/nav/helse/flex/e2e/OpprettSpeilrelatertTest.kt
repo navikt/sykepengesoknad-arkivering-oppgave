@@ -40,8 +40,8 @@ import java.util.UUID
 class OpprettSpeilrelatertTest : FellesTestoppsett() {
 
     companion object {
-        val aktørId = "aktørId"
-        val fnr = "fnr"
+        const val aktorId = "aktørId"
+        const val fnr = "fnr"
     }
 
     @MockBean
@@ -72,11 +72,11 @@ class OpprettSpeilrelatertTest : FellesTestoppsett() {
     lateinit var aivenSpreOppgaverListener: AivenSpreOppgaverListener
 
     @Autowired
-    lateinit var behandleVedTimeoutService: BehandleVedTimeoutService
+    lateinit var oppgaveOpprettelse: OppgaveOpprettelse
 
     @BeforeEach
     fun setup() {
-        whenever(identService.hentAktorIdForFnr(any())).thenReturn(aktørId)
+        whenever(identService.hentAktorIdForFnr(any())).thenReturn(aktorId)
         whenever(identService.hentFnrForAktorId(any())).thenReturn(fnr)
         whenever(pdlClient.hentFormattertNavn(any())).thenReturn("Kalle Klovn")
         whenever(arkivaren.opprettJournalpost(any())).thenReturn("jpost1234")
@@ -91,11 +91,11 @@ class OpprettSpeilrelatertTest : FellesTestoppsett() {
 
     @Test
     fun `En speil relatert søknad for behandlingstema ab0455`() {
-        val søknadsId = UUID.randomUUID()
-        leggSøknadPåKafka(søknad(søknadsId))
-        leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.OpprettSpeilRelatert, søknadsId))
+        val soknadId = UUID.randomUUID()
+        leggSøknadPåKafka(søknad(soknadId))
+        leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.OpprettSpeilRelatert, soknadId))
 
-        behandleVedTimeoutService.behandleTimeout()
+        oppgaveOpprettelse.behandleOppgaver()
         val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
 
         verify(oppgaveService).opprettOppgave(captor.capture())
@@ -104,11 +104,11 @@ class OpprettSpeilrelatertTest : FellesTestoppsett() {
 
     @Test
     fun `En ikke speil relatert søknad for behandlingstema ab0061`() {
-        val søknadsId = UUID.randomUUID()
-        leggSøknadPåKafka(søknad(søknadsId))
-        leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, søknadsId))
+        val soknadId = UUID.randomUUID()
+        leggSøknadPåKafka(søknad(soknadId))
+        leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, soknadId))
 
-        behandleVedTimeoutService.behandleTimeout()
+        oppgaveOpprettelse.behandleOppgaver()
         val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
 
         verify(oppgaveService).opprettOppgave(captor.capture())
@@ -122,12 +122,12 @@ class OpprettSpeilrelatertTest : FellesTestoppsett() {
         aivenSpreOppgaverListener.listen(skapConsumerRecord("key", oppgave.serialisertTilString()), acknowledgment)
 
     private fun søknad(
-        søknadsId: UUID = UUID.randomUUID(),
+        soknadId: UUID = UUID.randomUUID(),
         sendtNav: LocalDateTime? = LocalDateTime.now(),
         sendtArbeidsgiver: LocalDateTime? = null
     ) = SykepengesoknadDTO(
         fnr = fnr,
-        id = søknadsId.toString(),
+        id = soknadId.toString(),
         opprettet = LocalDateTime.now(),
         fom = LocalDate.of(2019, 5, 4),
         tom = LocalDate.of(2019, 5, 8),
