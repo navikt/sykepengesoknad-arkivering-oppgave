@@ -16,18 +16,12 @@ abstract class FellesTestoppsett {
 
     companion object {
         init {
-
-            KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:6.1.0")).also {
-                it.start()
-                System.setProperty("KAFKA_BROKERS", it.bootstrapServers)
-            }
             PostgreSQLContainer12().also {
                 it.start()
                 System.setProperty("spring.datasource.url", "${it.jdbcUrl}&reWriteBatchedInserts=true")
                 System.setProperty("spring.datasource.username", it.username)
                 System.setProperty("spring.datasource.password", it.password)
             }
-
             KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:6.1.1")).also {
                 it.start()
                 System.setProperty("KAFKA_BROKERS", it.bootstrapServers)
