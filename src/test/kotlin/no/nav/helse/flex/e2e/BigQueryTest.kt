@@ -4,19 +4,14 @@ import com.nhaarman.mockitokotlin2.whenever
 import no.nav.helse.FellesTestoppsett
 import no.nav.helse.flex.any
 import no.nav.helse.flex.client.SyfosoknadClient
-import no.nav.helse.flex.domain.DokumentTypeDTO
-import no.nav.helse.flex.domain.OppdateringstypeDTO
-import no.nav.helse.flex.domain.OppgaveDTO
-import no.nav.helse.flex.kafka.consumer.AivenSoknadSendtListener
-import no.nav.helse.flex.kafka.consumer.AivenSpreOppgaverListener
 import no.nav.helse.flex.objectMapper
 import no.nav.helse.flex.repository.InnsendingDbRecord
 import no.nav.helse.flex.repository.OppgaveStatus
+import no.nav.helse.flex.repository.SpreOppgaveDbRecord
 import no.nav.helse.flex.repository.SpreOppgaveRepository
 import no.nav.helse.flex.serialisertTilString
 import no.nav.helse.flex.service.OppgaveOpprettelse
 import no.nav.helse.flex.service.SaksbehandlingsService
-import no.nav.helse.flex.skapConsumerRecord
 import no.nav.helse.flex.sykepengesoknad.kafka.SoknadsstatusDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SoknadstypeDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SporsmalDTO
@@ -24,19 +19,20 @@ import no.nav.helse.flex.sykepengesoknad.kafka.SvarDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SvartypeDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SykepengesoknadDTO
 import org.amshove.kluent.`should be`
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
-import org.springframework.kafka.support.Acknowledgment
 import org.springframework.test.annotation.DirtiesContext
 import java.sql.ResultSet
+import java.sql.Timestamp
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.temporal.ChronoUnit
 import java.util.*
 
 @DirtiesContext
@@ -44,9 +40,6 @@ class BigQueryTest : FellesTestoppsett() {
 
     @MockBean
     lateinit var saksbehandlingsService: SaksbehandlingsService
-
-    @MockBean
-    lateinit var acknowledgment: Acknowledgment
 
     @MockBean
     lateinit var syfosoknadClient: SyfosoknadClient
@@ -57,23 +50,93 @@ class BigQueryTest : FellesTestoppsett() {
     @Autowired
     lateinit var oppgaveOpprettelse: OppgaveOpprettelse
 
-    @Autowired
-    lateinit var aivenSoknadSendtListener: AivenSoknadSendtListener
+    private val tid = LocalDateTime.of(2022, 3, 7, 12, 37, 17).toInstant(ZoneOffset.UTC)
 
-    @Autowired
-    lateinit var aivenSpreOppgaverListener: AivenSpreOppgaverListener
+    @BeforeEach
+    fun `lag oppgaver`() {
+        val enDagSiden = tid.minus(1, ChronoUnit.DAYS)
+        val omEnDag = tid.plus(1, ChronoUnit.DAYS)
+        val enTimeSiden = tid.minus(1, ChronoUnit.HOURS)
 
-    @Autowired
-    lateinit var namedParameterJdbcTemplate: NamedParameterJdbcTemplate
+        // Bømlo har sagt det skal opprettes en oppgave.
+        spreOppgaveRepository.save(
+            SpreOppgaveDbRecord(
+                sykepengesoknadId = "uuid-1",
+                timeout = null,
+                status = OppgaveStatus.Opprett,
+                avstemt = true,
+                opprettet = enDagSiden,
+                modifisert = enDagSiden
+            )
+        )
 
-    @Autowired
-    lateinit var jdbcTemplate: JdbcTemplate
+        // Bømlo har sagt det skal opprettes en Speil-relatert oppgave.
+        spreOppgaveRepository.save(
+            SpreOppgaveDbRecord(
+                sykepengesoknadId = "uuid-2",
+                timeout = null,
+                status = OppgaveStatus.OpprettSpeilRelatert,
+                avstemt = true,
+                opprettet = enDagSiden,
+                modifisert = enDagSiden
+            )
+        )
+
+        // Utsett har timet ut, så det skal opprettes en oppgave.
+        spreOppgaveRepository.save(
+            SpreOppgaveDbRecord(
+                sykepengesoknadId = "uuid-3",
+                timeout = enTimeSiden,
+                status = OppgaveStatus.Utsett,
+                avstemt = true,
+                opprettet = enDagSiden,
+                modifisert = enDagSiden
+            )
+        )
+
+        // Er ikke avstemt så det skal ikke opprettes en oppgave.
+        spreOppgaveRepository.save(
+            SpreOppgaveDbRecord(
+                sykepengesoknadId = "uuid-4",
+                timeout = null,
+                status = OppgaveStatus.Opprett,
+                avstemt = false,
+                opprettet = enDagSiden,
+                modifisert = enDagSiden
+            )
+        )
+
+        // Utsett ikke nådd timeout så det skal ikke opprettes en oppgave.
+        spreOppgaveRepository.save(
+            SpreOppgaveDbRecord(
+                sykepengesoknadId = "uuid-5",
+                timeout = omEnDag,
+                status = OppgaveStatus.Utsett,
+                avstemt = true,
+                opprettet = enDagSiden,
+                modifisert = enDagSiden
+            )
+        )
+
+        // Er ferdigbehandlet så det skal ikke opprettes en oppgave.
+        spreOppgaveRepository.save(
+            SpreOppgaveDbRecord(
+                sykepengesoknadId = "uuid-6",
+                timeout = null,
+                status = OppgaveStatus.IkkeOpprett,
+                avstemt = true,
+                opprettet = enDagSiden,
+                modifisert = enDagSiden
+            )
+        )
+        oppgaveOpprettelse.behandleOppgaver(tid)
+    }
 
     @BeforeEach
     fun setup() {
         whenever(saksbehandlingsService.finnEksisterendeInnsending(any())).thenAnswer {
             InnsendingDbRecord(
-                id = "iid",
+                id = "id",
                 sykepengesoknadId = it.arguments[0].toString(),
                 journalpostId = "journalpost"
             )
@@ -86,97 +149,58 @@ class BigQueryTest : FellesTestoppsett() {
         )
     }
 
-    @Test
-    fun `test spørring brukt i BigQuery Federated Query`() {
-        val id1 = UUID.randomUUID()
-        leggOppgavePaAivenKafka(
-            OppgaveDTO(
-                DokumentTypeDTO.Søknad,
-                OppdateringstypeDTO.Opprett,
-                id1,
-                E2ETest.omFireTimer
-            )
-        )
-        leggSoknadPaKafka(lagSoknad(id1))
-
-        val id2 = UUID.randomUUID()
-        leggOppgavePaAivenKafka(
-            OppgaveDTO(
-                DokumentTypeDTO.Søknad,
-                OppdateringstypeDTO.OpprettSpeilRelatert,
-                id2,
-                E2ETest.omFireTimer
-            )
-        )
-        leggSoknadPaKafka(lagSoknad(id2))
-
-        val id3 = UUID.randomUUID()
-        leggOppgavePaAivenKafka(
-            OppgaveDTO(
-                DokumentTypeDTO.Søknad,
-                OppdateringstypeDTO.Utsett,
-                id3,
-                LocalDateTime.now().minusHours(4)
-            )
-        )
-        leggSoknadPaKafka(lagSoknad(id3))
-
-        val id4 = UUID.randomUUID()
-        leggOppgavePaAivenKafka(
-            OppgaveDTO(
-                DokumentTypeDTO.Søknad,
-                OppdateringstypeDTO.Opprett,
-                id4,
-                E2ETest.omFireTimer
-            )
-        )
-
-        val id5 = UUID.randomUUID()
-        leggOppgavePaAivenKafka(
-            OppgaveDTO(
-                DokumentTypeDTO.Søknad,
-                OppdateringstypeDTO.Utsett,
-                id5,
-                E2ETest.omFireTimer
-            )
-        )
-        leggSoknadPaKafka(lagSoknad(id5))
-
-        val id6 = UUID.randomUUID()
-        leggOppgavePaAivenKafka(
-            OppgaveDTO(
-                DokumentTypeDTO.Søknad,
-                OppdateringstypeDTO.Ferdigbehandlet,
-                id6,
-                null
-            )
-        )
-        leggSoknadPaKafka(lagSoknad(id6))
-
-        oppgaveOpprettelse.behandleOppgaver()
-
-        val params = MapSqlParameterSource().addValue(
-            "status",
-            listOf("Opprettet", "OpprettetSpeilRelatert", "OpprettetTimeout")
-        )
-
-        val sql =
-            """
-            SELECT sykepengesoknad_id, status, modifisert 
-            FROM oppgavestyring
-            WHERE status IN (:status)
-            ORDER BY modifisert
-            """
-        val tilBigQuery = namedParameterJdbcTemplate.query(sql, params) { rs: ResultSet, _ -> rs.toBigQueryRecord() }
-
-        tilBigQuery.size `should be` 3
+    @AfterEach
+    fun `slett oppgaver`() {
+        jdbcTemplate.update("DELETE FROM oppgavestyring")
     }
 
-    private fun leggSoknadPaKafka(soknad: SykepengesoknadDTO) =
-        aivenSoknadSendtListener.listen(skapConsumerRecord("key", soknad.serialisertTilString()), acknowledgment)
+    @Test
+    fun `test Federated Query for oppgaver opprettet`() {
+        val sql =
+            """
+            SELECT sykepengesoknad_id, status, modifisert AS opprettet
+            FROM oppgavestyring
+            WHERE modifisert >= :modifisert
+              AND status IN (:status)
+            ORDER BY modifisert
+            """
 
-    private fun leggOppgavePaAivenKafka(oppgave: OppgaveDTO) =
-        aivenSpreOppgaverListener.listen(skapConsumerRecord("key", oppgave.serialisertTilString()), acknowledgment)
+        val params = MapSqlParameterSource()
+            .addValue("status", listOf("Opprettet", "OpprettetSpeilRelatert", "OpprettetTimeout"))
+            .addValue("modifisert", Timestamp.from(tid))
+
+        val tilBigQuery = namedParameterJdbcTemplate.query(sql, params) { rs: ResultSet, _ -> rs.toBigQueryOpprettet() }
+
+        tilBigQuery.size `should be` 3
+
+        val uuids = tilBigQuery.map { it.sykepengesoknadId }.toSet()
+
+        uuids.containsAll(listOf("uuid-1", "uuid-2", "uuid-3")) `should be` true
+    }
+
+    @Test
+    fun `test Federated Query for oppgaver opprettet gruppert`() {
+        val sql =
+            """
+            SELECT date(modifisert) AS dato, status, count(*) AS antall
+            FROM oppgavestyring
+            WHERE modifisert >= :modifisert
+              AND status IN (:status)
+            GROUP BY date(modifisert), status;
+            """
+
+        val params = MapSqlParameterSource()
+            .addValue("status", listOf("Opprettet", "OpprettetSpeilRelatert", "OpprettetTimeout"))
+            .addValue("modifisert", Timestamp.from(tid))
+
+        val tilBigQuery = namedParameterJdbcTemplate.query(sql, params) { rs: ResultSet, _ -> rs.toBigQueryGruppert() }
+
+        tilBigQuery.size `should be` 3
+
+        tilBigQuery.first { it.status == OppgaveStatus.Opprettet }.antall `should be` 1
+        tilBigQuery.first { it.status == OppgaveStatus.OpprettetSpeilRelatert }.antall `should be` 1
+        tilBigQuery.first { it.status == OppgaveStatus.OpprettetTimeout }.antall `should be` 1
+    }
 
     private fun lagSoknad(
         soknadId: UUID = UUID.randomUUID(),
@@ -204,17 +228,31 @@ class BigQueryTest : FellesTestoppsett() {
         sendtArbeidsgiver = sendtArbeidsgiver,
     )
 
-    private fun ResultSet.toBigQueryRecord(): BigQueryRecord {
-        return BigQueryRecord(
+    private fun ResultSet.toBigQueryOpprettet(): BigQueryOpprettet {
+        return BigQueryOpprettet(
             sykepengesoknadId = getString("sykepengesoknad_id"),
             status = OppgaveStatus.valueOf(getString("status")),
-            modifisert = getTimestamp("modifisert").toInstant(),
+            opprettet = getTimestamp("opprettet").toInstant(),
         )
     }
 
-    private data class BigQueryRecord(
+    private fun ResultSet.toBigQueryGruppert(): BigQueryGruppert {
+        return BigQueryGruppert(
+            dato = getDate("dato").toLocalDate(),
+            status = OppgaveStatus.valueOf(getString("status")),
+            antall = getInt("antall"),
+        )
+    }
+
+    private data class BigQueryOpprettet(
         val sykepengesoknadId: String,
         val status: OppgaveStatus,
-        val modifisert: Instant
+        val opprettet: Instant
+    )
+
+    private data class BigQueryGruppert(
+        val dato: LocalDate,
+        val status: OppgaveStatus,
+        val antall: Int
     )
 }

@@ -84,7 +84,7 @@ class OppgaveOpprettelseTest {
     @Test
     fun `har noe å behandle men mangler innsending`() {
         mockRegistry()
-        whenever(spreOppgaveRepository.findOppgaverTilOpprettelse()).thenReturn(
+        whenever(spreOppgaveRepository.findOppgaverTilOpprettelse(any())).thenReturn(
             listOf(
                 SpreOppgaveDbRecord(
                     sykepengesoknadId = UUID.randomUUID().toString(),
@@ -103,7 +103,7 @@ class OppgaveOpprettelseTest {
     @Test
     fun `sletter ikke oppgave(i test) om vi mangler innsending og den er fersk`() {
         mockRegistry()
-        whenever(spreOppgaveRepository.findOppgaverTilOpprettelse()).thenReturn(
+        whenever(spreOppgaveRepository.findOppgaverTilOpprettelse(any())).thenReturn(
             listOf(
                 SpreOppgaveDbRecord(
                     sykepengesoknadId = UUID.randomUUID().toString(),
@@ -124,7 +124,7 @@ class OppgaveOpprettelseTest {
     fun `sletter oppgave(i test) om vi mangler innsending og den er gammel`() {
         mockRegistry()
         whenever(environmentToggles.isQ()).thenReturn(true)
-        whenever(spreOppgaveRepository.findOppgaverTilOpprettelse()).thenReturn(
+        whenever(spreOppgaveRepository.findOppgaverTilOpprettelse(any())).thenReturn(
             listOf(
                 SpreOppgaveDbRecord(
                     sykepengesoknadId = UUID.randomUUID().toString(),
@@ -146,7 +146,7 @@ class OppgaveOpprettelseTest {
         mockHenting()
         mockRegistry()
         val soknadId = UUID.randomUUID().toString()
-        whenever(spreOppgaveRepository.findOppgaverTilOpprettelse()).thenReturn(
+        whenever(spreOppgaveRepository.findOppgaverTilOpprettelse(any())).thenReturn(
             listOf(
                 SpreOppgaveDbRecord(
                     sykepengesoknadId = soknadId,
@@ -186,7 +186,7 @@ class OppgaveOpprettelseTest {
         val soknadId1 = UUID.randomUUID()
         val soknadId2 = UUID.randomUUID()
         val soknadId3 = UUID.randomUUID()
-        whenever(spreOppgaveRepository.findOppgaverTilOpprettelse()).thenReturn(
+        whenever(spreOppgaveRepository.findOppgaverTilOpprettelse(any())).thenReturn(
             listOf(
                 SpreOppgaveDbRecord(
                     sykepengesoknadId = soknadId1.toString(),
@@ -246,7 +246,7 @@ class OppgaveOpprettelseTest {
     @Test
     fun `Finner ikke søknad, skippes i Q`() {
         val soknadId = UUID.randomUUID()
-        whenever(spreOppgaveRepository.findOppgaverTilOpprettelse()).thenReturn(
+        whenever(spreOppgaveRepository.findOppgaverTilOpprettelse(any())).thenReturn(
             listOf(
                 SpreOppgaveDbRecord(
                     sykepengesoknadId = soknadId.toString(),
@@ -282,7 +282,7 @@ class OppgaveOpprettelseTest {
     @Test
     fun `Finner ikke søknad, skippes ikke i P`() {
         val soknadId = UUID.randomUUID()
-        whenever(spreOppgaveRepository.findOppgaverTilOpprettelse()).thenReturn(
+        whenever(spreOppgaveRepository.findOppgaverTilOpprettelse(any())).thenReturn(
             listOf(
                 SpreOppgaveDbRecord(
                     sykepengesoknadId = soknadId.toString(),

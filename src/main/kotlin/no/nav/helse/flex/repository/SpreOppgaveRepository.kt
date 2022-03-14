@@ -19,10 +19,10 @@ interface SpreOppgaveRepository : CrudRepository<SpreOppgaveDbRecord, String> {
         WHERE  avstemt = true
           AND (status = 'Opprett'
                OR status = 'OpprettSpeilRelatert'
-               OR (status = 'Utsett' AND timeout < now()))
+               OR (status = 'Utsett' AND timeout < :timeout))
         """
     )
-    fun findOppgaverTilOpprettelse(): List<SpreOppgaveDbRecord>
+    fun findOppgaverTilOpprettelse(timeout: Instant): List<SpreOppgaveDbRecord>
 
     @Modifying
     @Query(
