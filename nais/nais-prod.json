@@ -11,7 +11,7 @@
     "PDL_URL": "https://pdl-api.prod-fss-pub.nais.io",
     "PDL_API_AAD_CLIENT_ID": "prod-fss.pdl.pdl-api",
     "DOKARKIV_URL": "https://dokarkiv.prod-fss-pub.nais.io",
-    "DOKARKIV_AAD_CLIENT_ID": "162b3255-2f72-4399-8f7a-244add9ffaac",
+    "DOKARKIV_AAD_CLIENT_ID": "prod-fss.teamdokumenthandtering.dokarkiv",
     "OPPGAVE_URL": "https://oppgave.prod-fss-pub.nais.io/api/v1/oppgaver",
     "OPPGAVE_AAD_CLIENT_ID": "prod-fss.oppgavehandtering.oppgave",
     "BUCKET_UPLOADER_URL": "http://flex-bucket-uploader",
