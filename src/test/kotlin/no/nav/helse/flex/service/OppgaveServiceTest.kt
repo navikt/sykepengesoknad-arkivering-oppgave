@@ -127,7 +127,7 @@ class OppgaveServiceTest {
             opprettet = LocalDateTime.now(),
             fom = now().minusWeeks(3),
             tom = now().minusDays(3),
-            innsendtDato = null,
+            innsendtTid = null,
             sendtArbeidsgiver = null,
             startSykeforlop = now().minusWeeks(3),
             sykmeldingUtskrevet = now().minusWeeks(3),
