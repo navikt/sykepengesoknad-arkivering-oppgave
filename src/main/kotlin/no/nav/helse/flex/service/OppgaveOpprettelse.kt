@@ -34,8 +34,8 @@ class OppgaveOpprettelse(
         behandleOppgaver()
     }
 
-    fun behandleOppgaver(modifisertTidspunkt: Instant = Instant.now()) {
-        val oppgaver = spreOppgaveRepository.findOppgaverTilOpprettelse()
+    fun behandleOppgaver(tid: Instant = Instant.now()) {
+        val oppgaver = spreOppgaveRepository.findOppgaverTilOpprettelse(tid)
 
         if (oppgaver.isNotEmpty()) {
             log.info("Behandler ${oppgaver.size} oppgaver som skal opprettes")
@@ -57,7 +57,7 @@ class OppgaveOpprettelse(
                         sykepengesoknadId = it.sykepengesoknadId,
                         timeout = null,
                         status = tilOpprettetStatus(it.status),
-                        modifisertTidspunkt
+                        tid
                     )
                 } else {
                     log.info("Fant ikke eksisterende innsending, ignorerer søknad med id ${it.sykepengesoknadId}")
@@ -79,7 +79,7 @@ class OppgaveOpprettelse(
                         sykepengesoknadId = it.sykepengesoknadId,
                         timeout = null,
                         status = OppgaveStatus.IkkeOpprett,
-                        modifisertTidspunkt
+                        tid
                     )
                 } else {
                     log.error("SøknadIkkeFunnetException ved opprettelse av oppgave ${it.sykepengesoknadId}", e)

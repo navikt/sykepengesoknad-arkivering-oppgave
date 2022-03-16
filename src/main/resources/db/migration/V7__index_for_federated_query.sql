@@ -1,0 +1,1 @@
+CREATE INDEX modifisert_status_idx ON oppgavestyring (modifisert, status);
