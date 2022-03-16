@@ -82,7 +82,7 @@ private fun getJornalfoertDokumentTittel(soknad: Soknad): String {
 
 private fun getStruktureltInnholdFilnavn(soknad: Soknad): String {
     return when (soknad.soknadstype) {
-        Soknadstype.OPPHOLD_UTLAND -> "soknad-${soknad.innsendtDato!!.format(DatoUtil.norskDato)}"
+        Soknadstype.OPPHOLD_UTLAND -> "soknad-${soknad.innsendtTid!!.format(DatoUtil.norskDato)}"
         Soknadstype.SELVSTENDIGE_OG_FRILANSERE -> "Søknad om sykepenger fra Selvstendig/Frilanser for periode: ${soknad.fom!!.format(
             DatoUtil.norskDato
         )} til ${soknad.tom!!.format(DatoUtil.norskDato)}"
