@@ -29,6 +29,7 @@ class AivenSoknadSendtListener(
         topics = [SYKEPENGESOKNAD_TOPIC],
         id = "soknadSendt",
         idIsGroup = false,
+        concurrency = "3",
         containerFactory = "aivenKafkaListenerContainerFactory"
     )
     fun listen(cr: ConsumerRecord<String, String>, acknowledgment: Acknowledgment) {

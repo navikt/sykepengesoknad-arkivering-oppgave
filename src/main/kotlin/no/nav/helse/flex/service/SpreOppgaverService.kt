@@ -30,8 +30,6 @@ class SpreOppgaverService(
     private val timeout = defaultTimeoutTimer.toLong()
     private val gjenopplivetCounter = registry.counter("gjenopplivet_oppgave")
 
-    // Er Synchronized pga. race condition mellom saksbehandling i vårt system og saksbehandling i Bømlo's system
-    @Synchronized
     fun prosesserOppgave(oppgave: OppgaveDTO, kilde: OppgaveKilde) {
         val eksisterendeOppgave = spreOppgaveRepository.findBySykepengesoknadId(oppgave.dokumentId.toString())
         when (kilde) {
@@ -61,8 +59,6 @@ class SpreOppgaverService(
         }
     }
 
-    // Dersom on-prem og aiven konsumering slåss om kallet
-    @Synchronized
     private fun håndterOppgaveFraBømlo(
         eksisterendeOppgave: SpreOppgaveDbRecord?,
         oppgave: OppgaveDTO
