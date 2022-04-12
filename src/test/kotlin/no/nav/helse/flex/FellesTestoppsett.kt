@@ -18,17 +18,26 @@ private class PostgreSQLContainer12 : PostgreSQLContainer<PostgreSQLContainer12>
 abstract class FellesTestoppsett {
 
     companion object {
+        private val postgresContainer = PostgreSQLContainer12().apply {
+            start()
+            System.setProperty("spring.datasource.url", "${jdbcUrl}&reWriteBatchedInserts=true")
+            System.setProperty("spring.datasource.username", username)
+            System.setProperty("spring.datasource.password", password)
+        }
+
+        private val kafkaContainer = KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:6.1.1")).apply {
+            start()
+            System.setProperty("KAFKA_BROKERS", bootstrapServers)
+        }
+
         init {
-            PostgreSQLContainer12().also {
-                it.start()
-                System.setProperty("spring.datasource.url", "${it.jdbcUrl}&reWriteBatchedInserts=true")
-                System.setProperty("spring.datasource.username", it.username)
-                System.setProperty("spring.datasource.password", it.password)
-            }
-            KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:6.1.1")).also {
-                it.start()
-                System.setProperty("KAFKA_BROKERS", it.bootstrapServers)
-            }
+            Runtime.getRuntime().addShutdownHook(
+                Thread {
+                    println("Avslutter testcontainers")
+                    postgresContainer.close()
+                    kafkaContainer.close()
+                }
+            )
         }
     }
 
