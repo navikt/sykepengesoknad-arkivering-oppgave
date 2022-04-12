@@ -1,7 +1,7 @@
 package no.nav.helse.flex.service
 
 import com.nhaarman.mockitokotlin2.*
-import no.nav.helse.FellesTestoppsett
+import no.nav.helse.flex.FellesTestoppsett
 import no.nav.helse.flex.client.DokArkivClient
 import no.nav.helse.flex.client.FlexBucketUploaderClient
 import no.nav.helse.flex.client.PDFClient

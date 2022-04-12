@@ -1,7 +1,7 @@
 package no.nav.helse.flex.e2e
 
 import com.nhaarman.mockitokotlin2.whenever
-import no.nav.helse.FellesTestoppsett
+import no.nav.helse.flex.FellesTestoppsett
 import no.nav.helse.flex.any
 import no.nav.helse.flex.client.SyfosoknadClient
 import no.nav.helse.flex.domain.DokumentTypeDTO

@@ -1,4 +1,4 @@
-package no.nav.helse
+package no.nav.helse.flex
 
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import org.junit.jupiter.api.TestInstance
@@ -20,7 +20,7 @@ abstract class FellesTestoppsett {
     companion object {
         private val postgresContainer = PostgreSQLContainer12().apply {
             start()
-            System.setProperty("spring.datasource.url", "${jdbcUrl}&reWriteBatchedInserts=true")
+            System.setProperty("spring.datasource.url", "$jdbcUrl&reWriteBatchedInserts=true")
             System.setProperty("spring.datasource.username", username)
             System.setProperty("spring.datasource.password", password)
         }
