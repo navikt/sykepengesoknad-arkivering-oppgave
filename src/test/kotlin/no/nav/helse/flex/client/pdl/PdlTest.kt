@@ -2,7 +2,7 @@ package no.nav.helse.flex.client.pdl
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
-import no.nav.helse.FellesTestoppsett
+import no.nav.helse.flex.FellesTestoppsett
 import no.nav.helse.flex.service.IdentService
 import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.Test

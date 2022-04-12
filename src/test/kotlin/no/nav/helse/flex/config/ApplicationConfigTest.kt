@@ -1,6 +1,6 @@
 package no.nav.helse.flex.config
 
-import no.nav.helse.FellesTestoppsett
+import no.nav.helse.flex.FellesTestoppsett
 import org.junit.jupiter.api.Test
 import org.springframework.test.annotation.DirtiesContext
 

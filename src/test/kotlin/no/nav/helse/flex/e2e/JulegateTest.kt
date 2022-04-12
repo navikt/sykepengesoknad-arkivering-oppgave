@@ -1,6 +1,6 @@
 package no.nav.helse.flex.e2e
 
-import no.nav.helse.FellesTestoppsett
+import no.nav.helse.flex.FellesTestoppsett
 import no.nav.helse.flex.domain.DokumentTypeDTO
 import no.nav.helse.flex.domain.OppdateringstypeDTO
 import no.nav.helse.flex.domain.OppgaveDTO

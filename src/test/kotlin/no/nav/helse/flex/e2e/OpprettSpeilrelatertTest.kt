@@ -4,7 +4,7 @@ import com.nhaarman.mockitokotlin2.KArgumentCaptor
 import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import no.nav.helse.FellesTestoppsett
+import no.nav.helse.flex.FellesTestoppsett
 import no.nav.helse.flex.any
 import no.nav.helse.flex.arkivering.Arkivaren
 import no.nav.helse.flex.client.DokArkivClient

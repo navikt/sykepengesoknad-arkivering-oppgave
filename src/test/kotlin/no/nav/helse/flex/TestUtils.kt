@@ -1,4 +1,4 @@
-package no.nav.helse
+package no.nav.helse.flex
 
 const val beskrivelseUtland = "Søknad om å beholde sykepenger utenfor EØS\n" +
     "\n" +
