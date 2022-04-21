@@ -93,15 +93,15 @@ class HandterOppave(
             )
         }
     }
+}
 
-    private fun timeout(oppgave: OppgaveDTO) =
-        if (oppgave.oppdateringstype == OppdateringstypeDTO.Utsett) oppgave.timeout?.tilOsloZone()
-            ?.toInstant() else null
+internal fun timeout(oppgave: OppgaveDTO) =
+    if (oppgave.oppdateringstype == OppdateringstypeDTO.Utsett) oppgave.timeout?.tilOsloZone()
+        ?.toInstant() else null
 
-    private fun OppdateringstypeDTO.tilOppgaveStatus() = when (this) {
-        OppdateringstypeDTO.Utsett -> OppgaveStatus.Utsett
-        OppdateringstypeDTO.Ferdigbehandlet -> OppgaveStatus.IkkeOpprett
-        OppdateringstypeDTO.OpprettSpeilRelatert -> OppgaveStatus.OpprettSpeilRelatert
-        OppdateringstypeDTO.Opprett -> OppgaveStatus.Opprett
-    }
+private fun OppdateringstypeDTO.tilOppgaveStatus() = when (this) {
+    OppdateringstypeDTO.Utsett -> OppgaveStatus.Utsett
+    OppdateringstypeDTO.Ferdigbehandlet -> OppgaveStatus.IkkeOpprett
+    OppdateringstypeDTO.OpprettSpeilRelatert -> OppgaveStatus.OpprettSpeilRelatert
+    OppdateringstypeDTO.Opprett -> OppgaveStatus.Opprett
 }
