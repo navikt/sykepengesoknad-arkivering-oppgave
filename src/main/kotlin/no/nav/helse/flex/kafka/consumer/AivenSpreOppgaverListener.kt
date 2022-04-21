@@ -14,6 +14,7 @@ import no.nav.syfo.kafka.getSafeNavCallIdHeaderAsString
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.MDC
 import org.springframework.dao.DuplicateKeyException
+import org.springframework.data.relational.core.conversion.DbActionExecutionException
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
@@ -48,9 +49,12 @@ class AivenSpreOppgaverListener(
             }
 
             acknowledgment.acknowledge()
-        } catch (e: DuplicateKeyException) {
-            log.info("Spre oppgave ${oppgaveDTO.dokumentId} kan ikke legges inn i databasen nå, prøver igjen senere")
-            acknowledgment.nack(100)
+        } catch (e: DbActionExecutionException) {
+            if (e.cause is DuplicateKeyException) {
+                log.info("Spre oppgave ${oppgaveDTO.dokumentId} kan ikke legges inn i databasen nå, prøver igjen senere")
+                acknowledgment.nack(100)
+                return
+            }
         } catch (e: Exception) {
             throw RuntimeException("Uventet feil ved prosessering av oppgave")
         } finally {

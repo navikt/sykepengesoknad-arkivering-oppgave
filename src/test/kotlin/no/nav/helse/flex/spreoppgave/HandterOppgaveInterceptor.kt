@@ -1,0 +1,43 @@
+package no.nav.helse.flex.spreoppgave
+
+import no.nav.helse.flex.domain.OppgaveDTO
+import no.nav.helse.flex.repository.OppgaveStatus
+import no.nav.helse.flex.repository.SpreOppgaveDbRecord
+import no.nav.helse.flex.repository.SpreOppgaveRepository
+import org.springframework.context.annotation.Primary
+import org.springframework.stereotype.Component
+import java.time.Instant
+import java.util.UUID
+
+@Component
+@Primary
+class HandterOppgaveInterceptor(
+    private val handterOppave: HandterOppave,
+    private val spreOppgaveRepository: SpreOppgaveRepository,
+) : HandterOppgaveInterface {
+    companion object {
+        val raceConditionUUID: UUID = UUID.randomUUID()
+    }
+
+    override fun håndterOppgaveFraBømlo(eksisterendeOppgave: SpreOppgaveDbRecord?, oppgave: OppgaveDTO) {
+        if (eksisterendeOppgave == null && oppgave.dokumentId == raceConditionUUID) {
+            val tidspunkt = Instant.now()
+
+            spreOppgaveRepository.save(
+                SpreOppgaveDbRecord(
+                    sykepengesoknadId = oppgave.dokumentId.toString(),
+                    timeout = tidspunkt.plusSeconds(60),
+                    status = OppgaveStatus.Utsett,
+                    opprettet = tidspunkt,
+                    modifisert = tidspunkt
+                )
+            )
+        }
+
+        handterOppave.håndterOppgaveFraBømlo(eksisterendeOppgave, oppgave)
+    }
+
+    override fun håndterOppgaveFraSøknad(eksisterendeOppgave: SpreOppgaveDbRecord?, oppgave: OppgaveDTO) {
+        handterOppave.håndterOppgaveFraSøknad(eksisterendeOppgave, oppgave)
+    }
+}
