@@ -3,6 +3,7 @@ package no.nav.helse.flex.service
 import no.nav.helse.flex.domain.dto.Sykepengesoknad
 import no.nav.helse.flex.logger
 import no.nav.helse.flex.repository.InnsendingDbRecord
+import no.nav.helse.flex.spreoppgave.SpreOppgaverService
 import org.springframework.stereotype.Component
 
 @Component
