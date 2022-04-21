@@ -7,8 +7,8 @@ import no.nav.helse.flex.domain.DokumentTypeDTO
 import no.nav.helse.flex.domain.OppgaveDTO
 import no.nav.helse.flex.logger
 import no.nav.helse.flex.objectMapper
-import no.nav.helse.flex.service.OppgaveKilde
-import no.nav.helse.flex.service.SpreOppgaverService
+import no.nav.helse.flex.spreoppgave.OppgaveKilde
+import no.nav.helse.flex.spreoppgave.SpreOppgaverService
 import no.nav.syfo.kafka.NAV_CALLID
 import no.nav.syfo.kafka.getSafeNavCallIdHeaderAsString
 import org.apache.kafka.clients.consumer.ConsumerRecord

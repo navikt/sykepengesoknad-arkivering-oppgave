@@ -5,7 +5,7 @@ import no.nav.helse.flex.kafka.mapper.toSykepengesoknad
 import no.nav.helse.flex.logger
 import no.nav.helse.flex.objectMapper
 import no.nav.helse.flex.service.IdentService
-import no.nav.helse.flex.service.SpreOppgaverService
+import no.nav.helse.flex.spreoppgave.SpreOppgaverService
 import no.nav.helse.flex.sykepengesoknad.kafka.SykepengesoknadDTO
 import no.nav.syfo.kafka.NAV_CALLID
 import no.nav.syfo.kafka.getSafeNavCallIdHeaderAsString
