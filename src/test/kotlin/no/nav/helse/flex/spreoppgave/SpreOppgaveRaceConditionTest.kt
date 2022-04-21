@@ -88,6 +88,7 @@ class SpreOppgaveRaceConditionTest : FellesTestoppsett() {
         aivenKafkaProducer.send(
             ProducerRecord(
                 SPREOPPGAVER_TOPIC,
+                raceConditionUUID.serialisertTilString(),
                 OppgaveDTO(
                     dokumentType = DokumentTypeDTO.Søknad,
                     oppdateringstype = OppdateringstypeDTO.Utsett,
@@ -115,6 +116,7 @@ class SpreOppgaveRaceConditionTest : FellesTestoppsett() {
         aivenKafkaProducer.send(
             ProducerRecord(
                 SYKEPENGESOKNAD_TOPIC,
+                søknad.id,
                 søknad.serialisertTilString()
             )
         )
