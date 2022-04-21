@@ -8,6 +8,7 @@ import no.nav.helse.flex.domain.dto.Sykepengesoknad
 import no.nav.helse.flex.repository.SpreOppgaveRepository
 import no.nav.helse.flex.service.SaksbehandlingsService
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.data.relational.core.conversion.DbActionExecutionException
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 import java.util.UUID
@@ -54,6 +55,9 @@ class SpreOppgaverService(
                 }
                 saksbehandlingsService.settFerdigbehandlet(innsendingsId)
             }
+        } catch (e: DbActionExecutionException) {
+            // Kastes videre for å gjøre acknowledgment.nack()
+            throw e
         } catch (e: Exception) {
             saksbehandlingsService.innsendingFeilet(sykepengesoknad, e)
         }
