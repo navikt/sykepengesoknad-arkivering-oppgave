@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.time.Instant
 import java.time.LocalDateTime
-import java.time.OffsetDateTime
 import java.util.UUID
 
 @Component
@@ -49,8 +48,8 @@ class SpreOppgaverService(
             spreOppgaveRepository.save(
                 SpreOppgaveDbRecord(
                     sykepengesoknadId = oppgave.dokumentId.toString(),
-                    timeout = OffsetDateTime.now().plusHours(48).toInstant(),
-                    status = OppgaveStatus.Utsett,
+                    timeout = timeout(oppgave),
+                    status = oppgave.oppdateringstype.tilOppgaveStatus(),
                     avstemt = true,
                     opprettet = now,
                     modifisert = now
