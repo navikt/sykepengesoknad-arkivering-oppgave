@@ -20,6 +20,6 @@
     "PDFGEN_URL": "http://flex-sykepengesoknad-pdfgen",
     "FLEX_FSS_PROXY_AAD_CLIENT_ID": "prod-fss.flex.flex-fss-proxy",
     "FLEX_FSS_PROXY_URL": "https://flex-fss-proxy.prod-fss-pub.nais.io",
-    "DEFAULT_TIMEOUT_TIMER": "1"
+    "DEFAULT_TIMEOUT_TIMER": "48"
   }
 }
