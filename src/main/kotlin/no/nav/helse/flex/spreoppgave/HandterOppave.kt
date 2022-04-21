@@ -71,6 +71,10 @@ class HandterOppave(
                 log.info("Gjør ikke ${oppgave.oppdateringstype.name} for søknad ${oppgave.dokumentId} fordi status er ${eksisterendeOppgave.status.name}")
             }
         }
+
+        if (eksisterendeOppgave != null) {
+            spreOppgaveRepository.updateAvstemtBySykepengesoknadId(eksisterendeOppgave.sykepengesoknadId)
+        }
     }
 
     override fun håndterOppgaveFraSøknad(
