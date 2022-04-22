@@ -35,6 +35,7 @@ import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.test.annotation.DirtiesContext
 import java.time.Duration
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
 @DirtiesContext
 class SpreOppgaveRaceConditionTest : FellesTestoppsett() {
@@ -83,7 +84,7 @@ class SpreOppgaveRaceConditionTest : FellesTestoppsett() {
 
     @Test
     fun `Håndtering av DuplicateKeyException når spre oppgave opprettes i fra søknad og bømlo samtidig`() {
-        val timeoutFraBømlo = LocalDateTime.now().plusMinutes(29)
+        val timeoutFraBømlo = LocalDateTime.now().plusMinutes(29).truncatedTo(ChronoUnit.SECONDS)
 
         aivenKafkaProducer.send(
             ProducerRecord(

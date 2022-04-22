@@ -7,6 +7,7 @@ import no.nav.helse.flex.repository.SpreOppgaveRepository
 import org.springframework.context.annotation.Primary
 import org.springframework.stereotype.Component
 import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.UUID
 
 @Component
@@ -17,7 +18,7 @@ class HandterOppgaveInterceptor(
 ) : HandterOppgaveInterface {
     companion object {
         val raceConditionUUID: UUID = UUID.randomUUID()
-        val raceConditionTimeout: Instant = Instant.now().plusSeconds(60)
+        val raceConditionTimeout: Instant = Instant.now().plusSeconds(60).truncatedTo(ChronoUnit.SECONDS)
     }
 
     override fun håndterOppgaveFraBømlo(eksisterendeOppgave: SpreOppgaveDbRecord?, oppgave: OppgaveDTO) {
