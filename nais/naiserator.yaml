@@ -53,7 +53,7 @@ spec:
             users:
               - name: bigquery-dataprodukt
     buckets:
-      - name: oppgavefordeling-bucket
+      - name: {{bucketName}}
         cascadingDelete: true
   accessPolicy:
     outbound:

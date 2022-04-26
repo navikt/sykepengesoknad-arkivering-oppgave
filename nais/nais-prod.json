@@ -7,6 +7,7 @@
     "dokarkiv.prod-fss-pub.nais.io",
     "oppgave.prod-fss-pub.nais.io"
   ],
+  "bucketName": "oppgavefordeling-bucket-prod",
   "env": {
     "PDL_URL": "https://pdl-api.prod-fss-pub.nais.io",
     "PDL_API_AAD_CLIENT_ID": "prod-fss.pdl.pdl-api",
@@ -16,7 +17,7 @@
     "OPPGAVE_AAD_CLIENT_ID": "prod-fss.oppgavehandtering.oppgave",
     "BUCKET_UPLOADER_URL": "http://flex-bucket-uploader",
     "FLEX_BUCKET_UPLOADER_AAD_CLIENT_ID": "prod-gcp.flex.flex-bucket-uploader",
-    "PDFGEN_URL":"http://flex-sykepengesoknad-pdfgen",
+    "PDFGEN_URL": "http://flex-sykepengesoknad-pdfgen",
     "FLEX_FSS_PROXY_AAD_CLIENT_ID": "prod-fss.flex.flex-fss-proxy",
     "FLEX_FSS_PROXY_URL": "https://flex-fss-proxy.prod-fss-pub.nais.io",
     "DEFAULT_TIMEOUT_TIMER": "1"
