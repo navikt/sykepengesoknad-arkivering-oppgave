@@ -52,6 +52,9 @@ spec:
             envVarPrefix: DB
             users:
               - name: bigquery-dataprodukt
+    buckets:
+      - name: oppgavefordeling-bucket
+        cascadingDelete: true
   accessPolicy:
     outbound:
       rules:
