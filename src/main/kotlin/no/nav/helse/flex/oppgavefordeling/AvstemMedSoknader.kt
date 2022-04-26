@@ -3,6 +3,7 @@ package no.nav.helse.flex.oppgavefordeling
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.flex.objectMapper
 import no.nav.helse.flex.sykepengesoknad.kafka.SoknadstypeDTO
+import no.nav.helse.flex.util.tilOsloZone
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
@@ -12,7 +13,9 @@ import java.time.LocalDateTime
 const val SENDT_SYKEPENGESOKNAD_TOPIC = "flex." + "syfosoknad-sykepengesoknad-migrering"
 
 @Component
-class AvstemMedSoknader {
+class AvstemMedSoknader(
+    val oppgavefordelingRepository: OppgavefordelingRepository,
+) {
 
     @KafkaListener(
         topics = [SENDT_SYKEPENGESOKNAD_TOPIC],
@@ -28,7 +31,10 @@ class AvstemMedSoknader {
         val soknad = cr.value().tilEnkelSoknad()
 
         if (soknad.status == "SENDT" && !soknad.ettersendtTilArbeidsgiver() && soknad.skalSynkeOppgaveOpprettelseMedBomlo()) {
-            // TODO: Avstem oppgave
+            oppgavefordelingRepository.settTilAvstemt(
+                soknad.id,
+                soknad.sendtNav!!.tilOsloZone().toInstant()
+            )
         }
 
         acknowledgment.acknowledge()
