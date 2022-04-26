@@ -20,7 +20,7 @@ class AvstemMedSoknader(
         topics = [SENDT_SYKEPENGESOKNAD_TOPIC],
         id = "avstemMedSoknader",
         idIsGroup = true,
-        concurrency = "3",
+        concurrency = "6",
         containerFactory = "aivenKafkaListenerContainerFactory",
         properties = [
             "auto.offset.reset=earliest"
