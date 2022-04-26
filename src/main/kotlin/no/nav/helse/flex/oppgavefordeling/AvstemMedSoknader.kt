@@ -35,9 +35,8 @@ class AvstemMedSoknader(
                 soknad.id,
                 soknad.sendtNav!!.tilOsloZone().toInstant()
             )
+            acknowledgment.acknowledge()
         }
-
-        acknowledgment.acknowledge()
     }
 
     private data class EnkelSoknad(
