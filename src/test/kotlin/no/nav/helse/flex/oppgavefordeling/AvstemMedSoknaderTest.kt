@@ -23,10 +23,11 @@ class AvstemMedSoknaderTest : FellesTestoppsett() {
     @Autowired
     private lateinit var aivenKafkaProducer: KafkaProducer<String, String>
 
+    private val fnr = "12345"
+
     @Test
     fun `Avstemning av oppgave`() {
         val id = UUID.randomUUID()
-        val fnr = "12345"
         val soknad = mockSykepengesoknadDTO.copy(
             id = id.toString(),
             fnr = fnr
@@ -54,5 +55,30 @@ class AvstemMedSoknaderTest : FellesTestoppsett() {
         val oppgave = oppgavefordelingRepository.findBySykepengesoknadId(soknad.id)!!
         oppgave.avstemt shouldBeEqualTo true
         oppgave.sendtNav shouldBeEqualTo soknad.sendtNav!!.tilOsloZone().toInstant()
+    }
+
+    @Test
+    fun `Sendt søknad som vi ikke har fått beskjed om å opprette`() {
+        val id = UUID.randomUUID()
+        val soknad = mockSykepengesoknadDTO.copy(
+            id = id.toString(),
+            fnr = fnr
+        )
+
+        oppgavefordelingRepository.findBySykepengesoknadId(soknad.id) shouldBeEqualTo null
+
+        aivenKafkaProducer.send(
+            ProducerRecord(
+                SENDT_SYKEPENGESOKNAD_TOPIC,
+                soknad.id,
+                soknad.serialisertTilString()
+            )
+        )
+
+        await().during(Duration.ofSeconds(2)).until {
+            oppgavefordelingRepository.findBySykepengesoknadId(soknad.id) == null
+        }
+
+        oppgavefordelingRepository.findBySykepengesoknadId(soknad.id) shouldBeEqualTo null
     }
 }
