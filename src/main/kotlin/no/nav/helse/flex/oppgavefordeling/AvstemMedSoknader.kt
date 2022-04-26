@@ -2,7 +2,6 @@ package no.nav.helse.flex.oppgavefordeling
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.flex.objectMapper
-import no.nav.helse.flex.sykepengesoknad.kafka.SoknadstypeDTO
 import no.nav.helse.flex.util.tilOsloZone
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.springframework.kafka.annotation.KafkaListener
@@ -39,14 +38,28 @@ class AvstemMedSoknader(
         }
     }
 
-    private data class EnkelSoknad(
+    data class EnkelSoknad(
         val id: String,
         val status: String,
         val sendtNav: LocalDateTime? = null,
         val sendtArbeidsgiver: LocalDateTime? = null,
-        val type: SoknadstypeDTO,
-        val sendTilGosys: Boolean? = null,
-    )
+        val soknadstype: Soknadstype,
+        val avbruttFeilinfo: Boolean? = null,
+    ) {
+        val sendTilGosys: Boolean?
+            get() = avbruttFeilinfo
+    }
+
+    enum class Soknadstype {
+        SELVSTENDIGE_OG_FRILANSERE,
+        OPPHOLD_UTLAND,
+        ARBEIDSTAKERE,
+        ARBEIDSLEDIG,
+        BEHANDLINGSDAGER,
+        ANNET_ARBEIDSFORHOLD,
+        REISETILSKUDD,
+        GRADERT_REISETILSKUDD,
+    }
 
     private fun String.tilEnkelSoknad(): EnkelSoknad = objectMapper.readValue(this)
 
@@ -54,7 +67,7 @@ class AvstemMedSoknader(
         sendtArbeidsgiver != null && sendtNav?.isBefore(sendtArbeidsgiver) ?: false
 
     private fun EnkelSoknad.skalSynkeOppgaveOpprettelseMedBomlo(): Boolean {
-        return type == SoknadstypeDTO.ARBEIDSTAKERE && skalBehandlesAvNav() && this.sendTilGosys != true
+        return soknadstype == Soknadstype.ARBEIDSTAKERE && skalBehandlesAvNav() && this.sendTilGosys != true
     }
 
     private fun EnkelSoknad.skalBehandlesAvNav() =

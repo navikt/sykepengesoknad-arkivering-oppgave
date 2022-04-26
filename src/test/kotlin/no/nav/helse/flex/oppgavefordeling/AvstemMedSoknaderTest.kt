@@ -1,7 +1,8 @@
 package no.nav.helse.flex.oppgavefordeling
 
 import no.nav.helse.flex.FellesTestoppsett
-import no.nav.helse.flex.mockSykepengesoknadDTO
+import no.nav.helse.flex.oppgavefordeling.AvstemMedSoknader.EnkelSoknad
+import no.nav.helse.flex.oppgavefordeling.AvstemMedSoknader.Soknadstype.ARBEIDSTAKERE
 import no.nav.helse.flex.serialisertTilString
 import no.nav.helse.flex.util.tilOsloZone
 import org.amshove.kluent.shouldBeEqualTo
@@ -12,6 +13,8 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.annotation.DirtiesContext
 import java.time.Duration
+import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 import java.util.UUID
 
 @DirtiesContext
@@ -23,15 +26,17 @@ class AvstemMedSoknaderTest : FellesTestoppsett() {
     @Autowired
     private lateinit var aivenKafkaProducer: KafkaProducer<String, String>
 
-    private val fnr = "12345"
+    private fun mockSoknad(soknadId: UUID) = EnkelSoknad(
+        id = soknadId.toString(),
+        status = "SENDT",
+        sendtNav = LocalDateTime.now(),
+        soknadstype = ARBEIDSTAKERE,
+    )
 
     @Test
     fun `Avstemning av oppgave`() {
         val id = UUID.randomUUID()
-        val soknad = mockSykepengesoknadDTO.copy(
-            id = id.toString(),
-            fnr = fnr
-        )
+        val soknad = mockSoknad(id)
 
         oppgavefordelingRepository.insert(
             sykepengesoknadId = soknad.id,
@@ -54,16 +59,14 @@ class AvstemMedSoknaderTest : FellesTestoppsett() {
 
         val oppgave = oppgavefordelingRepository.findBySykepengesoknadId(soknad.id)!!
         oppgave.avstemt shouldBeEqualTo true
-        oppgave.sendtNav shouldBeEqualTo soknad.sendtNav!!.tilOsloZone().toInstant()
+        oppgave.sendtNav?.truncatedTo(ChronoUnit.MILLIS) shouldBeEqualTo soknad.sendtNav!!.tilOsloZone().toInstant()
+            .truncatedTo(ChronoUnit.MILLIS)
     }
 
     @Test
     fun `Sendt søknad som vi ikke har fått beskjed om å opprette`() {
         val id = UUID.randomUUID()
-        val soknad = mockSykepengesoknadDTO.copy(
-            id = id.toString(),
-            fnr = fnr
-        )
+        val soknad = mockSoknad(id)
 
         oppgavefordelingRepository.findBySykepengesoknadId(soknad.id) shouldBeEqualTo null
 
