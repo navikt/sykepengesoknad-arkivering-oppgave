@@ -33,7 +33,6 @@ class KorrigerteSoknader(
             }
         }
         acknowledgment.acknowledge()
-        log.info("Prosessert ${cr.size} records ved leting etter korrigerte.")
     }
 
     data class EnkelSoknad(
