@@ -35,7 +35,6 @@ class AivenKafkaErrorHandler : DefaultErrorHandler(
         }
         super.handleRemaining(thrownException, records, consumer, container)
     }
-
     override fun handleBatch(
         thrownException: Exception,
         records: ConsumerRecords<*, *>,

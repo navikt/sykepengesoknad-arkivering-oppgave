@@ -19,6 +19,10 @@ interface OppgavefordelingRepository : CrudRepository<OppgavefordelingDbRecord, 
     @Modifying
     @Query("""UPDATE oppgavefordeling SET avstemt = TRUE, sendt_nav = :sendtNav WHERE sykepengesoknad_id = :sykepengesoknadId""")
     fun settTilAvstemt(sykepengesoknadId: String, sendtNav: Instant): Boolean
+
+    @Modifying
+    @Query("""UPDATE oppgavefordeling SET korrigert_av = :korrigertAv WHERE sykepengesoknad_id = :sykepengesoknadId""")
+    fun settkorrigertAv(korrigertAv: String, sykepengesoknadId: String): Boolean
 }
 
 @Table("oppgavefordeling")
@@ -29,6 +33,7 @@ data class OppgavefordelingDbRecord(
     val timeout: Instant? = null,
     val avstemt: Boolean = false,
     val sendtNav: Instant? = null,
+    val korrigertAv: String? = null,
 )
 
 enum class OppgavefordelingStatus {
