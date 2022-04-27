@@ -23,6 +23,10 @@ interface OppgavefordelingRepository : CrudRepository<OppgavefordelingDbRecord, 
     @Modifying
     @Query("""UPDATE oppgavefordeling SET korrigert_av = :korrigertAv WHERE sykepengesoknad_id = :sykepengesoknadId""")
     fun settkorrigertAv(korrigertAv: String, sykepengesoknadId: String): Boolean
+
+    @Modifying
+    @Query("""UPDATE oppgavefordeling SET sendt_arbeidsgiver = :sendtArbeidsgiver WHERE sykepengesoknad_id = :sykepengesoknadId""")
+    fun settSendtArbeidsgiver(sykepengesoknadId: String, sendtArbeidsgiver: Instant): Boolean
 }
 
 @Table("oppgavefordeling")
@@ -33,6 +37,7 @@ data class OppgavefordelingDbRecord(
     val timeout: Instant? = null,
     val avstemt: Boolean = false,
     val sendtNav: Instant? = null,
+    val sendtArbeidsgiver: Instant? = null,
     val korrigertAv: String? = null,
 )
 

@@ -2,6 +2,7 @@ package no.nav.helse.flex.oppgavefordeling
 
 import no.nav.helse.flex.FellesTestoppsett
 import no.nav.helse.flex.oppgavefordeling.AvstemMedSoknader.EnkelSoknad
+import no.nav.helse.flex.oppgavefordeling.AvstemMedSoknader.Soknadstatus.SENDT
 import no.nav.helse.flex.oppgavefordeling.AvstemMedSoknader.Soknadstype.ARBEIDSTAKERE
 import no.nav.helse.flex.serialisertTilString
 import no.nav.helse.flex.util.tilOsloZone
@@ -28,7 +29,7 @@ class AvstemMedSoknaderTest : FellesTestoppsett() {
 
     private fun mockSoknad(soknadId: UUID) = EnkelSoknad(
         id = soknadId.toString(),
-        status = "SENDT",
+        status = SENDT,
         sendtNav = LocalDateTime.now(),
         soknadstype = ARBEIDSTAKERE,
     )
