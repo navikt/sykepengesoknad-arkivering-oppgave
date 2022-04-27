@@ -90,7 +90,7 @@ class AivenKafkaConfig(
             ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
             ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
             ConsumerConfig.MAX_POLL_RECORDS_CONFIG to "1000",
-            ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG to ConsumerConfig.DEFAULT_MAX_PARTITION_FETCH_BYTES * 3,
+            ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG to ConsumerConfig.DEFAULT_MAX_PARTITION_FETCH_BYTES * 6,
         ) + commonConfig()
         val consumerFactory = DefaultKafkaConsumerFactory<String, String>(config)
 

@@ -2,20 +2,23 @@ package no.nav.helse.flex.oppgavefordeling
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.flex.objectMapper
+import no.nav.helse.flex.util.tilOsloZone
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
+import java.time.LocalDateTime
 
 @Component
-class KorrigerteSoknader(
+class SendtarbeidsgiverSoknader(
     val oppgavefordelingRepository: OppgavefordelingRepository,
 ) {
 
     @KafkaListener(
         topics = [SENDT_SYKEPENGESOKNAD_TOPIC],
-        id = "korrigerteSoknader",
+        id = "sendtarbeidsgiverSoknader",
         idIsGroup = true,
+        concurrency = "12",
         containerFactory = "importKafkaListenerContainerFactory",
         properties = [
             "auto.offset.reset=earliest"
@@ -24,21 +27,26 @@ class KorrigerteSoknader(
     fun listenBatch(cr: List<ConsumerRecord<String, String>>, acknowledgment: Acknowledgment) {
         cr.forEach {
             val soknad = it.value().tilEnkelSoknad()
-            if (soknad.status == Soknadstatus.KORRIGERT &&
+
+            if (soknad.status == Soknadstatus.SENDT &&
                 soknad.soknadstype == Soknadstype.ARBEIDSTAKERE &&
-                soknad.korrigertAv != null
+                soknad.sendtArbeidsgiver != null
             ) {
-                oppgavefordelingRepository.settkorrigertAv(soknad.korrigertAv, soknad.id)
+                oppgavefordelingRepository.settSendtArbeidsgiver(
+                    soknad.id,
+                    soknad.sendtArbeidsgiver.tilOsloZone().toInstant(),
+                )
             }
         }
+
         acknowledgment.acknowledge()
     }
 
     private data class EnkelSoknad(
         val id: String,
         val status: Soknadstatus,
+        val sendtArbeidsgiver: LocalDateTime? = null,
         val soknadstype: Soknadstype,
-        val korrigertAv: String? = null,
     )
 
     private enum class Soknadstype {

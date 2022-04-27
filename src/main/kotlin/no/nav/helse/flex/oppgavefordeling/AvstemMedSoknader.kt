@@ -20,7 +20,6 @@ class AvstemMedSoknader(
         topics = [SENDT_SYKEPENGESOKNAD_TOPIC],
         id = "avstemMedSoknader",
         idIsGroup = true,
-        concurrency = "6",
         containerFactory = "aivenKafkaListenerContainerFactory",
         properties = [
             "auto.offset.reset=earliest"
@@ -29,7 +28,10 @@ class AvstemMedSoknader(
     fun listen(cr: ConsumerRecord<String, String>, acknowledgment: Acknowledgment) {
         val soknad = cr.value().tilEnkelSoknad()
 
-        if (soknad.status == "SENDT" && !soknad.ettersendtTilArbeidsgiver() && soknad.skalSynkeOppgaveOpprettelseMedBomlo()) {
+        if (soknad.status == Soknadstatus.SENDT &&
+            !soknad.ettersendtTilArbeidsgiver() &&
+            soknad.skalSynkeOppgaveOpprettelseMedBomlo()
+        ) {
             oppgavefordelingRepository.settTilAvstemt(
                 soknad.id,
                 soknad.sendtNav!!.tilOsloZone().toInstant()
@@ -38,9 +40,9 @@ class AvstemMedSoknader(
         }
     }
 
-    data class EnkelSoknad(
+    internal data class EnkelSoknad(
         val id: String,
-        val status: String,
+        val status: Soknadstatus,
         val sendtNav: LocalDateTime? = null,
         val sendtArbeidsgiver: LocalDateTime? = null,
         val soknadstype: Soknadstype,
@@ -50,7 +52,7 @@ class AvstemMedSoknader(
             get() = avbruttFeilinfo
     }
 
-    enum class Soknadstype {
+    internal enum class Soknadstype {
         SELVSTENDIGE_OG_FRILANSERE,
         OPPHOLD_UTLAND,
         ARBEIDSTAKERE,
@@ -59,6 +61,17 @@ class AvstemMedSoknader(
         ANNET_ARBEIDSFORHOLD,
         REISETILSKUDD,
         GRADERT_REISETILSKUDD,
+    }
+
+    internal enum class Soknadstatus {
+        NY,
+        SENDT,
+        FREMTIDIG,
+        UTKAST_TIL_KORRIGERING,
+        KORRIGERT,
+        AVBRUTT,
+        UTGATT,
+        SLETTET
     }
 
     private fun String.tilEnkelSoknad(): EnkelSoknad = objectMapper.readValue(this)
