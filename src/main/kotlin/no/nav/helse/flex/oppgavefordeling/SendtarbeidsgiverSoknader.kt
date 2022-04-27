@@ -11,9 +11,8 @@ import java.time.LocalDateTime
 
 @Component
 class SendtarbeidsgiverSoknader(
-    val oppgavefordelingRepository: OppgavefordelingRepository,
+    val oppgavefordelingRepository: OppgavefordelingBatchRepository,
 ) {
-
     @KafkaListener(
         topics = [SENDT_SYKEPENGESOKNAD_TOPIC],
         id = "sendtarbeidsgiverSoknader",
@@ -25,6 +24,9 @@ class SendtarbeidsgiverSoknader(
         ],
     )
     fun listenBatch(cr: List<ConsumerRecord<String, String>>, acknowledgment: Acknowledgment) {
+
+        val arbeidsgiverDatoer: ArrayList<ArbeidsgiverDato> = arrayListOf()
+
         cr.forEach {
             val soknad = it.value().tilEnkelSoknad()
 
@@ -32,13 +34,10 @@ class SendtarbeidsgiverSoknader(
                 soknad.soknadstype == Soknadstype.ARBEIDSTAKERE &&
                 soknad.sendtArbeidsgiver != null
             ) {
-                oppgavefordelingRepository.settSendtArbeidsgiver(
-                    soknad.id,
-                    soknad.sendtArbeidsgiver.tilOsloZone().toInstant(),
-                )
+                arbeidsgiverDatoer.add(ArbeidsgiverDato(soknad.id, soknad.sendtArbeidsgiver.tilOsloZone().toInstant()))
             }
         }
-
+        oppgavefordelingRepository.settSendtTilArbeidsGiver(arbeidsgiverDatoer)
         acknowledgment.acknowledge()
     }
 

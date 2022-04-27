@@ -1,14 +1,18 @@
 package no.nav.helse.flex.oppgavefordeling
 
+import no.nav.helse.flex.logger
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils
 import org.springframework.stereotype.Repository
-import java.sql.Timestamp
+import java.time.Instant
 
 @Repository
 class OppgavefordelingBatchRepository(
     private val namedParameterJdbcTemplate: NamedParameterJdbcTemplate,
 ) {
+
+    private var log = logger()
+
     fun settSendtTilArbeidsGiver(arbeidsgiverDatoer: List<ArbeidsgiverDato>) {
         val sql = """
             UPDATE oppgavefordeling 
@@ -17,11 +21,12 @@ class OppgavefordelingBatchRepository(
             """
 
         val batchParams = SqlParameterSourceUtils.createBatch(arbeidsgiverDatoer)
-        namedParameterJdbcTemplate.batchUpdate(sql, batchParams)
+        val batchUpdate = namedParameterJdbcTemplate.batchUpdate(sql, batchParams)
+        log.info("Lagret ${batchUpdate.sum()} verdier med sendtTilArbeidsgiver.")
     }
 }
 
 data class ArbeidsgiverDato(
     val sykepengesoknadId: String,
-    val sendArbeidsgiver: Timestamp
+    val sendArbeidsgiver: Instant
 )
