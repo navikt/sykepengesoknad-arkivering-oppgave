@@ -28,8 +28,11 @@ class KorrigerteSoknader(
     fun listenBatch(cr: List<ConsumerRecord<String, String>>, acknowledgment: Acknowledgment) {
         cr.forEach {
             val soknad = it.value().tilEnkelSoknad()
-            if (soknad.status == Soknadstatus.KORRIGERT && soknad.soknadstype == Soknadstype.ARBEIDSTAKERE) {
-                oppgavefordelingRepository.settkorrigertAv(soknad.korrigertAv!!, soknad.id)
+            if (soknad.status == Soknadstatus.KORRIGERT
+                && soknad.soknadstype == Soknadstype.ARBEIDSTAKERE
+                && soknad.korrigertAv != null
+            ) {
+                oppgavefordelingRepository.settkorrigertAv(soknad.korrigertAv, soknad.id)
             }
         }
         acknowledgment.acknowledge()
