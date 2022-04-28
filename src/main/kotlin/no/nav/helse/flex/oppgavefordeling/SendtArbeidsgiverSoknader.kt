@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 
 @Component
-class SendtarbeidsgiverSoknader(
+class SendtArbeidsgiverSoknader(
     val oppgavefordelingRepository: OppgavefordelingBatchRepository,
 ) {
     @KafkaListener(
@@ -34,7 +34,7 @@ class SendtarbeidsgiverSoknader(
                 soknad.soknadstype == Soknadstype.ARBEIDSTAKERE &&
                 soknad.sendtArbeidsgiver != null
             ) {
-                arbeidsgiverDatoer.add(ArbeidsgiverDato(soknad.id, soknad.sendtArbeidsgiver.tilOsloZone().toInstant()))
+                arbeidsgiverDatoer.add(ArbeidsgiverDato(soknad.id, soknad.sendtArbeidsgiver.tilOsloZone()))
             }
         }
         oppgavefordelingRepository.settSendtTilArbeidsGiver(arbeidsgiverDatoer)

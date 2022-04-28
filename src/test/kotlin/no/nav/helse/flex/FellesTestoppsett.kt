@@ -29,16 +29,6 @@ abstract class FellesTestoppsett {
             start()
             System.setProperty("KAFKA_BROKERS", bootstrapServers)
         }
-
-        init {
-            Runtime.getRuntime().addShutdownHook(
-                Thread {
-                    println("Avslutter testcontainers")
-                    postgresContainer.close()
-                    kafkaContainer.close()
-                }
-            )
-        }
     }
 
     @Autowired

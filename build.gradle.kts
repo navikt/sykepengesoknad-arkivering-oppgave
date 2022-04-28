@@ -46,7 +46,7 @@ val sykepengesoknadKafkaVersion = "2022.03.01-07.45-064f3bb6"
 val mockitoKotlinVersion = "2.2.0"
 val logstashLogbackEncoderVersion = "7.1"
 val tokenSupportVersion = "2.0.14"
-val testContainersVersion = "1.16.3"
+val testContainersVersion = "1.17.1"
 val kluentVersion = "1.68"
 
 dependencies {

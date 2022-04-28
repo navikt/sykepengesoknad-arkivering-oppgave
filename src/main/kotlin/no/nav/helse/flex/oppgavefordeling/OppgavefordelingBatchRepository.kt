@@ -4,7 +4,7 @@ import no.nav.helse.flex.logger
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils
 import org.springframework.stereotype.Repository
-import java.time.Instant
+import java.time.OffsetDateTime
 
 @Repository
 class OppgavefordelingBatchRepository(
@@ -21,6 +21,7 @@ class OppgavefordelingBatchRepository(
             """
 
         val batchParams = SqlParameterSourceUtils.createBatch(arbeidsgiverDatoer)
+
         val batchUpdate = namedParameterJdbcTemplate.batchUpdate(sql, batchParams)
         log.info("Lagret ${batchUpdate.sum()} verdier med sendtTilArbeidsgiver.")
     }
@@ -28,5 +29,5 @@ class OppgavefordelingBatchRepository(
 
 data class ArbeidsgiverDato(
     val sykepengesoknadId: String,
-    val sendArbeidsgiver: Instant
+    val sendtArbeidsgiver: OffsetDateTime
 )
