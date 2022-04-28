@@ -21,9 +21,7 @@ class OppgavefordelingBatchRepository(
             """
 
         val batchParams = SqlParameterSourceUtils.createBatch(arbeidsgiverDatoer)
-
-        val batchUpdate = namedParameterJdbcTemplate.batchUpdate(sql, batchParams)
-        log.info("Lagret ${batchUpdate.sum()} verdier med sendtTilArbeidsgiver.")
+        namedParameterJdbcTemplate.batchUpdate(sql, batchParams)
     }
 }
 
