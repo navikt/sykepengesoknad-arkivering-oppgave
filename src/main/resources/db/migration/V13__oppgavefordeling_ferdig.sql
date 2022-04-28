@@ -1,0 +1,2 @@
+ALTER TABLE oppgavefordeling
+    ADD COLUMN ferdig BOOLEAN DEFAULT FALSE;
