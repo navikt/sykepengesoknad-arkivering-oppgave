@@ -17,7 +17,6 @@ class SendtArbeidsgiverSoknader(
         topics = [SENDT_SYKEPENGESOKNAD_TOPIC],
         id = "sendtarbeidsgiverSoknader",
         idIsGroup = true,
-        concurrency = "12",
         containerFactory = "importKafkaListenerContainerFactory",
         properties = [
             "auto.offset.reset=earliest"
