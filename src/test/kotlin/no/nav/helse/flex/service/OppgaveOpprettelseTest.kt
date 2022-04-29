@@ -78,7 +78,7 @@ class OppgaveOpprettelseTest {
     @Test
     fun `har ingenting å behandle`() {
         oppgaveOpprettelse.behandleOppgaver()
-        verify(saksbehandlingsService, never()).opprettOppgave(any(), any(), any())
+        verify(saksbehandlingsService, never()).opprettOppgave(any(), any(), any(), any())
     }
 
     @Test
@@ -97,7 +97,7 @@ class OppgaveOpprettelseTest {
             )
         )
         oppgaveOpprettelse.behandleOppgaver()
-        verify(saksbehandlingsService, never()).opprettOppgave(any(), any(), any())
+        verify(saksbehandlingsService, never()).opprettOppgave(any(), any(), any(), any())
     }
 
     @Test
@@ -116,7 +116,7 @@ class OppgaveOpprettelseTest {
             )
         )
         oppgaveOpprettelse.behandleOppgaver()
-        verify(saksbehandlingsService, never()).opprettOppgave(any(), any(), any())
+        verify(saksbehandlingsService, never()).opprettOppgave(any(), any(), any(), any())
         verify(spreOppgaveRepository, never()).deleteOppgaveBySykepengesoknadId(any())
     }
 
@@ -137,7 +137,7 @@ class OppgaveOpprettelseTest {
             )
         )
         oppgaveOpprettelse.behandleOppgaver()
-        verify(saksbehandlingsService, never()).opprettOppgave(any(), any(), any())
+        verify(saksbehandlingsService, never()).opprettOppgave(any(), any(), any(), any())
         verify(spreOppgaveRepository, times(1)).deleteOppgaveBySykepengesoknadId(any())
     }
 
@@ -169,7 +169,7 @@ class OppgaveOpprettelseTest {
         val tidspunkt = Instant.now()
         oppgaveOpprettelse.behandleOppgaver(tidspunkt)
 
-        verify(saksbehandlingsService, times(1)).opprettOppgave(any(), any(), any())
+        verify(saksbehandlingsService, times(1)).opprettOppgave(any(), any(), any(), any())
         verify(spreOppgaveRepository, times(1))
             .updateOppgaveBySykepengesoknadId(
                 sykepengesoknadId = soknadId,
@@ -226,7 +226,7 @@ class OppgaveOpprettelseTest {
         val tidspunkt = Instant.now()
         oppgaveOpprettelse.behandleOppgaver(tidspunkt)
 
-        verify(saksbehandlingsService, times(2)).opprettOppgave(any(), any(), any())
+        verify(saksbehandlingsService, times(2)).opprettOppgave(any(), any(), any(), any())
         verify(spreOppgaveRepository, times(1))
             .updateOppgaveBySykepengesoknadId(
                 sykepengesoknadId = soknadId1.toString(),

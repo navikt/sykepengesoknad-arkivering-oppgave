@@ -62,6 +62,7 @@ class OppgaveService(
             soknad: Soknad,
             harRedusertVenteperiode: Boolean = false,
             speilRelatert: Boolean = false,
+            oppgavefordelingRelatert: Boolean = false,
         ): OppgaveRequest =
             OppgaveRequest(
                 opprettetAvEnhetsnr = "9999",
@@ -70,11 +71,13 @@ class OppgaveService(
                 beskrivelse = lagBeskrivelse(soknad),
                 tema = "SYK",
                 oppgavetype = "SOK",
-                aktivDato = now().format(oppgaveDato),
+                aktivDato = aktivDato(soknad, oppgavefordelingRelatert),
                 fristFerdigstillelse = omTreUkedager(now()).format(oppgaveDato),
                 prioritet = "NORM"
             ).apply {
-                if (harRedusertVenteperiode) {
+                if (oppgavefordelingRelatert) {
+                    this.behandlingstema = "TODO" // TODO: Finn ut hva denne skal være
+                } else if (harRedusertVenteperiode) {
                     this.behandlingstype = "ae0247"
                 } else if (speilRelatert) {
                     this.behandlingstema = "ab0455"
@@ -93,6 +96,16 @@ class OppgaveService(
             DayOfWeek.SUNDAY -> idag.plusDays(4)
             DayOfWeek.MONDAY, DayOfWeek.TUESDAY -> idag.plusDays(3)
             else -> idag.plusDays(5)
+        }
+
+        // TODO: Sjekk at man kan filtrere på denne i gosys
+        // Sier noe om når oppgaven ønskes påbegynt f. eks av saksbehandler.
+        fun aktivDato(soknad: Soknad, oppgavefordelingRelatert: Boolean = false): String {
+            if (oppgavefordelingRelatert) {
+                return soknad.innsendtTid!!.format(oppgaveDato)
+            }
+
+            return now().format(oppgaveDato)
         }
     }
 }

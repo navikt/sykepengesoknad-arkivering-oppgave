@@ -50,7 +50,12 @@ class SaksbehandlingsService(
         return innsendingId!!
     }
 
-    fun opprettOppgave(sykepengesoknad: Sykepengesoknad, innsending: InnsendingDbRecord, speilRelatert: Boolean = false) {
+    fun opprettOppgave(
+        sykepengesoknad: Sykepengesoknad,
+        innsending: InnsendingDbRecord,
+        speilRelatert: Boolean = false,
+        oppgavefordelingRelatert: Boolean = false
+    ) {
         val fnr = identService.hentFnrForAktorId(sykepengesoknad.aktorId)
 
         val soknad = opprettSoknad(sykepengesoknad, fnr)
@@ -61,6 +66,7 @@ class SaksbehandlingsService(
             soknad = soknad,
             harRedusertVenteperiode = sykepengesoknad.harRedusertVenteperiode,
             speilRelatert = speilRelatert,
+            oppgavefordelingRelatert = oppgavefordelingRelatert,
         )
         val oppgaveId = oppgaveService.opprettOppgave(requestBody).id.toString()
 
