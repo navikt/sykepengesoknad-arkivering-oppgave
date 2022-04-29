@@ -63,8 +63,8 @@ class FodselsnummerSoknaderTest : FellesTestoppsett() {
         )
 
         await().atMost(Duration.ofSeconds(2)).until {
-            oppgavefordelingRepository.findBySykepengesoknadId(soknad1.id)?.avstemt == true &&
-                oppgavefordelingRepository.findBySykepengesoknadId(soknad2.id)?.avstemt == true
+            oppgavefordelingRepository.findBySykepengesoknadId(soknad1.id)?.fnr != null &&
+                oppgavefordelingRepository.findBySykepengesoknadId(soknad2.id)?.fnr != null
         }
 
         oppgavefordelingRepository.findBySykepengesoknadId(soknad1.id)?.fnr shouldBeEqualTo fnr1

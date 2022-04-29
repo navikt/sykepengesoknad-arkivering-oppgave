@@ -15,14 +15,6 @@ interface OppgavefordelingRepository : CrudRepository<OppgavefordelingDbRecord, 
     @Modifying
     @Query("""INSERT INTO oppgavefordeling(sykepengesoknad_id, status) VALUES (:sykepengesoknadId, :status)""")
     fun insert(sykepengesoknadId: String, status: OppgavefordelingStatus)
-
-    @Modifying
-    @Query("""UPDATE oppgavefordeling SET avstemt = TRUE, sendt_nav = :sendtNav WHERE sykepengesoknad_id = :sykepengesoknadId""")
-    fun settTilAvstemt(sykepengesoknadId: String, sendtNav: Instant): Boolean
-
-    @Modifying
-    @Query("""UPDATE oppgavefordeling SET korrigert_av = :korrigertAv WHERE sykepengesoknad_id = :sykepengesoknadId""")
-    fun settkorrigertAv(korrigertAv: String, sykepengesoknadId: String): Boolean
 }
 
 @Table("oppgavefordeling")

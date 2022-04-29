@@ -8,6 +8,8 @@ import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 
+const val SENDT_SYKEPENGESOKNAD_TOPIC = "flex." + "syfosoknad-sykepengesoknad-migrering"
+
 @Component
 class FodselsnummerSoknader(
     val oppgavefordelingRepository: OppgavefordelingBatchRepository,
@@ -16,7 +18,6 @@ class FodselsnummerSoknader(
         topics = [SENDT_SYKEPENGESOKNAD_TOPIC],
         id = "fodselsnummerSoknader",
         idIsGroup = true,
-        concurrency = "6",
         containerFactory = "importKafkaListenerContainerFactory",
         properties = [
             "auto.offset.reset=earliest"
