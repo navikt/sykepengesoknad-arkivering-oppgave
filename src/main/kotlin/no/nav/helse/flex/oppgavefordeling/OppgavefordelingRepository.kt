@@ -7,6 +7,7 @@ import org.springframework.data.relational.core.mapping.Table
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 import java.time.Instant
+import java.time.LocalDate
 
 @Repository
 interface OppgavefordelingRepository : CrudRepository<OppgavefordelingDbRecord, String> {
@@ -31,6 +32,8 @@ data class OppgavefordelingDbRecord(
     val kommune: String? = null,
     val bydel: String? = null,
     val land: String? = null,
+    val fom: LocalDate? = null,
+    val tom: LocalDate? = null,
 )
 
 enum class OppgavefordelingStatus {

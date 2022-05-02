@@ -6,17 +6,18 @@ import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 const val SENDT_SYKEPENGESOKNAD_TOPIC = "flex." + "syfosoknad-sykepengesoknad-migrering"
 
 @Component
-class FodselsnummerSoknader(
+class FomTomSoknader(
     val oppgavefordelingRepository: OppgavefordelingBatchRepository,
 ) {
     @KafkaListener(
         topics = [SENDT_SYKEPENGESOKNAD_TOPIC],
-        id = "fodselsnummerSoknader",
+        id = "fomTomSoknader",
         idIsGroup = true,
         containerFactory = "importKafkaListenerContainerFactory",
         properties = [
@@ -25,7 +26,7 @@ class FodselsnummerSoknader(
     )
     fun listenBatch(cr: List<ConsumerRecord<String, String>>, acknowledgment: Acknowledgment) {
 
-        val fodselsnummere: ArrayList<Fodselsnummer> = arrayListOf()
+        val liste: ArrayList<FomTom> = arrayListOf()
 
         cr.forEach {
             val soknad = it.value().tilEnkelSoknad()
@@ -35,10 +36,10 @@ class FodselsnummerSoknader(
                 soknad.skalSynkeOppgaveOpprettelseMedBomlo() &&
                 soknad.fnr != null
             ) {
-                fodselsnummere.add(Fodselsnummer(soknad.id, soknad.fnr))
+                liste.add(FomTom(soknad.id, soknad.fom, soknad.tom))
             }
         }
-        oppgavefordelingRepository.settFodselsnummer(fodselsnummere)
+        oppgavefordelingRepository.settFomTom(liste)
         acknowledgment.acknowledge()
     }
 
@@ -50,6 +51,8 @@ class FodselsnummerSoknader(
         val soknadstype: Soknadstype,
         val fnr: String?,
         val avbruttFeilinfo: Boolean? = null,
+        val fom: LocalDate?,
+        val tom: LocalDate?,
     ) {
         val sendTilGosys: Boolean?
             get() = avbruttFeilinfo
