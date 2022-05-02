@@ -1,0 +1,4 @@
+ALTER TABLE oppgavefordeling
+    ADD COLUMN kommune VARCHAR(100) NULL,
+    ADD COLUMN bydel VARCHAR(100) NULL,
+    ADD COLUMN land VARCHAR(100) NULL;
