@@ -29,7 +29,7 @@ interface OppgavefordelingRepository : CrudRepository<OppgavefordelingDbRecord, 
         LIMIT 100
         """
     )
-    fun hent100UtenBosted(): List<OppgavefordelingDbRecord>
+    fun hent100UtenGT(): List<OppgavefordelingDbRecord>
 
     @Modifying
     @Query(
@@ -41,7 +41,7 @@ interface OppgavefordelingRepository : CrudRepository<OppgavefordelingDbRecord, 
         WHERE sykepengesoknad_id = :sykepengesoknadId
         """
     )
-    fun lagreGeografiskTilknytning(sykepengesoknadId: String, kommune: String, bydel: String, land: String)
+    fun lagreGeografiskTilknytning(sykepengesoknadId: String, kommune: String?, bydel: String?, land: String?)
 }
 
 @Table("oppgavefordeling")
