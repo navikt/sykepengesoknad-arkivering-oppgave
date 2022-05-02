@@ -1,9 +1,9 @@
 package no.nav.helse.flex.oppgavefordeling
 
 import no.nav.helse.flex.FellesTestoppsett
-import no.nav.helse.flex.oppgavefordeling.FodselsnummerSoknader.EnkelSoknad
-import no.nav.helse.flex.oppgavefordeling.FodselsnummerSoknader.Soknadstatus.SENDT
-import no.nav.helse.flex.oppgavefordeling.FodselsnummerSoknader.Soknadstype.ARBEIDSTAKERE
+import no.nav.helse.flex.oppgavefordeling.FomTomSoknader.EnkelSoknad
+import no.nav.helse.flex.oppgavefordeling.FomTomSoknader.Soknadstatus.SENDT
+import no.nav.helse.flex.oppgavefordeling.FomTomSoknader.Soknadstype.ARBEIDSTAKERE
 import no.nav.helse.flex.serialisertTilString
 import org.amshove.kluent.shouldBeEqualTo
 import org.apache.kafka.clients.producer.KafkaProducer
@@ -13,11 +13,12 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.annotation.DirtiesContext
 import java.time.Duration
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
 @DirtiesContext
-class FodselsnummerSoknaderTest : FellesTestoppsett() {
+class FomTomSoknaderTest : FellesTestoppsett() {
 
     @Autowired
     lateinit var oppgavefordelingRepository: OppgavefordelingRepository
@@ -34,6 +35,8 @@ class FodselsnummerSoknaderTest : FellesTestoppsett() {
         sendtNav = LocalDateTime.now(),
         soknadstype = ARBEIDSTAKERE,
         fnr = fnr,
+        fom = LocalDate.of(2022, 5, 1),
+        tom = LocalDate.of(2022, 5, 2),
     )
 
     @Test
@@ -42,32 +45,20 @@ class FodselsnummerSoknaderTest : FellesTestoppsett() {
         val fnr1 = "12345678901"
         val soknad1 = mockSoknad(uuid1, fnr1)
 
-        val uuid2 = UUID.randomUUID()
-        val fnr2 = "09876543210"
-        val soknad2 = mockSoknad(uuid2, fnr2)
-
         oppgavefordelingRepository.insert(
             sykepengesoknadId = soknad1.id,
-            status = OppgavefordelingStatus.LagOppgave,
-        )
-        oppgavefordelingRepository.insert(
-            sykepengesoknadId = soknad2.id,
             status = OppgavefordelingStatus.LagOppgave,
         )
 
         aivenKafkaProducer.send(
             ProducerRecord(SENDT_SYKEPENGESOKNAD_TOPIC, soknad1.id, soknad1.serialisertTilString())
         )
-        aivenKafkaProducer.send(
-            ProducerRecord(SENDT_SYKEPENGESOKNAD_TOPIC, soknad2.id, soknad2.serialisertTilString())
-        )
 
         await().atMost(Duration.ofSeconds(2)).until {
-            oppgavefordelingRepository.findBySykepengesoknadId(soknad1.id)?.fnr != null &&
-                oppgavefordelingRepository.findBySykepengesoknadId(soknad2.id)?.fnr != null
+            oppgavefordelingRepository.findBySykepengesoknadId(soknad1.id)?.fom != null
         }
 
-        oppgavefordelingRepository.findBySykepengesoknadId(soknad1.id)?.fnr shouldBeEqualTo fnr1
-        oppgavefordelingRepository.findBySykepengesoknadId(soknad2.id)?.fnr shouldBeEqualTo fnr2
+        oppgavefordelingRepository.findBySykepengesoknadId(soknad1.id)?.fom shouldBeEqualTo LocalDate.of(2022, 5, 1)
+        oppgavefordelingRepository.findBySykepengesoknadId(soknad1.id)?.tom shouldBeEqualTo LocalDate.of(2022, 5, 2)
     }
 }
