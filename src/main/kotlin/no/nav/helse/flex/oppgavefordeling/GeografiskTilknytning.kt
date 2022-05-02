@@ -13,10 +13,13 @@ class GeografiskTilknytning(
 ) {
 
     val log = logger()
+    var total = 0
 
     @Scheduled(initialDelay = 120, fixedDelay = 1, timeUnit = TimeUnit.SECONDS)
     fun fyllMedGeografiskTilknytning() {
-        oppgavefordelingRepository.hent100UtenGT().forEach {
+        val utenGt = oppgavefordelingRepository.hent100UtenGT()
+
+        utenGt.forEach {
             try {
                 val gt = pdlClient.hentGeografiskTilknytning(it.fnr!!).hentGeografiskTilknytning
 
@@ -26,9 +29,13 @@ class GeografiskTilknytning(
                     bydel = gt.gtBydel,
                     land = gt.gtLand,
                 )
+
+                total++
             } catch (e: Exception) {
                 log.warn("Klarte ikke hent GT for sykepengesoknad ${it.sykepengesoknadId} - ${e.message}")
             }
         }
+
+        log.info("Hentet ut ${utenGt.size} rader, totalt $total")
     }
 }
