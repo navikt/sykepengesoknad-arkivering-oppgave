@@ -15,6 +15,15 @@ class GeografiskTilknytning(
     val log = logger()
 
     @Scheduled(initialDelay = 120, fixedDelay = 1, timeUnit = TimeUnit.SECONDS)
+    fun testPDLGT() {
+        val fnr = "15880699374"
+
+        val res = pdlClient.hentGeografiskTilknytning(fnr)
+
+        log.info(res.toString())
+    }
+
+    // @Scheduled(initialDelay = 120, fixedDelay = 1, timeUnit = TimeUnit.SECONDS)
     fun fyllMedGeografiskTilknytning() {
         oppgavefordelingRepository.hent100UtenGT().forEach {
             try {
