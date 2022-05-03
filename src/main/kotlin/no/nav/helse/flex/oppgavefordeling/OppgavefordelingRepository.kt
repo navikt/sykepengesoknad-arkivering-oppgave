@@ -16,27 +16,6 @@ interface OppgavefordelingRepository : CrudRepository<OppgavefordelingDbRecord, 
     @Modifying
     @Query("""INSERT INTO oppgavefordeling(sykepengesoknad_id, status) VALUES (:sykepengesoknadId, :status)""")
     fun insert(sykepengesoknadId: String, status: OppgavefordelingStatus)
-
-    @Modifying
-    @Query(
-        """
-        UPDATE oppgavefordeling 
-        SET kommune = :kommune,
-            bydel = :bydel,
-            land = :land
-        WHERE sykepengesoknad_id = :sykepengesoknadId
-        """
-    )
-    fun lagreGeografiskTilknytning(sykepengesoknadId: String, kommune: String?, bydel: String?, land: String?)
-
-    @Query(
-        """
-        SELECT fnr 
-        FROM oppgavefordeling
-        WHERE sykepengesoknad_id = :sykepengesoknadId
-        """
-    )
-    fun findFnrBySykepengesoknadId(sykepengesoknadId: String): String?
 }
 
 @Table("oppgavefordeling")
