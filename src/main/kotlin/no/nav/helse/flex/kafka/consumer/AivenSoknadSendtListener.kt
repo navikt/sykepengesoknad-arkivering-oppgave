@@ -5,12 +5,14 @@ import no.nav.helse.flex.kafka.mapper.toSykepengesoknad
 import no.nav.helse.flex.logger
 import no.nav.helse.flex.objectMapper
 import no.nav.helse.flex.service.IdentService
-import no.nav.helse.flex.service.SpreOppgaverService
+import no.nav.helse.flex.spreoppgave.SpreOppgaverService
 import no.nav.helse.flex.sykepengesoknad.kafka.SykepengesoknadDTO
 import no.nav.syfo.kafka.NAV_CALLID
 import no.nav.syfo.kafka.getSafeNavCallIdHeaderAsString
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.MDC
+import org.springframework.dao.DuplicateKeyException
+import org.springframework.data.relational.core.conversion.DbActionExecutionException
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
@@ -44,6 +46,12 @@ class AivenSoknadSendtListener(
             spreOppgaverService.soknadSendt(sykepengesoknad)
 
             acknowledgment.acknowledge()
+        } catch (e: DbActionExecutionException) {
+            if (e.cause is DuplicateKeyException) {
+                log.info("Søknaden ${cr.key()} sin spre oppgave kan ikke legges inn i databasen nå, prøver igjen senere")
+                acknowledgment.nack(100)
+                return
+            }
         } catch (e: Exception) {
             log.error("Uventet feil ved behandling av søknad ${cr.key()}", e)
             throw RuntimeException("Uventet feil ved behandling av søknad")

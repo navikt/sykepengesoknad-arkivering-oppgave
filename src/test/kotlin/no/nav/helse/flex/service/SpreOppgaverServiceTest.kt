@@ -12,6 +12,8 @@ import no.nav.helse.flex.domain.dto.Soknadstype
 import no.nav.helse.flex.domain.dto.Sykepengesoknad
 import no.nav.helse.flex.repository.InnsendingDbRecord
 import no.nav.helse.flex.repository.SpreOppgaveRepository
+import no.nav.helse.flex.spreoppgave.HandterOppave
+import no.nav.helse.flex.spreoppgave.SpreOppgaverService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -26,6 +28,7 @@ class SpreOppgaverServiceTest {
     lateinit var saksbehandlingsService: SaksbehandlingsService
 
     lateinit var spreOppgaverService: SpreOppgaverService
+    lateinit var handterOppave: HandterOppave
 
     @Mock
     lateinit var spreOppgaveRepository: SpreOppgaveRepository
@@ -53,7 +56,8 @@ class SpreOppgaverServiceTest {
     @BeforeEach
     fun setup() {
         whenever(registry.counter(any())).thenReturn(counter)
-        spreOppgaverService = SpreOppgaverService("1", saksbehandlingsService, spreOppgaveRepository, registry)
+        handterOppave = HandterOppave(spreOppgaveRepository, registry)
+        spreOppgaverService = SpreOppgaverService("1", saksbehandlingsService, spreOppgaveRepository, handterOppave)
     }
 
     @Test
