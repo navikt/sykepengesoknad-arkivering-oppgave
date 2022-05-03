@@ -82,7 +82,7 @@ class GeografiskTilknytning(
         utenGt.forEach {
             val fnr = oppgavefordelingRepository.findFnrBySykepengesoknadId(it)
             try {
-                val gt = pdlClient.hentGeografiskTilknytning(fnr).hentGeografiskTilknytning
+                val gt = pdlClient.hentGeografiskTilknytning(fnr!!).hentGeografiskTilknytning
 
                 oppgavefordelingRepository.lagreGeografiskTilknytning(
                     sykepengesoknadId = it,
@@ -90,7 +90,7 @@ class GeografiskTilknytning(
                     bydel = gt.gtBydel,
                     land = gt.gtLand,
                 )
-                log.info("Hentet GT for sykepengesoknad $it")
+                log.info("Hentet GT for sykepengesoknad $it with type: ${gt.gtType}")
             } catch (e: Exception) {
                 log.warn("Klarte ikke hent GT for sykepengesoknad $it - ${e.message}")
             }

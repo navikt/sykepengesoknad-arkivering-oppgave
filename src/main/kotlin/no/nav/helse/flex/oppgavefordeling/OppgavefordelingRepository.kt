@@ -44,7 +44,7 @@ interface OppgavefordelingRepository : CrudRepository<OppgavefordelingDbRecord, 
     )
     fun lagreGeografiskTilknytning(sykepengesoknadId: String, kommune: String?, bydel: String?, land: String?)
 
-    fun findFnrBySykepengesoknadId(sykepengesoknadId: String): String
+    fun findFnrBySykepengesoknadId(sykepengesoknadId: String): String?
 }
 
 @Table("oppgavefordeling")
