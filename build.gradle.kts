@@ -18,7 +18,7 @@ buildscript {
         maven("https://plugins.gradle.org/m2/")
     }
     dependencies {
-        classpath("org.jlleitschuh.gradle:ktlint-gradle:10.2.1")
+        classpath("org.jlleitschuh.gradle:ktlint-gradle:10.3.0")
     }
 }
 
@@ -45,7 +45,7 @@ val syfoKafkaVersion = "2021.07.20-09.39-6be2c52c"
 val sykepengesoknadKafkaVersion = "2022.03.01-07.45-064f3bb6"
 val mockitoKotlinVersion = "2.2.0"
 val logstashLogbackEncoderVersion = "7.1.1"
-val tokenSupportVersion = "2.0.14"
+val tokenSupportVersion = "2.0.15"
 val testContainersVersion = "1.17.1"
 val kluentVersion = "1.68"
 
