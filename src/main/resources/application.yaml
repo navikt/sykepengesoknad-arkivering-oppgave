@@ -1,6 +1,5 @@
 spring:
-  profiles:
-    active: remote
+  profiles.active: remote
   main.banner-mode: 'off'
   flyway:
     enabled: true
@@ -30,10 +29,10 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
-      syfosoknad-client-credentials:
+      sykepengesoknad-backend-client-credentials:
         token-endpoint-url: ${AZURE_OPENID_CONFIG_TOKEN_ENDPOINT}
         grant-type: client_credentials
-        scope: api://${FLEX_FSS_PROXY_AAD_CLIENT_ID}/.default
+        scope: api://${SYKEPENGESOKNAD_BACKEND_AAD_CLIENT_ID}/.default
         authentication:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
@@ -68,7 +67,6 @@ management:
   endpoints.web:
     base-path: /internal
     exposure.include: health,prometheus
-    path-mapping.prometheus: /prometheus
 
 aiven-kafka:
   auto-offset-reset: none
@@ -78,6 +76,5 @@ KAFKA_TRUSTSTORE_PATH: ""
 KAFKA_CREDSTORE_PASSWORD: ""
 KAFKA_KEYSTORE_PATH: ""
 
-default.timeout.timer: "1"
 rebehandling.delay.sekunder: 240 # 4 minutter. Må være mindre enn max.poll.interval.ms
 pdl.api.url: "http://pdl-api.pdl"

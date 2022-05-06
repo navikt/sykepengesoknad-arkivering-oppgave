@@ -6,7 +6,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import no.nav.helse.flex.FellesTestoppsett
 import no.nav.helse.flex.any
 import no.nav.helse.flex.arkivering.Arkivaren
-import no.nav.helse.flex.client.SyfosoknadClient
+import no.nav.helse.flex.client.SykepengesoknadBackendClient
 import no.nav.helse.flex.client.pdl.PdlClient
 import no.nav.helse.flex.domain.DokumentTypeDTO
 import no.nav.helse.flex.domain.OppdateringstypeDTO
@@ -61,7 +61,7 @@ class SpreOppgaveRaceConditionTest : FellesTestoppsett() {
     lateinit var pdlClient: PdlClient
 
     @MockBean
-    lateinit var syfosoknadConsumer: SyfosoknadClient
+    lateinit var sykepengesoknadBackendClient: SykepengesoknadBackendClient
 
     private val søknad = mockSykepengesoknadDTO.copy(
         id = raceConditionUUID.toString(),
@@ -75,7 +75,7 @@ class SpreOppgaveRaceConditionTest : FellesTestoppsett() {
         whenever(pdlClient.hentFormattertNavn(any())).thenReturn("Kalle Klovn")
         whenever(arkivaren.opprettJournalpost(any())).thenReturn("jpost1234")
         whenever(oppgaveService.opprettOppgave(any())).thenReturn(OppgaveResponse(123))
-        whenever(syfosoknadConsumer.hentSoknad(any())).thenReturn(søknad)
+        whenever(sykepengesoknadBackendClient.hentSoknad(any())).thenReturn(søknad)
     }
 
     @AfterEach

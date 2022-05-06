@@ -3,7 +3,7 @@ package no.nav.helse.flex.service
 import com.nhaarman.mockitokotlin2.*
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tag
-import no.nav.helse.flex.client.SyfosoknadClient
+import no.nav.helse.flex.client.SykepengesoknadBackendClient
 import no.nav.helse.flex.client.SøknadIkkeFunnetException
 import no.nav.helse.flex.config.EnvironmentToggles
 import no.nav.helse.flex.repository.*
@@ -29,7 +29,7 @@ class OppgaveOpprettelseTest {
     lateinit var spreOppgaveRepository: SpreOppgaveRepository
 
     @Mock
-    lateinit var syfosoknadConsumer: SyfosoknadClient
+    lateinit var sykepengesoknadBackendClient: SykepengesoknadBackendClient
 
     @Mock
     lateinit var environmentToggles: EnvironmentToggles
@@ -48,7 +48,7 @@ class OppgaveOpprettelseTest {
     }
 
     private fun mockHenting() {
-        whenever(syfosoknadConsumer.hentSoknad(any())).thenReturn(
+        whenever(sykepengesoknadBackendClient.hentSoknad(any())).thenReturn(
             SykepengesoknadDTO(
                 id = UUID.randomUUID().toString(),
                 opprettet = LocalDateTime.now(),
@@ -221,7 +221,7 @@ class OppgaveOpprettelseTest {
                 journalpostId = "journalpost"
             )
         }
-        whenever(syfosoknadConsumer.hentSoknad(soknadId2.toString())).thenThrow(RuntimeException("I AM ERROR"))
+        whenever(sykepengesoknadBackendClient.hentSoknad(soknadId2.toString())).thenThrow(RuntimeException("I AM ERROR"))
 
         val tidspunkt = Instant.now()
         oppgaveOpprettelse.behandleOppgaver(tidspunkt)
@@ -266,7 +266,7 @@ class OppgaveOpprettelseTest {
             )
         )
         whenever(environmentToggles.isQ()).thenReturn(true)
-        whenever(syfosoknadConsumer.hentSoknad(soknadId.toString())).thenThrow(SøknadIkkeFunnetException("finner ikke"))
+        whenever(sykepengesoknadBackendClient.hentSoknad(soknadId.toString())).thenThrow(SøknadIkkeFunnetException("finner ikke"))
         val modifisertTidspunkt = Instant.now()
         oppgaveOpprettelse.behandleOppgaver(modifisertTidspunkt)
 
@@ -302,7 +302,7 @@ class OppgaveOpprettelseTest {
             )
         )
         whenever(environmentToggles.isQ()).thenReturn(false)
-        whenever(syfosoknadConsumer.hentSoknad(soknadId.toString())).thenThrow(SøknadIkkeFunnetException("msg"))
+        whenever(sykepengesoknadBackendClient.hentSoknad(soknadId.toString())).thenThrow(SøknadIkkeFunnetException("msg"))
         assertThrows(SøknadIkkeFunnetException::class.java) {
             oppgaveOpprettelse.behandleOppgaver()
         }

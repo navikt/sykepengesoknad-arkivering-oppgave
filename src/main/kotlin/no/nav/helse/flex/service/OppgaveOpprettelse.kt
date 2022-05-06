@@ -2,7 +2,7 @@ package no.nav.helse.flex.service
 
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tags
-import no.nav.helse.flex.client.SyfosoknadClient
+import no.nav.helse.flex.client.SykepengesoknadBackendClient
 import no.nav.helse.flex.client.SøknadIkkeFunnetException
 import no.nav.helse.flex.config.EnvironmentToggles
 import no.nav.helse.flex.kafka.mapper.toSykepengesoknad
@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit
 class OppgaveOpprettelse(
     private val spreOppgaveRepository: SpreOppgaveRepository,
     private val saksbehandlingsService: SaksbehandlingsService,
-    private val syfosoknadClient: SyfosoknadClient,
+    private val sykepengesoknadBackendClient: SykepengesoknadBackendClient,
     private val environmentToggles: EnvironmentToggles,
     private val registry: MeterRegistry,
     private val identService: IdentService
@@ -45,7 +45,7 @@ class OppgaveOpprettelse(
             try {
                 val innsending = saksbehandlingsService.finnEksisterendeInnsending(it.sykepengesoknadId)
                 if (innsending != null) {
-                    val soknadDTO = syfosoknadClient.hentSoknad(it.sykepengesoknadId)
+                    val soknadDTO = sykepengesoknadBackendClient.hentSoknad(it.sykepengesoknadId)
                     val aktorId = identService.hentAktorIdForFnr(soknadDTO.fnr)
                     val soknad = soknadDTO.toSykepengesoknad(aktorId)
                     saksbehandlingsService.opprettOppgave(
@@ -62,7 +62,7 @@ class OppgaveOpprettelse(
                 } else {
                     log.info("Fant ikke eksisterende innsending, ignorerer søknad med id ${it.sykepengesoknadId}")
                     if (environmentToggles.isQ() && it.opprettet < OffsetDateTime.now().minusDays(1).toInstant()) {
-                        // Dette skjer hvis Bømlo selv mocker opp søknader som ikke går gjennom syfosoknad
+                        // Dette skjer hvis Bømlo selv mocker opp søknader som ikke går gjennom sykepengesoknad-backend
                         log.info("Sletter oppgave fra ${it.opprettet} siden den ikke har en tilhørende søknad")
                         spreOppgaveRepository.deleteOppgaveBySykepengesoknadId(it.sykepengesoknadId)
                     }

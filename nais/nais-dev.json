@@ -1,14 +1,13 @@
 {
   "azureTenant": "trygdeetaten.no",
   "kafkaPool": "nav-dev",
-  "environment": "dev",
   "externalHosts": [
-    "flex-fss-proxy.dev-fss-pub.nais.io",
     "dokarkiv.dev-fss-pub.nais.io",
     "oppgave-q1.dev-fss-pub.nais.io"
   ],
   "bucketName": "oppgavefordeling-bucket-dev",
   "env": {
+    "SYKEPENGESOKNAD_BACKEND_AAD_CLIENT_ID": "dev-gcp.flex.sykepengesoknad-backend",
     "PDL_URL": "https://pdl-api.dev-fss-pub.nais.io",
     "PDL_API_AAD_CLIENT_ID": "dev-fss.pdl.pdl-api",
     "DOKARKIV_URL": "https://dokarkiv.dev-fss-pub.nais.io",
@@ -18,8 +17,6 @@
     "BUCKET_UPLOADER_URL": "http://flex-bucket-uploader",
     "FLEX_BUCKET_UPLOADER_AAD_CLIENT_ID": "dev-gcp.flex.flex-bucket-uploader",
     "PDFGEN_URL": "http://flex-sykepengesoknad-pdfgen",
-    "FLEX_FSS_PROXY_AAD_CLIENT_ID": "dev-fss.flex.flex-fss-proxy",
-    "FLEX_FSS_PROXY_URL": "https://flex-fss-proxy.dev-fss-pub.nais.io",
     "DEFAULT_TIMEOUT_TIMER": "48"
   }
 }

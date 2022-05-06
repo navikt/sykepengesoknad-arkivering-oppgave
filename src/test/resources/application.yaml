@@ -5,20 +5,15 @@ management:
   endpoints.web:
     base-path: /internal
     exposure.include: prometheus
-    path-mapping.prometheus: /prometheus
-
 
 OPPGAVE_URL: "http://oppgave.oppgaver.url"
 PDFGEN_URL: "http://pdf"
 pdl.api.url: "http://pdl-api.pdl"
 DOKARKIV_URL: "http://dokarkiv"
-FLEX_FSS_PROXY_URL: "http://flex-proxy"
 DEFAULT_TIMEOUT_TIMER: "24"
 
 spring:
-  profiles:
-    active: test
-  jackson.serialization.WRITE_DATES_AS_TIMESTAMPS: false
+  profiles.active: test
   datasource:
     hikari:
       minimum-idle: 1

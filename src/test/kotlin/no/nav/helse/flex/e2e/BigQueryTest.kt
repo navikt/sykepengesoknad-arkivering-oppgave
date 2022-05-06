@@ -3,7 +3,7 @@ package no.nav.helse.flex.e2e
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.helse.flex.FellesTestoppsett
 import no.nav.helse.flex.any
-import no.nav.helse.flex.client.SyfosoknadClient
+import no.nav.helse.flex.client.SykepengesoknadBackendClient
 import no.nav.helse.flex.objectMapper
 import no.nav.helse.flex.repository.InnsendingDbRecord
 import no.nav.helse.flex.repository.OppgaveStatus
@@ -42,7 +42,7 @@ class BigQueryTest : FellesTestoppsett() {
     lateinit var saksbehandlingsService: SaksbehandlingsService
 
     @MockBean
-    lateinit var syfosoknadClient: SyfosoknadClient
+    lateinit var sykepengesoknadBackendClient: SykepengesoknadBackendClient
 
     @Autowired
     lateinit var spreOppgaveRepository: SpreOppgaveRepository
@@ -141,7 +141,7 @@ class BigQueryTest : FellesTestoppsett() {
                 journalpostId = "journalpost"
             )
         }
-        whenever(syfosoknadClient.hentSoknad(any())).thenReturn(
+        whenever(sykepengesoknadBackendClient.hentSoknad(any())).thenReturn(
             objectMapper.readValue(
                 lagSoknad().serialisertTilString(),
                 SykepengesoknadDTO::class.java

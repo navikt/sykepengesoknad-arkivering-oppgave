@@ -3,7 +3,7 @@ package no.nav.helse.flex.e2e
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.helse.flex.FellesTestoppsett
 import no.nav.helse.flex.any
-import no.nav.helse.flex.client.SyfosoknadClient
+import no.nav.helse.flex.client.SykepengesoknadBackendClient
 import no.nav.helse.flex.domain.DokumentTypeDTO
 import no.nav.helse.flex.domain.OppdateringstypeDTO
 import no.nav.helse.flex.domain.OppgaveDTO
@@ -54,7 +54,7 @@ class E2ETest : FellesTestoppsett() {
     lateinit var acknowledgment: Acknowledgment
 
     @MockBean
-    lateinit var syfosoknadClient: SyfosoknadClient
+    lateinit var sykepengesoknadBackendClient: SykepengesoknadBackendClient
 
     @Autowired
     lateinit var aivenSoknadSendtListener: AivenSoknadSendtListener
@@ -77,7 +77,7 @@ class E2ETest : FellesTestoppsett() {
                 journalpostId = "journalpost"
             )
         }
-        whenever(syfosoknadClient.hentSoknad(any())).thenReturn(
+        whenever(sykepengesoknadBackendClient.hentSoknad(any())).thenReturn(
             objectMapper.readValue(
                 lagSoknad().serialisertTilString(),
                 SykepengesoknadDTO::class.java

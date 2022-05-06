@@ -7,8 +7,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import no.nav.helse.flex.FellesTestoppsett
 import no.nav.helse.flex.any
 import no.nav.helse.flex.arkivering.Arkivaren
-import no.nav.helse.flex.client.DokArkivClient
-import no.nav.helse.flex.client.SyfosoknadClient
+import no.nav.helse.flex.client.SykepengesoknadBackendClient
 import no.nav.helse.flex.client.pdl.PdlClient
 import no.nav.helse.flex.domain.DokumentTypeDTO
 import no.nav.helse.flex.domain.OppdateringstypeDTO
@@ -57,13 +56,10 @@ class OpprettSpeilrelatertTest : FellesTestoppsett() {
     lateinit var pdlClient: PdlClient
 
     @MockBean
-    lateinit var dokArkivClient: DokArkivClient
-
-    @MockBean
     lateinit var acknowledgment: Acknowledgment
 
     @MockBean
-    lateinit var syfosoknadConsumer: SyfosoknadClient
+    lateinit var sykepengesoknadBackendClient: SykepengesoknadBackendClient
 
     @Autowired
     lateinit var aivenSoknadSendtListener: AivenSoknadSendtListener
@@ -81,7 +77,7 @@ class OpprettSpeilrelatertTest : FellesTestoppsett() {
         whenever(pdlClient.hentFormattertNavn(any())).thenReturn("Kalle Klovn")
         whenever(arkivaren.opprettJournalpost(any())).thenReturn("jpost1234")
         whenever(oppgaveService.opprettOppgave(any())).thenReturn(OppgaveResponse(123))
-        whenever(syfosoknadConsumer.hentSoknad(any())).thenReturn(
+        whenever(sykepengesoknadBackendClient.hentSoknad(any())).thenReturn(
             objectMapper.readValue(
                 søknad().serialisertTilString(),
                 SykepengesoknadDTO::class.java
