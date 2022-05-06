@@ -32,6 +32,9 @@ class OppgaveOpprettelse(
     // Only no-args methods can be Scheduled.
     fun startOppgaveBehandling() {
         behandleOppgaver()
+
+        val soknad = sykepengesoknadBackendClient.hentSoknad("e69a0225-c13e-30bb-b654-249701abbedb")
+        log.info("Henter soknad ${soknad.id} ${soknad.status}")
     }
 
     fun behandleOppgaver(tid: Instant = Instant.now()) {
