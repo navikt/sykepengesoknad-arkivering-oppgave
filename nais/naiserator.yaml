@@ -60,9 +60,7 @@ spec:
       rules:
         - application: flex-sykepengesoknad-pdfgen
         - application: flex-bucket-uploader
-        - application: syfosoknad
-          namespace: flex
-          cluster: {{environment}}-fss
+        - application: sykepengesoknad-backend
       external:
       {{#each externalHosts as |url|}}
          - host: {{url}}

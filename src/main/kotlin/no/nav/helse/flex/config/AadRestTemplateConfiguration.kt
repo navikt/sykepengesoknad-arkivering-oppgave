@@ -31,12 +31,12 @@ class AadRestTemplateConfiguration {
     )
 
     @Bean
-    fun syfosoknadRestTemplate(
+    fun sykepengesoknadBackendRestTemplate(
         restTemplateBuilder: RestTemplateBuilder,
         clientConfigurationProperties: ClientConfigurationProperties,
         oAuth2AccessTokenService: OAuth2AccessTokenService
     ): RestTemplate = downstreamRestTemplate(
-        registrationName = "syfosoknad-client-credentials",
+        registrationName = "sykepengesoknad-backend-client-credentials",
         restTemplateBuilder = restTemplateBuilder,
         clientConfigurationProperties = clientConfigurationProperties,
         oAuth2AccessTokenService = oAuth2AccessTokenService,
