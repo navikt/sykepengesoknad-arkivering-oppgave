@@ -18,7 +18,8 @@ interface SpreOppgaveRepository : CrudRepository<SpreOppgaveDbRecord, String> {
         FROM   oppgavestyring
         WHERE  avstemt = true
           AND (status = 'Opprett'
-               OR status = 'OpprettSpeilRelatert')
+               OR status = 'OpprettSpeilRelatert'
+               OR (status = 'Utsett' AND timeout < :timeout))
         """
     )
     fun findOppgaverTilOpprettelse(timeout: Instant): List<SpreOppgaveDbRecord>

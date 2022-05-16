@@ -28,7 +28,6 @@ import no.nav.helse.flex.util.tilOsloZone
 import org.amshove.kluent.`should be equal to`
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -188,7 +187,6 @@ class E2ETest : FellesTestoppsett() {
     }
 
     @Test
-    @Disabled
     fun `oppgaven timer ut og vi oppretter oppgave`() {
         val soknadId = UUID.randomUUID()
         val timeout = LocalDateTime.now().minusHours(1)
@@ -239,7 +237,6 @@ class E2ETest : FellesTestoppsett() {
     }
 
     @Test
-    @Disabled
     fun `Bømlo sier Utsett etter oppgaven er opprettet`() {
         val soknadId = UUID.randomUUID()
         val timeout = LocalDateTime.now().minusHours(1)

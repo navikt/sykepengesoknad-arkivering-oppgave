@@ -21,7 +21,6 @@ import no.nav.helse.flex.sykepengesoknad.kafka.SykepengesoknadDTO
 import org.amshove.kluent.`should be`
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -156,7 +155,6 @@ class BigQueryTest : FellesTestoppsett() {
     }
 
     @Test
-    @Disabled
     fun `test Federated Query for oppgaver opprettet`() {
         val sql =
             """
@@ -181,7 +179,6 @@ class BigQueryTest : FellesTestoppsett() {
     }
 
     @Test
-    @Disabled
     fun `test Federated Query for oppgaver opprettet gruppert`() {
         val sql =
             """
