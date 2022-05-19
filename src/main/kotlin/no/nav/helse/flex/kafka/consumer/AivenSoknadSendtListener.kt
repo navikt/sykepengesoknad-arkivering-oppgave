@@ -46,6 +46,7 @@ class AivenSoknadSendtListener(
             spreOppgaverService.soknadSendt(sykepengesoknad)
 
             acknowledgment.acknowledge()
+            log.info("partiotion på sykepengesoknad topic-et: ${cr.partition()}, cr: ${cr.key()}")
         } catch (e: DbActionExecutionException) {
             if (e.cause is DuplicateKeyException) {
                 log.info("Søknaden ${cr.key()} sin spre oppgave kan ikke legges inn i databasen nå, prøver igjen senere")
