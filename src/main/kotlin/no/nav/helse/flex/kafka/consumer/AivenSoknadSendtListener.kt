@@ -35,14 +35,7 @@ class AivenSoknadSendtListener(
         containerFactory = "aivenKafkaListenerContainerFactory"
     )
     fun listen(cr: ConsumerRecord<String, String>, acknowledgment: Acknowledgment) {
-
-        if (cr.key() != "hei") {
-            acknowledgment.acknowledge()
-            return
-        }
-
         try {
-
             MDC.put(NAV_CALLID, getSafeNavCallIdHeaderAsString(cr.headers()))
 
             val dto = cr.value().tilSykepengesoknadDTO()
