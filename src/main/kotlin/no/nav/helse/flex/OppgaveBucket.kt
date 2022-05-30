@@ -112,7 +112,7 @@ class OppgaveBucket(
         val permitteringer: String,
     ) {
         override fun toString(): String {
-            return "$fnr,$id,$fom,$tom,$cics,$soknadsperioder,$fravarForSykmeldingen,$fravar,$andreInntektskilder,$permitteringer"
+            return "$fnr;$id;$fom;$tom;$cics;$soknadsperioder;$fravarForSykmeldingen;$fravar;$andreInntektskilder;$permitteringer"
         }
     }
 }
