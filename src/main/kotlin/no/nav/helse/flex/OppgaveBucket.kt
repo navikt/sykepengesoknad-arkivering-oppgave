@@ -25,7 +25,7 @@ class OppgaveBucket(
 
     @Scheduled(initialDelay = 10, fixedDelay = 1_000, timeUnit = TimeUnit.SECONDS)
     fun job() {
-        val inputBlob = "test.csv"
+        val inputBlob = "input.csv"
 
         val blob = getBlob(inputBlob)
 
@@ -43,7 +43,7 @@ class OppgaveBucket(
 
             val columns = line.split(',').map { it.trim() }
 
-            val fnr = columns[0]
+            val fnr = columns[0].let { if (it.length < 11) "0$it" else it }
             val id = columns[1]
             val fom = LocalDate.parse(columns[2])
             val tom = LocalDate.parse(columns[3])
