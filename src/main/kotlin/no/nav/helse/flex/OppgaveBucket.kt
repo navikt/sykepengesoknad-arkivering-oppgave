@@ -23,7 +23,7 @@ class OppgaveBucket(
     private val retrySettings = RetrySettings.newBuilder().setTotalTimeout(Duration.ofMillis(3000)).build()
     private val storage = StorageOptions.newBuilder().setRetrySettings(retrySettings).build().service
 
-    @Scheduled(initialDelay = 120, fixedDelay = 1_000, timeUnit = TimeUnit.SECONDS)
+    @Scheduled(initialDelay = 10, fixedDelay = 1_000, timeUnit = TimeUnit.SECONDS)
     fun job() {
         val inputBlob = "test.csv"
 
@@ -34,10 +34,13 @@ class OppgaveBucket(
 
     private fun readFile(blob: Blob) {
         val content = blob.getContent().decodeToString()
+        val output = mutableListOf<SoknadData>()
 
         log.info(content)
 
         content.lines().forEach { line ->
+            if (line.isBlank()) return@forEach
+
             val columns = line.split(',').map { it.trim() }
 
             val fnr = columns[0]
@@ -55,7 +58,27 @@ class OppgaveBucket(
             assert(soknad.fom == fom)
             assert(soknad.tom == tom)
             assert(soknad.status == SoknadsstatusDTO.SENDT)
+
+            output.add(
+                SoknadData(
+                    fnr = soknad.fnr,
+                    id = soknad.id,
+                    fom = soknad.fom!!,
+                    tom = soknad.tom!!,
+                    cics = cics,
+                    soknadsperioder = soknad.soknadsperioder!!.serialisertTilString(),
+                    fravarForSykmeldingen = soknad.fravarForSykmeldingen!!.serialisertTilString(),
+                    fravar = soknad.fravar!!.serialisertTilString(),
+                    andreInntektskilder = soknad.andreInntektskilder!!.serialisertTilString(),
+                    permitteringer = soknad.permitteringer!!.serialisertTilString()
+                )
+            )
         }
+
+        createBlob(
+            blobId = "output.csv",
+            file = output.joinToString("\n")
+        )
     }
 
     private fun getBlob(
@@ -74,5 +97,22 @@ class OppgaveBucket(
             .build()
 
         storage.create(bInfo, file.encodeToByteArray())
+    }
+
+    private data class SoknadData(
+        val fnr: String,
+        val id: String,
+        val fom: LocalDate,
+        val tom: LocalDate,
+        val cics: String,
+        val soknadsperioder: String,
+        val fravarForSykmeldingen: String,
+        val fravar: String,
+        val andreInntektskilder: String,
+        val permitteringer: String,
+    ) {
+        override fun toString(): String {
+            return "$fnr,$id,$fom,$tom,$cics,$soknadsperioder,$fravarForSykmeldingen,$fravar,$andreInntektskilder,$permitteringer"
+        }
     }
 }
