@@ -38,7 +38,7 @@ class OppgaveBucket(
         log.info(content)
 
         content.lines().forEach { line ->
-            val columns = line.split(',')
+            val columns = line.split(',').map { it.trim() }
 
             val fnr = columns[0]
             val id = columns[1]
