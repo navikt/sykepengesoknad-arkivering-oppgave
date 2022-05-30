@@ -17,6 +17,7 @@
     "BUCKET_UPLOADER_URL": "http://flex-bucket-uploader",
     "FLEX_BUCKET_UPLOADER_AAD_CLIENT_ID": "prod-gcp.flex.flex-bucket-uploader",
     "PDFGEN_URL": "http://flex-sykepengesoknad-pdfgen",
-    "DEFAULT_TIMEOUT_TIMER": "48"
+    "DEFAULT_TIMEOUT_TIMER": "48",
+    "BUCKET_NAME": "oppgavefordeling-bucket-prod"
   }
 }

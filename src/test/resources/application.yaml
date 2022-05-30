@@ -1,4 +1,5 @@
 NAIS_CLUSTER_NAME: local
+BUCKET_NAME: lokalBøtte
 
 management:
   endpoint.prometheus.enabled: true
