@@ -21,16 +21,24 @@ class OppgaveBucket(
 
     @Scheduled(initialDelay = 120, fixedDelay = 1_000, timeUnit = TimeUnit.SECONDS)
     fun job() {
-        val blobId = "newFile.csv"
-
-        createBlob(
-            blobId = blobId,
-            file = "abc, oiegjr"
-        )
+        val blobId = "test.csv"
 
         val blob = getBlob(blobId)
 
-        log.info(blob.getContent().decodeToString())
+        readFile(blob)
+    }
+
+    private fun readFile(blob: Blob) {
+        val content = blob.getContent().decodeToString()
+
+        log.info(content)
+
+        content.lines().forEachIndexed { lidx, line ->
+            log.info("linje $lidx = $line")
+            line.split(',').forEachIndexed { ridx, row ->
+                log.info("linje $lidx row $ridx = $row")
+            }
+        }
     }
 
     private fun getBlob(
