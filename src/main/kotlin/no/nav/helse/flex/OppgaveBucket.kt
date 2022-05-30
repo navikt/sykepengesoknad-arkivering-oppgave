@@ -19,15 +19,12 @@ class OppgaveBucket(
     private val sykepengesoknadBackendClient: SykepengesoknadBackendClient,
 ) {
 
-    private val log = logger()
     private val retrySettings = RetrySettings.newBuilder().setTotalTimeout(Duration.ofMillis(3000)).build()
     private val storage = StorageOptions.newBuilder().setRetrySettings(retrySettings).build().service
 
     @Scheduled(initialDelay = 10, fixedDelay = 1_000, timeUnit = TimeUnit.SECONDS)
     fun job() {
-        val inputBlob = "input.csv"
-
-        val blob = getBlob(inputBlob)
+        val blob = getBlob("input.csv")
 
         readFile(blob)
     }
@@ -35,8 +32,6 @@ class OppgaveBucket(
     private fun readFile(blob: Blob) {
         val content = blob.getContent().decodeToString()
         val output = mutableListOf<SoknadData>()
-
-        log.info(content)
 
         content.lines().forEach { line ->
             if (line.isBlank()) return@forEach
@@ -50,8 +45,6 @@ class OppgaveBucket(
             val cics = columns[4]
 
             val soknad = sykepengesoknadBackendClient.hentSoknad(id)
-
-            log.info("Hentet soknad $soknad med cics $cics")
 
             assert(soknad.fnr == fnr)
             assert(soknad.id == id)
