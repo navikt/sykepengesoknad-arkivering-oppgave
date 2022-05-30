@@ -2,7 +2,6 @@ package no.nav.helse.flex
 
 import com.google.api.gax.retrying.RetrySettings
 import com.google.cloud.storage.Blob
-import com.google.cloud.storage.BlobId
 import com.google.cloud.storage.BlobInfo
 import com.google.cloud.storage.StorageOptions
 import org.springframework.beans.factory.annotation.Value
@@ -31,7 +30,7 @@ class OppgaveBucket(
 
         val blob = getBlob(blobId)
 
-        log.info("Hentet blob ${blob.metadata} ${blob.bucket} ${blob.blobId} $blob")
+        log.info(blob.getContent().decodeToString())
     }
 
     private fun getBlob(
@@ -45,9 +44,7 @@ class OppgaveBucket(
         blobId: String,
         file: String,
     ) {
-        val bId = BlobId.of(bucketName, blobId)
-
-        val bInfo = BlobInfo.newBuilder(bId)
+        val bInfo = BlobInfo.newBuilder(bucketName, blobId)
             .setContentType("text/csv")
             .build()
 
