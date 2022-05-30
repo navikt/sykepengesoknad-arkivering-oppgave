@@ -3,17 +3,19 @@ package no.nav.helse.flex
 import com.google.cloud.storage.Blob
 import com.google.cloud.storage.BlobId
 import com.google.cloud.storage.BlobInfo
-import com.google.cloud.storage.Storage
+import com.google.cloud.storage.StorageOptions
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.stereotype.Component
 import java.util.concurrent.TimeUnit
 
+@Component
 class OppgaveBucket(
     @Value("\${BUCKET_NAME}") private val bucketName: String,
-    private val storage: Storage,
 ) {
 
-    val log = logger()
+    private val log = logger()
+    private val storage = StorageOptions.newBuilder().build().service
 
     @Scheduled(initialDelay = 120, fixedDelay = 1_000, timeUnit = TimeUnit.SECONDS)
     fun job() {
