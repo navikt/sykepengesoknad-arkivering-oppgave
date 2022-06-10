@@ -81,8 +81,26 @@ class OppgaveBucket(
             )
 
             if (soknad.status != SoknadsstatusDTO.SENDT) {
-                log.info("Soknad ${soknad.id} har status ${soknad.status} og legges i egen liste")
-                feilStatusOutput.add(soknadData)
+                var korrigering = soknad
+                while (korrigering.status != SoknadsstatusDTO.SENDT) {
+                    log.info("Soknad ${soknad.id} har status ${soknad.status} og legges i egen liste")
+                    feilStatusOutput.add(
+                        SoknadData(
+                            fnr = korrigering.fnr,
+                            id = korrigering.id,
+                            fom = korrigering.fom!!,
+                            tom = korrigering.tom!!,
+                            cics = cics,
+                            soknadsperioder = korrigering.soknadsperioder!!.serialisertTilString(),
+                            fravarForSykmeldingen = korrigering.fravarForSykmeldingen!!.serialisertTilString(),
+                            fravar = korrigering.fravar!!.serialisertTilString(),
+                            andreInntektskilder = korrigering.andreInntektskilder!!.serialisertTilString(),
+                            permitteringer = korrigering.permitteringer!!.serialisertTilString(),
+                            korrigertAv = korrigering.korrigertAv
+                        )
+                    )
+                    korrigering = sykepengesoknadBackendClient.hentSoknad(korrigering.korrigertAv!!)
+                }
             } else {
                 when (status) {
                     "ARBEIDSGIVERPERIODE" -> arbeidsgiverperiodeOutput.add(soknadData)
@@ -109,7 +127,9 @@ class OppgaveBucket(
 
         createBlob(
             blobId = "feilStatusOutput.csv",
-            file = feilStatusOutput.joinToString("\n")
+            file = feilStatusOutput.joinToString("\n") {
+                "$it;${it.korrigertAv}"
+            }
         )
     }
 
@@ -142,6 +162,7 @@ class OppgaveBucket(
         val fravar: String,
         val andreInntektskilder: String,
         val permitteringer: String,
+        val korrigertAv: String? = null,
     ) {
         override fun toString(): String {
             return "$fnr;$id;$fom;$tom;$cics;$soknadsperioder;$fravarForSykmeldingen;$fravar;$andreInntektskilder;$permitteringer"
