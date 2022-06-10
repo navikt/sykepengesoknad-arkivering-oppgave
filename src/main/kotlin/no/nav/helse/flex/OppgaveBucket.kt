@@ -50,11 +50,22 @@ class OppgaveBucket(
 
             val soknad = sykepengesoknadBackendClient.hentSoknad(id)
 
-            require(soknad.fnr == fnr)
-            require(soknad.id == id)
-            require(soknad.fom == fom)
-            require(soknad.tom == tom)
-            require(status in listOf("ARBEIDSGIVERPERIODE", "DELVIS_UTBETALT", "IKKE_UTBETALT"))
+            try {
+                require(soknad.fnr == fnr) { "Soknad $id har feil fnr" }
+                require(soknad.id == id) { "Soknad $id har feil id: ${soknad.id}" }
+                require(soknad.fom == fom) { "Soknad $id har feil fom: $fom og ${soknad.fom}" }
+                require(soknad.tom == tom) { "Soknad $id har feil tom: $tom og ${soknad.tom}" }
+                require(
+                    status in listOf(
+                        "ARBEIDSGIVERPERIODE",
+                        "DELVIS_UTBETALT",
+                        "IKKE_UTBETALT"
+                    )
+                ) { "Soknad $id har feil status: $status" }
+            } catch (e: IllegalArgumentException) {
+                log.info(e.message)
+                return@forEach
+            }
 
             val soknadData = SoknadData(
                 fnr = soknad.fnr,
