@@ -22,55 +22,73 @@ class OppgaveBucket(
     private val retrySettings = RetrySettings.newBuilder().setTotalTimeout(Duration.ofMillis(3000)).build()
     private val storage = StorageOptions.newBuilder().setRetrySettings(retrySettings).build().service
 
-    @Scheduled(initialDelay = 10, fixedDelay = 1_000, timeUnit = TimeUnit.SECONDS)
+    @Scheduled(initialDelay = 20, fixedDelay = 100_000, timeUnit = TimeUnit.SECONDS)
     fun job() {
-        val blob = getBlob("input.csv")
+        val blob = getBlob("resultat_filtrert_formattert.csv")
 
         readFile(blob)
     }
 
     private fun readFile(blob: Blob) {
         val content = blob.getContent().decodeToString()
-        val output = mutableListOf<SoknadData>()
+        val arbeidsgiverperiodeOutput = mutableListOf<SoknadData>()
+        val delvisUtbetaltOutput = mutableListOf<SoknadData>()
+        val ikkeUtbetaltOutput = mutableListOf<SoknadData>()
 
         content.lines().forEach { line ->
             if (line.isBlank()) return@forEach
 
-            val columns = line.split(',').map { it.trim() }
+            val columns = line.split(';').map { it.trim() }
 
-            val fnr = columns[0].let { if (it.length < 11) "0$it" else it }
-            val id = columns[1]
-            val fom = LocalDate.parse(columns[2])
-            val tom = LocalDate.parse(columns[3])
-            val cics = columns[4]
+            val status = columns[0]
+            val fnr = columns[1].let { if (it.length < 11) "0$it" else it }
+            val id = columns[2]
+            val fom = LocalDate.parse(columns[3])
+            val tom = LocalDate.parse(columns[4])
+            val cics = columns[5]
 
             val soknad = sykepengesoknadBackendClient.hentSoknad(id)
 
-            assert(soknad.fnr == fnr)
-            assert(soknad.id == id)
-            assert(soknad.fom == fom)
-            assert(soknad.tom == tom)
-            assert(soknad.status == SoknadsstatusDTO.SENDT)
+            require(soknad.fnr == fnr)
+            require(soknad.id == id)
+            require(soknad.fom == fom)
+            require(soknad.tom == tom)
+            require(soknad.status == SoknadsstatusDTO.SENDT)
+            require(status in listOf("ARBEIDSGIVERPERIODE", "DELVIS_UTBETALT", "IKKE_UTBETALT"))
 
-            output.add(
-                SoknadData(
-                    fnr = soknad.fnr,
-                    id = soknad.id,
-                    fom = soknad.fom!!,
-                    tom = soknad.tom!!,
-                    cics = cics,
-                    soknadsperioder = soknad.soknadsperioder!!.serialisertTilString(),
-                    fravarForSykmeldingen = soknad.fravarForSykmeldingen!!.serialisertTilString(),
-                    fravar = soknad.fravar!!.serialisertTilString(),
-                    andreInntektskilder = soknad.andreInntektskilder!!.serialisertTilString(),
-                    permitteringer = soknad.permitteringer!!.serialisertTilString()
-                )
+            val soknadData = SoknadData(
+                fnr = soknad.fnr,
+                id = soknad.id,
+                fom = soknad.fom!!,
+                tom = soknad.tom!!,
+                cics = cics,
+                soknadsperioder = soknad.soknadsperioder!!.serialisertTilString(),
+                fravarForSykmeldingen = soknad.fravarForSykmeldingen!!.serialisertTilString(),
+                fravar = soknad.fravar!!.serialisertTilString(),
+                andreInntektskilder = soknad.andreInntektskilder!!.serialisertTilString(),
+                permitteringer = soknad.permitteringer!!.serialisertTilString()
             )
+
+            when (status) {
+                "ARBEIDSGIVERPERIODE" -> arbeidsgiverperiodeOutput.add(soknadData)
+                "DELVIS_UTBETALT" -> delvisUtbetaltOutput.add(soknadData)
+                "IKKE_UTBETALT" -> ikkeUtbetaltOutput.add(soknadData)
+            }
         }
 
         createBlob(
-            blobId = "output.csv",
-            file = output.joinToString("\n")
+            blobId = "arbeidsgiverperiodeOutput.csv",
+            file = arbeidsgiverperiodeOutput.joinToString("\n")
+        )
+
+        createBlob(
+            blobId = "delvisUtbetaltOutput.csv",
+            file = delvisUtbetaltOutput.joinToString("\n")
+        )
+
+        createBlob(
+            blobId = "ikkeUtbetaltOutput.csv",
+            file = ikkeUtbetaltOutput.joinToString("\n")
         )
     }
 
