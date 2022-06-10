@@ -18,7 +18,7 @@ class OppgaveBucket(
     @Value("\${BUCKET_NAME}") private val bucketName: String,
     private val sykepengesoknadBackendClient: SykepengesoknadBackendClient,
 ) {
-
+    private val log = logger()
     private val retrySettings = RetrySettings.newBuilder().setTotalTimeout(Duration.ofMillis(3000)).build()
     private val storage = StorageOptions.newBuilder().setRetrySettings(retrySettings).build().service
 
@@ -34,6 +34,7 @@ class OppgaveBucket(
         val arbeidsgiverperiodeOutput = mutableListOf<SoknadData>()
         val delvisUtbetaltOutput = mutableListOf<SoknadData>()
         val ikkeUtbetaltOutput = mutableListOf<SoknadData>()
+        val feilStatusOutput = mutableListOf<SoknadData>()
 
         content.lines().forEach { line ->
             if (line.isBlank()) return@forEach
@@ -53,7 +54,6 @@ class OppgaveBucket(
             require(soknad.id == id)
             require(soknad.fom == fom)
             require(soknad.tom == tom)
-            require(soknad.status == SoknadsstatusDTO.SENDT)
             require(status in listOf("ARBEIDSGIVERPERIODE", "DELVIS_UTBETALT", "IKKE_UTBETALT"))
 
             val soknadData = SoknadData(
@@ -69,10 +69,15 @@ class OppgaveBucket(
                 permitteringer = soknad.permitteringer!!.serialisertTilString()
             )
 
-            when (status) {
-                "ARBEIDSGIVERPERIODE" -> arbeidsgiverperiodeOutput.add(soknadData)
-                "DELVIS_UTBETALT" -> delvisUtbetaltOutput.add(soknadData)
-                "IKKE_UTBETALT" -> ikkeUtbetaltOutput.add(soknadData)
+            if (soknad.status != SoknadsstatusDTO.SENDT) {
+                log.info("Soknad ${soknad.id} har status ${soknad.status} og legges i egen liste")
+                feilStatusOutput.add(soknadData)
+            } else {
+                when (status) {
+                    "ARBEIDSGIVERPERIODE" -> arbeidsgiverperiodeOutput.add(soknadData)
+                    "DELVIS_UTBETALT" -> delvisUtbetaltOutput.add(soknadData)
+                    "IKKE_UTBETALT" -> ikkeUtbetaltOutput.add(soknadData)
+                }
             }
         }
 
@@ -89,6 +94,11 @@ class OppgaveBucket(
         createBlob(
             blobId = "ikkeUtbetaltOutput.csv",
             file = ikkeUtbetaltOutput.joinToString("\n")
+        )
+
+        createBlob(
+            blobId = "feilStatusOutput.csv",
+            file = feilStatusOutput.joinToString("\n")
         )
     }
 
