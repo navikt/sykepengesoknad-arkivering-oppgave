@@ -81,9 +81,14 @@ class OppgaveBucket(
             )
 
             if (soknad.status != SoknadsstatusDTO.SENDT) {
+                log.info("Soknad ${soknad.id} har status ${soknad.status} og legges i egen liste")
+                feilStatusOutput.add(soknadData.copy(korrigertAv = soknad.korrigertAv))
                 var korrigering = soknad
-                while (korrigering.status != SoknadsstatusDTO.SENDT) {
-                    log.info("Soknad ${soknad.id} har status ${soknad.status} og legges i egen liste")
+
+                do {
+                    korrigering = sykepengesoknadBackendClient.hentSoknad(korrigering.korrigertAv!!)
+                    log.info("Soknad ${korrigering.id} har status ${korrigering.status} og legges i egen liste")
+
                     feilStatusOutput.add(
                         SoknadData(
                             fnr = korrigering.fnr,
@@ -99,8 +104,7 @@ class OppgaveBucket(
                             korrigertAv = korrigering.korrigertAv
                         )
                     )
-                    korrigering = sykepengesoknadBackendClient.hentSoknad(korrigering.korrigertAv!!)
-                }
+                } while (korrigering.status == SoknadsstatusDTO.KORRIGERT)
             } else {
                 when (status) {
                     "ARBEIDSGIVERPERIODE" -> arbeidsgiverperiodeOutput.add(soknadData)
@@ -131,6 +135,8 @@ class OppgaveBucket(
                 "$it;${it.korrigertAv}"
             }
         )
+
+        log.info("Output er lagt til i bøtta")
     }
 
     private fun getBlob(
