@@ -141,8 +141,7 @@ class OppgaveBucket(
         val arbeidUtenforNorge: Boolean,
         val behandlingsdager: String,
 
-        val fravarFerie: String,
-        val fravarPermisjon: String,
+        val fravar: String,
         val fravarUtlandsopphold: String,
         val fravarUtdanning: String,
 
@@ -164,9 +163,8 @@ class OppgaveBucket(
             arbeidUtenforNorge = soknad.arbeidUtenforNorge ?: false,
             behandlingsdager = soknad.behandlingsdager?.serialisertTilString() ?: "[]",
 
-            fravarFerie = soknad.fravar?.filter { it.type == FravarstypeDTO.FERIE }?.serialisertTilString() ?: "[]",
-            fravarPermisjon = soknad.fravar?.filter { it.type == FravarstypeDTO.PERMISJON }?.serialisertTilString()
-                ?: "[]",
+            fravar = soknad.fravar?.filter { it.type == FravarstypeDTO.FERIE || it.type == FravarstypeDTO.PERMISJON }
+                ?.serialisertTilString() ?: "[]",
             fravarUtlandsopphold = soknad.fravar?.filter { it.type == FravarstypeDTO.UTLANDSOPPHOLD }
                 ?.serialisertTilString() ?: "[]",
             fravarUtdanning = soknad.fravar?.filter {
@@ -180,7 +178,7 @@ class OppgaveBucket(
         )
 
         override fun toString(): String {
-            return "$fnr;$id;$fom;$tom;$cics;$soknadsperioder;$startSyketilfelle;$andreInntektskilder;$permitteringer;$arbeidGjenopptatt;$soktUtenlandsopphold;$arbeidUtenforNorge;$fravarFerie;$fravarPermisjon;$fravarUtlandsopphold;$fravarUtdanning"
+            return "$fnr;$id;$fom;$tom;$cics;$soknadsperioder;$startSyketilfelle;$andreInntektskilder;$permitteringer;$arbeidGjenopptatt;$soktUtenlandsopphold;$arbeidUtenforNorge;$fravar;$fravarUtlandsopphold;$fravarUtdanning"
         }
     }
 }
