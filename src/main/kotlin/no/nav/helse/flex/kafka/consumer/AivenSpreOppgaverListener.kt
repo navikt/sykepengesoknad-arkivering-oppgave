@@ -18,6 +18,7 @@ import org.springframework.data.relational.core.conversion.DbActionExecutionExce
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
+import java.time.Duration
 
 const val SPREOPPGAVER_TOPIC = "tbd." + "spre-oppgaver"
 
@@ -52,7 +53,7 @@ class AivenSpreOppgaverListener(
         } catch (e: DbActionExecutionException) {
             if (e.cause is DuplicateKeyException) {
                 log.info("Spre oppgave ${oppgaveDTO.dokumentId} kan ikke legges inn i databasen nå, prøver igjen senere")
-                acknowledgment.nack(100)
+                acknowledgment.nack(Duration.ofMillis(100))
                 return
             }
         } catch (e: Exception) {

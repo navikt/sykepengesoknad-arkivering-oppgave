@@ -16,6 +16,7 @@ import org.springframework.data.relational.core.conversion.DbActionExecutionExce
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
+import java.time.Duration
 
 const val SYKEPENGESOKNAD_TOPIC = "flex." + "sykepengesoknad"
 
@@ -49,7 +50,7 @@ class AivenSoknadSendtListener(
         } catch (e: DbActionExecutionException) {
             if (e.cause is DuplicateKeyException) {
                 log.info("Søknaden ${cr.key()} sin spre oppgave kan ikke legges inn i databasen nå, prøver igjen senere")
-                acknowledgment.nack(100)
+                acknowledgment.nack(Duration.ofMillis(100))
                 return
             }
         } catch (e: Exception) {
