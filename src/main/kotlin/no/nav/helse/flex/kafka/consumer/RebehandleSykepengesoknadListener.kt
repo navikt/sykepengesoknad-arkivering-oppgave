@@ -13,6 +13,7 @@ import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
 import java.nio.charset.StandardCharsets
+import java.time.Duration
 import java.time.Instant
 import java.time.ZoneOffset
 
@@ -49,7 +50,7 @@ class RebehandleSykepengesoknadListener(
                     )
                     } sover i $sovetid millisekunder"
                 )
-                acknowledgment.nack(sovetid)
+                acknowledgment.nack(Duration.ofMillis(sovetid))
             } else {
                 val innsending = innsendingRepository.findBySykepengesoknadId(sykepengesoknad.id)
                 behandleFeiledeSoknaderService.behandleFeiletSoknad(innsending, sykepengesoknad)
