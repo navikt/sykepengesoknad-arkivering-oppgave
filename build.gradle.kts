@@ -46,7 +46,7 @@ val sykepengesoknadKafkaVersion = "2022.03.14-10.39-e61acd76"
 val mockitoKotlinVersion = "2.2.0"
 val logstashLogbackEncoderVersion = "7.1.1"
 val tokenSupportVersion = "2.0.14"
-val testContainersVersion = "1.17.1"
+val testContainersVersion = "1.17.3"
 val kluentVersion = "1.68"
 
 dependencies {
@@ -74,7 +74,7 @@ dependencies {
     implementation("no.nav.helse.flex:sykepengesoknad-kafka:$sykepengesoknadKafkaVersion")
     implementation("no.nav.security:token-validation-spring:$tokenSupportVersion")
     implementation("no.nav.security:token-client-spring:$tokenSupportVersion")
-    implementation("com.google.cloud:google-cloud-storage:2.6.1")
+    implementation("com.google.cloud:google-cloud-storage:2.9.0")
 
     testImplementation("org.amshove.kluent:kluent:$kluentVersion")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
