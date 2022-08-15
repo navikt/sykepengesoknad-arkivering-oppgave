@@ -74,7 +74,7 @@ class SpreOppgaveRaceConditionTest : FellesTestoppsett() {
         whenever(identService.hentFnrForAktorId(any())).thenReturn(søknad.fnr)
         whenever(pdlClient.hentFormattertNavn(any())).thenReturn("Kalle Klovn")
         whenever(arkivaren.opprettJournalpost(any())).thenReturn("jpost1234")
-        whenever(oppgaveService.opprettOppgave(any())).thenReturn(OppgaveResponse(123))
+        whenever(oppgaveService.opprettOppgave(any())).thenReturn(OppgaveResponse(123, "4488", "SYK", "SOK"))
         whenever(sykepengesoknadBackendClient.hentSoknad(any())).thenReturn(søknad)
     }
 

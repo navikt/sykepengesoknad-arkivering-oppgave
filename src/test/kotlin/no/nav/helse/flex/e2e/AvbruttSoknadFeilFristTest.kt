@@ -61,7 +61,7 @@ class AvbruttSoknadFeilFristTest : FellesTestoppsett() {
         whenever(identService.hentFnrForAktorId(any())).thenReturn(fnr)
         whenever(pdlClient.hentFormattertNavn(any())).thenReturn("Kalle Klovn")
         whenever(arkivaren.opprettJournalpost(any())).thenReturn("jpost1234")
-        whenever(oppgaveService.opprettOppgave(any())).thenReturn(OppgaveResponse(123))
+        whenever(oppgaveService.opprettOppgave(any())).thenReturn(OppgaveResponse(123, "4488", "SYK", "SOK"))
 
         val soknad = SykepengesoknadDTO(
             fnr = fnr,

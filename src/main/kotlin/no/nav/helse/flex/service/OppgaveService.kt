@@ -114,5 +114,10 @@ data class OppgaveRequest(
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class OppgaveResponse(
-    val id: Int
+    val id: Int,
+    val tildeltEnhetsnr: String,
+    val tema: String,
+    val oppgavetype: String,
+    val behandlingstema: String? = null,
+    val behandlingstype: String? = null,
 )

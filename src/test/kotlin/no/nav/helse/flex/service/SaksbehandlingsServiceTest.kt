@@ -67,7 +67,7 @@ class SaksbehandlingsServiceTest {
         given(identService.hentAktorIdForFnr(any())).willReturn(aktorId)
         given(identService.hentFnrForAktorId(any())).willReturn(fnr)
         given(arkivaren.opprettJournalpost(any())).willReturn("journalpostId")
-        given(oppgaveService.opprettOppgave(any())).willReturn(OppgaveResponse(1234))
+        given(oppgaveService.opprettOppgave(any())).willReturn(OppgaveResponse(1234, "4488", "SYK", "SOK"))
         given(
             registry.counter(
                 ArgumentMatchers.anyString(),
