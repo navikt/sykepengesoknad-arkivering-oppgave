@@ -62,12 +62,33 @@ class SaksbehandlingsService(
             harRedusertVenteperiode = sykepengesoknad.harRedusertVenteperiode,
             speilRelatert = speilRelatert,
         )
-        val oppgaveId = oppgaveService.opprettOppgave(requestBody).id.toString()
+        val oppgaveResponse = oppgaveService.opprettOppgave(requestBody)
 
-        innsendingRepository.updateOppgaveId(id = innsending.id!!, oppgaveId = oppgaveId)
+        innsendingRepository.updateOppgaveId(id = innsending.id!!, oppgaveId = oppgaveResponse.id.toString())
 
         tellInnsendingBehandlet(soknad.soknadstype)
         log.info("Oppretter oppgave ${innsending.id} for ${soknad.soknadstype.name.lowercase()} søknad: ${soknad.soknadsId}")
+
+        if (soknad.soknadstype == Soknadstype.OPPHOLD_UTLAND) {
+            sjekkOmOppholdUtlandSendesTilEnhet4488(soknad, requestBody, oppgaveResponse)
+        }
+    }
+
+    private fun sjekkOmOppholdUtlandSendesTilEnhet4488(
+        soknad: Soknad,
+        req: OppgaveRequest,
+        res: OppgaveResponse,
+    ) {
+        if (res.tildeltEnhetsnr == "4488") {
+            log.warn(
+                "Søknad om opphold utland ${soknad.soknadsId} ble tildelt enhet ${res.tildeltEnhetsnr}. Request = ${
+                    req.copy(
+                        aktoerId = "***",
+                        beskrivelse = "***"
+                    )
+                }. Response $res"
+            )
+        }
     }
 
     fun settFerdigbehandlet(innsendingsId: String) {
