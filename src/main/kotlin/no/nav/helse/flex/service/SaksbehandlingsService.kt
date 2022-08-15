@@ -82,10 +82,10 @@ class SaksbehandlingsService(
         if (res.tildeltEnhetsnr == "4488") {
             log.warn(
                 "Søknad om opphold utland ${soknad.soknadsId} ble tildelt enhet ${res.tildeltEnhetsnr}. Request = ${
-                    req.copy(
-                        aktoerId = "***",
-                        beskrivelse = "***"
-                    )
+                req.copy(
+                    aktoerId = "***",
+                    beskrivelse = "***"
+                )
                 }. Response $res"
             )
         }
