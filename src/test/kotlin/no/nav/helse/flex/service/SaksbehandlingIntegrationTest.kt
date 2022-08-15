@@ -56,7 +56,7 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
     fun `test happycase`() {
         val oppgaveID = 1
 
-        whenever(oppgaveService.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
+        whenever(oppgaveService.opprettOppgave(any())).thenReturn(OppgaveResponse(oppgaveID, "4488", "SYK", "SOK"))
 
         val soknad = mockSykepengesoknadDTO.copy(
             id = UUID.randomUUID().toString(),
@@ -118,7 +118,7 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
     @Test
     fun `kafkamelding med redusertVenteperiode setter riktig behandlingstema`() {
         val oppgaveID = 2
-        whenever(oppgaveService.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
+        whenever(oppgaveService.opprettOppgave(any())).thenReturn(OppgaveResponse(oppgaveID, "4488", "SYK", "SOK"))
 
         val soknad = SykepengesoknadDTO(
             id = UUID.randomUUID().toString(),
@@ -196,7 +196,7 @@ Ja
     fun `reisetilskudd søknad behandles korrekt`() {
         val oppgaveID = 3
         whenever(flexBucketUploaderClient.hentVedlegg(any())).thenReturn("123".encodeToByteArray())
-        whenever(oppgaveService.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
+        whenever(oppgaveService.opprettOppgave(any())).thenReturn(OppgaveResponse(oppgaveID, "4488", "SYK", "SOK"))
 
         val soknad = mockReisetilskuddDTO.copy(id = UUID.randomUUID().toString())
 
@@ -293,7 +293,7 @@ Nei
     fun `gradert reisetilskudd søknad behandles korrekt`() {
         val oppgaveID = 3
         whenever(flexBucketUploaderClient.hentVedlegg(any())).thenReturn("123".encodeToByteArray())
-        whenever(oppgaveService.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
+        whenever(oppgaveService.opprettOppgave(any())).thenReturn(OppgaveResponse(oppgaveID, "4488", "SYK", "SOK"))
 
         val soknad = mockReisetilskuddDTO.copy(
             id = UUID.randomUUID().toString(),
@@ -394,7 +394,7 @@ Nei
     fun `Reisetilskudd for kode 6 går til Vikafossen`() {
         val oppgaveID = 4
         whenever(flexBucketUploaderClient.hentVedlegg(any())).thenReturn("123".encodeToByteArray())
-        whenever(oppgaveService.opprettOppgave(any())).thenReturn(OppgaveResponse(id = oppgaveID))
+        whenever(oppgaveService.opprettOppgave(any())).thenReturn(OppgaveResponse(oppgaveID, "4488", "SYK", "SOK"))
         pdlClient.returnerKode6 = true
 
         val soknad = mockReisetilskuddDTO
