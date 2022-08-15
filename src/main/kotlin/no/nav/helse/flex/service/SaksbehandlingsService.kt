@@ -89,6 +89,14 @@ class SaksbehandlingsService(
                 }. Response $res"
             )
         }
+        log.info(
+            "Søknad om opphold utland ${soknad.soknadsId} ble tildelt enhet ${res.tildeltEnhetsnr}. Request = ${
+            req.copy(
+                aktoerId = "***",
+                beskrivelse = "***"
+            )
+            }. Response $res"
+        )
     }
 
     fun settFerdigbehandlet(innsendingsId: String) {
