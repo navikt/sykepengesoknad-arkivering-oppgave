@@ -70,7 +70,6 @@ dependencies {
     implementation("org.aspectj:aspectjweaver")
     implementation("io.micrometer:micrometer-registry-prometheus")
     implementation("no.nav.syfo.kafka:kafkautils:$syfoKafkaVersion")
-    implementation("no.nav.syfo.kafka:legacy-serialisering:$syfoKafkaVersion")
     implementation("no.nav.helse.flex:sykepengesoknad-kafka:$sykepengesoknadKafkaVersion")
     implementation("no.nav.security:token-validation-spring:$tokenSupportVersion")
     implementation("no.nav.security:token-client-spring:$tokenSupportVersion")
