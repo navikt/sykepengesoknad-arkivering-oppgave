@@ -84,7 +84,7 @@ private fun Soknad.lagTittel() =
             )
             }"
         }
-        OPPHOLD_UTLAND -> "Søknad om å beholde sykepenger utenfor EØS"
+        OPPHOLD_UTLAND -> "Søknad om å beholde sykepenger utenfor EU/EØS/Storbritannia"
         ARBEIDSLEDIG -> "Søknad om sykepenger for arbeidsledig"
         BEHANDLINGSDAGER -> "Søknad med enkeltstående behandlingsdager"
         ANNET_ARBEIDSFORHOLD -> "Søknad om sykepenger med uavklart arbeidssituasjon"
