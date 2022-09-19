@@ -55,7 +55,7 @@ private fun getBrevkode(soknad: Soknad): String {
 
 private fun getJornalfoertDokumentTittel(soknad: Soknad): String {
     return when (soknad.soknadstype) {
-        Soknadstype.OPPHOLD_UTLAND -> "Søknad om å beholde sykepenger utenfor EU/EØS/Storbritannia"
+        Soknadstype.OPPHOLD_UTLAND -> "Søknad om å beholde sykepenger utenfor EØS"
         Soknadstype.SELVSTENDIGE_OG_FRILANSERE -> "Søknad om sykepenger fra Selvstendig/Frilanser for periode: ${soknad.fom!!.format(
             DatoUtil.norskDato
         )} til ${soknad.tom!!.format(DatoUtil.norskDato)}"

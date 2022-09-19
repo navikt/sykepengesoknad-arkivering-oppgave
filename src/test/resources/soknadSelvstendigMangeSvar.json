@@ -322,7 +322,7 @@
     {
       "id": "19",
       "tag": "UTLAND",
-      "sporsmalstekst": "Har du oppholdt deg utenfor EU/EØS/Storbritannia i perioden 20.05.2018 - 28.05.2018?",
+      "sporsmalstekst": "Har du oppholdt deg utenfor EØS i perioden 20.05.2018 - 28.05.2018?",
       "undertekst": null,
       "svartype": "JA_NEI",
       "min": null,
@@ -337,7 +337,7 @@
         {
           "id": "20",
           "tag": "PERIODER",
-          "sporsmalstekst": "Når oppholdt du deg utenfor EU/EØS/Storbritannia?",
+          "sporsmalstekst": "Når oppholdt du deg utenfor EØS?",
           "undertekst": null,
           "svartype": "PERIODER",
           "min": "2018-05-20",
@@ -353,7 +353,7 @@
         {
           "id": "21",
           "tag": "UTLANDSOPPHOLD_SOKT_SYKEPENGER",
-          "sporsmalstekst": "Har du søkt om å beholde sykepenger under dette oppholdet utenfor EU/EØS/Storbritannia?",
+          "sporsmalstekst": "Har du søkt om å beholde sykepenger under dette oppholdet utenfor EØS?",
           "undertekst": null,
           "svartype": "JA_NEI",
           "min": null,

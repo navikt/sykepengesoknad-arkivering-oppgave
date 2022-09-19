@@ -327,7 +327,7 @@
     {
       "id": "74",
       "tag": "FERIE_PERMISJON_UTLAND",
-      "sporsmalstekst": "Har du hatt ferie, permisjon eller oppholdt deg utenfor EU/EØS/Storbritannia i perioden 16. - 24. oktober 2018?",
+      "sporsmalstekst": "Har du hatt ferie, permisjon eller oppholdt deg utenfor EØS i perioden 16. - 24. oktober 2018?",
       "undertekst": null,
       "svartype": "JA_NEI",
       "min": null,
@@ -411,7 +411,7 @@
             {
               "id": "80",
               "tag": "UTLAND",
-              "sporsmalstekst": "Jeg var utenfor EU/EØS/Storbritannia",
+              "sporsmalstekst": "Jeg var utenfor EØS",
               "undertekst": null,
               "svartype": "CHECKBOX",
               "min": null,
