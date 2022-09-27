@@ -1,6 +1,14 @@
 package no.nav.helse.flex.domain
 
 import com.fasterxml.jackson.module.kotlin.readValue
+import no.nav.helse.flex.domain.dto.Arbeidssituasjon
+import no.nav.helse.flex.domain.dto.Avsendertype
+import no.nav.helse.flex.domain.dto.Merknad
+import no.nav.helse.flex.domain.dto.SoknadPeriode
+import no.nav.helse.flex.domain.dto.Soknadstype
+import no.nav.helse.flex.domain.dto.Sporsmal
+import no.nav.helse.flex.domain.dto.Svartype
+import no.nav.helse.flex.domain.dto.Sykepengesoknad
 import no.nav.helse.flex.util.OBJECT_MAPPER
 import java.time.Instant
 import java.time.LocalDate
