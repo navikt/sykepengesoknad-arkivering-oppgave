@@ -1,7 +1,6 @@
 package no.nav.helse.flex.domain
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import no.nav.helse.flex.domain.dto.*
 import no.nav.helse.flex.util.OBJECT_MAPPER
 import java.time.Instant
 import java.time.LocalDate
