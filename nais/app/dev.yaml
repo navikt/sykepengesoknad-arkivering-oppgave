@@ -12,8 +12,8 @@ env:
   DOKARKIV_AAD_CLIENT_ID: dev-fss.teamdokumenthandtering.dokarkiv-q1
   OPPGAVE_URL: https://oppgave-q1.dev-fss-pub.nais.io/api/v1/oppgaver
   OPPGAVE_AAD_CLIENT_ID: dev-fss.oppgavehandtering.oppgave-q1
-  BUCKET_UPLOADER_URL: http://flex-bucket-uploader
-  FLEX_BUCKET_UPLOADER_AAD_CLIENT_ID: dev-gcp.flex.flex-bucket-uploader
+  SYKEPENGESOKNAD_KVITTERINGER_URL: http://sykepengesoknad-kvitteringer
+  SYKEPENGESOKNAD_KVITTEINGER_CLIENT_ID: prod-gcp.flex.sykepengesoknad-kvitteringer
   PDFGEN_URL: http://flex-sykepengesoknad-pdfgen
   DEFAULT_TIMEOUT_TIMER: '48'
   BUCKET_NAME: oppgavefordeling-bucket-dev

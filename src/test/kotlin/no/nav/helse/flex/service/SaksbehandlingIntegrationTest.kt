@@ -3,8 +3,8 @@ package no.nav.helse.flex.service
 import com.nhaarman.mockitokotlin2.*
 import no.nav.helse.flex.FellesTestoppsett
 import no.nav.helse.flex.client.DokArkivClient
-import no.nav.helse.flex.client.FlexBucketUploaderClient
 import no.nav.helse.flex.client.PDFClient
+import no.nav.helse.flex.client.SykepengesoknadKvitteringerClient
 import no.nav.helse.flex.client.pdl.PdlClient
 import no.nav.helse.flex.domain.*
 import no.nav.helse.flex.domain.dto.PDFTemplate
@@ -41,7 +41,7 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
     private lateinit var oppgaveService: OppgaveService
 
     @MockBean
-    private lateinit var flexBucketUploaderClient: FlexBucketUploaderClient
+    private lateinit var sykepengesoknadKvitteringerClient: SykepengesoknadKvitteringerClient
 
     @Autowired
     private lateinit var pdlClient: PdlClient
@@ -195,7 +195,7 @@ Ja
     @Test
     fun `reisetilskudd søknad behandles korrekt`() {
         val oppgaveID = 3
-        whenever(flexBucketUploaderClient.hentVedlegg(any())).thenReturn("123".encodeToByteArray())
+        whenever(sykepengesoknadKvitteringerClient.hentVedlegg(any())).thenReturn("123".encodeToByteArray())
         whenever(oppgaveService.opprettOppgave(any())).thenReturn(OppgaveResponse(oppgaveID, "4488", "SYK", "SOK"))
 
         val soknad = mockReisetilskuddDTO.copy(id = UUID.randomUUID().toString())
@@ -292,7 +292,7 @@ Nei
     @Test
     fun `gradert reisetilskudd søknad behandles korrekt`() {
         val oppgaveID = 3
-        whenever(flexBucketUploaderClient.hentVedlegg(any())).thenReturn("123".encodeToByteArray())
+        whenever(sykepengesoknadKvitteringerClient.hentVedlegg(any())).thenReturn("123".encodeToByteArray())
         whenever(oppgaveService.opprettOppgave(any())).thenReturn(OppgaveResponse(oppgaveID, "4488", "SYK", "SOK"))
 
         val soknad = mockReisetilskuddDTO.copy(
@@ -393,7 +393,7 @@ Nei
     @Test
     fun `Reisetilskudd for kode 6 går til Vikafossen`() {
         val oppgaveID = 4
-        whenever(flexBucketUploaderClient.hentVedlegg(any())).thenReturn("123".encodeToByteArray())
+        whenever(sykepengesoknadKvitteringerClient.hentVedlegg(any())).thenReturn("123".encodeToByteArray())
         whenever(oppgaveService.opprettOppgave(any())).thenReturn(OppgaveResponse(oppgaveID, "4488", "SYK", "SOK"))
         pdlClient.returnerKode6 = true
 
