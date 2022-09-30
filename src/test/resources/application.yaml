@@ -7,10 +7,13 @@ management:
     base-path: /internal
     exposure.include: prometheus
 
+SYKEPENGESOKNAD_KVITTERINGER_URL: "http://sykepengesoknad-kvitteringer"
 OPPGAVE_URL: "http://oppgave.oppgaver.url"
 PDFGEN_URL: "http://pdf"
-pdl.api.url: "http://pdl-api.pdl"
 DOKARKIV_URL: "http://dokarkiv"
+
+pdl.api.url: "http://pdl-api.pdl"
+
 DEFAULT_TIMEOUT_TIMER: "24"
 
 spring:
@@ -23,10 +26,6 @@ spring:
     banner-mode: off
   flyway:
     enabled: true
-
-BUCKET_UPLOADER_URL: http://flex-bucket
-
-
 
 KAFKA_TRUSTSTORE_PATH: ""
 KAFKA_CREDSTORE_PASSWORD: ""

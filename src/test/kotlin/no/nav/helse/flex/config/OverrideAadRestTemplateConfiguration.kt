@@ -11,7 +11,7 @@ import org.springframework.web.client.RestTemplate
 class OverrideAadRestTemplateConfiguration {
 
     @Bean
-    fun flexBucketUploaderRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate =
+    fun sykepengesoknadKvitteringerRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate =
         restTemplateBuilder.build()
 
     @Bean

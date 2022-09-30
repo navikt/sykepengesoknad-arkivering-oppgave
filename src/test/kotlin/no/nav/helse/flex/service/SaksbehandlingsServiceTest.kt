@@ -9,7 +9,7 @@ import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.helse.flex.any
 import no.nav.helse.flex.arkivering.Arkivaren
-import no.nav.helse.flex.client.FlexBucketUploaderClient
+import no.nav.helse.flex.client.SykepengesoknadKvitteringerClient
 import no.nav.helse.flex.client.pdl.PdlClient
 import no.nav.helse.flex.domain.dto.Sykepengesoknad
 import no.nav.helse.flex.kafka.producer.RebehandleSykepengesoknadProducer
@@ -48,7 +48,7 @@ class SaksbehandlingsServiceTest {
     @Mock
     lateinit var arkivaren: Arkivaren
     @Mock
-    lateinit var flexBucketUploaderClient: FlexBucketUploaderClient
+    lateinit var sykepengesoknadKvitteringerClient: SykepengesoknadKvitteringerClient
     @Mock
     lateinit var registry: MeterRegistry
     @Mock

@@ -19,12 +19,12 @@ import org.springframework.web.client.RestTemplate
 class AadRestTemplateConfiguration {
 
     @Bean
-    fun flexBucketUploaderRestTemplate(
+    fun sykepengesoknadKvitteringerRestTemplate(
         restTemplateBuilder: RestTemplateBuilder,
         clientConfigurationProperties: ClientConfigurationProperties,
         oAuth2AccessTokenService: OAuth2AccessTokenService
     ): RestTemplate = downstreamRestTemplate(
-        registrationName = "flex-bucket-uploader-client-credentials",
+        registrationName = "sykepengesoknad-kvitteringer-client-credentials",
         restTemplateBuilder = restTemplateBuilder,
         clientConfigurationProperties = clientConfigurationProperties,
         oAuth2AccessTokenService = oAuth2AccessTokenService,

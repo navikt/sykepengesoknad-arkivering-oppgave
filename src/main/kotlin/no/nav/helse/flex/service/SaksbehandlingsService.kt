@@ -2,7 +2,7 @@ package no.nav.helse.flex.service
 
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tags
-import no.nav.helse.flex.client.FlexBucketUploaderClient
+import no.nav.helse.flex.client.SykepengesoknadKvitteringerClient
 import no.nav.helse.flex.client.pdl.PdlClient
 import no.nav.helse.flex.domain.PdfKvittering
 import no.nav.helse.flex.domain.Soknad
@@ -22,7 +22,7 @@ class SaksbehandlingsService(
     private val innsendingRepository: InnsendingRepository,
     private val registry: MeterRegistry,
     private val rebehandleSykepengesoknadProducer: RebehandleSykepengesoknadProducer,
-    private val flexBucketUploaderClient: FlexBucketUploaderClient,
+    private val sykepengesoknadKvitteringerClient: SykepengesoknadKvitteringerClient,
     private val identService: IdentService,
     private val pdlClient: PdlClient,
 ) {
@@ -127,7 +127,7 @@ class SaksbehandlingsService(
     private fun PdfKvittering.hentOgSettKvittering(): PdfKvittering {
 
         return this.copy(
-            b64data = Base64.getEncoder().encodeToString(flexBucketUploaderClient.hentVedlegg(this.blobId))
+            b64data = Base64.getEncoder().encodeToString(sykepengesoknadKvitteringerClient.hentVedlegg(this.blobId))
         )
     }
 
