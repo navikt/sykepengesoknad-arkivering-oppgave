@@ -61,7 +61,7 @@ dependencies {
     implementation("org.slf4j:slf4j-api")
     implementation("org.hibernate.validator:hibernate-validator")
     implementation("org.apache.httpcomponents:httpclient:4.5.13")
-    implementation("org.apache.commons:commons-text:1.9")
+    implementation("org.apache.commons:commons-text:1.10.0")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashLogbackEncoderVersion")
