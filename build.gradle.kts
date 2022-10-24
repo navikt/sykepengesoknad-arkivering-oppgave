@@ -47,7 +47,7 @@ val mockitoKotlinVersion = "2.2.0"
 val logstashLogbackEncoderVersion = "7.2"
 val tokenSupportVersion = "2.1.6"
 val testContainersVersion = "1.17.5"
-val kluentVersion = "1.70"
+val kluentVersion = "1.72"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
