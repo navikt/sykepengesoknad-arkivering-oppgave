@@ -55,6 +55,7 @@ spec:
     buckets:
       - name: {{bucketName}}
         cascadingDelete: true
+        publicAccessPrevention: true
   accessPolicy:
     outbound:
       rules:
