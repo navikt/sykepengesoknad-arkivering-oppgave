@@ -9,11 +9,13 @@ import no.nav.helse.flex.kafka.mapper.toSykepengesoknad
 import no.nav.helse.flex.logger
 import no.nav.helse.flex.repository.OppgaveStatus
 import no.nav.helse.flex.repository.SpreOppgaveRepository
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
+import java.util.concurrent.TimeUnit
 
 @Component
 class OppgaveOpprettelse(
@@ -26,7 +28,7 @@ class OppgaveOpprettelse(
 ) {
     private val log = logger()
 
-    // @Scheduled(initialDelay = 120, fixedDelay = 60, timeUnit = TimeUnit.SECONDS)
+    @Scheduled(initialDelay = 120, fixedDelay = 60, timeUnit = TimeUnit.SECONDS)
     // Only no-args methods can be Scheduled.
     fun startOppgaveBehandling() {
         behandleOppgaver()
