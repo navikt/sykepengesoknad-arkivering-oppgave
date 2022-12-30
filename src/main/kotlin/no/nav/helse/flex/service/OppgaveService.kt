@@ -78,6 +78,8 @@ class OppgaveService(
                     this.behandlingstype = "ae0247"
                 } else if (speilRelatert) {
                     this.behandlingstema = "ab0455"
+                } else if (soknad.utenlandskSykmelding == true) {
+                    this.behandlingstema = "ab0313"
                 } else {
                     this.behandlingstema = when (soknad.soknadstype) {
                         Soknadstype.OPPHOLD_UTLAND -> "ab0314"

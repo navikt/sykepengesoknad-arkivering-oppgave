@@ -14,7 +14,6 @@ import no.nav.helse.flex.domain.OppdateringstypeDTO
 import no.nav.helse.flex.domain.OppgaveDTO
 import no.nav.helse.flex.kafka.consumer.AivenSoknadSendtListener
 import no.nav.helse.flex.kafka.consumer.AivenSpreOppgaverListener
-import no.nav.helse.flex.objectMapper
 import no.nav.helse.flex.serialisertTilString
 import no.nav.helse.flex.service.*
 import no.nav.helse.flex.skapConsumerRecord
@@ -36,7 +35,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 @DirtiesContext
-class OpprettSpeilrelatertTest : FellesTestoppsett() {
+class SpesialBehandlingstemaTest : FellesTestoppsett() {
 
     companion object {
         const val aktorId = "aktørId"
@@ -77,18 +76,14 @@ class OpprettSpeilrelatertTest : FellesTestoppsett() {
         whenever(pdlClient.hentFormattertNavn(any())).thenReturn("Kalle Klovn")
         whenever(arkivaren.opprettJournalpost(any())).thenReturn("jpost1234")
         whenever(oppgaveService.opprettOppgave(any())).thenReturn(OppgaveResponse(123, "4488", "SYK", "SOK"))
-        whenever(sykepengesoknadBackendClient.hentSoknad(any())).thenReturn(
-            objectMapper.readValue(
-                søknad().serialisertTilString(),
-                SykepengesoknadDTO::class.java
-            )
-        )
     }
 
     @Test
-    fun `En speil relatert søknad for behandlingstema ab0455`() {
+    fun `En speil relatert søknad får behandlingstema ab0455`() {
         val soknadId = UUID.randomUUID()
-        leggSøknadPåKafka(søknad(soknadId))
+        val søknad = søknad(soknadId)
+        whenever(sykepengesoknadBackendClient.hentSoknad(any())).thenReturn(søknad)
+        leggSøknadPåKafka(søknad)
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.OpprettSpeilRelatert, soknadId))
 
         oppgaveOpprettelse.behandleOppgaver()
@@ -99,9 +94,12 @@ class OpprettSpeilrelatertTest : FellesTestoppsett() {
     }
 
     @Test
-    fun `En ikke speil relatert søknad for behandlingstema ab0061`() {
+    fun `En ikke speil relatert søknad får behandlingstema ab0061`() {
         val soknadId = UUID.randomUUID()
-        leggSøknadPåKafka(søknad(soknadId))
+        val søknad = søknad(soknadId)
+        whenever(sykepengesoknadBackendClient.hentSoknad(any())).thenReturn(søknad)
+
+        leggSøknadPåKafka(søknad)
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, soknadId))
 
         oppgaveOpprettelse.behandleOppgaver()
@@ -109,6 +107,22 @@ class OpprettSpeilrelatertTest : FellesTestoppsett() {
 
         verify(oppgaveService).opprettOppgave(captor.capture())
         assertThat(captor.firstValue.behandlingstema).isEqualTo("ab0061")
+    }
+
+    @Test
+    fun `En søknad tilhørende utenlandsk sykmelding får behandlingstema ab0313`() {
+        val soknadId = UUID.randomUUID()
+        val søknad = søknad(soknadId, utenlandskSykmelding = true)
+        whenever(sykepengesoknadBackendClient.hentSoknad(any())).thenReturn(søknad)
+
+        leggSøknadPåKafka(søknad)
+        leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, soknadId))
+
+        oppgaveOpprettelse.behandleOppgaver()
+        val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
+
+        verify(oppgaveService).opprettOppgave(captor.capture())
+        assertThat(captor.firstValue.behandlingstema).isEqualTo("ab0313")
     }
 
     private fun leggSøknadPåKafka(søknad: SykepengesoknadDTO) =
@@ -120,7 +134,8 @@ class OpprettSpeilrelatertTest : FellesTestoppsett() {
     private fun søknad(
         soknadId: UUID = UUID.randomUUID(),
         sendtNav: LocalDateTime? = LocalDateTime.now(),
-        sendtArbeidsgiver: LocalDateTime? = null
+        sendtArbeidsgiver: LocalDateTime? = null,
+        utenlandskSykmelding: Boolean? = null
     ) = SykepengesoknadDTO(
         fnr = fnr,
         id = soknadId.toString(),
@@ -141,5 +156,6 @@ class OpprettSpeilrelatertTest : FellesTestoppsett() {
         status = SoknadsstatusDTO.SENDT,
         sendtNav = sendtNav,
         sendtArbeidsgiver = sendtArbeidsgiver,
+        utenlandskSykmelding = utenlandskSykmelding,
     )
 }

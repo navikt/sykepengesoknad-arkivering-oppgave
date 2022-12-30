@@ -41,6 +41,7 @@ data class Soknad(
     val kvitteringSum: Int? = null,
     val kvitteringer: List<PdfKvittering>? = null,
     val merknader: List<String>? = null,
+    val utenlandskSykmelding: Boolean? = null,
 ) {
 
     companion object {
@@ -72,6 +73,7 @@ data class Soknad(
                 kvitteringSum = sykepengesoknad.hentKvitteringSum(),
                 kvitteringer = sykepengesoknad.hentPdfKvitteringer(),
                 merknader = sykepengesoknad.merknader,
+                utenlandskSykmelding = sykepengesoknad.utenlandskSykmelding,
             )
 
         private fun endreRekkefolgePaSporsmalForPDF(sporsmal: List<Sporsmal>) =
