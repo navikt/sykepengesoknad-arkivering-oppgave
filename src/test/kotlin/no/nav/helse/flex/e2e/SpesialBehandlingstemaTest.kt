@@ -110,7 +110,7 @@ class SpesialBehandlingstemaTest : FellesTestoppsett() {
     }
 
     @Test
-    fun `En søknad tilhørende utenlandsk sykmelding får behandlingstema ab0313`() {
+    fun `En søknad tilhørende utenlandsk sykmelding får behandlingstype ae0106`() {
         val soknadId = UUID.randomUUID()
         val søknad = søknad(soknadId, utenlandskSykmelding = true)
         whenever(sykepengesoknadBackendClient.hentSoknad(any())).thenReturn(søknad)
@@ -122,7 +122,7 @@ class SpesialBehandlingstemaTest : FellesTestoppsett() {
         val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
 
         verify(oppgaveService).opprettOppgave(captor.capture())
-        assertThat(captor.firstValue.behandlingstema).isEqualTo("ab0313")
+        assertThat(captor.firstValue.behandlingstype).isEqualTo("ae0106")
     }
 
     private fun leggSøknadPåKafka(søknad: SykepengesoknadDTO) =
