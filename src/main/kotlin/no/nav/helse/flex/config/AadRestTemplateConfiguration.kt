@@ -82,13 +82,13 @@ class AadRestTemplateConfiguration {
         )
 
     private fun downstreamRestTemplate(
+        registrationName: String,
         restTemplateBuilder: RestTemplateBuilder,
         clientConfigurationProperties: ClientConfigurationProperties,
         oAuth2AccessTokenService: OAuth2AccessTokenService,
-        registrationName: String
     ): RestTemplate {
         val clientProperties = clientConfigurationProperties.registration[registrationName]
-            ?: throw RuntimeException("Fant ikke config for $registrationName")
+            ?: throw RuntimeException("Fant ikke config for $registrationName.")
         return restTemplateBuilder
             .additionalInterceptors(bearerTokenInterceptor(clientProperties, oAuth2AccessTokenService))
             .build()

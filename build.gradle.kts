@@ -2,10 +2,11 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.springframework.boot") version "2.7.5"
+    id("org.springframework.boot") version "3.0.2"
     id("io.spring.dependency-management") version "1.1.0"
     kotlin("jvm") version "1.8.10"
     kotlin("plugin.spring") version "1.8.10"
+    id("org.jlleitschuh.gradle.ktlint") version "11.1.0"
 }
 
 group = "no.nav.helse.flex"
@@ -13,21 +14,10 @@ version = "0.0.1-SNAPSHOT"
 description = "sykepengesoknad-arkivering-oppgave"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
-buildscript {
-    repositories {
-        maven("https://plugins.gradle.org/m2/")
-    }
-    dependencies {
-        classpath("org.jlleitschuh.gradle:ktlint-gradle:11.1.0")
-    }
-}
-
-ext["okhttp3.version"] = "4.9.0" // For at token support testen kjører (tror jeg)
+ext["okhttp3.version"] = "4.9.3" // Token-support tester trenger Mockwebserver.
 
 val githubUser: String by project
 val githubPassword: String by project
-
-apply(plugin = "org.jlleitschuh.gradle.ktlint")
 
 repositories {
     mavenCentral()
@@ -45,47 +35,50 @@ val syfoKafkaVersion = "2021.07.20-09.39-6be2c52c"
 val sykepengesoknadKafkaVersion = "2022.12.21-07.53-20bd43a2"
 val mockitoKotlinVersion = "2.2.0"
 val logstashLogbackEncoderVersion = "7.2"
-val tokenSupportVersion = "2.1.9"
+val tokenSupportVersion = "3.0.3"
 val testContainersVersion = "1.17.6"
 val kluentVersion = "1.72"
+val cloudStorageVersion = "2.18.0"
+val jaxWsApiVersion = "1.1"
+val commonsTextVersion = "1.10.0"
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
+    implementation(kotlin("stdlib"))
+    implementation(kotlin("reflect"))
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.kafka:spring-kafka")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.postgresql:postgresql")
     implementation("org.flywaydb:flyway-core")
     implementation("org.slf4j:slf4j-api")
     implementation("org.hibernate.validator:hibernate-validator")
-    implementation("org.apache.httpcomponents:httpclient:4.5.14")
-    implementation("org.apache.commons:commons-text:1.10.0")
+    implementation("org.apache.httpcomponents.client5:httpclient5")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-    implementation("net.logstash.logback:logstash-logback-encoder:$logstashLogbackEncoderVersion")
-    implementation("javax.jws:javax.jws-api:1.1")
     implementation("org.aspectj:aspectjrt")
     implementation("org.aspectj:aspectjweaver")
     implementation("io.micrometer:micrometer-registry-prometheus")
+    implementation("org.apache.commons:commons-text:$commonsTextVersion")
+    implementation("javax.jws:javax.jws-api:$jaxWsApiVersion")
+    implementation("net.logstash.logback:logstash-logback-encoder:$logstashLogbackEncoderVersion")
     implementation("no.nav.syfo.kafka:kafkautils:$syfoKafkaVersion")
     implementation("no.nav.helse.flex:sykepengesoknad-kafka:$sykepengesoknadKafkaVersion")
     implementation("no.nav.security:token-validation-spring:$tokenSupportVersion")
     implementation("no.nav.security:token-client-spring:$tokenSupportVersion")
-    implementation("com.google.cloud:google-cloud-storage:2.18.0")
+    implementation("com.google.cloud:google-cloud-storage:$cloudStorageVersion")
 
-    testImplementation("org.amshove.kluent:kluent:$kluentVersion")
+    testImplementation(platform("org.testcontainers:testcontainers-bom:$testContainersVersion"))
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.testcontainers:kafka:$testContainersVersion")
-    testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("no.nav.security:token-validation-spring-test:$tokenSupportVersion")
+    testImplementation("org.testcontainers:kafka")
+    testImplementation("org.testcontainers:postgresql")
     testImplementation("org.assertj:assertj-core")
-    testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlinVersion")
-    testImplementation("org.testcontainers:postgresql:$testContainersVersion")
-    testImplementation("org.mockito:mockito-core")
     testImplementation("org.awaitility:awaitility")
+    testImplementation("org.mockito:mockito-core")
+    testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlinVersion")
+    testImplementation("no.nav.security:token-validation-spring-test:$tokenSupportVersion")
+    testImplementation("org.amshove.kluent:kluent:$kluentVersion")
 }
 
 tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
