@@ -73,7 +73,7 @@ dependencies {
     implementation("no.nav.helse.flex:sykepengesoknad-kafka:$sykepengesoknadKafkaVersion")
     implementation("no.nav.security:token-validation-spring:$tokenSupportVersion")
     implementation("no.nav.security:token-client-spring:$tokenSupportVersion")
-    implementation("com.google.cloud:google-cloud-storage:2.17.2")
+    implementation("com.google.cloud:google-cloud-storage:2.18.0")
 
     testImplementation("org.amshove.kluent:kluent:$kluentVersion")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
