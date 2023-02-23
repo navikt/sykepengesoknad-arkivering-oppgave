@@ -26,7 +26,7 @@ interface HandterOppgaveInterface {
 @Component
 class HandterOppave(
     private val spreOppgaveRepository: SpreOppgaveRepository,
-    registry: MeterRegistry,
+    registry: MeterRegistry
 ) : HandterOppgaveInterface {
 
     private val log = logger()
@@ -96,8 +96,12 @@ class HandterOppave(
 }
 
 internal fun timeout(oppgave: OppgaveDTO) =
-    if (oppgave.oppdateringstype == OppdateringstypeDTO.Utsett) oppgave.timeout?.tilOsloZone()
-        ?.toInstant() else null
+    if (oppgave.oppdateringstype == OppdateringstypeDTO.Utsett) {
+        oppgave.timeout?.tilOsloZone()
+            ?.toInstant()
+    } else {
+        null
+    }
 
 private fun OppdateringstypeDTO.tilOppgaveStatus() = when (this) {
     OppdateringstypeDTO.Utsett -> OppgaveStatus.Utsett

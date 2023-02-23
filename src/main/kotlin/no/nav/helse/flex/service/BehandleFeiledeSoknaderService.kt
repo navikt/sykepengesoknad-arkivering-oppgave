@@ -15,7 +15,8 @@ class BehandleFeiledeSoknaderService(private val spreOppgaverService: SpreOppgav
             if (innsending?.behandlet != null) {
                 log.warn(
                     "Forsøkte å rebehandle ferdigbehandlet søknad med innsendingid: {} og søknadsid: {}",
-                    innsending.id, sykepengesoknad.id
+                    innsending.id,
+                    sykepengesoknad.id
                 )
             } else {
                 spreOppgaverService.soknadSendt(sykepengesoknad)

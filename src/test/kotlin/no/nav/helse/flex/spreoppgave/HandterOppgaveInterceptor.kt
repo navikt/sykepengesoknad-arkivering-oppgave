@@ -14,7 +14,7 @@ import java.util.UUID
 @Primary
 class HandterOppgaveInterceptor(
     private val handterOppave: HandterOppave,
-    private val spreOppgaveRepository: SpreOppgaveRepository,
+    private val spreOppgaveRepository: SpreOppgaveRepository
 ) : HandterOppgaveInterface {
     companion object {
         val raceConditionUUID: UUID = UUID.randomUUID()
@@ -47,7 +47,7 @@ class HandterOppgaveInterceptor(
                 timeout = raceConditionTimeout,
                 status = OppgaveStatus.Utsett,
                 opprettet = tidspunkt,
-                modifisert = tidspunkt,
+                modifisert = tidspunkt
             )
         )
     }

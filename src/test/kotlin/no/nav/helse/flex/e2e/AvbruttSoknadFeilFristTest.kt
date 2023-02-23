@@ -56,7 +56,6 @@ class AvbruttSoknadFeilFristTest : FellesTestoppsett() {
 
     @Test
     fun `Søknad med merknad om feil frist får tekst i oppgaven`() {
-
         whenever(identService.hentAktorIdForFnr(any())).thenReturn(aktørId)
         whenever(identService.hentFnrForAktorId(any())).thenReturn(fnr)
         whenever(pdlClient.hentFormattertNavn(any())).thenReturn("Kalle Klovn")

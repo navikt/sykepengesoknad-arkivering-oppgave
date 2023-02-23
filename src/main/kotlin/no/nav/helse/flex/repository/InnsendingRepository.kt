@@ -32,5 +32,5 @@ data class InnsendingDbRecord(
     val sykepengesoknadId: String,
     val journalpostId: String? = null,
     val oppgaveId: String? = null,
-    val behandlet: Instant? = null,
+    val behandlet: Instant? = null
 )

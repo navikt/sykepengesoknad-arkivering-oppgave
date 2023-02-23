@@ -26,7 +26,6 @@ class PdlClient(
 
     @Retryable(exclude = [FunctionalPdlError::class])
     fun hentIdenter(ident: String): HentIdenterResponseData {
-
         val graphQLRequest = GraphQLRequest(
             query = HENT_IDENTER_QUERY,
             variables = Collections.singletonMap(IDENT, ident)
@@ -53,7 +52,6 @@ class PdlClient(
 
     @Retryable(exclude = [FunctionalPdlError::class])
     fun hentFormattertNavn(fnr: String): String {
-
         val graphQLRequest = GraphQLRequest(
             query = HENT_NAVN_QUERY,
             variables = Collections.singletonMap(IDENT, fnr)

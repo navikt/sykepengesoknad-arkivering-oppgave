@@ -50,7 +50,7 @@ class SpreOppgaverServiceTest {
         sykepengesoknadId = soknadsId,
         journalpostId = "journalpost",
         oppgaveId = null,
-        behandlet = null,
+        behandlet = null
     )
 
     @BeforeEach

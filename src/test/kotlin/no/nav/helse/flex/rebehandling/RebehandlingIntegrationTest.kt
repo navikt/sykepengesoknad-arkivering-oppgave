@@ -54,7 +54,7 @@ class RebehandlingIntegrationTest : FellesTestoppsett() {
                     DokumentInfo()
                 ),
                 journalpostId = "1",
-                journalpostferdigstilt = true,
+                journalpostferdigstilt = true
             )
         )
 

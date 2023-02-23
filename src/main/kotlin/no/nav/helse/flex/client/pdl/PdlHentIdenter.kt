@@ -1,6 +1,6 @@
 package no.nav.helse.flex.client.pdl
 
-val HENT_IDENTER_QUERY =
+const val HENT_IDENTER_QUERY =
     """
 query(${"$"}ident: ID!){
   hentIdenter(ident: ${"$"}ident, historikk: false) {
@@ -18,7 +18,7 @@ data class HentIdenterResponse(
 )
 
 data class HentIdenterResponseData(
-    val hentIdenter: HentIdenter? = null,
+    val hentIdenter: HentIdenter? = null
 )
 
 data class HentIdenter(

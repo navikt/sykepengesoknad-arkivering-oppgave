@@ -26,7 +26,6 @@ class OppgaveService(
     private val oppgaveRestTemplate: RestTemplate
 ) {
     fun opprettOppgave(request: OppgaveRequest): OppgaveResponse {
-
         return try {
             val uriString = UriComponentsBuilder.fromHttpUrl(url)
 
@@ -61,7 +60,7 @@ class OppgaveService(
             journalpostId: String,
             soknad: Soknad,
             harRedusertVenteperiode: Boolean = false,
-            speilRelatert: Boolean = false,
+            speilRelatert: Boolean = false
         ): OppgaveRequest =
             OppgaveRequest(
                 opprettetAvEnhetsnr = "9999",
@@ -121,5 +120,5 @@ data class OppgaveResponse(
     val tema: String,
     val oppgavetype: String,
     val behandlingstema: String? = null,
-    val behandlingstype: String? = null,
+    val behandlingstype: String? = null
 )

@@ -225,14 +225,14 @@ class BigQueryTest : FellesTestoppsett() {
         ),
         status = SoknadsstatusDTO.SENDT,
         sendtNav = sendtNav,
-        sendtArbeidsgiver = sendtArbeidsgiver,
+        sendtArbeidsgiver = sendtArbeidsgiver
     )
 
     private fun ResultSet.toBigQueryOpprettet(): BigQueryOpprettet {
         return BigQueryOpprettet(
             sykepengesoknadId = getString("sykepengesoknad_id"),
             status = OppgaveStatus.valueOf(getString("status")),
-            opprettet = getTimestamp("opprettet").toInstant(),
+            opprettet = getTimestamp("opprettet").toInstant()
         )
     }
 
@@ -240,7 +240,7 @@ class BigQueryTest : FellesTestoppsett() {
         return BigQueryGruppert(
             dato = getDate("dato").toLocalDate(),
             status = OppgaveStatus.valueOf(getString("status")),
-            antall = getInt("antall"),
+            antall = getInt("antall")
         )
     }
 

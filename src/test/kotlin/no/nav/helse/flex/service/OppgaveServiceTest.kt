@@ -36,6 +36,7 @@ class OppgaveServiceTest {
 
     @Mock
     lateinit var restTemplate: RestTemplate
+
     @Mock
     private lateinit var oppgaveService: OppgaveService
 

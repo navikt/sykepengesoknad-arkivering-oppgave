@@ -24,7 +24,7 @@ class SaksbehandlingsService(
     private val rebehandleSykepengesoknadProducer: RebehandleSykepengesoknadProducer,
     private val sykepengesoknadKvitteringerClient: SykepengesoknadKvitteringerClient,
     private val identService: IdentService,
-    private val pdlClient: PdlClient,
+    private val pdlClient: PdlClient
 ) {
 
     private val log = logger()
@@ -60,7 +60,7 @@ class SaksbehandlingsService(
             journalpostId = innsending.journalpostId!!,
             soknad = soknad,
             harRedusertVenteperiode = sykepengesoknad.harRedusertVenteperiode,
-            speilRelatert = speilRelatert,
+            speilRelatert = speilRelatert
         )
         val oppgaveResponse = oppgaveService.opprettOppgave(requestBody)
 
@@ -77,7 +77,7 @@ class SaksbehandlingsService(
     private fun sjekkOmOppholdUtlandSendesTilEnhet4488(
         soknad: Soknad,
         req: OppgaveRequest,
-        res: OppgaveResponse,
+        res: OppgaveResponse
     ) {
         if (res.tildeltEnhetsnr == "4488") {
             log.warn(
@@ -125,7 +125,6 @@ class SaksbehandlingsService(
     }
 
     private fun PdfKvittering.hentOgSettKvittering(): PdfKvittering {
-
         return this.copy(
             b64data = Base64.getEncoder().encodeToString(sykepengesoknadKvitteringerClient.hentVedlegg(this.blobId))
         )
@@ -135,9 +134,12 @@ class SaksbehandlingsService(
         registry.counter(
             "innsending.behandlet",
             Tags.of(
-                "type", "info",
-                "soknadstype", soknadstype?.name ?: "UKJENT",
-                "help", "Antall ferdigbehandlede innsendinger."
+                "type",
+                "info",
+                "soknadstype",
+                soknadstype?.name ?: "UKJENT",
+                "help",
+                "Antall ferdigbehandlede innsendinger."
             )
         ).increment()
     }
@@ -146,9 +148,12 @@ class SaksbehandlingsService(
         registry.counter(
             "innsending.feilet",
             Tags.of(
-                "type", "info",
-                "soknadstype", soknadstype?.name ?: "UKJENT",
-                "help", "Antall innsendinger hvor feil mot baksystemer gjorde at behandling ikke kunne fullføres."
+                "type",
+                "info",
+                "soknadstype",
+                soknadstype?.name ?: "UKJENT",
+                "help",
+                "Antall innsendinger hvor feil mot baksystemer gjorde at behandling ikke kunne fullføres."
             )
         ).increment()
     }

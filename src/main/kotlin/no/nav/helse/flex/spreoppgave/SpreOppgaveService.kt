@@ -19,7 +19,7 @@ class SpreOppgaverService(
     private val defaultTimeoutTimer: String,
     private val saksbehandlingsService: SaksbehandlingsService,
     private val spreOppgaveRepository: SpreOppgaveRepository,
-    private val handterOppave: HandterOppgaveInterface,
+    private val handterOppave: HandterOppgaveInterface
 ) {
     private val timeout = defaultTimeoutTimer.toLong()
 

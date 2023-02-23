@@ -24,7 +24,7 @@ class AivenKafkaConfig(
     @Value("\${aiven-kafka.auto-offset-reset}") private val kafkaAutoOffsetReset: String,
     @Value("\${aiven-kafka.security-protocol}") private val kafkaSecurityProtocol: String,
     @Value("\${KAFKA_CREDSTORE_PASSWORD}") private val kafkaCredstorePassword: String,
-    @Value("\${KAFKA_KEYSTORE_PATH}") private val kafkaKeystorePath: String,
+    @Value("\${KAFKA_KEYSTORE_PATH}") private val kafkaKeystorePath: String
 ) {
     private val JAVA_KEYSTORE = "JKS"
     private val PKCS12 = "PKCS12"
@@ -42,7 +42,7 @@ class AivenKafkaConfig(
         SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG to kafkaCredstorePassword,
         SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG to kafkaKeystorePath,
         SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG to kafkaCredstorePassword,
-        SslConfigs.SSL_KEY_PASSWORD_CONFIG to kafkaCredstorePassword,
+        SslConfigs.SSL_KEY_PASSWORD_CONFIG to kafkaCredstorePassword
     )
 
     fun skapProducer(): KafkaProducer<String, String> {
@@ -90,7 +90,7 @@ class AivenKafkaConfig(
             ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
             ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
             ConsumerConfig.MAX_POLL_RECORDS_CONFIG to "1000",
-            ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG to ConsumerConfig.DEFAULT_MAX_PARTITION_FETCH_BYTES * 3,
+            ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG to ConsumerConfig.DEFAULT_MAX_PARTITION_FETCH_BYTES * 3
         ) + commonConfig()
         val consumerFactory = DefaultKafkaConsumerFactory<String, String>(config)
 

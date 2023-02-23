@@ -2,7 +2,7 @@ package no.nav.helse.flex.client.pdl
 
 import org.apache.commons.text.WordUtils
 
-val HENT_NAVN_QUERY =
+const val HENT_NAVN_QUERY =
     """
 query(${"$"}ident: ID!){
   hentPerson(ident: ${"$"}ident) {
@@ -21,11 +21,11 @@ data class HentNavnResponse(
 )
 
 data class HentNavnResponseData(
-    val hentPerson: HentNavn? = null,
+    val hentPerson: HentNavn? = null
 )
 
 data class HentNavn(
-    val navn: List<Navn>? = null,
+    val navn: List<Navn>? = null
 )
 
 data class Navn(

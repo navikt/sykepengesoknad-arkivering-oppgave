@@ -25,7 +25,7 @@ const val SPREOPPGAVER_TOPIC = "tbd." + "spre-oppgaver"
 @Component
 class AivenSpreOppgaverListener(
     private val spreOppgaverService: SpreOppgaverService,
-    private val registry: MeterRegistry,
+    private val registry: MeterRegistry
 ) {
 
     private val log = logger()
@@ -67,8 +67,10 @@ class AivenSpreOppgaverListener(
         registry.counter(
             "spre.oppgave",
             Tags.of(
-                "type", "info",
-                "oppdateringstype", oppgave.oppdateringstype.name
+                "type",
+                "info",
+                "oppdateringstype",
+                oppgave.oppdateringstype.name
             )
         ).increment()
     }

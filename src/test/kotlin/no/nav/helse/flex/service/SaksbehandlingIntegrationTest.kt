@@ -87,7 +87,7 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
                     DokumentInfo()
                 ),
                 journalpostId = "1",
-                journalpostferdigstilt = true,
+                journalpostferdigstilt = true
             )
         )
 
@@ -150,7 +150,7 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
                     DokumentInfo()
                 ),
                 journalpostId = "1",
-                journalpostferdigstilt = true,
+                journalpostferdigstilt = true
             )
         )
 
@@ -208,7 +208,7 @@ Ja
                     DokumentInfo()
                 ),
                 journalpostId = "1",
-                journalpostferdigstilt = true,
+                journalpostferdigstilt = true
             )
         )
 
@@ -308,7 +308,7 @@ Nei
                     DokumentInfo()
                 ),
                 journalpostId = "1",
-                journalpostferdigstilt = true,
+                journalpostferdigstilt = true
             )
         )
 
@@ -407,7 +407,7 @@ Nei
                     DokumentInfo()
                 ),
                 journalpostId = "1",
-                journalpostferdigstilt = true,
+                journalpostferdigstilt = true
             )
         )
 

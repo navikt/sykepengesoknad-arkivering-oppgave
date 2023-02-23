@@ -27,7 +27,6 @@ Fordi du fikk feil informasjon knyttet til akkurat denne søknadsperioden, gjeld
 
     @Test
     fun testerTekst() {
-
         val soknad = Soknad(
             fom = LocalDate.of(2022, 3, 24),
             tom = LocalDate.of(2022, 3, 28),

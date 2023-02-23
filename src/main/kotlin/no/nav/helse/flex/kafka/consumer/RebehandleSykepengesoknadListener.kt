@@ -30,7 +30,7 @@ class RebehandleSykepengesoknadListener(
     @KafkaListener(
         topics = [RETRY_TOPIC],
         containerFactory = "aivenKafkaListenerContainerFactory",
-        properties = [ "auto.offset.reset=earliest" ],
+        properties = [ "auto.offset.reset=earliest" ]
     )
     fun listen(cr: ConsumerRecord<String, String>, acknowledgment: Acknowledgment) {
         val sykepengesoknad = cr.value().tilSykepengesoknad()

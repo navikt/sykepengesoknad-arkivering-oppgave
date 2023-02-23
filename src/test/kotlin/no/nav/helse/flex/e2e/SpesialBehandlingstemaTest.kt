@@ -156,6 +156,6 @@ class SpesialBehandlingstemaTest : FellesTestoppsett() {
         status = SoknadsstatusDTO.SENDT,
         sendtNav = sendtNav,
         sendtArbeidsgiver = sendtArbeidsgiver,
-        utenlandskSykmelding = utenlandskSykmelding,
+        utenlandskSykmelding = utenlandskSykmelding
     )
 }

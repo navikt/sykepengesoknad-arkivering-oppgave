@@ -25,7 +25,7 @@ fun skapJournalpostRequest(
                     )
                 ),
                 brevkode = getBrevkode(soknad = soknad),
-                tittel = getJornalfoertDokumentTittel(soknad = soknad),
+                tittel = getJornalfoertDokumentTittel(soknad = soknad)
             )
         ),
         sak = Sak(
@@ -40,7 +40,7 @@ fun skapJournalpostRequest(
         tittel = getJornalfoertDokumentTittel(soknad = soknad),
         avsenderMottaker = AvsenderMottaker(
             id = soknad.fnr,
-            idType = "FNR",
+            idType = "FNR"
         )
     )
 }

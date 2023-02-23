@@ -28,8 +28,8 @@ class OppgaveOpprettelse(
 ) {
     private val log = logger()
 
-    @Scheduled(initialDelay = 120, fixedDelay = 60, timeUnit = TimeUnit.SECONDS)
     // Only no-args methods can be Scheduled.
+    @Scheduled(initialDelay = 120, fixedDelay = 60, timeUnit = TimeUnit.SECONDS)
     fun startOppgaveBehandling() {
         behandleOppgaver()
     }

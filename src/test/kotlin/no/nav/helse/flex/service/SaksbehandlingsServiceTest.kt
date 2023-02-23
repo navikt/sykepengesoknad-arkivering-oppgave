@@ -39,18 +39,25 @@ import java.util.UUID
 class SaksbehandlingsServiceTest {
     @Mock
     lateinit var pdlClient: PdlClient
+
     @Mock
     lateinit var identService: IdentService
+
     @Mock
     lateinit var innsendingRepository: InnsendingRepository
+
     @Mock
     lateinit var oppgaveService: OppgaveService
+
     @Mock
     lateinit var arkivaren: Arkivaren
+
     @Mock
     lateinit var sykepengesoknadKvitteringerClient: SykepengesoknadKvitteringerClient
+
     @Mock
     lateinit var registry: MeterRegistry
+
     @Mock
     lateinit var rebehandleSykepengesoknadProducer: RebehandleSykepengesoknadProducer
 

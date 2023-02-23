@@ -39,13 +39,17 @@ private fun Soknad.beskrivMerknaderFraSykmelding(): String {
     return if (merknaderFraSykmelding?.isNotEmpty() == true) {
         merknaderFraSykmelding
             .joinToString(separator = "\n", postfix = "\n") { it.beskrivMerknad() }
-    } else ""
+    } else {
+        ""
+    }
 }
 
 private fun Soknad.beskrivKvitteringer(): String {
     return if (kvitteringer != null && kvitteringer.isNotEmpty()) {
         "\nSøknaden har vedlagt ${kvitteringer.size} kvitteringer med en sum på ${kvitteringSum.toString().formatterBelop()} kr\n"
-    } else ""
+    } else {
+        ""
+    }
 }
 
 private fun Merknad.beskrivMerknad(): String {
@@ -61,16 +65,18 @@ private fun Merknad.beskrivMerknad(): String {
 }
 
 private fun Soknad.meldingDersomEgenmeldtSykmelding() =
-    if (egenmeldtSykmelding == true)
+    if (egenmeldtSykmelding == true) {
         "Denne søknaden hører til en egenmeldt sykmelding\n"
-    else
+    } else {
         ""
+    }
 
 private fun Soknad.meldingDersomAvsendertypeErSystem() =
-    if (avsendertype == SYSTEM)
+    if (avsendertype == SYSTEM) {
         "Denne søknaden er autogenerert på grunn av et registrert dødsfall\n"
-    else
+    } else {
         ""
+    }
 
 private fun Soknad.lagTittel() =
     when (soknadstype) {
@@ -96,11 +102,12 @@ private fun Soknad.erKorrigert() =
     korrigerer?.let { " KORRIGERING" } ?: ""
 
 private fun Soknad.beskrivArbeidsgiver() =
-    if (arbeidssituasjon === ARBEIDSTAKER)
+    if (arbeidssituasjon === ARBEIDSTAKER) {
         "\nArbeidsgiver: $arbeidsgiver" +
             "\nOrganisasjonsnummer: $orgNummer\n"
-    else
+    } else {
         ""
+    }
 
 private fun Soknad.beskrivPerioder() =
     soknadPerioder?.mapIndexed { index, periode ->
@@ -108,10 +115,11 @@ private fun Soknad.beskrivPerioder() =
             "${periode.fom!!.format(norskDato)} - ${periode.tom!!.format(norskDato)}\n" +
             (
                 periode.grad?.let { grad ->
-                    if (soknadstype != REISETILSKUDD)
+                    if (soknadstype != REISETILSKUDD) {
                         "Grad: ${grad}\n"
-                    else
+                    } else {
                         ""
+                    }
                 } ?: ""
                 ) +
             (
@@ -185,14 +193,15 @@ private fun getNesteDybde(sporsmal: Sporsmal, dybde: Int): Int {
 }
 
 private fun Sporsmal.undersporsmalIgnorerRadioIGruppeTimerProsent(): List<Sporsmal>? {
-    return if (svartype === RADIO_GRUPPE_TIMER_PROSENT)
+    return if (svartype === RADIO_GRUPPE_TIMER_PROSENT) {
         undersporsmal!!
             .filter { it.kriterieForVisningAvUndersporsmal?.name == it.forsteSvarverdi() }
             .map { it.undersporsmal }
             .flatMap { it!! }
             .toList()
-    else
+    } else {
         undersporsmal
+    }
 }
 
 private fun Sporsmal.formatterSporsmalOgSvar(): List<String> {

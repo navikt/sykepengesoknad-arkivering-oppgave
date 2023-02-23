@@ -3,7 +3,6 @@ import no.nav.helse.flex.util.DatoUtil
 
 fun Soknad.meldingDersomAvbruttFristFeil() =
     if (merknader?.contains("AVBRUTT_FEILINFO") == true) {
-
         val feilinformertFrist = this.opprettet.plusYears(1).toLocalDate().format(DatoUtil.norskDato)
 
         """Ved en feil har brukeren, for akkurat denne søknadsperioden, fått beskjed om en annen frist enn hva folketrygdloven § 22-13 tredje ledd tilsier. Hvis denne søknaden er sendt inn innen den alminnelige fristen, behandles søknaden som normalt, og du kan se vekk fra teksten under.
@@ -21,5 +20,6 @@ Vanligvis gis sykepenger kun for opptil tre måneder før den måneden da kravet
 Fordi du fikk feil informasjon knyttet til akkurat denne søknadsperioden, gjelder den forlengede søknadsfristen kun for denne perioden. Det betyr at hvis du søker om sykepenger for andre perioder, vil du ikke få forlenget frist for disse andre periodene. Da gjelder hovedregelen om at sykepenger kun gis for opptil tre måneder før den måneden da kravet ble satt fram, jf. folketrygdloven § 22-13 tredje ledd."
 
 """
-    } else
+    } else {
         ""
+    }

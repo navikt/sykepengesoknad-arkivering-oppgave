@@ -23,7 +23,7 @@ const val SYKEPENGESOKNAD_TOPIC = "flex." + "sykepengesoknad"
 @Component
 class AivenSoknadSendtListener(
     private val spreOppgaverService: SpreOppgaverService,
-    private val identService: IdentService,
+    private val identService: IdentService
 ) {
 
     private val log = logger()

@@ -41,7 +41,7 @@ data class Soknad(
     val kvitteringSum: Int? = null,
     val kvitteringer: List<PdfKvittering>? = null,
     val merknader: List<String>? = null,
-    val utenlandskSykmelding: Boolean? = null,
+    val utenlandskSykmelding: Boolean? = null
 ) {
 
     companion object {
@@ -73,7 +73,7 @@ data class Soknad(
                 kvitteringSum = sykepengesoknad.hentKvitteringSum(),
                 kvitteringer = sykepengesoknad.hentPdfKvitteringer(),
                 merknader = sykepengesoknad.merknader,
-                utenlandskSykmelding = sykepengesoknad.utenlandskSykmelding,
+                utenlandskSykmelding = sykepengesoknad.utenlandskSykmelding
             )
 
         private fun endreRekkefolgePaSporsmalForPDF(sporsmal: List<Sporsmal>) =
@@ -101,7 +101,7 @@ private fun Sykepengesoknad.hentPdfKvitteringer(): List<PdfKvittering>? {
                 blobId = it.blobId,
                 belop = it.belop,
                 typeUtgift = it.typeUtgift,
-                b64data = null,
+                b64data = null
             )
         }
 }
@@ -121,14 +121,14 @@ data class PdfKvittering(
     val b64data: String?,
     val blobId: String,
     val belop: Int,
-    val typeUtgift: String,
+    val typeUtgift: String
 )
 
 data class Kvittering(
     val blobId: String,
     val belop: Int, // Beløp i øre . 100kr = 10000
     val typeUtgift: String,
-    val opprettet: Instant,
+    val opprettet: Instant
 )
 
 private fun String.tilKvittering(): Kvittering {

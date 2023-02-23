@@ -14,13 +14,12 @@ import org.springframework.stereotype.Component
 class Arkivaren(
     val pdfClient: PDFClient,
     val dokArkivClient: DokArkivClient,
-    val registry: MeterRegistry,
+    val registry: MeterRegistry
 ) {
 
     val log = logger()
 
     fun opprettJournalpost(soknad: Soknad): String {
-
         val pdf = measureTimeMillisWithResult {
             pdfClient.getPDF(soknad = soknad, template = hentPDFTemplateEtterSoknadstype(soknad.soknadstype))
         }
@@ -56,7 +55,7 @@ class Arkivaren(
 
 class MeassureBlock<T>(
     val millis: Long,
-    val result: T,
+    val result: T
 )
 
 inline fun <T> measureTimeMillisWithResult(block: () -> T): MeassureBlock<T> {

@@ -65,7 +65,7 @@ class SpreOppgaveRaceConditionTest : FellesTestoppsett() {
 
     private val søknad = mockSykepengesoknadDTO.copy(
         id = raceConditionUUID.toString(),
-        sendtNav = LocalDateTime.now(),
+        sendtNav = LocalDateTime.now()
     )
 
     @BeforeEach
@@ -95,7 +95,7 @@ class SpreOppgaveRaceConditionTest : FellesTestoppsett() {
                     dokumentType = DokumentTypeDTO.Søknad,
                     oppdateringstype = OppdateringstypeDTO.Utsett,
                     dokumentId = raceConditionUUID,
-                    timeout = timeoutFraBømlo,
+                    timeout = timeoutFraBømlo
                 ).serialisertTilString()
             )
         )

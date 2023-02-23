@@ -38,7 +38,7 @@ interface SpreOppgaveRepository : CrudRepository<SpreOppgaveDbRecord, String> {
         sykepengesoknadId: String,
         timeout: Instant?,
         status: OppgaveStatus,
-        modifisert: Instant,
+        modifisert: Instant
     ): Boolean
 
     @Modifying

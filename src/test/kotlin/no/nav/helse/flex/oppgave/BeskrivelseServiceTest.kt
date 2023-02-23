@@ -250,5 +250,5 @@ private fun plainSøknad() = Sykepengesoknad(
     sporsmal = emptyList(),
     status = "SENDT",
     fom = LocalDate.ofEpochDay(1),
-    tom = LocalDate.ofEpochDay(1337),
+    tom = LocalDate.ofEpochDay(1337)
 )

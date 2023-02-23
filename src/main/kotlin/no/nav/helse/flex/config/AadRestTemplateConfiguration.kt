@@ -27,7 +27,7 @@ class AadRestTemplateConfiguration {
         registrationName = "sykepengesoknad-kvitteringer-client-credentials",
         restTemplateBuilder = restTemplateBuilder,
         clientConfigurationProperties = clientConfigurationProperties,
-        oAuth2AccessTokenService = oAuth2AccessTokenService,
+        oAuth2AccessTokenService = oAuth2AccessTokenService
     )
 
     @Bean
@@ -39,7 +39,7 @@ class AadRestTemplateConfiguration {
         registrationName = "sykepengesoknad-backend-client-credentials",
         restTemplateBuilder = restTemplateBuilder,
         clientConfigurationProperties = clientConfigurationProperties,
-        oAuth2AccessTokenService = oAuth2AccessTokenService,
+        oAuth2AccessTokenService = oAuth2AccessTokenService
     )
 
     @Bean
@@ -52,7 +52,7 @@ class AadRestTemplateConfiguration {
             registrationName = "pdl-api-client-credentials",
             restTemplateBuilder = restTemplateBuilder,
             clientConfigurationProperties = clientConfigurationProperties,
-            oAuth2AccessTokenService = oAuth2AccessTokenService,
+            oAuth2AccessTokenService = oAuth2AccessTokenService
         )
 
     @Bean
@@ -65,7 +65,7 @@ class AadRestTemplateConfiguration {
             registrationName = "oppgave-client-credentials",
             restTemplateBuilder = restTemplateBuilder,
             clientConfigurationProperties = clientConfigurationProperties,
-            oAuth2AccessTokenService = oAuth2AccessTokenService,
+            oAuth2AccessTokenService = oAuth2AccessTokenService
         )
 
     @Bean
@@ -78,14 +78,14 @@ class AadRestTemplateConfiguration {
             registrationName = "dokarkiv-client-credentials",
             restTemplateBuilder = restTemplateBuilder,
             clientConfigurationProperties = clientConfigurationProperties,
-            oAuth2AccessTokenService = oAuth2AccessTokenService,
+            oAuth2AccessTokenService = oAuth2AccessTokenService
         )
 
     private fun downstreamRestTemplate(
         registrationName: String,
         restTemplateBuilder: RestTemplateBuilder,
         clientConfigurationProperties: ClientConfigurationProperties,
-        oAuth2AccessTokenService: OAuth2AccessTokenService,
+        oAuth2AccessTokenService: OAuth2AccessTokenService
     ): RestTemplate {
         val clientProperties = clientConfigurationProperties.registration[registrationName]
             ?: throw RuntimeException("Fant ikke config for $registrationName.")

@@ -381,6 +381,6 @@ class E2ETest : FellesTestoppsett() {
         ),
         status = SoknadsstatusDTO.SENDT,
         sendtNav = sendtNav,
-        sendtArbeidsgiver = sendtArbeidsgiver,
+        sendtArbeidsgiver = sendtArbeidsgiver
     )
 }
