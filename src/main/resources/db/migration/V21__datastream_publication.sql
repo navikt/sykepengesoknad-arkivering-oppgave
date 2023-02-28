@@ -1,0 +1,1 @@
+CREATE PUBLICATION sykepengesoknad_arkivering_oppgave_publication for ALL TABLES;
