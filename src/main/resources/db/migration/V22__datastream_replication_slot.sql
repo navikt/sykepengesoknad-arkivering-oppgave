@@ -1,0 +1,1 @@
+SELECT PG_CREATE_LOGICAL_REPLICATION_SLOT ('sykepengesoknad_arkivering_oppgave_replication', 'pgoutput');
