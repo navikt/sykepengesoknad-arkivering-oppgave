@@ -4,7 +4,6 @@ db_tier: db-custom-1-3840
 externalHosts:
   - dokarkiv.prod-fss-pub.nais.io
   - oppgave.prod-fss-pub.nais.io
-bucketName: oppgavefordeling-bucket-prod
 env:
   SYKEPENGESOKNAD_BACKEND_AAD_CLIENT_ID: prod-gcp.flex.sykepengesoknad-backend
   PDL_URL: https://pdl-api.prod-fss-pub.nais.io
@@ -17,4 +16,3 @@ env:
   SYKEPENGESOKNAD_KVITTERINGER_AAD_CLIENT_ID: prod-gcp.flex.sykepengesoknad-kvitteringer
   PDFGEN_URL: http://flex-sykepengesoknad-pdfgen
   DEFAULT_TIMEOUT_TIMER: '48'
-  BUCKET_NAME: oppgavefordeling-bucket-prod

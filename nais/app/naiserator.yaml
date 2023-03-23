@@ -60,10 +60,6 @@ spec:
         flags:
           - name: cloudsql.logical_decoding
             value: "on"
-    buckets:
-      - name: {{bucketName}}
-        cascadingDelete: true
-        publicAccessPrevention: true
   accessPolicy:
     outbound:
       rules:
