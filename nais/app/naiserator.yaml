@@ -16,23 +16,18 @@ spec:
   port: 8080
   liveness:
     path: /internal/health
-    initialDelay: 20
-    timeout: 1
-    periodSeconds: 5
-    failureThreshold: 30
   readiness:
     path: /internal/health
-    initialDelay: 20
-    timeout: 1
-    periodSeconds: 5
-    failureThreshold: 30
+  startup:
+    path: /internal/health
+    initialDelay: 60
   leaderElection: true
   prometheus:
     enabled: true
     path: /internal/prometheus
   resources:
     limits:
-      cpu: 250m
+      cpu: 1000m
       memory: 800Mi
     requests:
       cpu: 250m
@@ -60,10 +55,6 @@ spec:
         flags:
           - name: cloudsql.logical_decoding
             value: "on"
-    buckets:
-      - name: {{bucketName}}
-        cascadingDelete: true
-        publicAccessPrevention: true
   accessPolicy:
     outbound:
       rules:
