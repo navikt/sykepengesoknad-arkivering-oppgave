@@ -1,9 +1,10 @@
 azureTenant: trygdeetaten.no
 kafkaPool: nav-dev
 db_tier: db-f1-micro
-externalHosts:
+external-host:
   - dokarkiv.dev-fss-pub.nais.io
   - oppgave-q1.dev-fss-pub.nais.io
+  - pdl-api.dev-fss-pub.nais.io
 env:
   SYKEPENGESOKNAD_BACKEND_AAD_CLIENT_ID: dev-gcp.flex.sykepengesoknad-backend
   PDL_URL: https://pdl-api.dev-fss-pub.nais.io

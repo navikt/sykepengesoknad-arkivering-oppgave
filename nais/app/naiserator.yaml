@@ -62,9 +62,9 @@ spec:
         - application: sykepengesoknad-kvitteringer
         - application: sykepengesoknad-backend
       external:
-      {{#each externalHosts as |url|}}
-         - host: {{url}}
-      {{/each}}
+  {{#each external-host}}
+        - host: {{this}}
+  {{/each}}
   env:
   {{#each env}}
     - name: {{@key}}
