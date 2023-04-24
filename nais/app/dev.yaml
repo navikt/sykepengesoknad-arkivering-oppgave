@@ -2,7 +2,7 @@ azureTenant: trygdeetaten.no
 kafkaPool: nav-dev
 db_tier: db-f1-micro
 cpu: 100m
-memory: 400Mi
+memory: 600Mi
 external-host:
   - dokarkiv.dev-fss-pub.nais.io
   - oppgave-q1.dev-fss-pub.nais.io
