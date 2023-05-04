@@ -30,5 +30,6 @@ data class Sykepengesoknad(
     val merknaderFraSykmelding: List<Merknad>? = null,
     val merknader: List<String>? = null,
     val sendTilGosys: Boolean? = null,
-    val utenlandskSykmelding: Boolean? = null
+    val utenlandskSykmelding: Boolean? = null,
+    val egenmeldingsdagerFraSykmelding: List<LocalDate>?
 )

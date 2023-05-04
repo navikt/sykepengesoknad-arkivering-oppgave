@@ -139,7 +139,8 @@ class OppgaveServiceTest {
             soknadPerioder = ArrayList(),
             sporsmal = ArrayList(),
             avsendertype = null,
-            merknaderFraSykmelding = null
+            merknaderFraSykmelding = null,
+            egenmeldingsdagerFraSykmelding = null
         )
     }
 }
