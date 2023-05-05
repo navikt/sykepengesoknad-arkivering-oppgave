@@ -33,7 +33,8 @@ Fordi du fikk feil informasjon knyttet til akkurat denne søknadsperioden, gjeld
             opprettet = LocalDate.EPOCH.atStartOfDay(),
             soknadstype = Soknadstype.ARBEIDSLEDIG,
             sporsmal = emptyList(),
-            merknader = listOf("AVBRUTT_FEILINFO")
+            merknader = listOf("AVBRUTT_FEILINFO"),
+            egenmeldingsdagerFraSykmelding = null
         )
 
         soknad.meldingDersomAvbruttFristFeil() `should be equal to` forventetBeskrivelse

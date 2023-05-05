@@ -73,6 +73,7 @@ fun SykepengesoknadDTO.toSykepengesoknad(
         merknaderFraSykmelding = merknaderFraSykmelding?.map { Merknad(type = it.type, beskrivelse = it.beskrivelse) },
         merknader = merknader,
         sendTilGosys = sendTilGosys,
-        utenlandskSykmelding = utenlandskSykmelding
+        utenlandskSykmelding = utenlandskSykmelding,
+        egenmeldingsdagerFraSykmelding = egenmeldingsdagerFraSykmelding
     )
 }
