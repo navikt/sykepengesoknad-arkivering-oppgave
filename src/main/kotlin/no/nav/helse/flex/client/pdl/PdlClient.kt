@@ -3,6 +3,7 @@ package no.nav.helse.flex.client.pdl
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import no.nav.helse.flex.logger
 import no.nav.helse.flex.objectMapper
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
@@ -23,6 +24,8 @@ class PdlClient(
     private val TEMA = "Tema"
     private val TEMA_SYK = "SYK"
     private val IDENT = "ident"
+
+    private val log = logger()
 
     @Retryable(exclude = [FunctionalPdlError::class])
     fun hentIdenter(ident: String): HentIdenterResponseData {
@@ -69,6 +72,10 @@ class PdlClient(
         }
 
         val parsedResponse: HentNavnResponse? = responseEntity.body?.let { objectMapper.readValue(it) }
+
+        parsedResponse?.errors?.forEach {
+            log.info("PDL error: ${objectMapper.writeValueAsString(it)}")
+        }
 
         parsedResponse?.data?.let {
             return it.hentPerson?.navn?.firstOrNull()?.format()
