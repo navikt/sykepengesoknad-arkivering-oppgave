@@ -22,5 +22,7 @@ enum class Svartype {
     KVITTERING,
     DATOER,
     BELOP,
-    KILOMETER
+    KILOMETER,
+    COMBOBOX_SINGLE,
+    COMBOBOX_MULTI
 }
