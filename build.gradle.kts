@@ -31,7 +31,7 @@ val logstashLogbackEncoderVersion = "7.4"
 val tokenSupportVersion = "3.1.3"
 val testContainersVersion = "1.18.3"
 val kluentVersion = "1.73"
-val cloudStorageVersion = "2.26.0"
+val cloudStorageVersion = "2.26.1"
 val jaxWsApiVersion = "1.1"
 val commonsTextVersion = "1.10.0"
 
