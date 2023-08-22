@@ -168,7 +168,8 @@ private fun beskrivSporsmal(sporsmal: Sporsmal, dybde: Int): String {
             CHECKBOX_GRUPPE,
             RADIO_GRUPPE,
             RADIO_GRUPPE_TIMER_PROSENT,
-            INFO_BEHANDLINGSDAGER
+            INFO_BEHANDLINGSDAGER,
+            IKKE_RELEVANT
         )
     ) {
         ""
@@ -213,12 +214,12 @@ private fun Sporsmal.formatterSporsmalOgSvar(): List<String> {
         DATO -> listOfNotNull(sporsmalstekst, formatterDato(forsteSvarverdi()))
         PERIODE -> listOfNotNull(sporsmalstekst, formatterPeriode(forsteSvarverdi()))
         PERIODER -> listOfNotNull(sporsmalstekst) + svarverdier().map { formatterPeriode(it) }
-        LAND -> listOfNotNull(sporsmalstekst) + svarverdier().map { formatterLand(it) }
+        LAND, COMBOBOX_MULTI -> listOfNotNull(sporsmalstekst) + svarverdier().map { formatterLand(it) }
         TALL, KILOMETER -> listOfNotNull(sporsmalstekst, forsteSvarverdi() + " " + undertekst)
         BELOP -> listOfNotNull(sporsmalstekst, forsteSvarverdi().formatterBelop() + " " + undertekst)
         TIMER -> listOfNotNull(sporsmalstekst, forsteSvarverdi() + " timer")
         PROSENT -> listOfNotNull(sporsmalstekst, forsteSvarverdi() + " prosent")
-        FRITEKST -> listOfNotNull(sporsmalstekst, forsteSvarverdi())
+        FRITEKST, COMBOBOX_SINGLE -> listOfNotNull(sporsmalstekst, forsteSvarverdi())
         RADIO_GRUPPE_UKEKALENDER -> listOfNotNull(formatterBehandlingsdato(forsteSvarverdi()))
         DATOER -> listOfNotNull(sporsmalstekst) + svarverdier().map { formatterDato(it) }
         else -> emptyList()

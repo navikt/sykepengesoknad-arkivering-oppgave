@@ -4,16 +4,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import no.nav.helse.flex.beskrivelseArbeidstakerMangeSvar
-import no.nav.helse.flex.beskrivelseArbeidstakerMedNeisvar
-import no.nav.helse.flex.beskrivelseArbeidstakerMedNeisvarKorrigert
-import no.nav.helse.flex.beskrivelseArbeidstakerMedTimerOgDeretterProsent
-import no.nav.helse.flex.beskrivelseBehandlingsdagerMedMangeSvar
-import no.nav.helse.flex.beskrivelseBehandlingsdagerMedNeisvar
-import no.nav.helse.flex.beskrivelseSelvstendigMangeSvar
-import no.nav.helse.flex.beskrivelseSoknadSelvstendigMedNeisvar
+import no.nav.helse.flex.*
 import no.nav.helse.flex.beskrivelseUtland
-import no.nav.helse.flex.beskrivelseUtlandMedSvartypeLand
 import no.nav.helse.flex.domain.Soknad
 import no.nav.helse.flex.domain.dto.Avsendertype.BRUKER
 import no.nav.helse.flex.domain.dto.Avsendertype.SYSTEM
@@ -41,6 +33,18 @@ class BeskrivelseServiceTest {
         val beskrivelse = lagBeskrivelse(soknad)
 
         assertThat(beskrivelse).isEqualTo(beskrivelseUtland)
+    }
+
+    @Test
+    fun medlemskapssporsmal() {
+        val sykepengesoknad = objectMapper.readValue(
+            BeskrivelseServiceTest::class.java.getResource("/soknadMedlemskap.json"),
+            Sykepengesoknad::class.java
+        )
+        val soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn")
+        val beskrivelse = lagBeskrivelse(soknad)
+
+        assertThat(beskrivelse).isEqualTo(beskrivelseMedlemskap)
     }
 
     @Test
