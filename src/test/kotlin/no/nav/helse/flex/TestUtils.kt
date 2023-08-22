@@ -277,3 +277,66 @@ Ja
 
     Hvor mye jobbet du totalt 16. - 20. oktober 2018 hos ARBEIDSGIVER A/S?
     51 prosent"""
+
+const val beskrivelseMedlemskap = """Søknad om sykepenger for perioden 16.10.2018 - 24.10.2018
+
+Arbeidsgiver: ARBEIDSGIVER A/S
+Organisasjonsnummer: 1257358
+
+Periode 1:
+16.10.2018 - 20.10.2018
+Grad: 100
+Oppgitt faktisk arbeidsgrad: 79
+
+Periode 2:
+21.10.2018 - 24.10.2018
+Grad: 40
+Oppgitt faktisk arbeidsgrad: 440
+
+Har du oppholdstillatelse fra utlendingsdirektoratet?
+Ja
+    Oppgi vedtaksdato om oppholdstillatelse:
+    01.01.2023
+
+    Har du fått permanent oppholdstillatelse?
+    Nei
+        Hvilken periode har du fått oppholdstillatelse?
+        13.12.2022 - 02.01.2023
+
+Har du utført arbeid utenfor Norge i det siste 12 månedene?
+Ja
+        Arbeidsgiver
+        Arbeidsgiver0
+
+        Velg land
+        Land0
+
+        13.12.2022 - 02.01.2023
+
+Har du oppholdt deg utenfor Norge i løpet av de siste 12 månedene?
+Ja
+        Velg land
+        Land
+
+        Grunn for opphold
+        Ferie
+
+        13.12.2022 - 02.01.2023
+
+Har du oppholdt deg utenfor EØS i løpet av de siste 12 månedene?
+Ja
+        Velg land
+        Tyskland
+
+        Grunn for opphold
+        Ferie
+
+        13.12.2022 - 02.01.2023
+
+        Velg land
+        Gran Canaria
+
+        Grunn for opphold
+        Studier
+
+        13.12.2022 - 02.01.2023"""
