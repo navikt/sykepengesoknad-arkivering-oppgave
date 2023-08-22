@@ -87,7 +87,7 @@
               "undertekst": null,
               "min": "2013-08-22",
               "max": "2033-08-22",
-              "svartype": "PERIODER",
+              "svartype": "PERIODE",
               "kriterieForVisningAvUndersporsmal": null,
               "svar": [
                 {
@@ -165,7 +165,7 @@
               "undertekst": null,
               "min": "2013-08-22",
               "max": "2024-08-22",
-              "svartype": "PERIODER",
+              "svartype": "PERIODE",
               "kriterieForVisningAvUndersporsmal": null,
               "svar": [
                 {
@@ -280,7 +280,7 @@
               "undertekst": null,
               "min": "2021-08-22",
               "max": "2023-08-22",
-              "svartype": "PERIODER",
+              "svartype": "PERIODE",
               "kriterieForVisningAvUndersporsmal": null,
               "svar": [
                 {
@@ -395,7 +395,7 @@
               "undertekst": null,
               "min": "2021-08-22",
               "max": "2023-08-22",
-              "svartype": "PERIODER",
+              "svartype": "PERIODE",
               "kriterieForVisningAvUndersporsmal": null,
               "svar": [
                 {
@@ -494,7 +494,7 @@
               "undertekst": null,
               "min": "2021-08-22",
               "max": "2023-08-22",
-              "svartype": "PERIODER",
+              "svartype": "PERIODE",
               "kriterieForVisningAvUndersporsmal": null,
               "svar": [
                 {
