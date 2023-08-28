@@ -46,7 +46,9 @@ private fun Soknad.beskrivMerknaderFraSykmelding(): String {
 
 private fun Soknad.beskrivKvitteringer(): String {
     return if (kvitteringer != null && kvitteringer.isNotEmpty()) {
-        "\nSøknaden har vedlagt ${kvitteringer.size} kvitteringer med en sum på ${kvitteringSum.toString().formatterBelop()} kr\n"
+        "\nSøknaden har vedlagt ${kvitteringer.size} kvitteringer med en sum på ${
+        kvitteringSum.toString().formatterBelop()
+        } kr\n"
     } else {
         ""
     }
@@ -90,12 +92,17 @@ private fun Soknad.lagTittel() =
             )
             }"
         }
+
         OPPHOLD_UTLAND -> "Søknad om å beholde sykepenger utenfor EØS"
         ARBEIDSLEDIG -> "Søknad om sykepenger for arbeidsledig"
         BEHANDLINGSDAGER -> "Søknad med enkeltstående behandlingsdager"
         ANNET_ARBEIDSFORHOLD -> "Søknad om sykepenger med uavklart arbeidssituasjon"
         REISETILSKUDD -> "Søknad om reisetilskudd for perioden ${fom!!.format(norskDato)} - ${tom!!.format(norskDato)}"
-        GRADERT_REISETILSKUDD -> "Søknad om sykepenger med reisetilskudd for perioden ${fom!!.format(norskDato)} - ${tom!!.format(norskDato)}"
+        GRADERT_REISETILSKUDD -> "Søknad om sykepenger med reisetilskudd for perioden ${fom!!.format(norskDato)} - ${
+        tom!!.format(
+            norskDato
+        )
+        }"
     }
 
 private fun Soknad.erKorrigert() =
@@ -164,7 +171,7 @@ private fun beskrivSporsmal(sporsmal: Sporsmal, dybde: Int): String {
     val innrykk = "\n" + nCopies(dybde, "    ").joinToString("")
     val svarverdier = sporsmal.svarverdier()
 
-    return if (svarverdier.isEmpty() && sporsmal.svartype !in listOf(
+    if (svarverdier.isEmpty() && sporsmal.svartype !in listOf(
             CHECKBOX_GRUPPE,
             RADIO_GRUPPE,
             RADIO_GRUPPE_TIMER_PROSENT,
@@ -172,18 +179,29 @@ private fun beskrivSporsmal(sporsmal: Sporsmal, dybde: Int): String {
             IKKE_RELEVANT
         )
     ) {
-        ""
-    } else {
-        sporsmal.formatterSporsmalOgSvar().joinToString("") { sporsmalOgSvar ->
-            innrykk + sporsmalOgSvar
-        }.plus(
-            sporsmal.undersporsmalIgnorerRadioIGruppeTimerProsent()
-                ?.map { beskrivSporsmal(it, getNesteDybde(sporsmal, dybde)) }
-                ?.filter { it.isNotBlank() }
-                ?.joinToString("\n")
-                ?: ""
-        )
+        return ""
     }
+
+    val sporsmalBeskrivelse = sporsmal.formatterSporsmalOgSvar().joinToString("") { sporsmalOgSvar ->
+        innrykk + sporsmalOgSvar
+    }
+    val undersporsmålBeskrivelse = (
+        sporsmal.undersporsmalIgnorerRadioIGruppeTimerProsent()
+            ?.map { beskrivSporsmal(it, getNesteDybde(sporsmal, dybde)) }
+            ?.filter { it.isNotBlank() }
+            ?.joinToString("\n")
+            ?: ""
+        ).fjernTommeLinjerHvisMedlemskapsgruppe(sporsmal.tag)
+
+    return sporsmalBeskrivelse.plus(undersporsmålBeskrivelse)
+}
+
+private fun String.fjernTommeLinjerHvisMedlemskapsgruppe(tag: String): String {
+    if (tag.contains("MEDLEMSKAP") && tag.contains("GRUPPERING")) {
+        return this.replace("\n\n", "\n")
+    }
+
+    return this
 }
 
 private fun getNesteDybde(sporsmal: Sporsmal, dybde: Int): Int {
@@ -209,6 +227,7 @@ private fun Sporsmal.formatterSporsmalOgSvar(): List<String> {
     return when (svartype) {
         CHECKBOX, CHECKBOX_GRUPPE, RADIO, RADIO_GRUPPE, RADIO_GRUPPE_TIMER_PROSENT, INFO_BEHANDLINGSDAGER ->
             listOfNotNull(sporsmalstekst)
+
         IKKE_RELEVANT -> emptyList()
         JA_NEI -> listOfNotNull(sporsmalstekst, if ("JA" == forsteSvarverdi()) "Ja" else "Nei")
         DATO -> listOfNotNull(sporsmalstekst, formatterDato(forsteSvarverdi()))
