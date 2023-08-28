@@ -295,7 +295,7 @@ Oppgitt faktisk arbeidsgrad: 440
 
 Har du oppholdstillatelse fra utlendingsdirektoratet?
 Ja
-    Oppgi vedtaksdato om oppholdstillatelse:
+    Når fikk du vedtak om oppholdstillatelse?
     01.01.2023
 
     Har du fått permanent oppholdstillatelse?
@@ -303,40 +303,43 @@ Ja
         Hvilken periode har du fått oppholdstillatelse?
         13.12.2022 - 02.01.2023
 
-Har du utført arbeid utenfor Norge i det siste 12 månedene?
+Har du utført arbeid utenfor Norge i løpet av de siste 12 månedene?
 Ja
-        Arbeidsgiver
-        Arbeidsgiver0
-
-        Velg land
-        Land0
-
+        I hvilket land utførte du arbeidet?
+        Canada
+        Hvilken arbeidsgiver jobbet du for?
+        Oslo Kommune
+        I hvilken periode ble arbeidet utført?
         13.12.2022 - 02.01.2023
 
 Har du oppholdt deg utenfor Norge i løpet av de siste 12 månedene?
 Ja
-        Velg land
-        Land
-
-        Grunn for opphold
+        I hvilket land utenfor Norge har du oppholdt deg?
+        Sverige
+        Hva var årsaken til oppholdet?
         Ferie
-
+        I hvilken periode oppholdt du deg i dette landet?
         13.12.2022 - 02.01.2023
 
 Har du oppholdt deg utenfor EØS i løpet av de siste 12 månedene?
 Ja
-        Velg land
-        Tyskland
-
-        Grunn for opphold
+        I hvilket land utenfor EØS har du oppholdt deg?
+        USA
+        Hva var årsaken til oppholdet?
         Ferie
-
+        I hvilken periode oppholdt du deg i dette landet?
         13.12.2022 - 02.01.2023
 
-        Velg land
-        Gran Canaria
+        I hvilket land utenfor EØS har du oppholdt deg?
+        Australia
+        Hva var årsaken til oppholdet?
+        Ferie
+        I hvilken periode oppholdt du deg i dette landet?
+        13.12.2022 - 02.01.2023
 
-        Grunn for opphold
-        Studier
-
+        I hvilket land utenfor EØS har du oppholdt deg?
+        Indonesia
+        Hva var årsaken til oppholdet?
+        Ferie
+        I hvilken periode oppholdt du deg i dette landet?
         13.12.2022 - 02.01.2023"""

@@ -35,7 +35,7 @@
   ],
   "sporsmal": [
     {
-      "id": "c7a3fac7-c67b-3251-acee-8a52497545fd",
+      "id": "a555296e-caba-3700-962f-ebe4d9e4a848",
       "tag": "MEDLEMSKAP_OPPHOLDSTILLATELSE",
       "sporsmalstekst": "Har du oppholdstillatelse fra utlendingsdirektoratet?",
       "undertekst": null,
@@ -50,12 +50,12 @@
       ],
       "undersporsmal": [
         {
-          "id": "3d4a4d39-fb71-3c4c-86a2-561db9d6489b",
+          "id": "44ec5281-34ae-3c5b-976c-b3dc24064338",
           "tag": "MEDLEMSKAP_OPPHOLDSTILLATELSE_VEDTAKSDATO",
-          "sporsmalstekst": "Oppgi vedtaksdato om oppholdstillatelse:",
+          "sporsmalstekst": "Når fikk du vedtak om oppholdstillatelse?",
           "undertekst": null,
-          "min": "2013-08-22",
-          "max": "2023-08-22",
+          "min": "2013-08-28",
+          "max": "2023-08-28",
           "svartype": "DATO",
           "kriterieForVisningAvUndersporsmal": null,
           "svar": [
@@ -66,7 +66,7 @@
           "undersporsmal": []
         },
         {
-          "id": "2340f771-faa3-3139-a5d5-e2ea80c936f2",
+          "id": "c3b3b17e-b1f5-3dac-92f3-55a5afdf2ce1",
           "tag": "MEDLEMSKAP_OPPHOLDSTILLATELSE_PERMANENT",
           "sporsmalstekst": "Har du fått permanent oppholdstillatelse?",
           "undertekst": null,
@@ -81,12 +81,12 @@
           ],
           "undersporsmal": [
             {
-              "id": "794766ab-04c6-3d0d-afa5-a6b602e5b4b6",
+              "id": "8f9a5695-609e-325a-8b7f-0f718e8f1109",
               "tag": "MEDLEMSKAP_OPPHOLDSTILLATELSE_PERIODE",
               "sporsmalstekst": "Hvilken periode har du fått oppholdstillatelse?",
               "undertekst": null,
-              "min": "2013-08-22",
-              "max": "2033-08-22",
+              "min": "2013-08-28",
+              "max": "2033-08-28",
               "svartype": "PERIODE",
               "kriterieForVisningAvUndersporsmal": null,
               "svar": [
@@ -101,9 +101,9 @@
       ]
     },
     {
-      "id": "04afca29-8c3a-3f04-9d41-b8dbea3524f1",
+      "id": "8cf230d8-f07f-3e11-bda9-6ac4d00c3fea",
       "tag": "MEDLEMSKAP_UTFORT_ARBEID_UTENFOR_NORGE",
-      "sporsmalstekst": "Har du utført arbeid utenfor Norge i det siste 12 månedene?",
+      "sporsmalstekst": "Har du utført arbeid utenfor Norge i løpet av de siste 12 månedene?",
       "undertekst": null,
       "min": null,
       "max": null,
@@ -116,7 +116,7 @@
       ],
       "undersporsmal": [
         {
-          "id": "0484f652-c5c7-3133-af1e-fc6fa6671d95",
+          "id": "403bd323-c741-3beb-83a8-22dbcb926656",
           "tag": "MEDLEMSKAP_UTFORT_ARBEID_UTENFOR_NORGE_GRUPPERING_0",
           "sporsmalstekst": null,
           "undertekst": null,
@@ -127,25 +127,9 @@
           "svar": [],
           "undersporsmal": [
             {
-              "id": "78e4857a-5337-313a-bef8-42e3d037269a",
-              "tag": "MEDLEMSKAP_UTFORT_ARBEID_UTENFOR_NORGE_ARBEIDSGIVER_0",
-              "sporsmalstekst": "Arbeidsgiver",
-              "undertekst": null,
-              "min": "1",
-              "max": "200",
-              "svartype": "FRITEKST",
-              "kriterieForVisningAvUndersporsmal": null,
-              "svar": [
-                {
-                  "verdi": "Arbeidsgiver0"
-                }
-              ],
-              "undersporsmal": []
-            },
-            {
-              "id": "2ad7a8d4-e881-3a0f-a4ed-207e9e5a869a",
+              "id": "cc7c4d5c-4e0a-3518-be82-9e2d2b9d69f6",
               "tag": "MEDLEMSKAP_UTFORT_ARBEID_UTENFOR_NORGE_HVOR_0",
-              "sporsmalstekst": "Velg land",
+              "sporsmalstekst": "I hvilket land utførte du arbeidet?",
               "undertekst": null,
               "min": null,
               "max": null,
@@ -153,18 +137,34 @@
               "kriterieForVisningAvUndersporsmal": null,
               "svar": [
                 {
-                  "verdi": "Land0"
+                  "verdi": "Canada"
                 }
               ],
               "undersporsmal": []
             },
             {
-              "id": "e8ce78aa-1dca-3f5a-80be-23b015b5c5b7",
-              "tag": "MEDLEMSKAP_UTFORT_ARBEID_UTENFOR_NORGE_NAAR_0",
-              "sporsmalstekst": null,
+              "id": "f7a84809-2b87-3317-a4cd-3e0092df4a6c",
+              "tag": "MEDLEMSKAP_UTFORT_ARBEID_UTENFOR_NORGE_ARBEIDSGIVER_0",
+              "sporsmalstekst": "Hvilken arbeidsgiver jobbet du for?",
               "undertekst": null,
-              "min": "2013-08-22",
-              "max": "2024-08-22",
+              "min": "1",
+              "max": "200",
+              "svartype": "FRITEKST",
+              "kriterieForVisningAvUndersporsmal": null,
+              "svar": [
+                {
+                  "verdi": "Oslo Kommune"
+                }
+              ],
+              "undersporsmal": []
+            },
+            {
+              "id": "8ad90a5b-027a-3f13-aab0-72df3ac15678",
+              "tag": "MEDLEMSKAP_UTFORT_ARBEID_UTENFOR_NORGE_NAAR_0",
+              "sporsmalstekst": "I hvilken periode ble arbeidet utført?",
+              "undertekst": null,
+              "min": "2013-08-28",
+              "max": "2024-08-28",
               "svartype": "PERIODE",
               "kriterieForVisningAvUndersporsmal": null,
               "svar": [
@@ -179,7 +179,7 @@
       ]
     },
     {
-      "id": "30a8c74b-98cb-35de-8aaf-7bb0a2335fa4",
+      "id": "57cae773-b03b-32c3-b5e1-43f729421ffa",
       "tag": "MEDLEMSKAP_OPPHOLD_UTENFOR_NORGE",
       "sporsmalstekst": "Har du oppholdt deg utenfor Norge i løpet av de siste 12 månedene?",
       "undertekst": null,
@@ -194,7 +194,7 @@
       ],
       "undersporsmal": [
         {
-          "id": "d24bef1d-e27e-340d-9f91-88bdcc08b4b5",
+          "id": "738e7540-9c0a-3b57-b5c2-b76e0cf5ebbf",
           "tag": "MEDLEMSKAP_OPPHOLD_UTENFOR_NORGE_GRUPPERING_0",
           "sporsmalstekst": null,
           "undertekst": null,
@@ -205,9 +205,9 @@
           "svar": [],
           "undersporsmal": [
             {
-              "id": "a42f8426-36e4-3644-bb12-d816a6f39e5c",
+              "id": "1ca93dd1-e05c-3576-a946-64058a55c837",
               "tag": "MEDLEMSKAP_OPPHOLD_UTENFOR_NORGE_HVOR_0",
-              "sporsmalstekst": "Velg land",
+              "sporsmalstekst": "I hvilket land utenfor Norge har du oppholdt deg?",
               "undertekst": null,
               "min": null,
               "max": null,
@@ -215,15 +215,15 @@
               "kriterieForVisningAvUndersporsmal": null,
               "svar": [
                 {
-                  "verdi": "Land"
+                  "verdi": "Sverige"
                 }
               ],
               "undersporsmal": []
             },
             {
-              "id": "42b12505-230c-3970-a947-5e8d58341d18",
+              "id": "836137c4-5028-37b3-8fd1-2cbc02763367",
               "tag": "MEDLEMSKAP_OPPHOLD_UTENFOR_NORGE_BEGRUNNELSE_0",
-              "sporsmalstekst": "Grunn for opphold",
+              "sporsmalstekst": "Hva var årsaken til oppholdet?",
               "undertekst": null,
               "min": null,
               "max": null,
@@ -232,7 +232,7 @@
               "svar": [],
               "undersporsmal": [
                 {
-                  "id": "58c73574-3243-32be-8705-989c12908011",
+                  "id": "f6fe341f-566c-30ea-9e97-fd45dc758f75",
                   "tag": "MEDLEMSKAP_OPPHOLD_UTENFOR_NORGE_BEGRUNNELSE_STUDIE_0",
                   "sporsmalstekst": "Studier",
                   "undertekst": null,
@@ -244,7 +244,7 @@
                   "undersporsmal": []
                 },
                 {
-                  "id": "2028231d-4e99-335d-ae63-3fba419f84fa",
+                  "id": "1f665e9e-486b-39de-a2ba-696576ec6e5a",
                   "tag": "MEDLEMSKAP_OPPHOLD_UTENFOR_NORGE_BEGRUNNELSE_FERIE_0",
                   "sporsmalstekst": "Ferie",
                   "undertekst": null,
@@ -260,7 +260,7 @@
                   "undersporsmal": []
                 },
                 {
-                  "id": "263b76e1-3da4-3b92-873b-7a64199b0611",
+                  "id": "9b990d10-3ff7-371c-a15f-d4aaeb54cfa2",
                   "tag": "MEDLEMSKAP_OPPHOLD_UTENFOR_NORGE_BEGRUNNELSE_FORSORG_0",
                   "sporsmalstekst": "Forsørget medfølgende familiemedlem",
                   "undertekst": null,
@@ -274,12 +274,12 @@
               ]
             },
             {
-              "id": "64170a0a-d908-3cfa-91ea-1b05b5e2fa87",
+              "id": "df1d0083-34e5-3c95-b3e7-ae980d4761d2",
               "tag": "MEDLEMSKAP_OPPHOLD_UTENFOR_NORGE_NAAR_0",
-              "sporsmalstekst": null,
+              "sporsmalstekst": "I hvilken periode oppholdt du deg i dette landet?",
               "undertekst": null,
-              "min": "2021-08-22",
-              "max": "2023-08-22",
+              "min": "2021-08-28",
+              "max": "2023-08-28",
               "svartype": "PERIODE",
               "kriterieForVisningAvUndersporsmal": null,
               "svar": [
@@ -294,7 +294,7 @@
       ]
     },
     {
-      "id": "5fb98ead-bfc9-3465-ac3e-3d04be5fc738",
+      "id": "7e7c04c2-f5da-30ef-a8bb-0812f4721da9",
       "tag": "MEDLEMSKAP_OPPHOLD_UTENFOR_EOS",
       "sporsmalstekst": "Har du oppholdt deg utenfor EØS i løpet av de siste 12 månedene?",
       "undertekst": null,
@@ -309,7 +309,7 @@
       ],
       "undersporsmal": [
         {
-          "id": "ed3bf3f2-e21c-350b-b281-0adbf10c282f",
+          "id": "e95e3322-5b45-33e1-83bd-cbf1c3700075",
           "tag": "MEDLEMSKAP_OPPHOLD_UTENFOR_EOS_GRUPPERING_0",
           "sporsmalstekst": null,
           "undertekst": null,
@@ -320,9 +320,9 @@
           "svar": [],
           "undersporsmal": [
             {
-              "id": "5c9ab281-22d3-3851-93db-560e2d0213da",
+              "id": "ee7648fe-d353-3c43-b3ca-a05b9182fbf6",
               "tag": "MEDLEMSKAP_OPPHOLD_UTENFOR_EOS_HVOR_0",
-              "sporsmalstekst": "Velg land",
+              "sporsmalstekst": "I hvilket land utenfor EØS har du oppholdt deg?",
               "undertekst": null,
               "min": null,
               "max": null,
@@ -330,15 +330,15 @@
               "kriterieForVisningAvUndersporsmal": null,
               "svar": [
                 {
-                  "verdi": "Tyskland"
+                  "verdi": "USA"
                 }
               ],
               "undersporsmal": []
             },
             {
-              "id": "dd72e1db-7c5b-354c-a53f-14e82073940c",
+              "id": "307a65bd-c640-37dc-9725-c6466fcd518c",
               "tag": "MEDLEMSKAP_OPPHOLD_UTENFOR_EOS_BEGRUNNELSE_0",
-              "sporsmalstekst": "Grunn for opphold",
+              "sporsmalstekst": "Hva var årsaken til oppholdet?",
               "undertekst": null,
               "min": null,
               "max": null,
@@ -347,7 +347,7 @@
               "svar": [],
               "undersporsmal": [
                 {
-                  "id": "7c9924da-81c0-39c9-a24d-55e2d793537b",
+                  "id": "0e5cd4f3-3fc9-396e-8cee-847fedad2144",
                   "tag": "MEDLEMSKAP_OPPHOLD_UTENFOR_EOS_BEGRUNNELSE_STUDIE_0",
                   "sporsmalstekst": "Studier",
                   "undertekst": null,
@@ -359,7 +359,7 @@
                   "undersporsmal": []
                 },
                 {
-                  "id": "42bd2df2-1509-36ae-bf69-8d6f06176213",
+                  "id": "c1fc9741-35d4-3ea0-b29a-6d1dd2a0167b",
                   "tag": "MEDLEMSKAP_OPPHOLD_UTENFOR_EOS_BEGRUNNELSE_FERIE_0",
                   "sporsmalstekst": "Ferie",
                   "undertekst": null,
@@ -375,7 +375,7 @@
                   "undersporsmal": []
                 },
                 {
-                  "id": "36cece31-ea06-3b48-b378-57665a62e2b0",
+                  "id": "4072b85c-3065-30b8-986d-44c5b6ed9493",
                   "tag": "MEDLEMSKAP_OPPHOLD_UTENFOR_EOS_BEGRUNNELSE_FORSORG_0",
                   "sporsmalstekst": "Forsørget medfølgende familiemedlem",
                   "undertekst": null,
@@ -389,12 +389,12 @@
               ]
             },
             {
-              "id": "e9d00d38-3e3f-3458-87c3-40e5978e8098",
+              "id": "1d5a3183-ab6e-3eee-b7ce-a85158076eca",
               "tag": "MEDLEMSKAP_OPPHOLD_UTENFOR_EOS_NAAR_0",
-              "sporsmalstekst": null,
+              "sporsmalstekst": "I hvilken periode oppholdt du deg i dette landet?",
               "undertekst": null,
-              "min": "2021-08-22",
-              "max": "2023-08-22",
+              "min": "2021-08-28",
+              "max": "2023-08-28",
               "svartype": "PERIODE",
               "kriterieForVisningAvUndersporsmal": null,
               "svar": [
@@ -407,7 +407,7 @@
           ]
         },
         {
-          "id": "ed3bf3f2-e21c-350b-b281-0adbf10c282f",
+          "id": "e95e3322-5b45-33e1-83bd-cbf1c3700075",
           "tag": "MEDLEMSKAP_OPPHOLD_UTENFOR_EOS_GRUPPERING_1",
           "sporsmalstekst": null,
           "undertekst": null,
@@ -418,9 +418,9 @@
           "svar": [],
           "undersporsmal": [
             {
-              "id": "5c9ab281-22d3-3851-93db-560e2d0213da",
+              "id": "ee7648fe-d353-3c43-b3ca-a05b9182fbf6",
               "tag": "MEDLEMSKAP_OPPHOLD_UTENFOR_EOS_HVOR_0",
-              "sporsmalstekst": "Velg land",
+              "sporsmalstekst": "I hvilket land utenfor EØS har du oppholdt deg?",
               "undertekst": null,
               "min": null,
               "max": null,
@@ -428,15 +428,15 @@
               "kriterieForVisningAvUndersporsmal": null,
               "svar": [
                 {
-                  "verdi": "Gran Canaria"
+                  "verdi": "Australia"
                 }
               ],
               "undersporsmal": []
             },
             {
-              "id": "dd72e1db-7c5b-354c-a53f-14e82073940c",
+              "id": "307a65bd-c640-37dc-9725-c6466fcd518c",
               "tag": "MEDLEMSKAP_OPPHOLD_UTENFOR_EOS_BEGRUNNELSE_0",
-              "sporsmalstekst": "Grunn for opphold",
+              "sporsmalstekst": "Hva var årsaken til oppholdet?",
               "undertekst": null,
               "min": null,
               "max": null,
@@ -445,9 +445,21 @@
               "svar": [],
               "undersporsmal": [
                 {
-                  "id": "7c9924da-81c0-39c9-a24d-55e2d793537b",
+                  "id": "0e5cd4f3-3fc9-396e-8cee-847fedad2144",
                   "tag": "MEDLEMSKAP_OPPHOLD_UTENFOR_EOS_BEGRUNNELSE_STUDIE_0",
                   "sporsmalstekst": "Studier",
+                  "undertekst": null,
+                  "min": null,
+                  "max": null,
+                  "svartype": "RADIO",
+                  "kriterieForVisningAvUndersporsmal": null,
+                  "svar": [],
+                  "undersporsmal": []
+                },
+                {
+                  "id": "c1fc9741-35d4-3ea0-b29a-6d1dd2a0167b",
+                  "tag": "MEDLEMSKAP_OPPHOLD_UTENFOR_EOS_BEGRUNNELSE_FERIE_0",
+                  "sporsmalstekst": "Ferie",
                   "undertekst": null,
                   "min": null,
                   "max": null,
@@ -461,20 +473,7 @@
                   "undersporsmal": []
                 },
                 {
-                  "id": "42bd2df2-1509-36ae-bf69-8d6f06176213",
-                  "tag": "MEDLEMSKAP_OPPHOLD_UTENFOR_EOS_BEGRUNNELSE_FERIE_0",
-                  "sporsmalstekst": "Ferie",
-                  "undertekst": null,
-                  "min": null,
-                  "max": null,
-                  "svartype": "RADIO",
-                  "kriterieForVisningAvUndersporsmal": null,
-                  "svar": [
-                  ],
-                  "undersporsmal": []
-                },
-                {
-                  "id": "36cece31-ea06-3b48-b378-57665a62e2b0",
+                  "id": "4072b85c-3065-30b8-986d-44c5b6ed9493",
                   "tag": "MEDLEMSKAP_OPPHOLD_UTENFOR_EOS_BEGRUNNELSE_FORSORG_0",
                   "sporsmalstekst": "Forsørget medfølgende familiemedlem",
                   "undertekst": null,
@@ -488,12 +487,110 @@
               ]
             },
             {
-              "id": "e9d00d38-3e3f-3458-87c3-40e5978e8098",
+              "id": "1d5a3183-ab6e-3eee-b7ce-a85158076eca",
               "tag": "MEDLEMSKAP_OPPHOLD_UTENFOR_EOS_NAAR_0",
-              "sporsmalstekst": null,
+              "sporsmalstekst": "I hvilken periode oppholdt du deg i dette landet?",
               "undertekst": null,
-              "min": "2021-08-22",
-              "max": "2023-08-22",
+              "min": "2021-08-28",
+              "max": "2023-08-28",
+              "svartype": "PERIODE",
+              "kriterieForVisningAvUndersporsmal": null,
+              "svar": [
+                {
+                  "verdi": "{\"fom\":\"2022-12-13\",\"tom\":\"2023-01-02\"}"
+                }
+              ],
+              "undersporsmal": []
+            }
+          ]
+        },
+        {
+          "id": "e95e3322-5b45-33e1-83bd-cbf1c3700075",
+          "tag": "MEDLEMSKAP_OPPHOLD_UTENFOR_EOS_GRUPPERING_2",
+          "sporsmalstekst": null,
+          "undertekst": null,
+          "min": null,
+          "max": null,
+          "svartype": "IKKE_RELEVANT",
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [],
+          "undersporsmal": [
+            {
+              "id": "ee7648fe-d353-3c43-b3ca-a05b9182fbf6",
+              "tag": "MEDLEMSKAP_OPPHOLD_UTENFOR_EOS_HVOR_0",
+              "sporsmalstekst": "I hvilket land utenfor EØS har du oppholdt deg?",
+              "undertekst": null,
+              "min": null,
+              "max": null,
+              "svartype": "COMBOBOX_SINGLE",
+              "kriterieForVisningAvUndersporsmal": null,
+              "svar": [
+                {
+                  "verdi": "Indonesia"
+                }
+              ],
+              "undersporsmal": []
+            },
+            {
+              "id": "307a65bd-c640-37dc-9725-c6466fcd518c",
+              "tag": "MEDLEMSKAP_OPPHOLD_UTENFOR_EOS_BEGRUNNELSE_0",
+              "sporsmalstekst": "Hva var årsaken til oppholdet?",
+              "undertekst": null,
+              "min": null,
+              "max": null,
+              "svartype": "RADIO_GRUPPE",
+              "kriterieForVisningAvUndersporsmal": null,
+              "svar": [],
+              "undersporsmal": [
+                {
+                  "id": "0e5cd4f3-3fc9-396e-8cee-847fedad2144",
+                  "tag": "MEDLEMSKAP_OPPHOLD_UTENFOR_EOS_BEGRUNNELSE_STUDIE_0",
+                  "sporsmalstekst": "Studier",
+                  "undertekst": null,
+                  "min": null,
+                  "max": null,
+                  "svartype": "RADIO",
+                  "kriterieForVisningAvUndersporsmal": null,
+                  "svar": [],
+                  "undersporsmal": []
+                },
+                {
+                  "id": "c1fc9741-35d4-3ea0-b29a-6d1dd2a0167b",
+                  "tag": "MEDLEMSKAP_OPPHOLD_UTENFOR_EOS_BEGRUNNELSE_FERIE_0",
+                  "sporsmalstekst": "Ferie",
+                  "undertekst": null,
+                  "min": null,
+                  "max": null,
+                  "svartype": "RADIO",
+                  "kriterieForVisningAvUndersporsmal": null,
+                  "svar": [
+                    {
+                      "verdi": "CHECKED"
+                    }
+                  ],
+                  "undersporsmal": []
+                },
+                {
+                  "id": "4072b85c-3065-30b8-986d-44c5b6ed9493",
+                  "tag": "MEDLEMSKAP_OPPHOLD_UTENFOR_EOS_BEGRUNNELSE_FORSORG_0",
+                  "sporsmalstekst": "Forsørget medfølgende familiemedlem",
+                  "undertekst": null,
+                  "min": null,
+                  "max": null,
+                  "svartype": "RADIO",
+                  "kriterieForVisningAvUndersporsmal": null,
+                  "svar": [],
+                  "undersporsmal": []
+                }
+              ]
+            },
+            {
+              "id": "1d5a3183-ab6e-3eee-b7ce-a85158076eca",
+              "tag": "MEDLEMSKAP_OPPHOLD_UTENFOR_EOS_NAAR_0",
+              "sporsmalstekst": "I hvilken periode oppholdt du deg i dette landet?",
+              "undertekst": null,
+              "min": "2021-08-28",
+              "max": "2023-08-28",
               "svartype": "PERIODE",
               "kriterieForVisningAvUndersporsmal": null,
               "svar": [
