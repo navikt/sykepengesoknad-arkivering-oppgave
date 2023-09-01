@@ -16,7 +16,13 @@ data class JournalpostRequest(
     val sak: Sak? = null,
     val tema: String? = null,
     val datoMottatt: LocalDate? = null,
-    val tittel: String? = null
+    val tittel: String? = null,
+    val tilleggsopplysninger: List<Tilleggsopplysning>? = null
+)
+
+data class Tilleggsopplysning(
+    val nokkel: String,
+    val verdi: String
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
