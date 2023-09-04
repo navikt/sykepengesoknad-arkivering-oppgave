@@ -42,20 +42,13 @@ fun skapJournalpostRequest(
             id = soknad.fnr,
             idType = "FNR"
         ),
-        tilleggsopplysninger = skapTillegsopplysninger(soknad = soknad)
-    )
-}
-
-fun skapTillegsopplysninger(soknad: Soknad): List<Tilleggsopplysning>? {
-    if (soknad.soknadstype == Soknadstype.BEHANDLINGSDAGER) {
-        return listOf(
+        tilleggsopplysninger = listOf(
             Tilleggsopplysning(
                 nokkel = "sp-arkiv-behdager",
                 verdi = "Behandlingsdager opplysning test"
             )
         )
-    }
-    return null
+    )
 }
 
 private fun getBrevkode(soknad: Soknad): String {
