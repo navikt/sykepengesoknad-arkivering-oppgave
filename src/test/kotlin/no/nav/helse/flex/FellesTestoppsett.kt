@@ -28,7 +28,7 @@ abstract class FellesTestoppsett {
                 System.setProperty("spring.datasource.password", password)
             }
 
-            KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:6.1.1")).apply {
+            KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.4.1")).apply {
                 start()
                 System.setProperty("KAFKA_BROKERS", bootstrapServers)
             }
