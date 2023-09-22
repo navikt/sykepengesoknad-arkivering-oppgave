@@ -11,7 +11,7 @@ fun Soknad.sorterViktigeSporsmalFørst(): Soknad {
     return this.copy(sporsmal = sorterteSporsmal)
 }
 
-fun Sporsmal.erViktig(): Boolean {
+private fun Sporsmal.erViktig(): Boolean {
     if (this.tag == "FRISKMELDT" && this.svar!!.any { it.verdi == "JA" }) return false
     return this.svar!!.any { it.verdi == "JA" }
 }
