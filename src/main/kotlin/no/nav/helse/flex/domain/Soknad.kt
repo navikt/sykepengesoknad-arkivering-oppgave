@@ -42,7 +42,7 @@ data class Soknad(
     val kvitteringer: List<PdfKvittering>? = null,
     val merknader: List<String>? = null,
     val utenlandskSykmelding: Boolean? = null,
-    val egenmeldingsdagerFraSykmelding: List<LocalDate>?
+    val egenmeldingsdagerFraSykmelding: List<LocalDate>? = null
 ) {
 
     companion object {

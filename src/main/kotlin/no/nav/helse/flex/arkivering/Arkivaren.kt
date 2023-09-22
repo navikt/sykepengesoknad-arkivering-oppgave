@@ -21,7 +21,7 @@ class Arkivaren(
 
     fun opprettJournalpost(soknad: Soknad): String {
         val pdf = measureTimeMillisWithResult {
-            pdfClient.getPDF(soknad = soknad, template = hentPDFTemplateEtterSoknadstype(soknad.soknadstype))
+            pdfClient.getPDF(soknad = soknad.sorterViktigeSporsmalFørst(), template = hentPDFTemplateEtterSoknadstype(soknad.soknadstype))
         }
 
         val request: JournalpostRequest =
