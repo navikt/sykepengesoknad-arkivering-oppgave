@@ -12,6 +12,10 @@ fun Soknad.sorterViktigeSporsmalFørst(): Soknad {
 }
 
 private fun Sporsmal.erViktig(): Boolean {
-    if (this.tag == "FRISKMELDT" && this.svar?.any { it.verdi == "JA" } == true) return false
-    return this.svar?.any { it.verdi == "JA" } == true
+    return this.svar?.any { it.verdi == viktigSvarverdi() } == true
+}
+
+private fun Sporsmal.viktigSvarverdi(): String {
+    if (this.tag == "FRISKMELDT") return "NEI"
+    return "JA"
 }

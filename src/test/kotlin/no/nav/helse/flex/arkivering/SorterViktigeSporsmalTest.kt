@@ -31,6 +31,26 @@ class SorterViktigeSporsmalTest {
         )
     }
 
+    @Test
+    fun testSorteringFriskmeldtNei() {
+        val soknad = Soknad(
+            opprettet = LocalDateTime.now(),
+            soknadstype = ARBEIDSLEDIG,
+            sporsmal = listOf(
+                sporsmal("NEI", "FERIE"),
+                sporsmal("NEI", "FRISKMELDT"),
+                sporsmal("JA", "ANDRE_INNTEKTSKILDER"),
+                sporsmal("NEI", "ARBEID_UTENFOR_NORGE")
+            )
+        )
+        soknad.sorterViktigeSporsmalFørst().sporsmal.map { it.tag } shouldBeEqualTo listOf(
+            "FRISKMELDT",
+            "ANDRE_INNTEKTSKILDER",
+            "FERIE",
+            "ARBEID_UTENFOR_NORGE"
+        )
+    }
+
     fun sporsmal(svar: String, tag: String) = Sporsmal(
         id = "a",
         tag = tag,
