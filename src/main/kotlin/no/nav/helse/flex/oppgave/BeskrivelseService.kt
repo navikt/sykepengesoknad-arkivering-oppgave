@@ -234,8 +234,9 @@ private fun Sporsmal.formatterSporsmalOgSvar(): List<String> {
         PERIODE -> listOfNotNull(sporsmalstekst, formatterPeriode(forsteSvarverdi()))
         PERIODER -> listOfNotNull(sporsmalstekst) + svarverdier().map { formatterPeriode(it) }
         LAND, COMBOBOX_MULTI -> listOfNotNull(sporsmalstekst) + svarverdier().map { formatterLand(it) }
-        TALL, KILOMETER -> listOfNotNull(sporsmalstekst, forsteSvarverdi() + " " + undertekst)
-        BELOP -> listOfNotNull(sporsmalstekst, forsteSvarverdi().formatterBelop() + " " + undertekst)
+        TALL -> listOfNotNull(sporsmalstekst, forsteSvarverdi() + " " + undertekst.orEmpty())
+        KILOMETER -> listOfNotNull(sporsmalstekst, forsteSvarverdi() + " km")
+        BELOP -> listOfNotNull(sporsmalstekst, forsteSvarverdi().formatterBelop() + " kr")
         TIMER -> listOfNotNull(sporsmalstekst, forsteSvarverdi() + " timer")
         PROSENT -> listOfNotNull(sporsmalstekst, forsteSvarverdi() + " prosent")
         FRITEKST, COMBOBOX_SINGLE -> listOfNotNull(sporsmalstekst, forsteSvarverdi())
