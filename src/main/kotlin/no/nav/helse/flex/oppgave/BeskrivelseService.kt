@@ -122,7 +122,7 @@ private fun Soknad.beskrivPerioder() =
             "${periode.fom!!.format(norskDato)} - ${periode.tom!!.format(norskDato)}\n" +
             (
                 periode.grad?.let { grad ->
-                    if (soknadstype != REISETILSKUDD) {
+                    if (soknadstype != REISETILSKUDD && soknadstype != BEHANDLINGSDAGER) {
                         "Grad: ${grad}\n"
                     } else {
                         ""

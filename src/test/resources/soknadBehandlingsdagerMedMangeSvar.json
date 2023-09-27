@@ -20,7 +20,8 @@
     {
       "fom": "2019-12-12",
       "tom": "2019-12-18",
-      "sykmeldingstype": "BEHANDLINGSDAGER"
+      "sykmeldingstype": "BEHANDLINGSDAGER",
+      "grad": 0
     }
   ],
   "sporsmal": [

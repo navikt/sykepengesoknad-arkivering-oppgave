@@ -19,7 +19,8 @@
     {
       "fom": "2019-12-11",
       "tom": "2019-12-17",
-      "sykmeldingstype": "BEHANDLINGSDAGER"
+      "sykmeldingstype": "BEHANDLINGSDAGER",
+      "grad": 0
     }
   ],
   "sporsmal": [
