@@ -60,7 +60,8 @@ private fun SoknadsperiodeDTO.toSoknadPeriode(): SoknadPeriode =
         fom = fom,
         tom = tom,
         grad = sykmeldingsgrad,
-        faktiskGrad = faktiskGrad
+        faktiskGrad = faktiskGrad,
+        sykmeldingstype = sykmeldingstype?.name
     )
 
 private fun SoknadstypeDTO.tilSoknadstype(): Soknadstype =

@@ -111,7 +111,11 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
             assertThat(innsendingIDatabase.sykepengesoknadId).isEqualTo(soknad.id)
             assertThat(innsendingIDatabase.oppgaveId).isNull()
             assertThat(innsendingIDatabase.behandlet).isNotNull
-            verify(pdfClient).getPDF(any(), eq(PDFTemplate.ARBEIDSTAKERE))
+
+            val pdfReqCaptor: KArgumentCaptor<Soknad> = argumentCaptor()
+            verify(pdfClient).getPDF(pdfReqCaptor.capture(), eq(PDFTemplate.ARBEIDSTAKERE))
+            val pdfReq = pdfReqCaptor.firstValue
+            assertThat(pdfReq.soknadPerioder!!.first().sykmeldingstype).isEqualTo("AKTIVITET_IKKE_MULIG")
         }
     }
 
@@ -287,6 +291,7 @@ Nei
         assertThat(pdfReq.kvitteringer).hasSize(2)
         assertThat(pdfReq.kvitteringer!![0].b64data).isEqualTo("MTIz")
         assertThat(pdfReq.sporsmal.filter { it.svartype == Svartype.KVITTERING }).isEmpty()
+        assertThat(pdfReq.soknadPerioder!!.first().sykmeldingstype).isEqualTo("REISETILSKUDD")
     }
 
     @Test
@@ -388,6 +393,7 @@ Nei
         assertThat(pdfReq.kvitteringer).hasSize(2)
         assertThat(pdfReq.kvitteringer!![0].b64data).isEqualTo("MTIz")
         assertThat(pdfReq.sporsmal.filter { it.svartype == Svartype.KVITTERING }).isEmpty()
+        assertThat(pdfReq.soknadPerioder!!.first().sykmeldingstype).isEqualTo("REISETILSKUDD")
     }
 
     @Test
