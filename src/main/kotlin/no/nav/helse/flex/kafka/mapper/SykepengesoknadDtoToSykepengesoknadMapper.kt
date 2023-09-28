@@ -52,6 +52,7 @@ private fun SvartypeDTO.mapSvartype(): Svartype {
         SvartypeDTO.KILOMETER -> Svartype.KILOMETER
         SvartypeDTO.COMBOBOX_SINGLE -> Svartype.COMBOBOX_SINGLE
         SvartypeDTO.COMBOBOX_MULTI -> Svartype.COMBOBOX_MULTI
+        SvartypeDTO.BEKREFTELSESPUNKTER -> Svartype.BEKREFTELSESPUNKTER
     }
 }
 
