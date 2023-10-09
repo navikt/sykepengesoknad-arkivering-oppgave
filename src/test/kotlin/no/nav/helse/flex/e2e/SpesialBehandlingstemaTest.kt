@@ -60,6 +60,9 @@ class SpesialBehandlingstemaTest : FellesTestoppsett() {
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
         val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
         assertThat(oppgaveRequestBody.behandlingstema).isEqualTo("ab0455")
+
+        val sykepengesoknadRequest = sykepengesoknadMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
+        assertThat(sykepengesoknadRequest.requestLine).isEqualTo("GET /api/v3/soknader/${søknad.id}/kafkaformat HTTP/1.1")
     }
 
     @Test
@@ -79,6 +82,9 @@ class SpesialBehandlingstemaTest : FellesTestoppsett() {
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
         val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
         assertThat(oppgaveRequestBody.behandlingstema).isEqualTo("ab0061")
+
+        val sykepengesoknadRequest = sykepengesoknadMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
+        assertThat(sykepengesoknadRequest.requestLine).isEqualTo("GET /api/v3/soknader/${søknad.id}/kafkaformat HTTP/1.1")
     }
 
     @Test
@@ -98,6 +104,9 @@ class SpesialBehandlingstemaTest : FellesTestoppsett() {
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
         val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
         assertThat(oppgaveRequestBody.behandlingstype).isEqualTo("ae0106")
+
+        val sykepengesoknadRequest = sykepengesoknadMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
+        assertThat(sykepengesoknadRequest.requestLine).isEqualTo("GET /api/v3/soknader/${søknad.id}/kafkaformat HTTP/1.1")
     }
 
     private fun leggSøknadPåKafka(søknad: SykepengesoknadDTO) =
