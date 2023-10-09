@@ -1,51 +1,27 @@
 package no.nav.helse.flex.service
 
-import com.nhaarman.mockitokotlin2.*
-import no.nav.helse.flex.FellesTestoppsett
-import no.nav.helse.flex.client.DokArkivClient
-import no.nav.helse.flex.client.PDFClient
-import no.nav.helse.flex.client.SykepengesoknadKvitteringerClient
-import no.nav.helse.flex.client.pdl.PdlClient
+import com.fasterxml.jackson.module.kotlin.readValue
+import no.nav.helse.flex.*
 import no.nav.helse.flex.domain.*
-import no.nav.helse.flex.domain.dto.PDFTemplate
 import no.nav.helse.flex.domain.dto.Svartype
 import no.nav.helse.flex.kafka.consumer.SYKEPENGESOKNAD_TOPIC
-import no.nav.helse.flex.mockReisetilskuddDTO
-import no.nav.helse.flex.mockSykepengesoknadDTO
 import no.nav.helse.flex.repository.InnsendingRepository
-import no.nav.helse.flex.serialisertTilString
 import no.nav.helse.flex.sykepengesoknad.kafka.*
+import okhttp3.mockwebserver.MockResponse
+import org.amshove.kluent.shouldBeEqualTo
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.Awaitility.await
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.test.annotation.DirtiesContext
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
+import java.util.concurrent.TimeUnit
 
-@DirtiesContext
 class SaksbehandlingIntegrationTest : FellesTestoppsett() {
-
-    @MockBean
-    private lateinit var pdfClient: PDFClient
-
-    @MockBean
-    private lateinit var dokArkivClient: DokArkivClient
-
-    @MockBean
-    private lateinit var oppgaveService: OppgaveService
-
-    @MockBean
-    private lateinit var sykepengesoknadKvitteringerClient: SykepengesoknadKvitteringerClient
-
-    @Autowired
-    private lateinit var pdlClient: PdlClient
-
     @Autowired
     private lateinit var innsendingRepository: InnsendingRepository
 
@@ -54,10 +30,6 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
 
     @Test
     fun `test happycase`() {
-        val oppgaveID = 1
-
-        whenever(oppgaveService.opprettOppgave(any())).thenReturn(OppgaveResponse(oppgaveID, "4488", "SYK", "SOK"))
-
         val soknad = mockSykepengesoknadDTO.copy(
             id = UUID.randomUUID().toString(),
             opprettet = LocalDateTime.now(),
@@ -79,18 +51,6 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
             fnr = "fnr"
         )
 
-        whenever(pdfClient.getPDF(any(), any())) doReturn ByteArray(0)
-
-        whenever(dokArkivClient.opprettJournalpost(any(), any())).thenReturn(
-            JournalpostResponse(
-                dokumenter = listOf(
-                    DokumentInfo()
-                ),
-                journalpostId = "1",
-                journalpostferdigstilt = true
-            )
-        )
-
         aivenKafkaProducer.send(
             ProducerRecord(
                 SYKEPENGESOKNAD_TOPIC,
@@ -100,29 +60,33 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
         )
 
         await().atMost(Duration.ofSeconds(10)).until {
-            innsendingRepository.findBySykepengesoknadId(soknad.id) != null
+            innsendingRepository.findBySykepengesoknadId(soknad.id)?.behandlet != null
         }
 
-        val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
-        verify(oppgaveService, never()).opprettOppgave(captor.capture())
+        val pdfRequest = pdfMockWebserver.takeRequest(10, TimeUnit.SECONDS)!!
+        pdfRequest.requestLine shouldBeEqualTo "POST /api/v1/genpdf/syfosoknader/arbeidstakere HTTP/1.1"
+        val pdfRequestBody = objectMapper.readValue<Soknad>(pdfRequest.body.readUtf8())
+        pdfRequestBody.soknadPerioder!!.first().sykmeldingstype shouldBeEqualTo "AKTIVITET_IKKE_MULIG"
 
-        await().atMost(Duration.ofSeconds(10)).untilAsserted {
-            val innsendingIDatabase = innsendingRepository.findBySykepengesoknadId(soknad.id)!!
-            assertThat(innsendingIDatabase.sykepengesoknadId).isEqualTo(soknad.id)
-            assertThat(innsendingIDatabase.oppgaveId).isNull()
-            assertThat(innsendingIDatabase.behandlet).isNotNull
-
-            val pdfReqCaptor: KArgumentCaptor<Soknad> = argumentCaptor()
-            verify(pdfClient).getPDF(pdfReqCaptor.capture(), eq(PDFTemplate.ARBEIDSTAKERE))
-            val pdfReq = pdfReqCaptor.firstValue
-            assertThat(pdfReq.soknadPerioder!!.first().sykmeldingstype).isEqualTo("AKTIVITET_IKKE_MULIG")
-        }
+        val innsendingIDatabase = innsendingRepository.findBySykepengesoknadId(soknad.id)!!
+        assertThat(innsendingIDatabase.sykepengesoknadId).isEqualTo(soknad.id)
+        assertThat(innsendingIDatabase.oppgaveId).isNull()
+        assertThat(innsendingIDatabase.behandlet).isNotNull
     }
 
     @Test
     fun `kafkamelding med redusertVenteperiode setter riktig behandlingstema`() {
         val oppgaveID = 2
-        whenever(oppgaveService.opprettOppgave(any())).thenReturn(OppgaveResponse(oppgaveID, "4488", "SYK", "SOK"))
+        oppgaveMockWebserver.enqueue(
+            MockResponse().setBody(
+                OppgaveResponse(
+                    oppgaveID,
+                    "4488",
+                    "SYK",
+                    "SOK"
+                ).serialisertTilString()
+            ).addHeader("Content-Type", "application/json")
+        )
 
         val soknad = SykepengesoknadDTO(
             id = UUID.randomUUID().toString(),
@@ -146,18 +110,6 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
             harRedusertVenteperiode = true
         )
 
-        whenever(pdfClient.getPDF(any(), any())) doReturn ByteArray(0)
-
-        whenever(dokArkivClient.opprettJournalpost(any(), any())).thenReturn(
-            JournalpostResponse(
-                dokumenter = listOf(
-                    DokumentInfo()
-                ),
-                journalpostId = "1",
-                journalpostferdigstilt = true
-            )
-        )
-
         aivenKafkaProducer.send(
             ProducerRecord(
                 SYKEPENGESOKNAD_TOPIC,
@@ -170,12 +122,12 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
             innsendingRepository.findBySykepengesoknadId(soknad.id)?.oppgaveId != null
         }
 
-        val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
-        verify(oppgaveService).opprettOppgave(captor.capture())
+        val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
+        assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
 
-        val oppgaveRequest = captor.firstValue
-        assertThat(oppgaveRequest.journalpostId).isEqualTo("1")
-        assertThat(oppgaveRequest.beskrivelse).isEqualTo(
+        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
+        assertThat(oppgaveRequestBody.journalpostId).isEqualTo("journalpostId")
+        assertThat(oppgaveRequestBody.beskrivelse).isEqualTo(
             """
 Søknad om sykepenger fra Selvstendig Næringsdrivende / Frilanser for perioden 01.05.2020 - 05.05.2020
 
@@ -183,38 +135,36 @@ Har systemet gode integrasjonstester?
 Ja
             """.trimIndent()
         )
-        assertThat(oppgaveRequest.tema).isEqualTo("SYK")
-        assertThat(oppgaveRequest.oppgavetype).isEqualTo("SOK")
-        assertThat(oppgaveRequest.prioritet).isEqualTo("NORM")
-        assertThat(oppgaveRequest.behandlingstema).isNull()
-        assertThat(oppgaveRequest.behandlingstype).isEqualTo("ae0247")
+        assertThat(oppgaveRequestBody.tema).isEqualTo("SYK")
+        assertThat(oppgaveRequestBody.oppgavetype).isEqualTo("SOK")
+        assertThat(oppgaveRequestBody.prioritet).isEqualTo("NORM")
+        assertThat(oppgaveRequestBody.behandlingstema).isNull()
+        assertThat(oppgaveRequestBody.behandlingstype).isEqualTo("ae0247")
 
         val innsendingIDatabase = innsendingRepository.findBySykepengesoknadId(soknad.id)!!
         assertThat(innsendingIDatabase.sykepengesoknadId).isEqualTo(soknad.id)
         assertThat(innsendingIDatabase.oppgaveId).isEqualTo(oppgaveID.toString())
         assertThat(innsendingIDatabase.behandlet).isNotNull
-        verify(pdfClient).getPDF(any(), eq(PDFTemplate.SELVSTENDIGNAERINGSDRIVENDE))
+
+        val pdfRequest = pdfMockWebserver.takeRequest(10, TimeUnit.SECONDS)!!
+        pdfRequest.requestLine shouldBeEqualTo "POST /api/v1/genpdf/syfosoknader/selvstendignaeringsdrivende HTTP/1.1"
     }
 
     @Test
     fun `reisetilskudd søknad behandles korrekt`() {
         val oppgaveID = 3
-        whenever(sykepengesoknadKvitteringerClient.hentVedlegg(any())).thenReturn("123".encodeToByteArray())
-        whenever(oppgaveService.opprettOppgave(any())).thenReturn(OppgaveResponse(oppgaveID, "4488", "SYK", "SOK"))
+        oppgaveMockWebserver.enqueue(
+            MockResponse().setBody(
+                OppgaveResponse(
+                    oppgaveID,
+                    "4488",
+                    "SYK",
+                    "SOK"
+                ).serialisertTilString()
+            ).addHeader("Content-Type", "application/json")
+        )
 
         val soknad = mockReisetilskuddDTO.copy(id = UUID.randomUUID().toString())
-
-        whenever(pdfClient.getPDF(any(), any())) doReturn ByteArray(0)
-
-        whenever(dokArkivClient.opprettJournalpost(any(), any())).thenReturn(
-            JournalpostResponse(
-                dokumenter = listOf(
-                    DokumentInfo()
-                ),
-                journalpostId = "1",
-                journalpostferdigstilt = true
-            )
-        )
 
         aivenKafkaProducer.send(
             ProducerRecord(
@@ -228,12 +178,12 @@ Ja
             innsendingRepository.findBySykepengesoknadId(soknad.id)?.oppgaveId != null
         }
 
-        val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
-        verify(oppgaveService).opprettOppgave(captor.capture())
+        val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
+        assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
 
-        val oppgaveRequest = captor.firstValue
-        assertThat(oppgaveRequest.journalpostId).isEqualTo("1")
-        assertThat(oppgaveRequest.beskrivelse).isEqualTo(
+        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
+        assertThat(oppgaveRequestBody.journalpostId).isEqualTo("journalpostId")
+        assertThat(oppgaveRequestBody.beskrivelse).isEqualTo(
             """
 Søknad om reisetilskudd for perioden 18.03.2021 - 22.03.2021
 
@@ -271,50 +221,45 @@ Legger arbeidsgiveren din ut for reisene?
 Nei
             """.trimIndent()
         )
-        assertThat(oppgaveRequest.tema).isEqualTo("SYK")
-        assertThat(oppgaveRequest.oppgavetype).isEqualTo("SOK")
-        assertThat(oppgaveRequest.prioritet).isEqualTo("NORM")
-        assertThat(oppgaveRequest.behandlingstema).isEqualTo("ab0237")
-        assertThat(oppgaveRequest.behandlingstype).isNull()
-        assertThat(oppgaveRequest.tildeltEnhetsnr).isEqualTo(null)
+        assertThat(oppgaveRequestBody.tema).isEqualTo("SYK")
+        assertThat(oppgaveRequestBody.oppgavetype).isEqualTo("SOK")
+        assertThat(oppgaveRequestBody.prioritet).isEqualTo("NORM")
+        assertThat(oppgaveRequestBody.behandlingstema).isEqualTo("ab0237")
+        assertThat(oppgaveRequestBody.behandlingstype).isNull()
+        assertThat(oppgaveRequestBody.tildeltEnhetsnr).isEqualTo(null)
 
         val innsendingIDatabase = innsendingRepository.findBySykepengesoknadId(soknad.id)!!
         assertThat(innsendingIDatabase.sykepengesoknadId).isEqualTo(soknad.id)
         assertThat(innsendingIDatabase.oppgaveId).isEqualTo(oppgaveID.toString())
         assertThat(innsendingIDatabase.behandlet).isNotNull
 
-        val pdfReqCaptor: KArgumentCaptor<Soknad> = argumentCaptor()
-        verify(pdfClient).getPDF(pdfReqCaptor.capture(), eq(PDFTemplate.REISETILSKUDD))
-
-        val pdfReq = pdfReqCaptor.firstValue
-        assertThat(pdfReq.kvitteringSum).isEqualTo(133800)
-        assertThat(pdfReq.kvitteringer).hasSize(2)
-        assertThat(pdfReq.kvitteringer!![0].b64data).isEqualTo("MTIz")
-        assertThat(pdfReq.sporsmal.filter { it.svartype == Svartype.KVITTERING }).isEmpty()
-        assertThat(pdfReq.soknadPerioder!!.first().sykmeldingstype).isEqualTo("REISETILSKUDD")
+        val pdfRequest = pdfMockWebserver.takeRequest(10, TimeUnit.SECONDS)!!
+        pdfRequest.requestLine shouldBeEqualTo "POST /api/v1/genpdf/syfosoknader/reisetilskudd HTTP/1.1"
+        val pdfRequestBody = objectMapper.readValue<Soknad>(pdfRequest.body.readUtf8())
+        pdfRequestBody.kvitteringSum shouldBeEqualTo 133800
+        pdfRequestBody.kvitteringer!!.size shouldBeEqualTo 2
+        pdfRequestBody.kvitteringer!!.first().b64data shouldBeEqualTo "MTIz"
+        pdfRequestBody.sporsmal.none { it.svartype == Svartype.KVITTERING } shouldBeEqualTo true
+        pdfRequestBody.soknadPerioder!!.first().sykmeldingstype shouldBeEqualTo "REISETILSKUDD"
     }
 
     @Test
     fun `gradert reisetilskudd søknad behandles korrekt`() {
         val oppgaveID = 3
-        whenever(sykepengesoknadKvitteringerClient.hentVedlegg(any())).thenReturn("123".encodeToByteArray())
-        whenever(oppgaveService.opprettOppgave(any())).thenReturn(OppgaveResponse(oppgaveID, "4488", "SYK", "SOK"))
+        oppgaveMockWebserver.enqueue(
+            MockResponse().setBody(
+                OppgaveResponse(
+                    oppgaveID,
+                    "4488",
+                    "SYK",
+                    "SOK"
+                ).serialisertTilString()
+            ).addHeader("Content-Type", "application/json")
+        )
 
         val soknad = mockReisetilskuddDTO.copy(
             id = UUID.randomUUID().toString(),
             type = SoknadstypeDTO.GRADERT_REISETILSKUDD
-        )
-
-        whenever(pdfClient.getPDF(any(), any())) doReturn ByteArray(0)
-
-        whenever(dokArkivClient.opprettJournalpost(any(), any())).thenReturn(
-            JournalpostResponse(
-                dokumenter = listOf(
-                    DokumentInfo()
-                ),
-                journalpostId = "1",
-                journalpostferdigstilt = true
-            )
         )
 
         aivenKafkaProducer.send(
@@ -329,12 +274,12 @@ Nei
             innsendingRepository.findBySykepengesoknadId(soknad.id)?.oppgaveId != null
         }
 
-        val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
-        verify(oppgaveService).opprettOppgave(captor.capture())
+        val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
+        assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
 
-        val oppgaveRequest = captor.firstValue
-        assertThat(oppgaveRequest.journalpostId).isEqualTo("1")
-        assertThat(oppgaveRequest.beskrivelse).isEqualTo(
+        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
+        assertThat(oppgaveRequestBody.journalpostId).isEqualTo("journalpostId")
+        assertThat(oppgaveRequestBody.beskrivelse).isEqualTo(
             """
 Søknad om sykepenger med reisetilskudd for perioden 18.03.2021 - 22.03.2021
 
@@ -373,70 +318,25 @@ Legger arbeidsgiveren din ut for reisene?
 Nei
             """.trimIndent()
         )
-        assertThat(oppgaveRequest.tema).isEqualTo("SYK")
-        assertThat(oppgaveRequest.oppgavetype).isEqualTo("SOK")
-        assertThat(oppgaveRequest.prioritet).isEqualTo("NORM")
-        assertThat(oppgaveRequest.behandlingstema).isEqualTo("ab0237")
-        assertThat(oppgaveRequest.behandlingstype).isNull()
-        assertThat(oppgaveRequest.tildeltEnhetsnr).isEqualTo(null)
+        assertThat(oppgaveRequestBody.tema).isEqualTo("SYK")
+        assertThat(oppgaveRequestBody.oppgavetype).isEqualTo("SOK")
+        assertThat(oppgaveRequestBody.prioritet).isEqualTo("NORM")
+        assertThat(oppgaveRequestBody.behandlingstema).isEqualTo("ab0237")
+        assertThat(oppgaveRequestBody.behandlingstype).isNull()
+        assertThat(oppgaveRequestBody.tildeltEnhetsnr).isEqualTo(null)
 
         val innsendingIDatabase = innsendingRepository.findBySykepengesoknadId(soknad.id)!!
         assertThat(innsendingIDatabase.sykepengesoknadId).isEqualTo(soknad.id)
         assertThat(innsendingIDatabase.oppgaveId).isEqualTo(oppgaveID.toString())
         assertThat(innsendingIDatabase.behandlet).isNotNull
 
-        val pdfReqCaptor: KArgumentCaptor<Soknad> = argumentCaptor()
-        verify(pdfClient).getPDF(pdfReqCaptor.capture(), eq(PDFTemplate.GRADERT_REISETILSKUDD))
-
-        val pdfReq = pdfReqCaptor.firstValue
-        assertThat(pdfReq.kvitteringSum).isEqualTo(133800)
-        assertThat(pdfReq.kvitteringer).hasSize(2)
-        assertThat(pdfReq.kvitteringer!![0].b64data).isEqualTo("MTIz")
-        assertThat(pdfReq.sporsmal.filter { it.svartype == Svartype.KVITTERING }).isEmpty()
-        assertThat(pdfReq.soknadPerioder!!.first().sykmeldingstype).isEqualTo("REISETILSKUDD")
-    }
-
-    @Test
-    fun `Reisetilskudd for kode 6 går til Vikafossen`() {
-        val oppgaveID = 4
-        whenever(sykepengesoknadKvitteringerClient.hentVedlegg(any())).thenReturn("123".encodeToByteArray())
-        whenever(oppgaveService.opprettOppgave(any())).thenReturn(OppgaveResponse(oppgaveID, "4488", "SYK", "SOK"))
-        pdlClient.returnerKode6 = true
-
-        val soknad = mockReisetilskuddDTO
-
-        whenever(pdfClient.getPDF(any(), any())) doReturn ByteArray(0)
-
-        whenever(dokArkivClient.opprettJournalpost(any(), any())).thenReturn(
-            JournalpostResponse(
-                dokumenter = listOf(
-                    DokumentInfo()
-                ),
-                journalpostId = "1",
-                journalpostferdigstilt = true
-            )
-        )
-
-        aivenKafkaProducer.send(
-            ProducerRecord(
-                SYKEPENGESOKNAD_TOPIC,
-                soknad.id,
-                soknad.serialisertTilString()
-            )
-        )
-
-        await().atMost(Duration.ofSeconds(10)).until {
-            innsendingRepository.findBySykepengesoknadId(soknad.id)?.oppgaveId != null
-        }
-
-        val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
-        verify(oppgaveService).opprettOppgave(captor.capture())
-        verify(pdfClient).getPDF(any(), eq(PDFTemplate.REISETILSKUDD))
-
-        val oppgaveRequest = captor.firstValue
-
-        assertThat(oppgaveRequest.tildeltEnhetsnr).isEqualTo(null)
-
-        pdlClient.returnerKode6 = false
+        val pdfRequest = pdfMockWebserver.takeRequest(10, TimeUnit.SECONDS)!!
+        pdfRequest.requestLine shouldBeEqualTo "POST /api/v1/genpdf/syfosoknader/gradertreisetilskudd HTTP/1.1"
+        val pdfRequestBody = objectMapper.readValue<Soknad>(pdfRequest.body.readUtf8())
+        pdfRequestBody.kvitteringSum shouldBeEqualTo 133800
+        pdfRequestBody.kvitteringer!!.size shouldBeEqualTo 2
+        pdfRequestBody.kvitteringer!!.first().b64data shouldBeEqualTo "MTIz"
+        pdfRequestBody.sporsmal.none { it.svartype == Svartype.KVITTERING } shouldBeEqualTo true
+        pdfRequestBody.soknadPerioder!!.first().sykmeldingstype shouldBeEqualTo "REISETILSKUDD"
     }
 }

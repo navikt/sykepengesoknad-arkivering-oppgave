@@ -8,12 +8,13 @@ external-host:
   - oppgave.prod-fss-pub.nais.io
   - pdl-api.prod-fss-pub.nais.io
 env:
+  SYKEPENGESOKNAD_BACKEND_URL: http://sykepengesoknad-backend
   SYKEPENGESOKNAD_BACKEND_AAD_CLIENT_ID: prod-gcp.flex.sykepengesoknad-backend
   PDL_URL: https://pdl-api.prod-fss-pub.nais.io
   PDL_API_AAD_CLIENT_ID: prod-fss.pdl.pdl-api
   DOKARKIV_URL: https://dokarkiv.prod-fss-pub.nais.io
   DOKARKIV_AAD_CLIENT_ID: prod-fss.teamdokumenthandtering.dokarkiv
-  OPPGAVE_URL: https://oppgave.prod-fss-pub.nais.io/api/v1/oppgaver
+  OPPGAVE_URL: https://oppgave.prod-fss-pub.nais.io
   OPPGAVE_AAD_CLIENT_ID: prod-fss.oppgavehandtering.oppgave
   SYKEPENGESOKNAD_KVITTERINGER_URL: http://sykepengesoknad-kvitteringer
   SYKEPENGESOKNAD_KVITTERINGER_AAD_CLIENT_ID: prod-gcp.flex.sykepengesoknad-kvitteringer

@@ -15,11 +15,6 @@ query(${"$"}ident: ID!){
 }
 """
 
-data class HentNavnResponse(
-    val data: HentNavnResponseData,
-    val errors: List<ResponseError>?
-)
-
 data class HentNavnResponseData(
     val hentPerson: HentNavn? = null
 )

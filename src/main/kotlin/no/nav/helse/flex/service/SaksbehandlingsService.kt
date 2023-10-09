@@ -17,7 +17,7 @@ import java.util.*
 
 @Component
 class SaksbehandlingsService(
-    private val oppgaveService: OppgaveService,
+    private val oppgaveClient: OppgaveClient,
     private val arkivaren: no.nav.helse.flex.arkivering.Arkivaren,
     private val innsendingRepository: InnsendingRepository,
     private val registry: MeterRegistry,
@@ -55,14 +55,14 @@ class SaksbehandlingsService(
 
         val soknad = opprettSoknad(sykepengesoknad, fnr)
 
-        val requestBody = OppgaveService.lagRequestBody(
+        val requestBody = OppgaveClient.lagRequestBody(
             aktorId = sykepengesoknad.aktorId,
             journalpostId = innsending.journalpostId!!,
             soknad = soknad,
             harRedusertVenteperiode = sykepengesoknad.harRedusertVenteperiode,
             speilRelatert = speilRelatert
         )
-        val oppgaveResponse = oppgaveService.opprettOppgave(requestBody)
+        val oppgaveResponse = oppgaveClient.opprettOppgave(requestBody)
 
         innsendingRepository.updateOppgaveId(id = innsending.id!!, oppgaveId = oppgaveResponse.id.toString())
 

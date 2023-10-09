@@ -1,30 +1,21 @@
 package no.nav.helse.flex.e2e
 
-import com.nhaarman.mockitokotlin2.KArgumentCaptor
-import com.nhaarman.mockitokotlin2.argumentCaptor
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
-import no.nav.helse.flex.FellesTestoppsett
-import no.nav.helse.flex.any
-import no.nav.helse.flex.arkivering.Arkivaren
-import no.nav.helse.flex.client.SykepengesoknadBackendClient
-import no.nav.helse.flex.client.pdl.PdlClient
+import com.fasterxml.jackson.module.kotlin.readValue
+import no.nav.helse.flex.*
 import no.nav.helse.flex.domain.DokumentTypeDTO
 import no.nav.helse.flex.domain.OppdateringstypeDTO
 import no.nav.helse.flex.domain.OppgaveDTO
 import no.nav.helse.flex.kafka.consumer.AivenSoknadSendtListener
 import no.nav.helse.flex.kafka.consumer.AivenSpreOppgaverListener
-import no.nav.helse.flex.serialisertTilString
 import no.nav.helse.flex.service.*
-import no.nav.helse.flex.skapConsumerRecord
 import no.nav.helse.flex.sykepengesoknad.kafka.SoknadsstatusDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SoknadstypeDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SporsmalDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SvarDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SvartypeDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SykepengesoknadDTO
+import okhttp3.mockwebserver.MockResponse
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -33,32 +24,13 @@ import org.springframework.test.annotation.DirtiesContext
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 
 @DirtiesContext
 class SpesialBehandlingstemaTest : FellesTestoppsett() {
 
-    companion object {
-        const val aktorId = "aktørId"
-        const val fnr = "fnr"
-    }
-
-    @MockBean
-    lateinit var oppgaveService: OppgaveService
-
-    @MockBean
-    lateinit var arkivaren: Arkivaren
-
-    @MockBean
-    lateinit var identService: IdentService
-
-    @MockBean
-    lateinit var pdlClient: PdlClient
-
     @MockBean
     lateinit var acknowledgment: Acknowledgment
-
-    @MockBean
-    lateinit var sykepengesoknadBackendClient: SykepengesoknadBackendClient
 
     @Autowired
     lateinit var aivenSoknadSendtListener: AivenSoknadSendtListener
@@ -69,60 +41,63 @@ class SpesialBehandlingstemaTest : FellesTestoppsett() {
     @Autowired
     lateinit var oppgaveOpprettelse: OppgaveOpprettelse
 
-    @BeforeEach
-    fun setup() {
-        whenever(identService.hentAktorIdForFnr(any())).thenReturn(aktorId)
-        whenever(identService.hentFnrForAktorId(any())).thenReturn(fnr)
-        whenever(pdlClient.hentFormattertNavn(any())).thenReturn("Kalle Klovn")
-        whenever(arkivaren.opprettJournalpost(any())).thenReturn("jpost1234")
-        whenever(oppgaveService.opprettOppgave(any())).thenReturn(OppgaveResponse(123, "4488", "SYK", "SOK"))
-    }
+    val fnr = "fnr"
 
     @Test
     fun `En speil relatert søknad får behandlingstema ab0455`() {
         val soknadId = UUID.randomUUID()
         val søknad = søknad(soknadId)
-        whenever(sykepengesoknadBackendClient.hentSoknad(any())).thenReturn(søknad)
+
+        sykepengesoknadMockWebserver.enqueue(
+            MockResponse().setBody(søknad.serialisertTilString()).addHeader("Content-Type", "application/json")
+        )
         leggSøknadPåKafka(søknad)
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.OpprettSpeilRelatert, soknadId))
 
         oppgaveOpprettelse.behandleOppgaver()
-        val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
 
-        verify(oppgaveService).opprettOppgave(captor.capture())
-        assertThat(captor.firstValue.behandlingstema).isEqualTo("ab0455")
+        val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
+        assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
+        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
+        assertThat(oppgaveRequestBody.behandlingstema).isEqualTo("ab0455")
     }
 
     @Test
     fun `En ikke speil relatert søknad får behandlingstema ab0061`() {
         val soknadId = UUID.randomUUID()
         val søknad = søknad(soknadId)
-        whenever(sykepengesoknadBackendClient.hentSoknad(any())).thenReturn(søknad)
 
+        sykepengesoknadMockWebserver.enqueue(
+            MockResponse().setBody(søknad.serialisertTilString()).addHeader("Content-Type", "application/json")
+        )
         leggSøknadPåKafka(søknad)
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, soknadId))
 
         oppgaveOpprettelse.behandleOppgaver()
-        val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
 
-        verify(oppgaveService).opprettOppgave(captor.capture())
-        assertThat(captor.firstValue.behandlingstema).isEqualTo("ab0061")
+        val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
+        assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
+        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
+        assertThat(oppgaveRequestBody.behandlingstema).isEqualTo("ab0061")
     }
 
     @Test
     fun `En søknad tilhørende utenlandsk sykmelding får behandlingstype ae0106`() {
         val soknadId = UUID.randomUUID()
         val søknad = søknad(soknadId, utenlandskSykmelding = true)
-        whenever(sykepengesoknadBackendClient.hentSoknad(any())).thenReturn(søknad)
 
+        sykepengesoknadMockWebserver.enqueue(
+            MockResponse().setBody(søknad.serialisertTilString()).addHeader("Content-Type", "application/json")
+        )
         leggSøknadPåKafka(søknad)
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, soknadId))
 
         oppgaveOpprettelse.behandleOppgaver()
-        val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
 
-        verify(oppgaveService).opprettOppgave(captor.capture())
-        assertThat(captor.firstValue.behandlingstype).isEqualTo("ae0106")
+        val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
+        assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
+        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
+        assertThat(oppgaveRequestBody.behandlingstype).isEqualTo("ae0106")
     }
 
     private fun leggSøknadPåKafka(søknad: SykepengesoknadDTO) =

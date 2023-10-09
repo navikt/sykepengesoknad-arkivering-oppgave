@@ -50,6 +50,7 @@ class HandterOppave(
                 )
             }
             eksisterendeOppgave.status == OppgaveStatus.Utsett -> {
+                log.info("Mottok utsett oppgave opprettelse for søknad ${oppgave.dokumentId} fra bømlo")
                 spreOppgaveRepository.updateOppgaveBySykepengesoknadId(
                     sykepengesoknadId = oppgave.dokumentId.toString(),
                     timeout = timeout(oppgave),
@@ -77,6 +78,7 @@ class HandterOppave(
         eksisterendeOppgave: SpreOppgaveDbRecord?,
         oppgave: OppgaveDTO
     ) {
+        log.info("Avstemmer oppgave opprettelse for søknad ${oppgave.dokumentId}")
         if (eksisterendeOppgave != null) {
             spreOppgaveRepository.updateAvstemtBySykepengesoknadId(eksisterendeOppgave.sykepengesoknadId)
         } else {

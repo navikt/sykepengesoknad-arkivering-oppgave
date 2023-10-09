@@ -4,6 +4,7 @@ import no.nav.helse.flex.logger
 import no.nav.helse.flex.sykepengesoknad.kafka.SykepengesoknadDTO
 import no.nav.helse.flex.util.callId
 import no.nav.syfo.kafka.NAV_CALLID
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -16,6 +17,8 @@ import org.springframework.web.util.UriComponentsBuilder
 
 @Component
 class SykepengesoknadBackendClient(
+    @Value("\${SYKEPENGESOKNAD_BACKEND_URL}")
+    private val url: String,
     private val sykepengesoknadBackendRestTemplate: RestTemplate
 ) {
 
@@ -23,8 +26,11 @@ class SykepengesoknadBackendClient(
 
     fun hentSoknad(soknadId: String): SykepengesoknadDTO {
         try {
-            val uriBuilder =
-                UriComponentsBuilder.fromHttpUrl("http://sykepengesoknad-backend/api/v3/soknader/$soknadId/kafkaformat")
+            val uri = UriComponentsBuilder
+                .fromHttpUrl(url)
+                .path("/api/v3/soknader/{soknadId}/kafkaformat")
+                .buildAndExpand("soknadId" to soknadId)
+                .toUri()
 
             val headers = HttpHeaders()
             headers.contentType = MediaType.APPLICATION_JSON
@@ -32,7 +38,7 @@ class SykepengesoknadBackendClient(
 
             val result = sykepengesoknadBackendRestTemplate
                 .exchange(
-                    uriBuilder.toUriString(),
+                    uri,
                     HttpMethod.GET,
                     HttpEntity<Any>(headers),
                     SykepengesoknadDTO::class.java
