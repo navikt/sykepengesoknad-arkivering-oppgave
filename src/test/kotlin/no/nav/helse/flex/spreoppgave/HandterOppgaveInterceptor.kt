@@ -19,9 +19,12 @@ class HandterOppgaveInterceptor(
     companion object {
         val raceConditionUUID: UUID = UUID.randomUUID()
         val raceConditionTimeout: Instant = Instant.now().plusSeconds(60).truncatedTo(ChronoUnit.SECONDS)
+        var kallTilHåndterOppgaveFraBømlo = 0
+        var kallTilHåndterOppgaveFraSøknad = 0
     }
 
     override fun håndterOppgaveFraBømlo(eksisterendeOppgave: SpreOppgaveDbRecord?, oppgave: OppgaveDTO) {
+        kallTilHåndterOppgaveFraBømlo += 1
         if (eksisterendeOppgave == null && oppgave.dokumentId == raceConditionUUID) {
             insertSpreOppgaveMellomHentingAvEksisterendeOgLagring()
             spreOppgaveRepository.updateAvstemtBySykepengesoknadId(oppgave.dokumentId.toString())
@@ -31,6 +34,7 @@ class HandterOppgaveInterceptor(
     }
 
     override fun håndterOppgaveFraSøknad(eksisterendeOppgave: SpreOppgaveDbRecord?, oppgave: OppgaveDTO) {
+        kallTilHåndterOppgaveFraSøknad += 1
         if (eksisterendeOppgave == null && oppgave.dokumentId == raceConditionUUID) {
             insertSpreOppgaveMellomHentingAvEksisterendeOgLagring()
         }
