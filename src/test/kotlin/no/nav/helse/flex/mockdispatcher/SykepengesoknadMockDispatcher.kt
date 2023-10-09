@@ -8,7 +8,6 @@ import okhttp3.mockwebserver.RecordedRequest
 
 object SykepengesoknadMockDispatcher : QueueDispatcher() {
     override fun dispatch(request: RecordedRequest): MockResponse {
-        println(request.requestUrl)
         if (request.requestUrl?.encodedPath?.endsWith("/kafkaformat") != true) {
             return MockResponse().setResponseCode(404)
                 .setBody("Har ikke implemetert sykepengesoknad mock api for ${request.requestUrl}")
