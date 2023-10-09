@@ -23,6 +23,7 @@ class PDFClient(
 
     val log = logger()
 
+    // template for adding a url thing
     @Retryable(backoff = Backoff(delay = 5000))
     fun getPDF(soknad: Soknad, template: PDFTemplate): ByteArray {
         val url = "$pdfgenUrl/api/v1/genpdf/syfosoknader/" + template.endpoint

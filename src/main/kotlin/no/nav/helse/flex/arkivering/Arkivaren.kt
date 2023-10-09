@@ -30,12 +30,35 @@ class Arkivaren(
         val journalpostResponse = measureTimeMillisWithResult {
             dokArkivClient.opprettJournalpost(request, soknad.soknadsId!!)
         }
+
+        //  https://reflectoring.io/spring-webclient/ Dette er det du trenger
+
         if (!journalpostResponse.result.journalpostferdigstilt) {
             log.warn("Journalpost ${journalpostResponse.result.journalpostId} for søknad ${soknad.soknadsId} ble ikke ferdigstilt")
         }
 
         log.info("Arkiverte søknad ${soknad.soknadsId}. PDF tid: ${pdf.millis} . Dokarkiv tid: ${journalpostResponse.millis}")
         registry.counter("søknad_arkivert").increment()
+
+        // det er her vi ville hentet ut journalpostid eller noe og lagt inn evt. behandlinsdager
+
+        // val id = journalpostResponse.result.journalpostId
+
+        // her må vi legge inn behandlingsdager om de finnes
+
+        val behandlingsdager = soknad.sporsmal.filter { it.tag == "BEHANDLINGSDAGER" }
+
+        if (behandlingsdager.isNotEmpty()) {
+            println("behandlingsdager finnes")
+        }
+
+        // /Users/kuls/code/sykepengesoknad-arkivering-oppgave/src/test/resources/soknadBehandlingsdagerMedNeisvar.json
+//        if (soknad.soknadstype == Soknadstype.BEHANDLINGSDAGER) {
+//            val behandlingsdager = soknad.sporsmal
+//
+//
+//        }
+
         return journalpostResponse.result.journalpostId
     }
 
