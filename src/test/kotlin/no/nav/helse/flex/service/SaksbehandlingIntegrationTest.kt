@@ -60,7 +60,7 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
         )
 
         await().atMost(Duration.ofSeconds(10)).until {
-            innsendingRepository.findBySykepengesoknadId(soknad.id) != null
+            innsendingRepository.findBySykepengesoknadId(soknad.id)?.behandlet != null
         }
 
         val pdfRequest = pdfMockWebserver.takeRequest(10, TimeUnit.SECONDS)!!
