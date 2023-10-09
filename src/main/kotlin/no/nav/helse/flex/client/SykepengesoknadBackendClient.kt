@@ -29,7 +29,7 @@ class SykepengesoknadBackendClient(
             val uri = UriComponentsBuilder
                 .fromHttpUrl(url)
                 .path("/api/v3/soknader/{soknadId}/kafkaformat")
-                .buildAndExpand("soknadId" to soknadId)
+                .buildAndExpand(mapOf("soknadId" to soknadId))
                 .toUri()
 
             val headers = HttpHeaders()
