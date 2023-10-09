@@ -1,22 +1,13 @@
 package no.nav.helse.flex.service
 
+import no.nav.helse.flex.FellesTestoppsett
 import no.nav.helse.flex.domain.Soknad
 import no.nav.helse.flex.domain.dto.Soknadstype
+import okhttp3.mockwebserver.MockResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.BDDMockito
-import org.mockito.Mock
-import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.junit.jupiter.MockitoSettings
-import org.mockito.quality.Strictness
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
-import org.springframework.web.client.RestTemplate
+import org.springframework.beans.factory.annotation.Autowired
 import java.time.DayOfWeek.FRIDAY
 import java.time.DayOfWeek.MONDAY
 import java.time.DayOfWeek.SATURDAY
@@ -28,66 +19,47 @@ import java.time.LocalDate.now
 import java.time.LocalDateTime
 import java.time.temporal.TemporalAdjusters.next
 
-@ExtendWith(MockitoExtension::class)
-@MockitoSettings(strictness = Strictness.LENIENT)
-class OppgaveServiceTest {
+class OppgaveServiceTest : FellesTestoppsett() {
+
+    @Autowired
+    lateinit var oppgaveClient: OppgaveClient
+
     private val aktorId = "aktorId"
     private val journalpostId = "145"
 
-    @Mock
-    lateinit var restTemplate: RestTemplate
-
-    @Mock
-    private lateinit var oppgaveService: OppgaveService
-
-    @BeforeEach
-    fun setup() {
-        oppgaveService = OppgaveService(
-            url = "https://oppgave.nav.no",
-            oppgaveRestTemplate = restTemplate
-        )
-    }
-
     @Test
     fun innsendingLordagOgSondagGirSammeFristSomMandag() {
-        assertThat(OppgaveService.omTreUkedager(now().with(next(SATURDAY))).dayOfWeek).isEqualTo(THURSDAY)
-        assertThat(OppgaveService.omTreUkedager(now().with(next(SUNDAY))).dayOfWeek).isEqualTo(THURSDAY)
-        assertThat(OppgaveService.omTreUkedager(now().with(next(MONDAY))).dayOfWeek).isEqualTo(THURSDAY)
+        assertThat(OppgaveClient.omTreUkedager(now().with(next(SATURDAY))).dayOfWeek).isEqualTo(THURSDAY)
+        assertThat(OppgaveClient.omTreUkedager(now().with(next(SUNDAY))).dayOfWeek).isEqualTo(THURSDAY)
+        assertThat(OppgaveClient.omTreUkedager(now().with(next(MONDAY))).dayOfWeek).isEqualTo(THURSDAY)
     }
 
     @Test
     fun fristSettesOmTreDagerUtenomHelg() {
-        assertThat(OppgaveService.omTreUkedager(now().with(next(MONDAY))).dayOfWeek).isEqualTo(THURSDAY)
-        assertThat(OppgaveService.omTreUkedager(now().with(next(TUESDAY))).dayOfWeek).isEqualTo(FRIDAY)
+        assertThat(OppgaveClient.omTreUkedager(now().with(next(MONDAY))).dayOfWeek).isEqualTo(THURSDAY)
+        assertThat(OppgaveClient.omTreUkedager(now().with(next(TUESDAY))).dayOfWeek).isEqualTo(FRIDAY)
     }
 
     @Test
     fun toDagerLeggesTilOverHelg() {
-        assertThat(OppgaveService.omTreUkedager(now().with(next(WEDNESDAY))).dayOfWeek).isEqualTo(MONDAY)
-        assertThat(OppgaveService.omTreUkedager(now().with(next(THURSDAY))).dayOfWeek).isEqualTo(TUESDAY)
-        assertThat(OppgaveService.omTreUkedager(now().with(next(FRIDAY))).dayOfWeek).isEqualTo(WEDNESDAY)
+        assertThat(OppgaveClient.omTreUkedager(now().with(next(WEDNESDAY))).dayOfWeek).isEqualTo(MONDAY)
+        assertThat(OppgaveClient.omTreUkedager(now().with(next(THURSDAY))).dayOfWeek).isEqualTo(TUESDAY)
+        assertThat(OppgaveClient.omTreUkedager(now().with(next(FRIDAY))).dayOfWeek).isEqualTo(WEDNESDAY)
     }
 
     @Test
     fun opprettOppgaveGirFeilmeldingHvisOppgaveErNede() {
-        assertThrows(RuntimeException::class.java) {
-            BDDMockito.given(
-                restTemplate.exchange(
-                    BDDMockito.anyString(),
-                    BDDMockito.any(HttpMethod::class.java),
-                    BDDMockito.any(HttpEntity::class.java),
-                    BDDMockito.eq(OppgaveResponse::class.java)
-                )
-            ).willReturn(ResponseEntity(HttpStatus.SERVICE_UNAVAILABLE))
+        oppgaveMockWebserver.enqueue(MockResponse().setResponseCode(500))
 
-            val oppgaveRequest = OppgaveService.lagRequestBody(aktorId, journalpostId, lagSoknad(Soknadstype.ARBEIDSTAKERE))
-            oppgaveService.opprettOppgave(oppgaveRequest)
+        assertThrows(RuntimeException::class.java) {
+            val oppgaveRequest = OppgaveClient.lagRequestBody(aktorId, journalpostId, lagSoknad(Soknadstype.ARBEIDSTAKERE))
+            oppgaveClient.opprettOppgave(oppgaveRequest)
         }
     }
 
     @Test
     fun lagRequestBodyLagerRequestMedRiktigeFelter() {
-        val body = OppgaveService.lagRequestBody(aktorId, journalpostId, lagSoknad(Soknadstype.ARBEIDSTAKERE))
+        val body = OppgaveClient.lagRequestBody(aktorId, journalpostId, lagSoknad(Soknadstype.ARBEIDSTAKERE))
 
         assertThat(body.tildeltEnhetsnr).isEqualTo(null)
         assertThat(body.opprettetAvEnhetsnr).isEqualTo("9999")
@@ -104,11 +76,11 @@ class OppgaveServiceTest {
 
     @Test
     fun lagRequestBodySetterRiktigBehandlingstema() {
-        val utland = OppgaveService.lagRequestBody(aktorId, journalpostId, lagSoknad(Soknadstype.OPPHOLD_UTLAND))
-        val arbeidstaker = OppgaveService.lagRequestBody(aktorId, journalpostId, lagSoknad(Soknadstype.ARBEIDSTAKERE))
-        val arbeidsledig = OppgaveService.lagRequestBody(aktorId, journalpostId, lagSoknad(Soknadstype.ARBEIDSLEDIG))
-        val behandlingsdager = OppgaveService.lagRequestBody(aktorId, journalpostId, lagSoknad(Soknadstype.BEHANDLINGSDAGER))
-        val redusertVenteperiode = OppgaveService.lagRequestBody(aktorId, journalpostId, lagSoknad(Soknadstype.SELVSTENDIGE_OG_FRILANSERE), harRedusertVenteperiode = true)
+        val utland = OppgaveClient.lagRequestBody(aktorId, journalpostId, lagSoknad(Soknadstype.OPPHOLD_UTLAND))
+        val arbeidstaker = OppgaveClient.lagRequestBody(aktorId, journalpostId, lagSoknad(Soknadstype.ARBEIDSTAKERE))
+        val arbeidsledig = OppgaveClient.lagRequestBody(aktorId, journalpostId, lagSoknad(Soknadstype.ARBEIDSLEDIG))
+        val behandlingsdager = OppgaveClient.lagRequestBody(aktorId, journalpostId, lagSoknad(Soknadstype.BEHANDLINGSDAGER))
+        val redusertVenteperiode = OppgaveClient.lagRequestBody(aktorId, journalpostId, lagSoknad(Soknadstype.SELVSTENDIGE_OG_FRILANSERE), harRedusertVenteperiode = true)
 
         assertThat(utland.behandlingstema).isEqualTo("ab0314")
         assertThat(arbeidstaker.behandlingstema).isEqualTo("ab0061")

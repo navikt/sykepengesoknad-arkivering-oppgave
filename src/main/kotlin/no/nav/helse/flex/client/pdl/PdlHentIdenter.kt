@@ -12,10 +12,8 @@ query(${"$"}ident: ID!){
 }
 """
 
-data class HentIdenterResponse(
-    val data: HentIdenterResponseData,
-    val errors: List<ResponseError>?
-)
+const val AKTORID = "AKTORID"
+const val FOLKEREGISTERIDENT = "FOLKEREGISTERIDENT"
 
 data class HentIdenterResponseData(
     val hentIdenter: HentIdenter? = null
@@ -29,3 +27,13 @@ data class PdlIdent(
     val gruppe: String,
     val ident: String
 )
+
+fun List<PdlIdent>.aktorId(): String {
+    return find { it.gruppe == AKTORID }?.ident
+        ?: throw RuntimeException("Kunne ikke finne aktørid i pdl response")
+}
+
+fun List<PdlIdent>.fnr(): String {
+    return find { it.gruppe == FOLKEREGISTERIDENT }?.ident
+        ?: throw RuntimeException("Kunne ikke finne fnr i pdl response")
+}

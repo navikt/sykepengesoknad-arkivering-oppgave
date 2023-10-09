@@ -1,17 +1,9 @@
 package no.nav.helse.flex.e2e
 
-import com.nhaarman.mockitokotlin2.KArgumentCaptor
-import com.nhaarman.mockitokotlin2.argumentCaptor
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
-import no.nav.helse.flex.FellesTestoppsett
-import no.nav.helse.flex.any
-import no.nav.helse.flex.arkivering.Arkivaren
-import no.nav.helse.flex.client.pdl.PdlClient
+import com.fasterxml.jackson.module.kotlin.readValue
+import no.nav.helse.flex.*
 import no.nav.helse.flex.kafka.consumer.AivenSoknadSendtListener
-import no.nav.helse.flex.serialisertTilString
 import no.nav.helse.flex.service.*
-import no.nav.helse.flex.skapConsumerRecord
 import no.nav.helse.flex.sykepengesoknad.kafka.SoknadsstatusDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SoknadstypeDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SporsmalDTO
@@ -27,26 +19,10 @@ import org.springframework.test.annotation.DirtiesContext
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 
 @DirtiesContext
 class AvbruttSoknadFeilFristTest : FellesTestoppsett() {
-
-    companion object {
-        val aktørId = "aktørId"
-        val fnr = "fnr"
-    }
-
-    @MockBean
-    lateinit var oppgaveService: OppgaveService
-
-    @MockBean
-    lateinit var arkivaren: Arkivaren
-
-    @MockBean
-    lateinit var identService: IdentService
-
-    @MockBean
-    lateinit var pdlClient: PdlClient
 
     @MockBean
     lateinit var acknowledgment: Acknowledgment
@@ -54,14 +30,10 @@ class AvbruttSoknadFeilFristTest : FellesTestoppsett() {
     @Autowired
     lateinit var aivenSoknadSendtListener: AivenSoknadSendtListener
 
+    val fnr = "fnr"
+
     @Test
     fun `Søknad med merknad om feil frist får tekst i oppgaven`() {
-        whenever(identService.hentAktorIdForFnr(any())).thenReturn(aktørId)
-        whenever(identService.hentFnrForAktorId(any())).thenReturn(fnr)
-        whenever(pdlClient.hentFormattertNavn(any())).thenReturn("Kalle Klovn")
-        whenever(arkivaren.opprettJournalpost(any())).thenReturn("jpost1234")
-        whenever(oppgaveService.opprettOppgave(any())).thenReturn(OppgaveResponse(123, "4488", "SYK", "SOK"))
-
         val soknad = SykepengesoknadDTO(
             fnr = fnr,
             id = UUID.randomUUID().toString(),
@@ -87,11 +59,10 @@ class AvbruttSoknadFeilFristTest : FellesTestoppsett() {
         )
         leggSøknadPåKafka(soknad)
 
-        val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
-
-        verify(oppgaveService).opprettOppgave(captor.capture())
-        val oppgaveRequest = captor.firstValue
-        assertThat(oppgaveRequest.beskrivelse).startsWith("Ved en feil har brukeren, for akkurat denne søknadsperioden, fått beskjed om en annen frist enn hva folketrygdloven § 22-13 tredje ledd tilsier.")
+        val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
+        assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
+        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
+        assertThat(oppgaveRequestBody.beskrivelse).startsWith("Ved en feil har brukeren, for akkurat denne søknadsperioden, fått beskjed om en annen frist enn hva folketrygdloven § 22-13 tredje ledd tilsier.")
     }
 
     private fun leggSøknadPåKafka(søknad: SykepengesoknadDTO) =

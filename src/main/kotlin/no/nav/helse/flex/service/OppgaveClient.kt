@@ -20,14 +20,14 @@ import java.time.LocalDate.now
 import java.time.format.DateTimeFormatter
 
 @Service
-class OppgaveService(
+class OppgaveClient(
     @Value("\${OPPGAVE_URL}")
     private val url: String,
     private val oppgaveRestTemplate: RestTemplate
 ) {
     fun opprettOppgave(request: OppgaveRequest): OppgaveResponse {
         return try {
-            val uriString = UriComponentsBuilder.fromHttpUrl(url)
+            val uriString = UriComponentsBuilder.fromHttpUrl("$url/api/v1/oppgaver")
 
             val headers = HttpHeaders()
             headers.contentType = MediaType.APPLICATION_JSON

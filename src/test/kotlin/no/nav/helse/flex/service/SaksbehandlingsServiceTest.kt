@@ -1,136 +1,63 @@
 package no.nav.helse.flex.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import com.nhaarman.mockitokotlin2.KArgumentCaptor
-import com.nhaarman.mockitokotlin2.argumentCaptor
-import io.micrometer.core.instrument.Counter
-import io.micrometer.core.instrument.MeterRegistry
+import com.fasterxml.jackson.module.kotlin.readValue
+import no.nav.helse.flex.FellesTestoppsett
 import no.nav.helse.flex.any
 import no.nav.helse.flex.arkivering.Arkivaren
-import no.nav.helse.flex.client.SykepengesoknadKvitteringerClient
-import no.nav.helse.flex.client.pdl.PdlClient
 import no.nav.helse.flex.domain.dto.Sykepengesoknad
-import no.nav.helse.flex.kafka.producer.RebehandleSykepengesoknadProducer
+import no.nav.helse.flex.objectMapper
 import no.nav.helse.flex.repository.InnsendingDbRecord
-import no.nav.helse.flex.repository.InnsendingRepository
-import org.assertj.core.api.Assertions
-import org.junit.jupiter.api.BeforeEach
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.ArgumentMatchers
-import org.mockito.BDDMockito.given
-import org.mockito.InjectMocks
-import org.mockito.Mock
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.never
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
-import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.junit.jupiter.MockitoSettings
-import org.mockito.quality.Strictness
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.mock.mockito.SpyBean
+import org.springframework.test.annotation.DirtiesContext
 import java.time.Instant
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.concurrent.TimeUnit
 
-@ExtendWith(MockitoExtension::class)
-@MockitoSettings(strictness = Strictness.LENIENT)
-class SaksbehandlingsServiceTest {
-    @Mock
-    lateinit var pdlClient: PdlClient
+@DirtiesContext
+class SaksbehandlingsServiceTest : FellesTestoppsett() {
 
-    @Mock
-    lateinit var identService: IdentService
-
-    @Mock
-    lateinit var innsendingRepository: InnsendingRepository
-
-    @Mock
-    lateinit var oppgaveService: OppgaveService
-
-    @Mock
+    @SpyBean
     lateinit var arkivaren: Arkivaren
 
-    @Mock
-    lateinit var sykepengesoknadKvitteringerClient: SykepengesoknadKvitteringerClient
-
-    @Mock
-    lateinit var registry: MeterRegistry
-
-    @Mock
-    lateinit var rebehandleSykepengesoknadProducer: RebehandleSykepengesoknadProducer
-
-    @InjectMocks
+    @Autowired
     lateinit var saksbehandlingsService: SaksbehandlingsService
-
-    private val objectMapper = ObjectMapper().registerKotlinModule().registerModules(JavaTimeModule())
-    private val aktorId = "aktorId-745463060"
-    private val fnr = "12345678901"
-
-    @BeforeEach
-    fun setup() {
-        given(pdlClient.hentFormattertNavn(any())).willReturn("Personnavn")
-        given(identService.hentAktorIdForFnr(any())).willReturn(aktorId)
-        given(identService.hentFnrForAktorId(any())).willReturn(fnr)
-        given(arkivaren.opprettJournalpost(any())).willReturn("journalpostId")
-        given(oppgaveService.opprettOppgave(any())).willReturn(OppgaveResponse(1234, "4488", "SYK", "SOK"))
-        given(
-            registry.counter(
-                ArgumentMatchers.anyString(),
-                ArgumentMatchers.anyIterable()
-            )
-        ).willReturn(mock(Counter::class.java))
-        given(innsendingRepository.save(any())).willReturn(
-            InnsendingDbRecord(
-                id = UUID.randomUUID().toString(),
-                sykepengesoknadId = "innsending-guid"
-            )
-        )
-    }
 
     @Test
     fun behandlerSoknaderSomEttersendesTilNavDerDetManglerOppgave() {
         val now = LocalDateTime.now()
-        val sykepengesoknadUtenOppgave = objectMapper.readValue(SaksbehandlingsServiceTest::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
+        val sykepengesoknadUtenOppgave = objectMapper.readValue(this::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
             .copy(sendtNav = null, sendtArbeidsgiver = now)
-        val sykepengesoknadEttersendingTilNAV = objectMapper.readValue(SaksbehandlingsServiceTest::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
+        val sykepengesoknadEttersendingTilNAV = objectMapper.readValue(this::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
             .copy(sendtNav = now, sendtArbeidsgiver = now)
 
+        val oppgaveRequestFør = oppgaveMockWebserver.requestCount
         saksbehandlingsService.behandleSoknad(sykepengesoknadUtenOppgave)
         verify(arkivaren, times(1)).opprettJournalpost(any())
-        verify(oppgaveService, never()).opprettOppgave(any())
-        given(innsendingRepository.findBySykepengesoknadId(sykepengesoknadUtenOppgave.id)).willReturn(
-            innsending(sykepengesoknadUtenOppgave)
-        )
+        assertThat(oppgaveMockWebserver.requestCount).isEqualTo(oppgaveRequestFør)
 
         saksbehandlingsService.behandleSoknad(sykepengesoknadEttersendingTilNAV)
         saksbehandlingsService.opprettOppgave(sykepengesoknadEttersendingTilNAV, innsending(sykepengesoknadEttersendingTilNAV))
         verify(arkivaren, times(1)).opprettJournalpost(any())
-        verify(oppgaveService, times(1)).opprettOppgave(any())
-    }
-
-    private fun innsending(
-        sykepengesoknadUtenOppgave: Sykepengesoknad
-    ): InnsendingDbRecord {
-        return InnsendingDbRecord(
-            id = "innsending-guid",
-            sykepengesoknadId = sykepengesoknadUtenOppgave.id,
-            journalpostId = "journalpostId",
-            oppgaveId = null,
-            behandlet = Instant.now()
-        )
+        val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
+        assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
     }
 
     @Test
     fun `oppretter oppgave med korrekte felter`() {
-        val captor: KArgumentCaptor<OppgaveRequest> = argumentCaptor()
-        val søknad = objectMapper.readValue(SaksbehandlingsServiceTest::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
+        val søknad = objectMapper.readValue(this::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
+
         saksbehandlingsService.opprettOppgave(søknad, innsending(søknad))
-        verify(oppgaveService).opprettOppgave(captor.capture())
-        val oppgaveRequest = captor.firstValue
-        Assertions.assertThat(oppgaveRequest.journalpostId).isEqualTo("journalpostId")
-        Assertions.assertThat(oppgaveRequest.beskrivelse).isEqualTo(
+        val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
+        assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
+
+        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
+        assertThat(oppgaveRequestBody.journalpostId).isEqualTo("journalpostId")
+        assertThat(oppgaveRequestBody.beskrivelse).isEqualTo(
             """
 Søknad om sykepenger for perioden 16.10.2018 - 24.10.2018
 
@@ -149,9 +76,21 @@ Betaler arbeidsgiveren lønnen din når du er syk?
 Vet ikke
             """.trimIndent()
         )
-        Assertions.assertThat(oppgaveRequest.tema).isEqualTo("SYK")
-        Assertions.assertThat(oppgaveRequest.oppgavetype).isEqualTo("SOK")
-        Assertions.assertThat(oppgaveRequest.prioritet).isEqualTo("NORM")
-        Assertions.assertThat(oppgaveRequest.behandlingstema).isEqualTo("ab0061")
+        assertThat(oppgaveRequestBody.tema).isEqualTo("SYK")
+        assertThat(oppgaveRequestBody.oppgavetype).isEqualTo("SOK")
+        assertThat(oppgaveRequestBody.prioritet).isEqualTo("NORM")
+        assertThat(oppgaveRequestBody.behandlingstema).isEqualTo("ab0061")
+    }
+
+    private fun innsending(
+        sykepengesoknadUtenOppgave: Sykepengesoknad
+    ): InnsendingDbRecord {
+        return InnsendingDbRecord(
+            id = "innsending-guid",
+            sykepengesoknadId = sykepengesoknadUtenOppgave.id,
+            journalpostId = "journalpostId",
+            oppgaveId = null,
+            behandlet = Instant.now()
+        )
     }
 }

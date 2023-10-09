@@ -1,7 +1,13 @@
-package no.nav.helse.flex.client.pdl
+package no.nav.helse.flex.graphql
 
-const val AKTORID = "AKTORID"
-const val FOLKEREGISTERIDENT = "FOLKEREGISTERIDENT"
+data class GraphQLResponse<T>(
+    val data: T,
+    val errors: List<ResponseError>?
+) {
+    fun hentErrors(): String? {
+        return errors?.map { it.message }?.joinToString(" - ")
+    }
+}
 
 data class ResponseError(
     val message: String?,

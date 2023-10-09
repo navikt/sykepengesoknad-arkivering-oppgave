@@ -6,6 +6,7 @@ management:
     base-path: /internal
     exposure.include: prometheus
 
+SYKEPENGESOKNAD_BACKEND_URL: "http://sykepengesoknad-backend"
 SYKEPENGESOKNAD_KVITTERINGER_URL: "http://sykepengesoknad-kvitteringer"
 OPPGAVE_URL: "http://oppgave.oppgaver.url"
 PDFGEN_URL: "http://pdf"

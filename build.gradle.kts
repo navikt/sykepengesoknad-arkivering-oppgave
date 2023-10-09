@@ -15,8 +15,6 @@ version = "0.0.1-SNAPSHOT"
 description = "sykepengesoknad-arkivering-oppgave"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
-ext["okhttp3.version"] = "4.9.3" // Token-support tester trenger Mockwebserver.
-
 repositories {
     mavenCentral()
 

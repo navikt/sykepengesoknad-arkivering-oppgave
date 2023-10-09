@@ -3,9 +3,10 @@ package no.nav.helse.flex.client.pdl
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import no.nav.helse.flex.graphql.GraphQLRequest
+import no.nav.helse.flex.graphql.GraphQLResponse
 import no.nav.helse.flex.objectMapper
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Profile
 import org.springframework.http.*
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
@@ -13,7 +14,6 @@ import org.springframework.web.client.RestTemplate
 import java.util.*
 
 @Component
-@Profile("remote")
 class PdlClient(
     @Value("\${PDL_URL}")
     private val pdlApiUrl: String,
@@ -25,7 +25,7 @@ class PdlClient(
     private val IDENT = "ident"
 
     @Retryable(exclude = [FunctionalPdlError::class])
-    fun hentIdenter(ident: String): HentIdenterResponseData {
+    fun hentIdenter(ident: String): List<PdlIdent> {
         val graphQLRequest = GraphQLRequest(
             query = HENT_IDENTER_QUERY,
             variables = Collections.singletonMap(IDENT, ident)
@@ -42,12 +42,13 @@ class PdlClient(
             throw RuntimeException("PDL svarer med status ${responseEntity.statusCode} - ${responseEntity.body}")
         }
 
-        val parsedResponse: HentIdenterResponse? = responseEntity.body?.let { objectMapper.readValue(it) }
+        val parsedResponse = responseEntity.body?.let { objectMapper.readValue<GraphQLResponse<HentIdenterResponseData>>(it) }
 
-        parsedResponse?.data?.let {
-            return it
-        }
-        throw FunctionalPdlError("Fant ikke person, ingen body eller data. ${parsedResponse.hentErrors()}")
+        val identer = parsedResponse?.data?.let {
+            it.hentIdenter?.identer
+        } ?: throw FunctionalPdlError("Fant ikke person, ingen body eller data. ${parsedResponse?.hentErrors()}")
+
+        return identer
     }
 
     @Retryable(exclude = [FunctionalPdlError::class])
@@ -68,13 +69,13 @@ class PdlClient(
             throw RuntimeException("PDL svarer med status ${responseEntity.statusCode} - ${responseEntity.body}")
         }
 
-        val parsedResponse: HentNavnResponse? = responseEntity.body?.let { objectMapper.readValue(it) }
+        val parsedResponse = responseEntity.body?.let { objectMapper.readValue<GraphQLResponse<HentNavnResponseData>>(it) }
 
-        parsedResponse?.data?.let {
-            return it.hentPerson?.navn?.firstOrNull()?.format()
-                ?: throw FunctionalPdlError("Fant navn i pdl response. ${parsedResponse.hentErrors()}")
-        }
-        throw FunctionalPdlError("Fant ikke person, ingen body eller data. ${parsedResponse.hentErrors()}")
+        val navn = parsedResponse?.data?.let {
+            it.hentPerson?.navn?.firstOrNull()?.format()
+        } ?: throw FunctionalPdlError("Fant ikke navn i pdl response. ${parsedResponse?.hentErrors()}")
+
+        return navn
     }
 
     private fun createHeaderWithTema(): HttpHeaders {
@@ -96,16 +97,6 @@ class PdlClient(
             throw RuntimeException(e)
         }
     }
-
-    private fun HentIdenterResponse?.hentErrors(): String? {
-        return this?.errors?.map { it.message }?.joinToString(" - ")
-    }
-
-    private fun HentNavnResponse?.hentErrors(): String? {
-        return this?.errors?.map { it.message }?.joinToString(" - ")
-    }
-
-    data class GraphQLRequest(val query: String, val variables: Map<String, String>)
 
     class FunctionalPdlError(message: String) : RuntimeException(message)
 }

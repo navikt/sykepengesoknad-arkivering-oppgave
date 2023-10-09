@@ -3,21 +3,12 @@ package no.nav.helse.flex.e2e
 import com.nhaarman.mockitokotlin2.whenever
 import no.nav.helse.flex.FellesTestoppsett
 import no.nav.helse.flex.any
-import no.nav.helse.flex.client.SykepengesoknadBackendClient
-import no.nav.helse.flex.objectMapper
 import no.nav.helse.flex.repository.InnsendingDbRecord
 import no.nav.helse.flex.repository.OppgaveStatus
 import no.nav.helse.flex.repository.SpreOppgaveDbRecord
 import no.nav.helse.flex.repository.SpreOppgaveRepository
-import no.nav.helse.flex.serialisertTilString
 import no.nav.helse.flex.service.OppgaveOpprettelse
 import no.nav.helse.flex.service.SaksbehandlingsService
-import no.nav.helse.flex.sykepengesoknad.kafka.SoknadsstatusDTO
-import no.nav.helse.flex.sykepengesoknad.kafka.SoknadstypeDTO
-import no.nav.helse.flex.sykepengesoknad.kafka.SporsmalDTO
-import no.nav.helse.flex.sykepengesoknad.kafka.SvarDTO
-import no.nav.helse.flex.sykepengesoknad.kafka.SvartypeDTO
-import no.nav.helse.flex.sykepengesoknad.kafka.SykepengesoknadDTO
 import org.amshove.kluent.`should be`
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -33,16 +24,12 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.temporal.ChronoUnit
-import java.util.*
 
 @DirtiesContext
 class BigQueryTest : FellesTestoppsett() {
 
     @MockBean
     lateinit var saksbehandlingsService: SaksbehandlingsService
-
-    @MockBean
-    lateinit var sykepengesoknadBackendClient: SykepengesoknadBackendClient
 
     @Autowired
     lateinit var spreOppgaveRepository: SpreOppgaveRepository
@@ -141,12 +128,6 @@ class BigQueryTest : FellesTestoppsett() {
                 journalpostId = "journalpost"
             )
         }
-        whenever(sykepengesoknadBackendClient.hentSoknad(any())).thenReturn(
-            objectMapper.readValue(
-                lagSoknad().serialisertTilString(),
-                SykepengesoknadDTO::class.java
-            )
-        )
     }
 
     @AfterEach
@@ -201,32 +182,6 @@ class BigQueryTest : FellesTestoppsett() {
         tilBigQuery.first { it.status == OppgaveStatus.OpprettetSpeilRelatert }.antall `should be` 1
         tilBigQuery.first { it.status == OppgaveStatus.OpprettetTimeout }.antall `should be` 1
     }
-
-    private fun lagSoknad(
-        soknadId: UUID = UUID.randomUUID(),
-        sendtNav: LocalDateTime? = LocalDateTime.now(),
-        sendtArbeidsgiver: LocalDateTime? = null
-    ) = SykepengesoknadDTO(
-        fnr = E2ETest.fnr,
-        id = soknadId.toString(),
-        opprettet = LocalDateTime.now(),
-        fom = LocalDate.of(2019, 5, 4),
-        tom = LocalDate.of(2019, 5, 8),
-        type = SoknadstypeDTO.ARBEIDSTAKERE,
-        sporsmal = listOf(
-            SporsmalDTO(
-                id = UUID.randomUUID().toString(),
-                tag = "TAGGEN",
-                sporsmalstekst = "Har systemet gode integrasjonstester?",
-                svartype = SvartypeDTO.JA_NEI,
-                svar = listOf(SvarDTO(verdi = "JA"))
-
-            )
-        ),
-        status = SoknadsstatusDTO.SENDT,
-        sendtNav = sendtNav,
-        sendtArbeidsgiver = sendtArbeidsgiver
-    )
 
     private fun ResultSet.toBigQueryOpprettet(): BigQueryOpprettet {
         return BigQueryOpprettet(
