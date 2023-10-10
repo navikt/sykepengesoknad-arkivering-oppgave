@@ -130,6 +130,24 @@ OBS! Tilbakedatert sykmelding er til vurdering
     }
 
     @Test
+    fun `soknad for arbeidstakere med tilbakedatering under behandling merknad`() {
+        val sykepengesoknad = plainSøknad()
+            .copy(
+                merknaderFraSykmelding = listOf(
+                    Merknad(type = "UNDER_BEHANDLING")
+                )
+            )
+        val soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn")
+        val beskrivelse = lagBeskrivelse(soknad)
+
+        val beskrivelseArbeidstakerMedNeisvar =
+            """Søknad om sykepenger for perioden 02.01.1970 - 30.08.1973
+OBS! Sykmeldingen er tilbakedatert. Tilbakedateringen var ikke behandlet når søknaden ble sendt. Sjekk gosys for resultat på tilbakedatering
+"""
+        assertThat(beskrivelse).isEqualTo(beskrivelseArbeidstakerMedNeisvar)
+    }
+
+    @Test
     fun soknadForArbeidstakereMedUgyldigUkjentMerknadstype() {
         val sykepengesoknad = plainSøknad()
             .copy(merknaderFraSykmelding = listOf(Merknad(type = "SVINDEL", beskrivelse = "Farlig")))
