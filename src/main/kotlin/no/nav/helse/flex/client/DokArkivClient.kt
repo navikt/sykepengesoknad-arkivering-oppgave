@@ -3,6 +3,7 @@ package no.nav.helse.flex.client
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.flex.domain.JournalpostRequest
 import no.nav.helse.flex.domain.JournalpostResponse
+import no.nav.helse.flex.domain.LogiskVedleggRequest
 import no.nav.helse.flex.objectMapper
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
@@ -43,6 +44,31 @@ class DokArkivClient(
                 ?: throw RuntimeException("dokarkiv returnerer ikke data for søknad med id: $id")
         } catch (e: HttpClientErrorException.Conflict) {
             return objectMapper.readValue(e.responseBodyAsString)
+        }
+    }
+
+    @Retryable(backoff = Backoff(delay = 5000))
+    fun opprettLogiskVedlegg(logiskVedleggRequest: LogiskVedleggRequest, dokumentId: String): Any { // hvordan kan jeg unngå any her? hva er egentlig responsformatet? sendes det noe json? hvordan tester man?
+        try {
+            val url = "$dokarkivUrl/rest/journalpostapi/v1/dokumentInfo/$dokumentId/logiskVedlegg/"
+
+            val headers = HttpHeaders()
+            headers.contentType = MediaType.APPLICATION_JSON
+            headers["Nav-Callid"] = dokumentId
+
+            val entity = HttpEntity(logiskVedleggRequest, headers)
+
+            // val result = dokArkivRestTemplate.exchange(url, HttpMethod.POST, entity, JournalpostResponse::class.java)
+            val result = dokArkivRestTemplate.exchange(url, HttpMethod.POST, entity, Any::class.java)
+
+            if (!result.statusCode.is2xxSuccessful) {
+                throw RuntimeException("dokarkiv feiler med HTTP-${result.statusCode} for søknad med id: $dokumentId")
+            }
+
+            return result.body
+                ?: throw RuntimeException("dokarkiv returnerer ikke data for søknad med id: $dokumentId")
+        } catch (e: HttpClientErrorException.Conflict) {
+            return OBJECT_MAPPER.readValue(e.responseBodyAsString)
         }
     }
 }

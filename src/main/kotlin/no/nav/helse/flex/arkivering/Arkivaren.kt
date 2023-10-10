@@ -4,6 +4,7 @@ import io.micrometer.core.instrument.MeterRegistry
 import no.nav.helse.flex.client.DokArkivClient
 import no.nav.helse.flex.client.PDFClient
 import no.nav.helse.flex.domain.JournalpostRequest
+import no.nav.helse.flex.domain.LogiskVedleggRequest
 import no.nav.helse.flex.domain.Soknad
 import no.nav.helse.flex.domain.dto.PDFTemplate
 import no.nav.helse.flex.domain.dto.Soknadstype
@@ -50,6 +51,26 @@ class Arkivaren(
 
         if (behandlingsdager.isNotEmpty()) {
             println("behandlingsdager finnes")
+        }
+
+        // loop trough behandlingsdager
+        // for hver behandlingsdag, opprett logisk vedlegg
+
+        for (item in behandlingsdager.withIndex()) {
+            println(item)
+            // opprett logisk vedlegg
+            val request2: LogiskVedleggRequest =
+                LogiskVedleggRequest(
+                    tittel = "Behandlingsdag"
+                )
+
+            val logiskVedleggResponse = measureTimeMillisWithResult {
+                dokArkivClient.opprettLogiskVedlegg(request2, soknad.soknadsId!!)
+            }
+            // check that it was a 200 response
+//            if (logiskVedleggResponse.result) {
+//                log.warn("Journalpost ${journalpostResponse.result.journalpostId} for søknad ${soknad.soknadsId} ble ikke ferdigstilt")
+//            }
         }
 
         // /Users/kuls/code/sykepengesoknad-arkivering-oppgave/src/test/resources/soknadBehandlingsdagerMedNeisvar.json
