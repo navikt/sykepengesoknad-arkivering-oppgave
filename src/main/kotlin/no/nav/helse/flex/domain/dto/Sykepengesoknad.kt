@@ -7,6 +7,7 @@ data class Sykepengesoknad(
     val id: String,
     val sykmeldingId: String? = null,
     val aktorId: String,
+    val fnr: String,
     val soknadstype: Soknadstype,
     val status: String,
     val fom: LocalDate? = null,
@@ -31,5 +32,6 @@ data class Sykepengesoknad(
     val merknader: List<String>? = null,
     val sendTilGosys: Boolean? = null,
     val utenlandskSykmelding: Boolean? = null,
-    val egenmeldingsdagerFraSykmelding: List<LocalDate>?
+    val egenmeldingsdagerFraSykmelding: List<LocalDate>?,
+    val medlemskapVurdering: String? = null
 )

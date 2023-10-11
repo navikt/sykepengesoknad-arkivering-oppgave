@@ -9,7 +9,7 @@ import no.nav.helse.flex.domain.dto.Soknadstype
 import no.nav.helse.flex.domain.dto.Sporsmal
 import no.nav.helse.flex.domain.dto.Svartype
 import no.nav.helse.flex.domain.dto.Sykepengesoknad
-import no.nav.helse.flex.util.OBJECT_MAPPER
+import no.nav.helse.flex.objectMapper
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -134,5 +134,5 @@ data class Kvittering(
 )
 
 private fun String.tilKvittering(): Kvittering {
-    return OBJECT_MAPPER.readValue(this)
+    return objectMapper.readValue(this)
 }
