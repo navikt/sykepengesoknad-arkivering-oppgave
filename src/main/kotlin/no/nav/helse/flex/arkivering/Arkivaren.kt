@@ -62,11 +62,9 @@ class Arkivaren(
 
         val dokumentInfoId: String = journalpostResponse.result.dokumenter[0].dokumentInfoId ?: ""
 
-
         // INFO_BEHANDLINGSDAGER
 
         val behandlingsdager = soknad.sporsmal.filter { it.tag == "INFO_BEHANDLINGSDAGER" }
-
 
         for (item in behandlingsdager.withIndex()) {
             println(item)
