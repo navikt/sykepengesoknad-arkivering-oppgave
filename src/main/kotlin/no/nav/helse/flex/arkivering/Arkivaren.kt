@@ -77,28 +77,33 @@ class Arkivaren(
         // var behandlingsdager: List<Sporsmal> = mutableListOf()
         // behandlingsdager = soknad.sporsmal.filter { it.tag == "ENKELTSTAENDE_BEHANDLINGSDAGER_UKE_0" }.first().undersporsmal
         val behandlingsdager = soknad.sporsmal.filter { it.tag == "ENKELTSTAENDE_BEHANDLINGSDAGER_UKE_0" }.firstOrNull()?.undersporsmal ?: emptyList()
-        behandlingsdagMessage += " dager antall ${behandlingsdager?.size} "
-        for (item in behandlingsdager.withIndex()) {
-            println(item)
-            // opprett logisk vedlegg
 
-            behandlingsdagMessage += " ${item.index} " // $item
+        if (erBehandlingsDagSoknad) {
+            val behandlingsdager = soknad.sporsmal
+                .filter { it.tag == "ENKELTSTAENDE_BEHANDLINGSDAGER_UKE_0" }
+
+            behandlingsdagMessage += " dager antall ${behandlingsdager?.size} "
+            for (item in behandlingsdager.withIndex()) {
+                println(item)
+                // opprett logisk vedlegg
+
+                behandlingsdagMessage += " ${item.index} " // $item
+            }
+
+            val request2: LogiskVedleggRequest =
+                LogiskVedleggRequest(
+                    tittel = behandlingsdagMessage
+                )
+
+            if (dokumentInfoId != "") {
+                dokArkivClient.opprettLogiskVedlegg(
+                    request2,
+                    dokumentInfoId
+                )
+
+                // check that it was a 200 response
+            }
         }
-
-        val request2: LogiskVedleggRequest =
-            LogiskVedleggRequest(
-                tittel = behandlingsdagMessage
-            )
-
-        if (dokumentInfoId != "") {
-            dokArkivClient.opprettLogiskVedlegg(
-                request2,
-                dokumentInfoId
-            )
-
-            // check that it was a 200 response
-        }
-
         // /Users/kuls/code/sykepengesoknad-arkivering-oppgave/src/test/resources/soknadBehandlingsdagerMedNeisvar.json
 //        if (soknad.soknadstype == Soknadstype.BEHANDLINGSDAGER) {
 //            val behandlingsdager = soknad.sporsmal
