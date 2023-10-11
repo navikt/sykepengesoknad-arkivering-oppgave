@@ -100,12 +100,14 @@ class Arkivaren(
                 }
             }
 
+            svarListe = svarListe.filter { it.verdi != "Ikke til behandling" }.toMutableList()
+
             behandlingsdagMessage += " dager antall ${svarListe?.size} "
             for (item in svarListe.withIndex()) {
                 println(item)
                 // opprett logisk vedlegg
 
-                behandlingsdagMessage += " ${item.index} ${item.value}" // $item
+                behandlingsdagMessage += " ${item.index} ${item.value.verdi}" // $item
             }
 
             val request2: LogiskVedleggRequest =
