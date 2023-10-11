@@ -9,6 +9,7 @@ import no.nav.helse.flex.domain.Soknad
 import no.nav.helse.flex.domain.dto.PDFTemplate
 import no.nav.helse.flex.domain.dto.Soknadstype
 import no.nav.helse.flex.domain.dto.Sporsmal
+import no.nav.helse.flex.domain.dto.Svar
 import no.nav.helse.flex.logger
 import org.springframework.stereotype.Component
 
@@ -79,25 +80,32 @@ class Arkivaren(
         // behandlingsdager = soknad.sporsmal.filter { it.tag == "ENKELTSTAENDE_BEHANDLINGSDAGER_UKE_0" }.first().undersporsmal
 
         if (erBehandlingsDagSoknad) {
-            val behandlingsdagerToppnivå = soknad.sporsmal
+            val behandlingsdagerUkerToppnivå = soknad.sporsmal
                 .filter { it.tag.startsWith("ENKELTSTAENDE_BEHANDLINGSDAGER_") }
 
-            var behandlingsdager: MutableList<Sporsmal> = mutableListOf()
-
+            var behandlingsdagerUker: MutableList<Sporsmal> = mutableListOf()
+            var behandlingsdagerDatoer = mutableListOf<String>()
             // loop trough behandlingsdagerToppnivå
-            for (i in behandlingsdagerToppnivå) {
+            for (i in behandlingsdagerUkerToppnivå) {
                 // check that of type List<Sporsmal>
                 if (i.undersporsmal is List<Sporsmal>) {
-                    behandlingsdager.addAll(i.undersporsmal)
+                    behandlingsdagerUker.addAll(i.undersporsmal)
                 }
             }
 
-            behandlingsdagMessage += " dager antall ${behandlingsdager?.size} "
-            for (item in behandlingsdager.withIndex()) {
+            var svarListe = mutableListOf<Svar>()
+            for (i in behandlingsdagerUker) {
+                if (i.svar is List<Svar>) {
+                    svarListe.addAll(i.svar)
+                }
+            }
+
+            behandlingsdagMessage += " dager antall ${svarListe?.size} "
+            for (item in svarListe.withIndex()) {
                 println(item)
                 // opprett logisk vedlegg
 
-                behandlingsdagMessage += " ${item.index} ${item.value.tag}" // $item
+                behandlingsdagMessage += " ${item.index} ${item.value}" // $item
             }
 
             val request2: LogiskVedleggRequest =
