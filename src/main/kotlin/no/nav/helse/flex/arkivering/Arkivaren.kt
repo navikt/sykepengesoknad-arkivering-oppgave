@@ -56,6 +56,20 @@ class Arkivaren(
         // loop trough behandlingsdager
         // for hver behandlingsdag, opprett logisk vedlegg
 
+        val request2 =
+            LogiskVedleggRequest(
+                tittel = "Behandlingsdag"
+            )
+
+        val dokumentInfoId: String = journalpostResponse.result.dokumenter[0].dokumentInfoId ?: ""
+
+        if (dokumentInfoId != "") {
+            dokArkivClient.opprettLogiskVedlegg(
+                request2,
+                dokumentInfoId
+            )
+
+        /*
         for (item in behandlingsdager.withIndex()) {
             println(item)
             // opprett logisk vedlegg
@@ -84,6 +98,9 @@ class Arkivaren(
 //                }
             }
             // check that it was a 200 response
+
+
+         */
         }
 
         // /Users/kuls/code/sykepengesoknad-arkivering-oppgave/src/test/resources/soknadBehandlingsdagerMedNeisvar.json
