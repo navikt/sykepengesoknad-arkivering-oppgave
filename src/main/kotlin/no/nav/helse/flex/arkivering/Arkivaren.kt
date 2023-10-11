@@ -64,8 +64,20 @@ class Arkivaren(
 
         // INFO_BEHANDLINGSDAGER
 
-        val behandlingsdager = soknad.sporsmal.filter { it.tag == "INFO_BEHANDLINGSDAGER" }
+        /*
 
+              "tag": "ENKELTSTAENDE_BEHANDLINGSDAGER_0",
+      "sporsmalstekst": "Hvilke dager måtte du være helt borte fra jobben på grunn av behandling mellom 11. - 17. desember 2019?",
+      "undertekst": null,
+      "svartype": "INFO_BEHANDLINGSDAGER",
+
+         */
+
+        // init behandlingsdager as an empty array of Sporsmal
+        // var behandlingsdager: List<Sporsmal> = mutableListOf()
+        // behandlingsdager = soknad.sporsmal.filter { it.tag == "ENKELTSTAENDE_BEHANDLINGSDAGER_UKE_0" }.first().undersporsmal
+        val behandlingsdager = soknad.sporsmal.filter { it.tag == "ENKELTSTAENDE_BEHANDLINGSDAGER_UKE_0" }.firstOrNull()?.undersporsmal ?: emptyList()
+        behandlingsdagMessage += " dager antall ${behandlingsdager?.size} "
         for (item in behandlingsdager.withIndex()) {
             println(item)
             // opprett logisk vedlegg
