@@ -84,6 +84,7 @@ fun SykepengesoknadDTO.toSykepengesoknad(
         id = id,
         sykmeldingId = sykmeldingId,
         aktorId = aktorId,
+        fnr = fnr,
         soknadstype = type.tilSoknadstype(),
         status = status.name,
         fom = fom,
@@ -108,7 +109,8 @@ fun SykepengesoknadDTO.toSykepengesoknad(
         merknader = merknader,
         sendTilGosys = sendTilGosys,
         utenlandskSykmelding = utenlandskSykmelding,
-        egenmeldingsdagerFraSykmelding = egenmeldingsdagerFraSykmelding
+        egenmeldingsdagerFraSykmelding = egenmeldingsdagerFraSykmelding,
+        medlemskapVurdering = medlemskapVurdering
     )
 }
 

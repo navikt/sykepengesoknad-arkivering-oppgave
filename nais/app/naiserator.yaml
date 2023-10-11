@@ -60,6 +60,8 @@ spec:
         - application: flex-sykepengesoknad-pdfgen
         - application: sykepengesoknad-kvitteringer
         - application: sykepengesoknad-backend
+        - application: medlemskap-sykepenger-listener
+          namespace: medlemskap
       external:
   {{#each external-host}}
         - host: {{this}}

@@ -29,6 +29,7 @@ abstract class FellesTestoppsett {
         val oppgaveMockWebserver: MockWebServer
         val sykepengesoknadMockWebserver: MockWebServer
         val kvitteringMockWebserver: MockWebServer
+        val medlemskapMockWebserver: MockWebServer
 
         init {
             val threads = mutableListOf<Thread>()
@@ -80,6 +81,11 @@ abstract class FellesTestoppsett {
                 dispatcher = KvitteringMockDispatcher
             }
 
+            medlemskapMockWebserver = MockWebServer().apply {
+                System.setProperty("MEDLEMSKAP_VURDERING_URL", "http://localhost:$port")
+                dispatcher = MedlemskapMockDispatcher
+            }
+
             threads.forEach { it.join() }
         }
     }
@@ -98,5 +104,6 @@ abstract class FellesTestoppsett {
         while (oppgaveMockWebserver.takeRequest(1, TimeUnit.MILLISECONDS) != null) { /* ok */ }
         while (sykepengesoknadMockWebserver.takeRequest(1, TimeUnit.MILLISECONDS) != null) { /* ok */ }
         while (kvitteringMockWebserver.takeRequest(1, TimeUnit.MILLISECONDS) != null) { /* ok */ }
+        while (medlemskapMockWebserver.takeRequest(1, TimeUnit.MILLISECONDS) != null) { /* ok */ }
     }
 }

@@ -266,6 +266,7 @@ OBS! Sykmeldingen har en merknad Merknad(type=SVINDEL, beskrivelse=Farlig)
 
 private fun plainSøknad() = Sykepengesoknad(
     aktorId = "1",
+    fnr = "1",
     id = UUID.randomUUID().toString(),
     opprettet = LocalDateTime.now(),
     soknadstype = Soknadstype.ARBEIDSTAKERE,

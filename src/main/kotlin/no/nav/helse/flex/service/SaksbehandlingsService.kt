@@ -2,6 +2,7 @@ package no.nav.helse.flex.service
 
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tags
+import no.nav.helse.flex.arkivering.Arkivaren
 import no.nav.helse.flex.client.SykepengesoknadKvitteringerClient
 import no.nav.helse.flex.client.pdl.PdlClient
 import no.nav.helse.flex.domain.PdfKvittering
@@ -18,7 +19,7 @@ import java.util.*
 @Component
 class SaksbehandlingsService(
     private val oppgaveClient: OppgaveClient,
-    private val arkivaren: no.nav.helse.flex.arkivering.Arkivaren,
+    private val arkivaren: Arkivaren,
     private val innsendingRepository: InnsendingRepository,
     private val registry: MeterRegistry,
     private val rebehandleSykepengesoknadProducer: RebehandleSykepengesoknadProducer,
@@ -68,27 +69,6 @@ class SaksbehandlingsService(
 
         tellInnsendingBehandlet(soknad.soknadstype)
         log.info("Oppretter oppgave ${innsending.id} for ${soknad.soknadstype.name.lowercase()} søknad: ${soknad.soknadsId}")
-
-        if (soknad.soknadstype == Soknadstype.OPPHOLD_UTLAND) {
-            sjekkOmOppholdUtlandSendesTilEnhet4488(soknad, requestBody, oppgaveResponse)
-        }
-    }
-
-    private fun sjekkOmOppholdUtlandSendesTilEnhet4488(
-        soknad: Soknad,
-        req: OppgaveRequest,
-        res: OppgaveResponse
-    ) {
-        if (res.tildeltEnhetsnr == "4488") {
-            log.warn(
-                "Søknad om opphold utland ${soknad.soknadsId} ble tildelt enhet ${res.tildeltEnhetsnr}. Request = ${
-                req.copy(
-                    aktoerId = "***",
-                    beskrivelse = "***"
-                )
-                }. Response $res"
-            )
-        }
     }
 
     fun settFerdigbehandlet(innsendingsId: String) {

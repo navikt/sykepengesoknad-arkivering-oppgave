@@ -3,7 +3,7 @@ package no.nav.helse.flex.client
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.flex.domain.JournalpostRequest
 import no.nav.helse.flex.domain.JournalpostResponse
-import no.nav.helse.flex.util.OBJECT_MAPPER
+import no.nav.helse.flex.objectMapper
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -42,7 +42,7 @@ class DokArkivClient(
             return result.body
                 ?: throw RuntimeException("dokarkiv returnerer ikke data for søknad med id: $id")
         } catch (e: HttpClientErrorException.Conflict) {
-            return OBJECT_MAPPER.readValue(e.responseBodyAsString)
+            return objectMapper.readValue(e.responseBodyAsString)
         }
     }
 }

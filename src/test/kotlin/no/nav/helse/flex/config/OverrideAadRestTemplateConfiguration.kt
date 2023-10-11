@@ -29,4 +29,8 @@ class OverrideAadRestTemplateConfiguration {
     @Bean
     fun pdlRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate =
         restTemplateBuilder.build()
+
+    @Bean
+    fun medlemskapVurderingRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate =
+        restTemplateBuilder.build()
 }

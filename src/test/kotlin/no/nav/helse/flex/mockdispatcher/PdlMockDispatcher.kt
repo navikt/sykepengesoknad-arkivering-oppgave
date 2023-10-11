@@ -4,15 +4,15 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.flex.client.pdl.*
 import no.nav.helse.flex.graphql.GraphQLRequest
 import no.nav.helse.flex.graphql.GraphQLResponse
+import no.nav.helse.flex.objectMapper
 import no.nav.helse.flex.serialisertTilString
-import no.nav.helse.flex.util.OBJECT_MAPPER
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.QueueDispatcher
 import okhttp3.mockwebserver.RecordedRequest
 
 object PdlMockDispatcher : QueueDispatcher() {
     override fun dispatch(request: RecordedRequest): MockResponse {
-        val graphReq = OBJECT_MAPPER.readValue<GraphQLRequest>(request.body.readUtf8())
+        val graphReq = objectMapper.readValue<GraphQLRequest>(request.body.readUtf8())
         val ident = graphReq.variables["ident"] ?: return MockResponse().setStatus("400").setBody("Ingen ident variabel")
 
         if (responseQueue.peek() != null) {
