@@ -54,11 +54,11 @@ class Arkivaren(
         // loop trough behandlingsdager
         // for hver behandlingsdag, opprett logisk vedlegg
 
-        var behandlingsdagMessage = "start "
+        var behandlingsdagMessage = ""
 
-        if (erBehandlingsDagSoknad) {
-            behandlingsdagMessage += " behandlingsdag søknad "
-        }
+//        if (erBehandlingsDagSoknad) {
+//            behandlingsdagMessage += " behandlingsdag søknad "
+//        }
 
         // ikke til behandling eller en tekststreng som er en dato ... vi må utelukke
 
@@ -102,12 +102,13 @@ class Arkivaren(
 
             svarListe = svarListe.filter { it.verdi != "Ikke til behandling" }.toMutableList()
 
-            behandlingsdagMessage += " dager antall ${svarListe?.size} "
+            behandlingsdagMessage += " Antall behandlingsdager: ${svarListe?.size} "
             for (item in svarListe.withIndex()) {
                 println(item)
                 // opprett logisk vedlegg
 
-                behandlingsdagMessage += " ${item.index} ${item.value.verdi}" // $item
+
+                behandlingsdagMessage += " ${item.value.verdi}" // $item
             }
 
             val request2: LogiskVedleggRequest =
