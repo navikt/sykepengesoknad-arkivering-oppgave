@@ -8,6 +8,7 @@ import no.nav.helse.flex.domain.LogiskVedleggRequest
 import no.nav.helse.flex.domain.Soknad
 import no.nav.helse.flex.domain.dto.PDFTemplate
 import no.nav.helse.flex.domain.dto.Soknadstype
+import no.nav.helse.flex.domain.dto.Sporsmal
 import no.nav.helse.flex.logger
 import org.springframework.stereotype.Component
 
@@ -78,16 +79,28 @@ class Arkivaren(
         // behandlingsdager = soknad.sporsmal.filter { it.tag == "ENKELTSTAENDE_BEHANDLINGSDAGER_UKE_0" }.first().undersporsmal
 
         if (erBehandlingsDagSoknad) {
-            val behandlingsdager = soknad.sporsmal
+            val behandlingsdagerToppnivå = soknad.sporsmal
                 .filter { it.tag.startsWith("ENKELTSTAENDE_BEHANDLINGSDAGER_") }
-                .flatMap { it.undersporsmal ?: emptyList() }
+
+
+            var behandlingsdager: MutableList<Sporsmal> = mutableListOf()
+
+            // loop trough behandlingsdagerToppnivå
+            for (i in behandlingsdagerToppnivå){
+
+                // check that of type List<Sporsmal>
+                if (i.undersporsmal is  List<Sporsmal>) {
+                    behandlingsdager.addAll(i.undersporsmal)
+                }
+            }
+
 
             behandlingsdagMessage += " dager antall ${behandlingsdager?.size} "
             for (item in behandlingsdager.withIndex()) {
                 println(item)
                 // opprett logisk vedlegg
 
-                behandlingsdagMessage += " ${item.index} " // $item
+                behandlingsdagMessage += " ${item.index} ${item.value.tag}" // $item
             }
 
             val request2: LogiskVedleggRequest =
