@@ -12,6 +12,10 @@ import org.springframework.http.HttpRequest
 import org.springframework.http.client.ClientHttpRequestExecution
 import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.springframework.web.client.RestTemplate
+import java.time.Duration
+
+const val MEDLEMSKAP_VURDERING_REST_TEMPLATE_CONNECT_TIMEOUT = 2L
+const val MEDLEMSKAP_VURDERING_REST_TEMPLATE_READ_TIMEOUT = 25L
 
 @EnableOAuth2Client(cacheEnabled = true)
 @Configuration
@@ -80,6 +84,23 @@ class AadRestTemplateConfiguration {
             clientConfigurationProperties = clientConfigurationProperties,
             oAuth2AccessTokenService = oAuth2AccessTokenService
         )
+
+    @Bean
+    fun medlemskapVurderingRestTemplate(
+        restTemplateBuilder: RestTemplateBuilder,
+        clientConfigurationProperties: ClientConfigurationProperties,
+        oAuth2AccessTokenService: OAuth2AccessTokenService
+    ): RestTemplate {
+        val registrationName = "medlemskap-vurdering-sykepenger-client-credentials"
+        val clientProperties = clientConfigurationProperties.registration[registrationName]
+            ?: throw RuntimeException("Fant ikke config for $registrationName.")
+
+        return restTemplateBuilder
+            .additionalInterceptors(bearerTokenInterceptor(clientProperties, oAuth2AccessTokenService))
+            .setConnectTimeout(Duration.ofSeconds(MEDLEMSKAP_VURDERING_REST_TEMPLATE_CONNECT_TIMEOUT))
+            .setReadTimeout(Duration.ofSeconds(MEDLEMSKAP_VURDERING_REST_TEMPLATE_READ_TIMEOUT))
+            .build()
+    }
 
     private fun downstreamRestTemplate(
         registrationName: String,
