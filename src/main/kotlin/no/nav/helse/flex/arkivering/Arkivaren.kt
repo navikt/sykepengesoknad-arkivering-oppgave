@@ -82,18 +82,15 @@ class Arkivaren(
             val behandlingsdagerToppnivå = soknad.sporsmal
                 .filter { it.tag.startsWith("ENKELTSTAENDE_BEHANDLINGSDAGER_") }
 
-
             var behandlingsdager: MutableList<Sporsmal> = mutableListOf()
 
             // loop trough behandlingsdagerToppnivå
-            for (i in behandlingsdagerToppnivå){
-
+            for (i in behandlingsdagerToppnivå) {
                 // check that of type List<Sporsmal>
-                if (i.undersporsmal is  List<Sporsmal>) {
+                if (i.undersporsmal is List<Sporsmal>) {
                     behandlingsdager.addAll(i.undersporsmal)
                 }
             }
-
 
             behandlingsdagMessage += " dager antall ${behandlingsdager?.size} "
             for (item in behandlingsdager.withIndex()) {
