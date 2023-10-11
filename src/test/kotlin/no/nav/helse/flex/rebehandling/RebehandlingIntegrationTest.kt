@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import java.time.Duration
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class RebehandlingIntegrationTest : FellesTestoppsett() {
 
@@ -48,15 +49,15 @@ class RebehandlingIntegrationTest : FellesTestoppsett() {
         )
 
         // Er satt opp med retry mot pdf, etter 3 feil legges søknaden til rebehandling
-        pdfMockWebserver.takeRequest()
+        pdfMockWebserver.takeRequest(30, TimeUnit.SECONDS)!!
         innsendingRepository.findBySykepengesoknadId(soknad.id)?.behandlet shouldBeEqualTo null
-        pdfMockWebserver.takeRequest()
+        pdfMockWebserver.takeRequest(30, TimeUnit.SECONDS)!!
         innsendingRepository.findBySykepengesoknadId(soknad.id)?.behandlet shouldBeEqualTo null
-        pdfMockWebserver.takeRequest()
+        pdfMockWebserver.takeRequest(30, TimeUnit.SECONDS)!!
         innsendingRepository.findBySykepengesoknadId(soknad.id)?.behandlet shouldBeEqualTo null
 
         // Venter til søknaden er rebehandlet
-        pdfMockWebserver.takeRequest()
+        pdfMockWebserver.takeRequest(30, TimeUnit.SECONDS)!!
         await().atMost(Duration.ofSeconds(30)).until {
             innsendingRepository.findBySykepengesoknadId(soknad.id)?.behandlet != null
         }
