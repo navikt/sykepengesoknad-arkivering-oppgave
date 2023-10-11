@@ -47,26 +47,32 @@ class Arkivaren(
 
         // her må vi legge inn behandlingsdager om de finnes
 
-        val behandlingsdager = soknad.sporsmal.filter { it.tag == "BEHANDLINGSDAGER" }
+        val erBehandlingsDagSoknad = soknad.soknadstype == Soknadstype.BEHANDLINGSDAGER
 
         // loop trough behandlingsdager
         // for hver behandlingsdag, opprett logisk vedlegg
 
         var behandlingsdagMessage = "start "
 
-        if (behandlingsdager.isNotEmpty()) {
-            behandlingsdagMessage += " fant behandlingsdager "
+        if (erBehandlingsDagSoknad) {
+            behandlingsdagMessage += " behandlingsdag søknad "
         }
 
         // ikke til behandling eller en tekststreng som er en dato ... vi må utelukke
 
         val dokumentInfoId: String = journalpostResponse.result.dokumenter[0].dokumentInfoId ?: ""
 
+
+        // INFO_BEHANDLINGSDAGER
+
+        val behandlingsdager = soknad.sporsmal.filter { it.tag == "INFO_BEHANDLINGSDAGER" }
+
+
         for (item in behandlingsdager.withIndex()) {
             println(item)
             // opprett logisk vedlegg
 
-            behandlingsdagMessage += " ${item.index} $item "
+            behandlingsdagMessage += " ${item.index} " // $item
         }
 
         val request2: LogiskVedleggRequest =
