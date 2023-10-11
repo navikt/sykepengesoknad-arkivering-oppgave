@@ -76,11 +76,11 @@ class Arkivaren(
         // init behandlingsdager as an empty array of Sporsmal
         // var behandlingsdager: List<Sporsmal> = mutableListOf()
         // behandlingsdager = soknad.sporsmal.filter { it.tag == "ENKELTSTAENDE_BEHANDLINGSDAGER_UKE_0" }.first().undersporsmal
-        val behandlingsdager = soknad.sporsmal.filter { it.tag == "ENKELTSTAENDE_BEHANDLINGSDAGER_UKE_0" }.firstOrNull()?.undersporsmal ?: emptyList()
 
         if (erBehandlingsDagSoknad) {
             val behandlingsdager = soknad.sporsmal
-                .filter { it.tag == "ENKELTSTAENDE_BEHANDLINGSDAGER_UKE_0" }
+                .filter { it.tag.startsWith("ENKELTSTAENDE_BEHANDLINGSDAGER_") }
+                .flatMap { it.undersporsmal ?: emptyList() }
 
             behandlingsdagMessage += " dager antall ${behandlingsdager?.size} "
             for (item in behandlingsdager.withIndex()) {
