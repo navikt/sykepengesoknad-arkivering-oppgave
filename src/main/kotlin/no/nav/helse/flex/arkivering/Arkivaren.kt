@@ -49,14 +49,17 @@ class Arkivaren(
 
         val behandlingsdager = soknad.sporsmal.filter { it.tag == "BEHANDLINGSDAGER" }
 
-        if (behandlingsdager.isNotEmpty()) {
-            println("behandlingsdager finnes")
-        }
+
 
         // loop trough behandlingsdager
         // for hver behandlingsdag, opprett logisk vedlegg
 
         var behandlingsdagMessage = "start "
+
+
+        if (behandlingsdager.isNotEmpty()) {
+          behandlingsdagMessage += " fant behandlingsdager "
+        }
 
         // ikke til behandling eller en tekststreng som er en dato ... vi må utelukke
 
