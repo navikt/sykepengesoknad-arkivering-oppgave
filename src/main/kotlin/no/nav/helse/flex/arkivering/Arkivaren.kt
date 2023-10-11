@@ -64,13 +64,26 @@ class Arkivaren(
                     tittel = "Behandlingsdag"
                 )
 
-            val logiskVedleggResponse = measureTimeMillisWithResult {
-                dokArkivClient.opprettLogiskVedlegg(request2, soknad.soknadsId!!)
+            val dokumentInfoId: String = journalpostResponse.result.dokumenter[0].dokumentInfoId ?: ""
+
+            if (dokumentInfoId != "") {
+                dokArkivClient.opprettLogiskVedlegg(
+                    request2,
+                    dokumentInfoId
+                )
+                // overskriver ubrukt variabel
+//                val logiskVedleggResponse = measureTimeMillisWithResult {
+//                    dokArkivClient.opprettLogiskVedlegg(
+//                        request2,
+//                        dokumentInfoId
+//                    )
+//
+// //                      if (logiskVedleggResponse.result) {
+// //                           log.warn("Journalpost ${journalpostResponse.result.journalpostId} for søknad ${soknad.soknadsId} ble ikke ferdigstilt")
+// //                      }
+//                }
             }
             // check that it was a 200 response
-//            if (logiskVedleggResponse.result) {
-//                log.warn("Journalpost ${journalpostResponse.result.journalpostId} for søknad ${soknad.soknadsId} ble ikke ferdigstilt")
-//            }
         }
 
         // /Users/kuls/code/sykepengesoknad-arkivering-oppgave/src/test/resources/soknadBehandlingsdagerMedNeisvar.json
