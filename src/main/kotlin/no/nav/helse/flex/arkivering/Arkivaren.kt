@@ -56,12 +56,24 @@ class Arkivaren(
         // loop trough behandlingsdager
         // for hver behandlingsdag, opprett logisk vedlegg
 
-        val request2 =
-            LogiskVedleggRequest(
-                tittel = "Behandlingsdag"
-            )
+        var behandlingsdagMessage = "start "
+
+        // ikke til behandling eller en tekststreng som er en dato ... vi må utelukke
+
 
         val dokumentInfoId: String = journalpostResponse.result.dokumenter[0].dokumentInfoId ?: ""
+
+        for (item in behandlingsdager.withIndex()) {
+            println(item)
+            // opprett logisk vedlegg
+
+            behandlingsdagMessage += " ${item.index} ${item} "
+        }
+
+        val request2: LogiskVedleggRequest =
+            LogiskVedleggRequest(
+                tittel = behandlingsdagMessage
+            )
 
         if (dokumentInfoId != "") {
             dokArkivClient.opprettLogiskVedlegg(
@@ -69,38 +81,7 @@ class Arkivaren(
                 dokumentInfoId
             )
 
-        /*
-        for (item in behandlingsdager.withIndex()) {
-            println(item)
-            // opprett logisk vedlegg
-            val request2: LogiskVedleggRequest =
-                LogiskVedleggRequest(
-                    tittel = "Behandlingsdag"
-                )
-
-            val dokumentInfoId: String = journalpostResponse.result.dokumenter[0].dokumentInfoId ?: ""
-
-            if (dokumentInfoId != "") {
-                dokArkivClient.opprettLogiskVedlegg(
-                    request2,
-                    dokumentInfoId
-                )
-                // overskriver ubrukt variabel
-//                val logiskVedleggResponse = measureTimeMillisWithResult {
-//                    dokArkivClient.opprettLogiskVedlegg(
-//                        request2,
-//                        dokumentInfoId
-//                    )
-//
-// //                      if (logiskVedleggResponse.result) {
-// //                           log.warn("Journalpost ${journalpostResponse.result.journalpostId} for søknad ${soknad.soknadsId} ble ikke ferdigstilt")
-// //                      }
-//                }
-            }
             // check that it was a 200 response
-
-
-         */
         }
 
         // /Users/kuls/code/sykepengesoknad-arkivering-oppgave/src/test/resources/soknadBehandlingsdagerMedNeisvar.json
