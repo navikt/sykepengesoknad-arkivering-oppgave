@@ -12,6 +12,8 @@ import no.nav.helse.flex.domain.dto.Sporsmal
 import no.nav.helse.flex.domain.dto.Svar
 import no.nav.helse.flex.logger
 import org.springframework.stereotype.Component
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Component
 class Arkivaren(
@@ -21,6 +23,14 @@ class Arkivaren(
 ) {
 
     val log = logger()
+
+    fun transformDateFormat(date: String): String {
+        val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val outputFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+
+        val parsedDate = LocalDate.parse(date, inputFormatter)
+        return parsedDate.format(outputFormatter)
+    }
 
     fun opprettJournalpost(soknad: Soknad): String {
         val pdf = measureTimeMillisWithResult {
@@ -103,12 +113,12 @@ class Arkivaren(
             svarListe = svarListe.filter { it.verdi != "Ikke til behandling" }.toMutableList()
 
             behandlingsdagMessage += " Antall behandlingsdager: ${svarListe?.size} "
+
             for (item in svarListe.withIndex()) {
                 println(item)
                 // opprett logisk vedlegg
-
-
-                behandlingsdagMessage += " ${item.value.verdi}" // $item
+                behandlingsdagMessage += " Behandlingsdager: "
+                behandlingsdagMessage += " ${item.value.verdi?.let { transformDateFormat(it) }}" // $item
             }
 
             val request2: LogiskVedleggRequest =
