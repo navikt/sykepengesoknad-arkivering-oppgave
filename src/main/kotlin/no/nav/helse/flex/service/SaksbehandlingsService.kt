@@ -11,6 +11,7 @@ import no.nav.helse.flex.domain.dto.Soknadstype
 import no.nav.helse.flex.domain.dto.Sykepengesoknad
 import no.nav.helse.flex.kafka.producer.RebehandleSykepengesoknadProducer
 import no.nav.helse.flex.logger
+import no.nav.helse.flex.medlemskap.MedlemskapVurdering
 import no.nav.helse.flex.repository.InnsendingDbRecord
 import no.nav.helse.flex.repository.InnsendingRepository
 import org.springframework.stereotype.Component
@@ -25,7 +26,8 @@ class SaksbehandlingsService(
     private val rebehandleSykepengesoknadProducer: RebehandleSykepengesoknadProducer,
     private val sykepengesoknadKvitteringerClient: SykepengesoknadKvitteringerClient,
     private val identService: IdentService,
-    private val pdlClient: PdlClient
+    private val pdlClient: PdlClient,
+    private val medlemskapVurdering: MedlemskapVurdering
 ) {
 
     private val log = logger()
@@ -48,6 +50,9 @@ class SaksbehandlingsService(
             )
             log.info("Journalført søknad: ${sykepengesoknad.id} med journalpostId: $jouralpostId")
         }
+
+        medlemskapVurdering.oppdaterInngåendeMedlemskapVurdering(sykepengesoknad)
+
         return innsendingId!!
     }
 
