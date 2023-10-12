@@ -1,7 +1,6 @@
 package no.nav.helse.flex.kafka.consumer
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.getunleash.Unleash
 import no.nav.helse.flex.kafka.mapper.toSykepengesoknad
 import no.nav.helse.flex.logger
 import no.nav.helse.flex.objectMapper
@@ -24,8 +23,7 @@ const val SYKEPENGESOKNAD_TOPIC = "flex." + "sykepengesoknad"
 @Component
 class AivenSoknadSendtListener(
     private val spreOppgaverService: SpreOppgaverService,
-    private val identService: IdentService,
-    private val unleash: Unleash
+    private val identService: IdentService
 ) {
 
     private val log = logger()
@@ -40,12 +38,6 @@ class AivenSoknadSendtListener(
     fun listen(cr: ConsumerRecord<String, String>, acknowledgment: Acknowledgment) {
         try {
             MDC.put(NAV_CALLID, getSafeNavCallIdHeaderAsString(cr.headers()))
-
-            if (unleash.isEnabled("sykepengesoknad-arkivering-oppgave-test")) {
-                log.info("Unleash toggle 'sykepengesoknad-arkivering-oppgave-test' er PÅ")
-            } else {
-                log.info("Unleash toggle 'sykepengesoknad-arkivering-oppgave-test' er AV")
-            }
 
             val dto = cr.value().tilSykepengesoknadDTO()
 
