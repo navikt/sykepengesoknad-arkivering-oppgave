@@ -10,17 +10,14 @@ import no.nav.helse.flex.service.*
 import okhttp3.mockwebserver.MockResponse
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldNotBe
-import org.junit.jupiter.api.MethodOrderer
-import org.junit.jupiter.api.Order
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestMethodOrder
 import org.springframework.beans.factory.annotation.Autowired
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-@TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class MedlemskapVurderingTest : FellesTestoppsett() {
 
     val fnr = "12121234343"
@@ -36,8 +33,13 @@ class MedlemskapVurderingTest : FellesTestoppsett() {
     @Autowired
     lateinit var innsendingRepository: InnsendingRepository
 
+    @AfterEach
+    fun opprydding() {
+        innsendingRepository.deleteAll()
+        medlemskapVurderingRepository.deleteAll()
+    }
+
     @Test
-    @Order(0)
     fun `En frilansersøknad, blir ikke vurdert`() {
         val soknad = soknad(medlemskapVurdering = null, soknadstype = Soknadstype.SELVSTENDIGE_OG_FRILANSERE)
 
@@ -47,7 +49,6 @@ class MedlemskapVurderingTest : FellesTestoppsett() {
     }
 
     @Test
-    @Order(0)
     fun `En arbeidstakersøknad uten inngående medlemskapvurdering, blir ikke vurdert`() {
         val soknad = soknad(medlemskapVurdering = null)
 
@@ -57,13 +58,8 @@ class MedlemskapVurderingTest : FellesTestoppsett() {
     }
 
     @Test
-    @Order(1)
-    fun `En arbeidstakersøknad som har inngående medlemskap`() {
-        val soknad = soknad(
-            medlemskapVurdering = "UAVKLART",
-            soknadFom = fom,
-            soknadTom = tom
-        ).copy(sporsmal = medlemskapSporsmal())
+    fun `En arbeidstakersøknad som har inngående medlemskap vurdering UAVKLART og endelig vurdering NEI`() {
+        val soknad = soknad(medlemskapVurdering = "UAVKLART").copy(sporsmal = medlemskapSporsmal())
         saksbehandlingsService.behandleSoknad(soknad)
 
         val inngåendeVurdering = medlemskapVurderingRepository.findBySykepengesoknadId(soknad.id)
@@ -130,9 +126,8 @@ class MedlemskapVurderingTest : FellesTestoppsett() {
     }
 
     @Test
-    @Order(2)
-    fun `Etterfølgende søknad gjenbruker inngående medlemskap vurdering`() {
-        val soknad = soknad(medlemskapVurdering = null, soknadFom = tom.plusDays(1), soknadTom = tom.plusDays(10))
+    fun `En arbeidstakersøknad som har inngående og endelig medlemskap vurdering UAVKLART`() {
+        val soknad = soknad(medlemskapVurdering = "UAVKLART").copy(sporsmal = medlemskapSporsmal())
         saksbehandlingsService.behandleSoknad(soknad)
 
         val inngåendeVurdering = medlemskapVurderingRepository.findBySykepengesoknadId(soknad.id)
@@ -173,10 +168,10 @@ class MedlemskapVurderingTest : FellesTestoppsett() {
         val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
         oppgaveRequestBody.behandlingstema shouldBeEqualTo "ab0269"
         oppgaveRequestBody.beskrivelse shouldBeEqualTo """
-        Søknad om sykepenger for perioden 21.09.2023 - 30.09.2023
-        
+        Søknad om sykepenger for perioden 01.09.2023 - 20.09.2023
+
         Periode 1:
-        21.09.2023 - 30.09.2023
+        01.09.2023 - 20.09.2023
         Grad: 100
         
         Om bruker er medlem i folketrygden eller ikke, kunne ikke avklares automatisk.
@@ -186,15 +181,21 @@ class MedlemskapVurderingTest : FellesTestoppsett() {
         Informasjon om hva du skal gjøre finner du på Navet, se
         https://navno.sharepoint.com/sites/fag-og-ytelser-eos-lovvalg-medlemskap/SitePages/Hvordan-vurderer-jeg-lovvalg-og-medlemskap.aspx
         
-        Spørsmål
-        Nei
+        Har du oppholdstillatelse fra utlendingsdirektoratet?
+        Ja
+            Når fikk du vedtak om oppholdstillatelse?
+            01.01.2023
+        
+            Har du fått permanent oppholdstillatelse?
+            Nei
+                Hvilken periode har du fått oppholdstillatelse?
+                13.12.2022 - 02.01.2023
         """.trimIndent()
     }
 
     @Test
-    @Order(3)
-    fun `Etterfølgende søknad med endelig vurdering JA, oppretter vanlig gosys oppgave`() {
-        val soknad = soknad(medlemskapVurdering = null, soknadFom = tom.plusDays(11), soknadTom = tom.plusDays(20))
+    fun `En arbeidstakersøknad med endelig vurdering JA, oppretter vanlig gosys oppgave`() {
+        val soknad = soknad(medlemskapVurdering = "UAVKLART")
         saksbehandlingsService.behandleSoknad(soknad)
 
         val inngåendeVurdering = medlemskapVurderingRepository.findBySykepengesoknadId(soknad.id)!!
@@ -228,10 +229,10 @@ class MedlemskapVurderingTest : FellesTestoppsett() {
         val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
         oppgaveRequestBody.behandlingstema shouldBeEqualTo "ab0061"
         oppgaveRequestBody.beskrivelse shouldBeEqualTo """
-        Søknad om sykepenger for perioden 01.10.2023 - 10.10.2023
-        
+        Søknad om sykepenger for perioden 01.09.2023 - 20.09.2023
+
         Periode 1:
-        01.10.2023 - 10.10.2023
+        01.09.2023 - 20.09.2023
         Grad: 100
         
         Spørsmål
@@ -240,9 +241,8 @@ class MedlemskapVurderingTest : FellesTestoppsett() {
     }
 
     @Test
-    @Order(4)
-    fun `Etterfølgende søknad der LovMe ikke finner inngående vurdring, oppretter vanlig gosys oppgave`() {
-        val soknad = soknad(medlemskapVurdering = null, soknadFom = tom.plusDays(21), soknadTom = tom.plusDays(30))
+    fun `Når LovMe ikke finner inngående vurdring, oppretter vanlig gosys oppgave`() {
+        val soknad = soknad(medlemskapVurdering = "UAVKLART")
         saksbehandlingsService.behandleSoknad(soknad)
 
         val inngåendeVurdering = medlemskapVurderingRepository.findBySykepengesoknadId(soknad.id)!!
@@ -265,10 +265,10 @@ class MedlemskapVurderingTest : FellesTestoppsett() {
         val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
         oppgaveRequestBody.behandlingstema shouldBeEqualTo "ab0061"
         oppgaveRequestBody.beskrivelse shouldBeEqualTo """
-        Søknad om sykepenger for perioden 11.10.2023 - 20.10.2023
-        
+        Søknad om sykepenger for perioden 01.09.2023 - 20.09.2023
+
         Periode 1:
-        11.10.2023 - 20.10.2023
+        01.09.2023 - 20.09.2023
         Grad: 100
         
         Spørsmål
@@ -278,18 +278,16 @@ class MedlemskapVurderingTest : FellesTestoppsett() {
 
     private fun soknad(
         medlemskapVurdering: String?,
-        soknadstype: Soknadstype = Soknadstype.ARBEIDSTAKERE,
-        soknadFom: LocalDate = fom,
-        soknadTom: LocalDate = tom
+        soknadstype: Soknadstype = Soknadstype.ARBEIDSTAKERE
     ) = Sykepengesoknad(
         fnr = fnr,
         aktorId = "aktor-$fnr",
         id = UUID.randomUUID().toString(),
         opprettet = LocalDateTime.now(),
-        fom = soknadFom,
-        tom = soknadTom,
+        fom = fom,
+        tom = tom,
         soknadPerioder = listOf(
-            SoknadPeriode(soknadFom, soknadTom, 100)
+            SoknadPeriode(fom, tom, 100)
         ),
         soknadstype = soknadstype,
         sporsmal = listOf(

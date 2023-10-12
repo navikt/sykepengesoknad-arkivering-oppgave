@@ -34,20 +34,6 @@ class MedlemskapVurdering(
             )
             return
         }
-
-        val tidligerMedlemskapVurdering = medlemskapVurderingRepository.tidligereMedlemskapVurdering(sykepengesoknad.fnr)
-        if (tidligerMedlemskapVurdering != null) {
-            log.info("Gjenbruker tidligere inngående medlemskap vurdering ${tidligerMedlemskapVurdering.inngaendeVurdering} for søknad ${sykepengesoknad.id}")
-            medlemskapVurderingRepository.save(
-                MedlemskapVurderingDbRecord(
-                    fnr = sykepengesoknad.fnr,
-                    sykepengesoknadId = sykepengesoknad.id,
-                    fom = sykepengesoknad.fom!!,
-                    tom = sykepengesoknad.tom!!,
-                    inngaendeVurdering = tidligerMedlemskapVurdering.inngaendeVurdering
-                )
-            )
-        }
     }
 
     fun hentEndeligMedlemskapVurdering(sykepengesoknad: Sykepengesoknad): String? {
