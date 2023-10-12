@@ -60,7 +60,8 @@ class OppgaveClient(
             journalpostId: String,
             soknad: Soknad,
             harRedusertVenteperiode: Boolean = false,
-            speilRelatert: Boolean = false
+            speilRelatert: Boolean = false,
+            medlemskapVurdering: String? = null
         ): OppgaveRequest =
             OppgaveRequest(
                 opprettetAvEnhetsnr = "9999",
@@ -79,6 +80,11 @@ class OppgaveClient(
                     this.behandlingstema = "ab0455"
                 } else if (soknad.utenlandskSykmelding == true) {
                     this.behandlingstype = "ae0106"
+                } else if (medlemskapVurdering in listOf("NEI", "UAVKLART")) {
+                    // TODO: Test i dev at dette blir riktig
+                    // ab0269 - Medlemskap
+                    // ab0211 - Medlemskap i Folketrygden
+                    this.behandlingstema = "ab0269"
                 } else {
                     this.behandlingstema = when (soknad.soknadstype) {
                         Soknadstype.OPPHOLD_UTLAND -> "ab0314"

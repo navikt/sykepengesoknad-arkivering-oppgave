@@ -58,15 +58,16 @@ class SaksbehandlingsService(
 
     fun opprettOppgave(sykepengesoknad: Sykepengesoknad, innsending: InnsendingDbRecord, speilRelatert: Boolean = false) {
         val fnr = identService.hentFnrForAktorId(sykepengesoknad.aktorId)
-
-        val soknad = opprettSoknad(sykepengesoknad, fnr)
+        val medlemskapVurdering = medlemskapVurdering.hentEndeligMedlemskapVurdering(sykepengesoknad)
+        val soknad = opprettSoknad(sykepengesoknad, fnr, medlemskapVurdering)
 
         val requestBody = OppgaveClient.lagRequestBody(
             aktorId = sykepengesoknad.aktorId,
             journalpostId = innsending.journalpostId!!,
             soknad = soknad,
             harRedusertVenteperiode = sykepengesoknad.harRedusertVenteperiode,
-            speilRelatert = speilRelatert
+            speilRelatert = speilRelatert,
+            medlemskapVurdering = medlemskapVurdering
         )
         val oppgaveResponse = oppgaveClient.opprettOppgave(requestBody)
 
@@ -101,10 +102,10 @@ class SaksbehandlingsService(
         rebehandleSykepengesoknadProducer.send(sykepengesoknad)
     }
 
-    fun opprettSoknad(sykepengesoknad: Sykepengesoknad, fnr: String): Soknad {
+    fun opprettSoknad(sykepengesoknad: Sykepengesoknad, fnr: String, endeligMedlemskapVurdering: String? = null): Soknad {
         val navn = pdlClient.hentFormattertNavn(fnr)
 
-        val soknad = Soknad.lagSoknad(sykepengesoknad, fnr, navn)
+        val soknad = Soknad.lagSoknad(sykepengesoknad, fnr, navn, endeligMedlemskapVurdering)
 
         return soknad.copy(kvitteringer = soknad.kvitteringer?.map { it.hentOgSettKvittering() })
     }
