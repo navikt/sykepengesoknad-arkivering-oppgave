@@ -11,6 +11,7 @@ import okhttp3.mockwebserver.MockResponse
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldNotBe
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import java.time.LocalDate
@@ -32,6 +33,11 @@ class MedlemskapVurderingTest : FellesTestoppsett() {
 
     @Autowired
     lateinit var innsendingRepository: InnsendingRepository
+
+    @BeforeAll
+    fun unleashToggle() {
+        fakeUnleash.enable(UNLEASH_CONTEXT_MEDLEMSKAP_SPORSMAL)
+    }
 
     @AfterEach
     fun opprydding() {

@@ -8,7 +8,8 @@ import org.springframework.stereotype.Component
 @Component
 class MedlemskapVurdering(
     private val medlemskapVurderingRepository: MedlemskapVurderingRepository,
-    private val lovMeClient: LovMeClient
+    private val lovMeClient: LovMeClient,
+    private val medlemskapToggle: MedlemskapToggle
 ) {
     private val log = logger()
 
@@ -48,7 +49,12 @@ class MedlemskapVurdering(
         }
         if (tidligereVurdering.endeligVurdering != null) {
             log.info("Søknad ${sykepengesoknad.id} er allerede medlemskap vurdert til ${tidligereVurdering.endeligVurdering}")
-            return tidligereVurdering.endeligVurdering
+
+            if (medlemskapToggle.medlemskapToggleForBruker(sykepengesoknad.fnr)) {
+                return tidligereVurdering.endeligVurdering
+            }
+
+            return null
         }
 
         val endeligVurdering = lovMeClient.hentEndeligMedlemskapVurdering(sykepengesoknad) ?: return null
@@ -58,6 +64,10 @@ class MedlemskapVurdering(
         )
         medlemskapVurderingRepository.save(oppdatertVurdering)
 
-        return oppdatertVurdering.endeligVurdering
+        if (medlemskapToggle.medlemskapToggleForBruker(sykepengesoknad.fnr)) {
+            return oppdatertVurdering.endeligVurdering
+        }
+
+        return null
     }
 }
