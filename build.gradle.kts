@@ -33,6 +33,7 @@ val kluentVersion = "1.73"
 val cloudStorageVersion = "2.27.1"
 val jaxWsApiVersion = "1.1"
 val commonsTextVersion = "1.10.0"
+val unleashVersion = "8.3.1"
 
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
@@ -60,6 +61,7 @@ dependencies {
     implementation("no.nav.security:token-validation-spring:$tokenSupportVersion")
     implementation("no.nav.security:token-client-spring:$tokenSupportVersion")
     implementation("com.google.cloud:google-cloud-storage:$cloudStorageVersion")
+    implementation("io.getunleash:unleash-client-java:$unleashVersion")
 
     testImplementation(platform("org.testcontainers:testcontainers-bom:$testContainersVersion"))
     testImplementation("org.springframework.boot:spring-boot-starter-test")

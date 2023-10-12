@@ -54,6 +54,8 @@ spec:
         flags:
           - name: cloudsql.logical_decoding
             value: "on"
+  envFrom:
+    - secret: sykepengesoknad-arkivering-oppgave-unleash-api-token
   accessPolicy:
     outbound:
       rules:

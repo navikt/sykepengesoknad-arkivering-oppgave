@@ -1,5 +1,6 @@
 package no.nav.helse.flex
 
+import io.getunleash.FakeUnleash
 import no.nav.helse.flex.mockdispatcher.*
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import okhttp3.mockwebserver.MockWebServer
@@ -95,6 +96,14 @@ abstract class FellesTestoppsett {
 
     @Autowired
     lateinit var jdbcTemplate: JdbcTemplate
+
+    @Autowired
+    lateinit var fakeUnleash: FakeUnleash
+
+    @AfterAll
+    fun `Disable unleash toggles`() {
+        fakeUnleash.disableAll()
+    }
 
     @AfterAll
     fun hentMockRequests() {
