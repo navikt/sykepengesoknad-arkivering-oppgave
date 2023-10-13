@@ -8,6 +8,7 @@ import no.nav.helse.flex.kafka.consumer.SYKEPENGESOKNAD_TOPIC
 import no.nav.helse.flex.repository.InnsendingRepository
 import no.nav.helse.flex.sykepengesoknad.kafka.*
 import okhttp3.mockwebserver.MockResponse
+import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.shouldBeEqualTo
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
@@ -72,6 +73,11 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
         assertThat(innsendingIDatabase.sykepengesoknadId).isEqualTo(soknad.id)
         assertThat(innsendingIDatabase.oppgaveId).isNull()
         assertThat(innsendingIDatabase.behandlet).isNotNull
+
+        val dokArkivRequest = dokArkivMockWebserver.takeRequest(1, TimeUnit.SECONDS)!!
+        dokArkivRequest.requestLine shouldBeEqualTo "POST /rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true HTTP/1.1"
+        val dokArkivRequestBody = objectMapper.readValue<JournalpostRequest>(dokArkivRequest.body.readUtf8())
+        dokArkivRequestBody.dokumenter[0].tittel `should be equal to` "Søknad om sykepenger 04.05.2019 - 08.05.2019"
     }
 
     @Test
@@ -148,6 +154,11 @@ Ja
 
         val pdfRequest = pdfMockWebserver.takeRequest(10, TimeUnit.SECONDS)!!
         pdfRequest.requestLine shouldBeEqualTo "POST /api/v1/genpdf/syfosoknader/selvstendignaeringsdrivende HTTP/1.1"
+
+        val dokArkivRequest = dokArkivMockWebserver.takeRequest(1, TimeUnit.SECONDS)!!
+        dokArkivRequest.requestLine shouldBeEqualTo "POST /rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true HTTP/1.1"
+        val dokArkivRequestBody = objectMapper.readValue<JournalpostRequest>(dokArkivRequest.body.readUtf8())
+        dokArkivRequestBody.dokumenter[0].tittel `should be equal to` "Søknad om sykepenger fra Selvstendig/Frilanser for periode: 01.05.2020 til 05.05.2020"
     }
 
     @Test
@@ -241,6 +252,11 @@ Nei
         pdfRequestBody.kvitteringer!!.first().b64data shouldBeEqualTo "MTIz"
         pdfRequestBody.sporsmal.none { it.svartype == Svartype.KVITTERING } shouldBeEqualTo true
         pdfRequestBody.soknadPerioder!!.first().sykmeldingstype shouldBeEqualTo "REISETILSKUDD"
+
+        val dokArkivRequest = dokArkivMockWebserver.takeRequest(1, TimeUnit.SECONDS)!!
+        dokArkivRequest.requestLine shouldBeEqualTo "POST /rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true HTTP/1.1"
+        val dokArkivRequestBody = objectMapper.readValue<JournalpostRequest>(dokArkivRequest.body.readUtf8())
+        dokArkivRequestBody.dokumenter[0].tittel `should be equal to` "Søknad om reisetilskudd for periode: 18.03.2021 til 22.03.2021"
     }
 
     @Test
@@ -338,5 +354,10 @@ Nei
         pdfRequestBody.kvitteringer!!.first().b64data shouldBeEqualTo "MTIz"
         pdfRequestBody.sporsmal.none { it.svartype == Svartype.KVITTERING } shouldBeEqualTo true
         pdfRequestBody.soknadPerioder!!.first().sykmeldingstype shouldBeEqualTo "REISETILSKUDD"
+
+        val dokArkivRequest = dokArkivMockWebserver.takeRequest(1, TimeUnit.SECONDS)!!
+        dokArkivRequest.requestLine shouldBeEqualTo "POST /rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true HTTP/1.1"
+        val dokArkivRequestBody = objectMapper.readValue<JournalpostRequest>(dokArkivRequest.body.readUtf8())
+        dokArkivRequestBody.dokumenter[0].tittel `should be equal to` "Søknad om sykepenger med reisetilskudd for periode: 18.03.2021 til 22.03.2021"
     }
 }
