@@ -4,6 +4,7 @@ import io.micrometer.core.instrument.MeterRegistry
 import no.nav.helse.flex.client.DokArkivClient
 import no.nav.helse.flex.client.PDFClient
 import no.nav.helse.flex.domain.JournalpostRequest
+import no.nav.helse.flex.domain.JournalpostResponse
 import no.nav.helse.flex.domain.LogiskVedleggRequest
 import no.nav.helse.flex.domain.Soknad
 import no.nav.helse.flex.domain.dto.PDFTemplate
@@ -32,6 +33,57 @@ class Arkivaren(
         return parsedDate.format(outputFormatter)
     }
 
+    fun leggTilLogiskVedleggForBehandlingsDager(soknad: Soknad, journalpostResponse:  MeassureBlock<JournalpostResponse>) {
+
+
+        val dokumentInfoId: String = journalpostResponse.result.dokumenter[0].dokumentInfoId ?: ""
+
+        var behandlingsdagMessage = ""
+        val behandlingsdagerUkerToppnivå = soknad.sporsmal
+            .filter { it.tag.startsWith("ENKELTSTAENDE_BEHANDLINGSDAGER_") }
+
+        var behandlingsdagerUker: MutableList<Sporsmal> = mutableListOf()
+        for (i in behandlingsdagerUkerToppnivå) {
+            if (i.undersporsmal is List<Sporsmal>) {
+                behandlingsdagerUker.addAll(i.undersporsmal)
+            }
+        }
+
+        var svarListe = mutableListOf<Svar>()
+        for (i in behandlingsdagerUker) {
+            if (i.svar is List<Svar>) {
+                svarListe.addAll(i.svar)
+            }
+        }
+
+        svarListe = svarListe.filter { it.verdi != "Ikke til behandling" }.toMutableList()
+
+
+        behandlingsdagMessage += " Antall behandlingsdager: ${svarListe?.size} "
+
+        if (svarListe.size > 0) {
+            behandlingsdagMessage += " Behandlingsdager: "
+        }
+
+        for (item in svarListe.withIndex()) {
+            behandlingsdagMessage += " ${item.value.verdi?.let { transformDateFormat(it) }}"
+        }
+
+        val request2: LogiskVedleggRequest =
+            LogiskVedleggRequest(
+                tittel = behandlingsdagMessage
+            )
+
+        if (dokumentInfoId != "") {
+            dokArkivClient.opprettLogiskVedlegg(
+                request2,
+                dokumentInfoId
+            )
+
+
+        }
+    }
+
     fun opprettJournalpost(soknad: Soknad): String {
         val pdf = measureTimeMillisWithResult {
             pdfClient.getPDF(soknad = soknad.sorterViktigeSporsmalFørst(), template = hentPDFTemplateEtterSoknadstype(soknad.soknadstype))
@@ -44,7 +96,6 @@ class Arkivaren(
             dokArkivClient.opprettJournalpost(request, soknad.soknadsId!!)
         }
 
-        //  https://reflectoring.io/spring-webclient/ Dette er det du trenger
 
         if (!journalpostResponse.result.journalpostferdigstilt) {
             log.warn("Journalpost ${journalpostResponse.result.journalpostId} for søknad ${soknad.soknadsId} ble ikke ferdigstilt")
@@ -53,98 +104,14 @@ class Arkivaren(
         log.info("Arkiverte søknad ${soknad.soknadsId}. PDF tid: ${pdf.millis} . Dokarkiv tid: ${journalpostResponse.millis}")
         registry.counter("søknad_arkivert").increment()
 
-        // det er her vi ville hentet ut journalpostid eller noe og lagt inn evt. behandlinsdager
-
-        // val id = journalpostResponse.result.journalpostId
-
-        // her må vi legge inn behandlingsdager om de finnes
 
         val erBehandlingsDagSoknad = soknad.soknadstype == Soknadstype.BEHANDLINGSDAGER
 
-        // loop trough behandlingsdager
-        // for hver behandlingsdag, opprett logisk vedlegg
 
-        var behandlingsdagMessage = ""
-
-//        if (erBehandlingsDagSoknad) {
-//            behandlingsdagMessage += " behandlingsdag søknad "
-//        }
-
-        // ikke til behandling eller en tekststreng som er en dato ... vi må utelukke
-
-        val dokumentInfoId: String = journalpostResponse.result.dokumenter[0].dokumentInfoId ?: ""
-
-        // INFO_BEHANDLINGSDAGER
-
-        /*
-
-              "tag": "ENKELTSTAENDE_BEHANDLINGSDAGER_0",
-      "sporsmalstekst": "Hvilke dager måtte du være helt borte fra jobben på grunn av behandling mellom 11. - 17. desember 2019?",
-      "undertekst": null,
-      "svartype": "INFO_BEHANDLINGSDAGER",
-
-         */
-
-        // init behandlingsdager as an empty array of Sporsmal
-        // var behandlingsdager: List<Sporsmal> = mutableListOf()
-        // behandlingsdager = soknad.sporsmal.filter { it.tag == "ENKELTSTAENDE_BEHANDLINGSDAGER_UKE_0" }.first().undersporsmal
 
         if (erBehandlingsDagSoknad) {
-            val behandlingsdagerUkerToppnivå = soknad.sporsmal
-                .filter { it.tag.startsWith("ENKELTSTAENDE_BEHANDLINGSDAGER_") }
-
-            var behandlingsdagerUker: MutableList<Sporsmal> = mutableListOf()
-            var behandlingsdagerDatoer = mutableListOf<String>()
-            // loop trough behandlingsdagerToppnivå
-            for (i in behandlingsdagerUkerToppnivå) {
-                // check that of type List<Sporsmal>
-                if (i.undersporsmal is List<Sporsmal>) {
-                    behandlingsdagerUker.addAll(i.undersporsmal)
-                }
-            }
-
-            var svarListe = mutableListOf<Svar>()
-            for (i in behandlingsdagerUker) {
-                if (i.svar is List<Svar>) {
-                    svarListe.addAll(i.svar)
-                }
-            }
-
-            svarListe = svarListe.filter { it.verdi != "Ikke til behandling" }.toMutableList()
-
-            behandlingsdagMessage += " Antall behandlingsdager: ${svarListe?.size} "
-
-            if (svarListe.size > 0) {
-                behandlingsdagMessage += " Behandlingsdager: "
-            }
-
-            for (item in svarListe.withIndex()) {
-                // println(item)
-                // opprett logisk vedlegg
-                behandlingsdagMessage += " ${item.value.verdi?.let { transformDateFormat(it) }}" // $item
-            }
-
-            val request2: LogiskVedleggRequest =
-                LogiskVedleggRequest(
-                    tittel = behandlingsdagMessage
-                )
-
-            if (dokumentInfoId != "") {
-                dokArkivClient.opprettLogiskVedlegg(
-                    request2,
-                    dokumentInfoId
-                )
-
-                // check that it was a 200 response
-            }
+            leggTilLogiskVedleggForBehandlingsDager(soknad, journalpostResponse)
         }
-        // /Users/kuls/code/sykepengesoknad-arkivering-oppgave/src/test/resources/soknadBehandlingsdagerMedNeisvar.json
-//        if (soknad.soknadstype == Soknadstype.BEHANDLINGSDAGER) {
-//            val behandlingsdager = soknad.sporsmal
-//
-//
-//        }
-
         return journalpostResponse.result.journalpostId
     }
 
