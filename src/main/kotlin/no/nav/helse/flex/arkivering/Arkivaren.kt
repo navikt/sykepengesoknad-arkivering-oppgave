@@ -33,56 +33,28 @@ class Arkivaren(
         return parsedDate.format(outputFormatter)
     }
 
-    fun leggTilLogiskVedleggForBehandlingsDager(soknad: Soknad, journalpostResponse:  MeassureBlock<JournalpostResponse>) {
+fun leggTilLogiskVedleggForBehandlingsDager(soknad: Soknad, journalpostResponse: MeassureBlock<JournalpostResponse>) {
+    val dokumentInfoId = journalpostResponse.result.dokumenter.firstOrNull()?.dokumentInfoId ?: return
 
+    val behandlingsdagerUker = soknad.sporsmal
+        .filter { it.tag.startsWith("ENKELTSTAENDE_BEHANDLINGSDAGER_") }
+        .flatMap { it.undersporsmal ?: emptyList() }
 
-        val dokumentInfoId: String = journalpostResponse.result.dokumenter[0].dokumentInfoId ?: ""
+    val svarListe = behandlingsdagerUker
+        .flatMap { it.svar ?: emptyList() }
+        .filter { it.verdi != "Ikke til behandling" }
 
-        var behandlingsdagMessage = ""
-        val behandlingsdagerUkerToppnivå = soknad.sporsmal
-            .filter { it.tag.startsWith("ENKELTSTAENDE_BEHANDLINGSDAGER_") }
+    var behandlingsdagMessage = " Antall behandlingsdager: ${svarListe.size} "
 
-        var behandlingsdagerUker: MutableList<Sporsmal> = mutableListOf()
-        for (i in behandlingsdagerUkerToppnivå) {
-            if (i.undersporsmal is List<Sporsmal>) {
-                behandlingsdagerUker.addAll(i.undersporsmal)
-            }
-        }
-
-        var svarListe = mutableListOf<Svar>()
-        for (i in behandlingsdagerUker) {
-            if (i.svar is List<Svar>) {
-                svarListe.addAll(i.svar)
-            }
-        }
-
-        svarListe = svarListe.filter { it.verdi != "Ikke til behandling" }.toMutableList()
-
-
-        behandlingsdagMessage += " Antall behandlingsdager: ${svarListe?.size} "
-
-        if (svarListe.size > 0) {
-            behandlingsdagMessage += " Behandlingsdager: "
-        }
-
-        for (item in svarListe.withIndex()) {
-            behandlingsdagMessage += " ${item.value.verdi?.let { transformDateFormat(it) }}"
-        }
-
-        val request2: LogiskVedleggRequest =
-            LogiskVedleggRequest(
-                tittel = behandlingsdagMessage
-            )
-
-        if (dokumentInfoId != "") {
-            dokArkivClient.opprettLogiskVedlegg(
-                request2,
-                dokumentInfoId
-            )
-
-
-        }
+    if (svarListe.isNotEmpty()) {
+        behandlingsdagMessage += " Behandlingsdager: ${svarListe.joinToString(" ") { it.verdi?.let { v -> transformDateFormat(v) } ?: "" }}"
     }
+
+    val request2 = LogiskVedleggRequest(tittel = behandlingsdagMessage)
+
+    dokArkivClient.opprettLogiskVedlegg(request2, dokumentInfoId)
+}
+
 
     fun opprettJournalpost(soknad: Soknad): String {
         val pdf = measureTimeMillisWithResult {
