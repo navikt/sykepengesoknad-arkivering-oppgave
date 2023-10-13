@@ -114,10 +114,13 @@ class Arkivaren(
 
             behandlingsdagMessage += " Antall behandlingsdager: ${svarListe?.size} "
 
-            for (item in svarListe.withIndex()) {
-                println(item)
-                // opprett logisk vedlegg
+            if (svarListe.size > 0) {
                 behandlingsdagMessage += " Behandlingsdager: "
+            }
+
+            for (item in svarListe.withIndex()) {
+                // println(item)
+                // opprett logisk vedlegg
                 behandlingsdagMessage += " ${item.value.verdi?.let { transformDateFormat(it) }}" // $item
             }
 
