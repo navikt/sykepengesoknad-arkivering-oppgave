@@ -10,7 +10,10 @@ import okhttp3.mockwebserver.RecordedRequest
 
 object DokArkivMockDispatcher : QueueDispatcher() {
     override fun dispatch(request: RecordedRequest): MockResponse {
-        if (request.requestUrl?.encodedPath?.startsWith("/rest/journalpostapi/v1/journalpost") != true) {
+           if (responseQueue.peek() != null) {
+            return responseQueue.take()
+        }
+        if (request.requestUrl?.encodedPath?.startsWith("/rest/journalpostapi/v1/journalpost") == true) {
 //            return MockResponse().setResponseCode(404)
 //                .setBody("Har ikke implemetert dok arkiv mock api for ${request.requestUrl}")
 
@@ -24,7 +27,7 @@ object DokArkivMockDispatcher : QueueDispatcher() {
         }
 
         // rest/journalpostapi/v1/dokumentInfo/{dokumentInfoId}/logiskVedlegg/
-        if (request.requestUrl?.encodedPath?.endsWith("/logiskVedlegg") != true) {
+        if (request.requestUrl?.encodedPath?.endsWith("/logiskVedlegg") == true) {
 //            return MockResponse().setResponseCode(404)
 //                .setBody("Har ikke implemetert dok arkiv mock api for ${request.requestUrl}")
             return MockResponse().setBody(
@@ -35,9 +38,7 @@ object DokArkivMockDispatcher : QueueDispatcher() {
         }
 
 
-        if (responseQueue.peek() != null) {
-            return responseQueue.take()
-        }
+
 
         return MockResponse().setResponseCode(404).setBody("Har ikke implemetert dok arkiv mock api for ${request.requestUrl}")
 
