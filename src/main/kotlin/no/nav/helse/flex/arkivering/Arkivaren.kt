@@ -3,10 +3,7 @@ package no.nav.helse.flex.arkivering
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.helse.flex.client.DokArkivClient
 import no.nav.helse.flex.client.PDFClient
-import no.nav.helse.flex.domain.JournalpostRequest
-import no.nav.helse.flex.domain.JournalpostResponse
-import no.nav.helse.flex.domain.LogiskVedleggRequest
-import no.nav.helse.flex.domain.Soknad
+import no.nav.helse.flex.domain.*
 import no.nav.helse.flex.domain.dto.PDFTemplate
 import no.nav.helse.flex.domain.dto.Soknadstype
 import no.nav.helse.flex.logger
@@ -31,8 +28,8 @@ class Arkivaren(
         return parsedDate.format(outputFormatter)
     }
 
-    fun leggTilLogiskVedleggForBehandlingsDager(soknad: Soknad, journalpostResponse: MeassureBlock<JournalpostResponse>) {
-        val dokumentInfoId = journalpostResponse.result.dokumenter.firstOrNull()?.dokumentInfoId ?: return
+    fun leggTilLogiskVedleggForBehandlingsDager(soknad: Soknad, journalpostResponse: MeassureBlock<JournalpostResponse>) : String {
+        val dokumentInfoId = journalpostResponse.result.dokumenter.firstOrNull()?.dokumentInfoId ?: throw RuntimeException("Request til dokarkiv failer")
 
         val behandlingsdagerUker = soknad.sporsmal
             .filter { it.tag.startsWith("ENKELTSTAENDE_BEHANDLINGSDAGER_") }
@@ -51,7 +48,8 @@ class Arkivaren(
         val request = LogiskVedleggRequest(tittel = behandlingsdagMessage)
 
         val response = dokArkivClient.opprettLogiskVedlegg(request, dokumentInfoId)
-        log.info("La til logisk vedlegg for behandlingsdager: $response")
+        return response.logiskVedleggId
+
     }
 
     fun opprettJournalpost(soknad: Soknad): String {

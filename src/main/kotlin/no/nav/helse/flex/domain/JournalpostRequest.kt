@@ -22,7 +22,6 @@ data class JournalpostRequest(
     val tema: String? = null,
     val datoMottatt: LocalDate? = null,
     val tittel: String? = null
-    // det er her vi trenger å få inn en liste med behandlingsdager? nei, det må gjøres separat
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
