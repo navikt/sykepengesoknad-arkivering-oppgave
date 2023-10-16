@@ -50,7 +50,8 @@ class Arkivaren(
 
         val request = LogiskVedleggRequest(tittel = behandlingsdagMessage)
 
-        dokArkivClient.opprettLogiskVedlegg(request, dokumentInfoId)
+        val response = dokArkivClient.opprettLogiskVedlegg(request, dokumentInfoId)
+        log.info("La til logisk vedlegg for behandlingsdager: $response")
     }
 
     fun opprettJournalpost(soknad: Soknad): String {
