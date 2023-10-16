@@ -10,10 +10,10 @@ data class JournalpostResponse(
     val journalstatus: String? = null,
     val melding: String? = null
 )
-// @JsonInclude(JsonInclude.Include.NON_NULL)
-// data class LogiskVedleggResponse(
-//
-// )
+ @JsonInclude(JsonInclude.Include.NON_NULL)
+ data class LogiskVedleggResponse(
+    val logiskVedleggId: String
+ )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class DokumentInfo(

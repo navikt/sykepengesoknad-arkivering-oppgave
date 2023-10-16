@@ -4,6 +4,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.flex.domain.JournalpostRequest
 import no.nav.helse.flex.domain.JournalpostResponse
 import no.nav.helse.flex.domain.LogiskVedleggRequest
+import no.nav.helse.flex.domain.LogiskVedleggResponse
 import no.nav.helse.flex.objectMapper
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
@@ -48,7 +49,7 @@ class DokArkivClient(
     }
 
     @Retryable(backoff = Backoff(delay = 5000))
-    fun opprettLogiskVedlegg(logiskVedleggRequest: LogiskVedleggRequest, dokumentId: String): String { // hvordan kan jeg unngå any her? hva er egentlig responsformatet? sendes det noe json? hvordan tester man?
+    fun opprettLogiskVedlegg(logiskVedleggRequest: LogiskVedleggRequest, dokumentId: String): LogiskVedleggResponse{ // hvordan kan jeg unngå any her? hva er egentlig responsformatet? sendes det noe json? hvordan tester man?
         try {
             val url = "$dokarkivUrl/rest/journalpostapi/v1/dokumentInfo/$dokumentId/logiskVedlegg/"
 
@@ -59,7 +60,7 @@ class DokArkivClient(
             val entity = HttpEntity(logiskVedleggRequest, headers)
 
             // val result = dokArkivRestTemplate.exchange(url, HttpMethod.POST, entity, JournalpostResponse::class.java)
-            val result = dokArkivRestTemplate.exchange(url, HttpMethod.POST, entity, String::class.java)
+            val result = dokArkivRestTemplate.exchange(url, HttpMethod.POST, entity, LogiskVedleggResponse::class.java)
 
             if (!result.statusCode.is2xxSuccessful) {
                 throw RuntimeException("dokarkiv feiler med HTTP-${result.statusCode} for søknad med id: $dokumentId")
