@@ -68,7 +68,7 @@ class DokArkivClient(
             return result.body
                 ?: throw RuntimeException("dokarkiv returnerer ikke data for søknad med id: $dokumentId")
         } catch (e: HttpClientErrorException.Conflict) {
-            return OBJECT_MAPPER.readValue(e.responseBodyAsString)
+            return objectMapper.readValue(e.responseBodyAsString)
         }
     }
 }
