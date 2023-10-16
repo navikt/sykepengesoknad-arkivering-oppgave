@@ -9,8 +9,6 @@ import no.nav.helse.flex.domain.LogiskVedleggRequest
 import no.nav.helse.flex.domain.Soknad
 import no.nav.helse.flex.domain.dto.PDFTemplate
 import no.nav.helse.flex.domain.dto.Soknadstype
-import no.nav.helse.flex.domain.dto.Sporsmal
-import no.nav.helse.flex.domain.dto.Svar
 import no.nav.helse.flex.logger
 import org.springframework.stereotype.Component
 import java.time.LocalDate
@@ -33,28 +31,27 @@ class Arkivaren(
         return parsedDate.format(outputFormatter)
     }
 
-fun leggTilLogiskVedleggForBehandlingsDager(soknad: Soknad, journalpostResponse: MeassureBlock<JournalpostResponse>) {
-    val dokumentInfoId = journalpostResponse.result.dokumenter.firstOrNull()?.dokumentInfoId ?: return
+    fun leggTilLogiskVedleggForBehandlingsDager(soknad: Soknad, journalpostResponse: MeassureBlock<JournalpostResponse>) {
+        val dokumentInfoId = journalpostResponse.result.dokumenter.firstOrNull()?.dokumentInfoId ?: return
 
-    val behandlingsdagerUker = soknad.sporsmal
-        .filter { it.tag.startsWith("ENKELTSTAENDE_BEHANDLINGSDAGER_") }
-        .flatMap { it.undersporsmal ?: emptyList() }
+        val behandlingsdagerUker = soknad.sporsmal
+            .filter { it.tag.startsWith("ENKELTSTAENDE_BEHANDLINGSDAGER_") }
+            .flatMap { it.undersporsmal ?: emptyList() }
 
-    val svarListe = behandlingsdagerUker
-        .flatMap { it.svar ?: emptyList() }
-        .filter { it.verdi != "Ikke til behandling" }
+        val svarListe = behandlingsdagerUker
+            .flatMap { it.svar ?: emptyList() }
+            .filter { it.verdi != "Ikke til behandling" }
 
-    var behandlingsdagMessage = " Antall behandlingsdager: ${svarListe.size} "
+        var behandlingsdagMessage = " Antall behandlingsdager: ${svarListe.size} "
 
-    if (svarListe.isNotEmpty()) {
-        behandlingsdagMessage += " Behandlingsdager: ${svarListe.joinToString(" ") { it.verdi?.let { v -> transformDateFormat(v) } ?: "" }}"
+        if (svarListe.isNotEmpty()) {
+            behandlingsdagMessage += " Behandlingsdager: ${svarListe.joinToString(" ") { it.verdi?.let { v -> transformDateFormat(v) } ?: "" }}"
+        }
+
+        val request = LogiskVedleggRequest(tittel = behandlingsdagMessage)
+
+        dokArkivClient.opprettLogiskVedlegg(request, dokumentInfoId)
     }
-
-    val request2 = LogiskVedleggRequest(tittel = behandlingsdagMessage)
-
-    dokArkivClient.opprettLogiskVedlegg(request2, dokumentInfoId)
-}
-
 
     fun opprettJournalpost(soknad: Soknad): String {
         val pdf = measureTimeMillisWithResult {
@@ -68,7 +65,6 @@ fun leggTilLogiskVedleggForBehandlingsDager(soknad: Soknad, journalpostResponse:
             dokArkivClient.opprettJournalpost(request, soknad.soknadsId!!)
         }
 
-
         if (!journalpostResponse.result.journalpostferdigstilt) {
             log.warn("Journalpost ${journalpostResponse.result.journalpostId} for søknad ${soknad.soknadsId} ble ikke ferdigstilt")
         }
@@ -76,10 +72,7 @@ fun leggTilLogiskVedleggForBehandlingsDager(soknad: Soknad, journalpostResponse:
         log.info("Arkiverte søknad ${soknad.soknadsId}. PDF tid: ${pdf.millis} . Dokarkiv tid: ${journalpostResponse.millis}")
         registry.counter("søknad_arkivert").increment()
 
-
         val erBehandlingsDagSoknad = soknad.soknadstype == Soknadstype.BEHANDLINGSDAGER
-
-
 
         if (erBehandlingsDagSoknad) {
             leggTilLogiskVedleggForBehandlingsDager(soknad, journalpostResponse)
