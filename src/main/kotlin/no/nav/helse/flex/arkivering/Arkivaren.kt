@@ -28,7 +28,7 @@ class Arkivaren(
         return parsedDate.format(outputFormatter)
     }
 
-    fun leggTilLogiskVedleggForBehandlingsDager(soknad: Soknad, journalpostResponse: MeassureBlock<JournalpostResponse>) : String {
+    fun leggTilLogiskVedleggForBehandlingsDager(soknad: Soknad, journalpostResponse: MeassureBlock<JournalpostResponse>): String {
         val dokumentInfoId = journalpostResponse.result.dokumenter.firstOrNull()?.dokumentInfoId ?: throw RuntimeException("Request til dokarkiv failer")
 
         val behandlingsdagerUker = soknad.sporsmal
@@ -49,7 +49,6 @@ class Arkivaren(
 
         val response = dokArkivClient.opprettLogiskVedlegg(request, dokumentInfoId)
         return response.logiskVedleggId
-
     }
 
     fun opprettJournalpost(soknad: Soknad): String {
