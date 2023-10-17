@@ -1,0 +1,344 @@
+{
+  "id": "5cafb320-5a2e-3988-8257-27fd40789c55",
+  "type": "BEHANDLINGSDAGER",
+  "status": "NY",
+  "fnr": "19866699723",
+  "sykmeldingId": "6e089067-f472-4282-9638-16edd7078506",
+  "arbeidsgiver": null,
+  "arbeidssituasjon": "ARBEIDSLEDIG",
+  "korrigerer": null,
+  "korrigertAv": null,
+  "soktUtenlandsopphold": false,
+  "arbeidsgiverForskutterer": null,
+  "fom": "2023-10-02",
+  "tom": "2023-10-15",
+  "dodsdato": null,
+  "startSyketilfelle": "2023-09-28",
+  "arbeidGjenopptatt": null,
+  "sykmeldingSkrevet": "2023-10-10T02:00:00",
+  "opprettet": "2023-10-17T12:59:28.52738",
+  "opprinneligSendt": null,
+  "sendtNav": null,
+  "sendtArbeidsgiver": null,
+  "egenmeldinger": [],
+  "fravarForSykmeldingen": [],
+  "papirsykmeldinger": [],
+  "fravar": [],
+  "andreInntektskilder": [],
+  "soknadsperioder": [
+    {
+      "fom": "2023-10-02",
+      "tom": "2023-10-15",
+      "sykmeldingsgrad": 0,
+      "faktiskGrad": null,
+      "avtaltTimer": null,
+      "faktiskTimer": null,
+      "sykmeldingstype": "BEHANDLINGSDAGER",
+      "grad": null
+    }
+  ],
+  "sporsmal": [
+    {
+      "id": "28936023-a470-3112-b336-afcd834f6035",
+      "tag": "ANSVARSERKLARING",
+      "sporsmalstekst": "Jeg vet at jeg kan miste retten til sykepenger hvis opplysningene jeg gir ikke er riktige eller fullstendige. Jeg vet også at NAV kan holde igjen eller kreve tilbake penger, og at å gi feil opplysninger kan være straffbart.",
+      "undertekst": null,
+      "min": null,
+      "max": null,
+      "svartype": "CHECKBOX_PANEL",
+      "kriterieForVisningAvUndersporsmal": null,
+      "svar": [],
+      "undersporsmal": []
+    },
+    {
+      "id": "b7a12b71-f8b9-354a-9c18-3fc9223a624a",
+      "tag": "ENKELTSTAENDE_BEHANDLINGSDAGER_0",
+      "sporsmalstekst": "Hvilke dager kunne du ikke være arbeidssøker på grunn av behandling mellom 2. - 15. oktober 2023?",
+      "undertekst": null,
+      "min": null,
+      "max": null,
+      "svartype": "INFO_BEHANDLINGSDAGER",
+      "kriterieForVisningAvUndersporsmal": null,
+      "svar": [],
+      "undersporsmal": [
+        {
+          "id": "8acb3171-f4c3-308f-8c81-5a688fbcb8c3",
+          "tag": "ENKELTSTAENDE_BEHANDLINGSDAGER_UKE_0",
+          "sporsmalstekst": "02.10.2023 - 06.10.2023",
+          "undertekst": null,
+          "min": "2023-10-02",
+          "max": "2023-10-06",
+          "svartype": "RADIO_GRUPPE_UKEKALENDER",
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [],
+          "undersporsmal": []
+        },
+        {
+          "id": "84154086-6a01-3f56-aa0a-4fa3ae7708a6",
+          "tag": "ENKELTSTAENDE_BEHANDLINGSDAGER_UKE_1",
+          "sporsmalstekst": "09.10.2023 - 13.10.2023",
+          "undertekst": null,
+          "min": "2023-10-09",
+          "max": "2023-10-13",
+          "svartype": "RADIO_GRUPPE_UKEKALENDER",
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [],
+          "undersporsmal": []
+        }
+      ]
+    },
+    {
+      "id": "07d41ccf-05e7-3405-8564-c3d8b494b4ee",
+      "tag": "ANDRE_INNTEKTSKILDER",
+      "sporsmalstekst": "Har du hatt inntekt mens du har vært sykmeldt i perioden 2. - 15. oktober 2023?",
+      "undertekst": null,
+      "min": "2023-10-02",
+      "max": "2023-10-15",
+      "svartype": "JA_NEI",
+      "kriterieForVisningAvUndersporsmal": "JA",
+      "svar": [],
+      "undersporsmal": [
+        {
+          "id": "a4b1ba09-a1dd-36f8-8c93-7a4fad7927f7",
+          "tag": "HVILKE_ANDRE_INNTEKTSKILDER",
+          "sporsmalstekst": "Hvilke inntektskilder har du hatt?",
+          "undertekst": null,
+          "min": null,
+          "max": null,
+          "svartype": "CHECKBOX_GRUPPE",
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [],
+          "undersporsmal": [
+            {
+              "id": "60cf1478-069a-3896-a239-0b1d2db06ae1",
+              "tag": "INNTEKTSKILDE_ANDRE_ARBEIDSFORHOLD",
+              "sporsmalstekst": "andre arbeidsforhold",
+              "undertekst": null,
+              "min": null,
+              "max": null,
+              "svartype": "CHECKBOX",
+              "kriterieForVisningAvUndersporsmal": "CHECKED",
+              "svar": [],
+              "undersporsmal": [
+                {
+                  "id": "8560de2c-a638-39e1-b883-7fb1e91e68b9",
+                  "tag": "INNTEKTSKILDE_ANDRE_ARBEIDSFORHOLD_ER_DU_SYKMELDT",
+                  "sporsmalstekst": "Er du sykmeldt fra dette?",
+                  "undertekst": null,
+                  "min": null,
+                  "max": null,
+                  "svartype": "JA_NEI",
+                  "kriterieForVisningAvUndersporsmal": null,
+                  "svar": [],
+                  "undersporsmal": []
+                }
+              ]
+            },
+            {
+              "id": "a4070350-e81f-3b26-ba87-bf39fd65c2f2",
+              "tag": "INNTEKTSKILDE_SELVSTENDIG",
+              "sporsmalstekst": "selvstendig næringsdrivende",
+              "undertekst": null,
+              "min": null,
+              "max": null,
+              "svartype": "CHECKBOX",
+              "kriterieForVisningAvUndersporsmal": "CHECKED",
+              "svar": [],
+              "undersporsmal": [
+                {
+                  "id": "8b39be1d-b0e8-307f-bff8-946f906c8097",
+                  "tag": "INNTEKTSKILDE_SELVSTENDIG_ER_DU_SYKMELDT",
+                  "sporsmalstekst": "Er du sykmeldt fra dette?",
+                  "undertekst": null,
+                  "min": null,
+                  "max": null,
+                  "svartype": "JA_NEI",
+                  "kriterieForVisningAvUndersporsmal": null,
+                  "svar": [],
+                  "undersporsmal": []
+                }
+              ]
+            },
+            {
+              "id": "9081405d-2b4c-3962-885d-e24f6dd126b7",
+              "tag": "INNTEKTSKILDE_SELVSTENDIG_DAGMAMMA",
+              "sporsmalstekst": "dagmamma",
+              "undertekst": null,
+              "min": null,
+              "max": null,
+              "svartype": "CHECKBOX",
+              "kriterieForVisningAvUndersporsmal": "CHECKED",
+              "svar": [],
+              "undersporsmal": [
+                {
+                  "id": "b4d015a2-7ce7-334f-9c88-75b7c797da35",
+                  "tag": "INNTEKTSKILDE_SELVSTENDIG_DAGMAMMA_ER_DU_SYKMELDT",
+                  "sporsmalstekst": "Er du sykmeldt fra dette?",
+                  "undertekst": null,
+                  "min": null,
+                  "max": null,
+                  "svartype": "JA_NEI",
+                  "kriterieForVisningAvUndersporsmal": null,
+                  "svar": [],
+                  "undersporsmal": []
+                }
+              ]
+            },
+            {
+              "id": "6153c163-1f9a-3d9c-9b55-7ac52efc73ef",
+              "tag": "INNTEKTSKILDE_JORDBRUKER",
+              "sporsmalstekst": "jordbruk / fiske / reindrift",
+              "undertekst": null,
+              "min": null,
+              "max": null,
+              "svartype": "CHECKBOX",
+              "kriterieForVisningAvUndersporsmal": "CHECKED",
+              "svar": [],
+              "undersporsmal": [
+                {
+                  "id": "4677566a-2b62-3b6a-ada5-3f146e155a8a",
+                  "tag": "INNTEKTSKILDE_JORDBRUKER_ER_DU_SYKMELDT",
+                  "sporsmalstekst": "Er du sykmeldt fra dette?",
+                  "undertekst": null,
+                  "min": null,
+                  "max": null,
+                  "svartype": "JA_NEI",
+                  "kriterieForVisningAvUndersporsmal": null,
+                  "svar": [],
+                  "undersporsmal": []
+                }
+              ]
+            },
+            {
+              "id": "90dbba43-0662-3d80-8539-a241aca43e5e",
+              "tag": "INNTEKTSKILDE_FRILANSER",
+              "sporsmalstekst": "frilanser",
+              "undertekst": null,
+              "min": null,
+              "max": null,
+              "svartype": "CHECKBOX",
+              "kriterieForVisningAvUndersporsmal": "CHECKED",
+              "svar": [],
+              "undersporsmal": [
+                {
+                  "id": "a9d46d7c-5632-3530-8af2-2a9d7fab0db0",
+                  "tag": "INNTEKTSKILDE_FRILANSER_ER_DU_SYKMELDT",
+                  "sporsmalstekst": "Er du sykmeldt fra dette?",
+                  "undertekst": null,
+                  "min": null,
+                  "max": null,
+                  "svartype": "JA_NEI",
+                  "kriterieForVisningAvUndersporsmal": null,
+                  "svar": [],
+                  "undersporsmal": []
+                }
+              ]
+            },
+            {
+              "id": "d72062af-5969-3faf-a88b-26d32d12cc15",
+              "tag": "INNTEKTSKILDE_OMSORGSLONN",
+              "sporsmalstekst": "kommunal omsorgstønad",
+              "undertekst": null,
+              "min": null,
+              "max": null,
+              "svartype": "CHECKBOX",
+              "kriterieForVisningAvUndersporsmal": "CHECKED",
+              "svar": [],
+              "undersporsmal": [
+                {
+                  "id": "c495a57a-1434-3bae-913b-6bc81931f6e9",
+                  "tag": "INNTEKTSKILDE_OMSORGSLONN_ER_DU_SYKMELDT",
+                  "sporsmalstekst": "Er du sykmeldt fra dette?",
+                  "undertekst": null,
+                  "min": null,
+                  "max": null,
+                  "svartype": "JA_NEI",
+                  "kriterieForVisningAvUndersporsmal": null,
+                  "svar": [],
+                  "undersporsmal": []
+                }
+              ]
+            },
+            {
+              "id": "9f4461d5-d202-3235-abf0-e7e3ba5348a7",
+              "tag": "INNTEKTSKILDE_FOSTERHJEM",
+              "sporsmalstekst": "fosterhjemgodtgjørelse",
+              "undertekst": null,
+              "min": null,
+              "max": null,
+              "svartype": "CHECKBOX",
+              "kriterieForVisningAvUndersporsmal": "CHECKED",
+              "svar": [],
+              "undersporsmal": [
+                {
+                  "id": "2f12bdab-26e9-3d54-9162-69ad44957a7e",
+                  "tag": "INNTEKTSKILDE_FOSTERHJEM_ER_DU_SYKMELDT",
+                  "sporsmalstekst": "Er du sykmeldt fra dette?",
+                  "undertekst": null,
+                  "min": null,
+                  "max": null,
+                  "svartype": "JA_NEI",
+                  "kriterieForVisningAvUndersporsmal": null,
+                  "svar": [],
+                  "undersporsmal": []
+                }
+              ]
+            },
+            {
+              "id": "03c41a83-a196-3944-940e-23bfa1cc5648",
+              "tag": "INNTEKTSKILDE_ANNET",
+              "sporsmalstekst": "annet",
+              "undertekst": null,
+              "min": null,
+              "max": null,
+              "svartype": "CHECKBOX",
+              "kriterieForVisningAvUndersporsmal": null,
+              "svar": [],
+              "undersporsmal": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "99b603df-f140-32d9-a088-b292c2977eaf",
+      "tag": "VAER_KLAR_OVER_AT",
+      "sporsmalstekst": "Viktig å være klar over:",
+      "undertekst": "<ul><li>Denne søknaden gjelder hvis selve behandlingen har en slik virkning på deg at du ikke kan jobbe resten av dagen. Grunnen er altså behandlingens effekt, og ikke at du for eksempel måtte bruke arbeidstid.</li><li>NAV kan innhente opplysninger som er nødvendige for å behandle søknaden.</li><li>Fristen for å søke sykepenger er som hovedregel 3 måneder.</li><li>Du kan endre svarene i denne søknaden opp til 12 måneder etter du sendte den inn første gangen.</li><li>Du kan lese mer om rettigheter og plikter på <a href=\"https://www.nav.no/sykepenger\" target=\"_blank\">nav.no/sykepenger</a>.</li></ul>",
+      "min": null,
+      "max": null,
+      "svartype": "IKKE_RELEVANT",
+      "kriterieForVisningAvUndersporsmal": null,
+      "svar": [],
+      "undersporsmal": []
+    },
+    {
+      "id": "f87dcb9a-a766-3411-8384-957480b7e42a",
+      "tag": "BEKREFT_OPPLYSNINGER",
+      "sporsmalstekst": "Jeg har lest all informasjonen jeg har fått i søknaden og bekrefter at opplysningene jeg har gitt er korrekte.",
+      "undertekst": null,
+      "min": null,
+      "max": null,
+      "svartype": "CHECKBOX_PANEL",
+      "kriterieForVisningAvUndersporsmal": null,
+      "svar": [],
+      "undersporsmal": []
+    }
+  ],
+  "avsendertype": null,
+  "ettersending": false,
+  "mottaker": null,
+  "egenmeldtSykmelding": false,
+  "yrkesskade": null,
+  "arbeidUtenforNorge": null,
+  "harRedusertVenteperiode": null,
+  "behandlingsdager": [],
+  "permitteringer": [],
+  "merknaderFraSykmelding": null,
+  "egenmeldingsdagerFraSykmelding": null,
+  "merknader": null,
+  "sendTilGosys": null,
+  "utenlandskSykmelding": false,
+  "medlemskapVurdering": null,
+  "forstegangssoknad": false
+}
