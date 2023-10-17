@@ -14,7 +14,6 @@ object DokArkivMockDispatcher : QueueDispatcher() {
             return responseQueue.take()
         }
         if (request.requestUrl?.encodedPath?.startsWith("/rest/journalpostapi/v1/journalpost") == true) {
-
             return MockResponse().setBody(
                 JournalpostResponse(
                     dokumenter = listOf(DokumentInfo(dokumentInfoId = "123456")),

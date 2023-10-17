@@ -4,7 +4,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.flex.kafka.mapper.toSykepengesoknad
 import no.nav.helse.flex.logger
 import no.nav.helse.flex.objectMapper
-import no.nav.helse.flex.serialisertTilString
 import no.nav.helse.flex.service.IdentService
 import no.nav.helse.flex.spreoppgave.SpreOppgaverService
 import no.nav.helse.flex.sykepengesoknad.kafka.SykepengesoknadDTO
