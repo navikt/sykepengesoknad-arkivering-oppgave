@@ -50,7 +50,6 @@ class SykepengesoknadBackendClient(
                 throw RuntimeException(message)
             }
 
-            // log.info(result.body.toString())
 
             result.body?.let { return it }
 
