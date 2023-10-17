@@ -51,7 +51,7 @@ class DokArkivClient(
     @Retryable(backoff = Backoff(delay = 5000))
     fun opprettLogiskVedlegg(logiskVedleggRequest: LogiskVedleggRequest, dokumentId: String): LogiskVedleggResponse { // hvordan kan jeg unngå any her? hva er egentlig responsformatet? sendes det noe json? hvordan tester man?
         try {
-            val url = "$dokarkivUrl/rest/journalpostapi/v1/dokumentInfo/$dokumentId/logiskVedlegg/"
+            val url = "$dokarkivUrl/rest/journalpostapi/v1/dokumentInfo/$dokumentId/logiskVedlegg"
 
             val headers = HttpHeaders()
             headers.contentType = MediaType.APPLICATION_JSON

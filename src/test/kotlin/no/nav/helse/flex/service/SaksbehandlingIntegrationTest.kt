@@ -260,6 +260,80 @@ Nei
     }
 
     @Test
+    fun `behandlingsdager søknad behandles korrekt`() {
+        val oppgaveID = 99
+        oppgaveMockWebserver.enqueue(
+            MockResponse().setBody(
+                OppgaveResponse(
+                    oppgaveID,
+                    "4488",
+                    "SYK",
+                    "SOK"
+                ).serialisertTilString()
+            ).addHeader("Content-Type", "application/json")
+        )
+
+        val soknad = mockBehandlingsdagerdDTO.copy(id = UUID.randomUUID().toString())
+
+        aivenKafkaProducer.send(
+            ProducerRecord(
+                SYKEPENGESOKNAD_TOPIC,
+                soknad.id,
+                soknad.serialisertTilString()
+            )
+        )
+
+        await().atMost(Duration.ofSeconds(20)).until {
+            innsendingRepository.findBySykepengesoknadId(soknad.id)?.oppgaveId != null
+        }
+
+        val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
+        assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
+
+        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
+        assertThat(oppgaveRequestBody.journalpostId).isEqualTo("journalpostId")
+        assertThat(oppgaveRequestBody.beskrivelse).isEqualTo(
+            """
+Søknad med enkeltstående behandlingsdager
+
+Periode 1:
+02.10.2023 - 15.10.2023
+
+Hvilke dager kunne du ikke være arbeidssøker på grunn av behandling mellom 2. - 15. oktober 2023?
+    04.10.2023
+
+    11.10.2023
+            """.trimIndent()
+        )
+        assertThat(oppgaveRequestBody.tema).isEqualTo("SYK")
+        assertThat(oppgaveRequestBody.oppgavetype).isEqualTo("SOK")
+       assertThat(oppgaveRequestBody.prioritet).isEqualTo("NORM")
+        assertThat(oppgaveRequestBody.behandlingstema).isEqualTo("ab0351")
+       assertThat(oppgaveRequestBody.behandlingstype).isNull()
+        assertThat(oppgaveRequestBody.tildeltEnhetsnr).isEqualTo(null)
+
+        val innsendingIDatabase = innsendingRepository.findBySykepengesoknadId(soknad.id)!!
+        assertThat(innsendingIDatabase.sykepengesoknadId).isEqualTo(soknad.id)
+        assertThat(innsendingIDatabase.oppgaveId).isEqualTo(oppgaveID.toString())
+        assertThat(innsendingIDatabase.behandlet).isNotNull
+
+        val pdfRequest = pdfMockWebserver.takeRequest(10, TimeUnit.SECONDS)!!
+        pdfRequest.requestLine shouldBeEqualTo "POST /api/v1/genpdf/syfosoknader/behandlingsdager HTTP/1.1"
+
+        val dokArkivRequestJournalpostRequest = dokArkivMockWebserver.takeRequest(1, TimeUnit.SECONDS)!!
+
+        dokArkivRequestJournalpostRequest.requestLine shouldBeEqualTo "POST /rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true HTTP/1.1"
+        val dokArkivRequestJournalpostBody = objectMapper.readValue<JournalpostRequest>(dokArkivRequestJournalpostRequest.body.readUtf8())
+        dokArkivRequestJournalpostBody.dokumenter[0].tittel `should be equal to` "Søknad om enkeltstående behandlingsdager fra arbeidsledig for periode: 02.10.2023 til 15.10.2023"
+
+        val dokArkivLogiskVedleggRequest = dokArkivMockWebserver.takeRequest(1, TimeUnit.SECONDS)!!
+        dokArkivLogiskVedleggRequest.requestLine shouldBeEqualTo "POST /rest/journalpostapi/v1/dokumentInfo/123456/logiskVedlegg HTTP/1.1"
+        val dokArkivLogiskVedleggRequestBody = objectMapper.readValue<LogiskVedleggRequest>(dokArkivLogiskVedleggRequest.body.readUtf8())
+        dokArkivLogiskVedleggRequestBody.tittel `should be equal to` "Antall behandlingsdager: 2 Behandlingsdager: 04-10-2023 11-10-2023"
+
+    }
+
+    @Test
     fun `gradert reisetilskudd søknad behandles korrekt`() {
         val oppgaveID = 3
         oppgaveMockWebserver.enqueue(

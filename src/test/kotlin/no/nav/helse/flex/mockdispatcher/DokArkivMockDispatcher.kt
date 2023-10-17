@@ -19,7 +19,7 @@ object DokArkivMockDispatcher : QueueDispatcher() {
 
             return MockResponse().setBody(
                 JournalpostResponse(
-                    dokumenter = listOf(DokumentInfo()),
+                    dokumenter = listOf(DokumentInfo(dokumentInfoId = "123456")),
                     journalpostId = "journalpostId",
                     journalpostferdigstilt = true
                 ).serialisertTilString()

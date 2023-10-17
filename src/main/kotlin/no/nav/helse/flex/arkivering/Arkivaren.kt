@@ -39,10 +39,10 @@ class Arkivaren(
             .flatMap { it.svar ?: emptyList() }
             .filter { it.verdi != "Ikke til behandling" }
 
-        var behandlingsdagMessage = " Antall behandlingsdager: ${svarListe.size} "
+        var behandlingsdagMessage = "Antall behandlingsdager: ${svarListe.size} "
 
         if (svarListe.isNotEmpty()) {
-            behandlingsdagMessage += " Behandlingsdager: ${svarListe.joinToString(" ") { it.verdi?.let { v -> transformDateFormat(v) } ?: "" }}"
+            behandlingsdagMessage += "Behandlingsdager: ${svarListe.joinToString(" ") { it.verdi?.let { v -> transformDateFormat(v) } ?: "" }}"
         }
 
         val request = LogiskVedleggRequest(tittel = behandlingsdagMessage)

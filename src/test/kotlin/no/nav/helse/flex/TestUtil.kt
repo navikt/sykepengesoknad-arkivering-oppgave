@@ -32,7 +32,6 @@ val mockReisetilskuddDTO: SykepengesoknadDTO =
         SykepengesoknadDTO::class.java
     )
 
-
 val mockBehandlingsdagerdDTO: SykepengesoknadDTO =
     objectMapper.readValue(
         Application::class.java.getResource("/soknadBehandlingsdagerTodagerDTO.json"),
