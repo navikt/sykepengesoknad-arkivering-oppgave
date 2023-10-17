@@ -4,6 +4,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.flex.kafka.mapper.toSykepengesoknad
 import no.nav.helse.flex.logger
 import no.nav.helse.flex.objectMapper
+import no.nav.helse.flex.serialisertTilString
 import no.nav.helse.flex.service.IdentService
 import no.nav.helse.flex.spreoppgave.SpreOppgaverService
 import no.nav.helse.flex.sykepengesoknad.kafka.SykepengesoknadDTO
@@ -40,7 +41,7 @@ class AivenSoknadSendtListener(
             MDC.put(NAV_CALLID, getSafeNavCallIdHeaderAsString(cr.headers()))
 
             val dto = cr.value().tilSykepengesoknadDTO()
-
+            log.warn(dto.serialisertTilString())
             val aktorId = identService.hentAktorIdForFnr(dto.fnr)
 
             val sykepengesoknad = dto.toSykepengesoknad(aktorId)
