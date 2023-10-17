@@ -307,9 +307,9 @@ Hvilke dager kunne du ikke være arbeidssøker på grunn av behandling mellom 2.
         )
         assertThat(oppgaveRequestBody.tema).isEqualTo("SYK")
         assertThat(oppgaveRequestBody.oppgavetype).isEqualTo("SOK")
-       assertThat(oppgaveRequestBody.prioritet).isEqualTo("NORM")
+        assertThat(oppgaveRequestBody.prioritet).isEqualTo("NORM")
         assertThat(oppgaveRequestBody.behandlingstema).isEqualTo("ab0351")
-       assertThat(oppgaveRequestBody.behandlingstype).isNull()
+        assertThat(oppgaveRequestBody.behandlingstype).isNull()
         assertThat(oppgaveRequestBody.tildeltEnhetsnr).isEqualTo(null)
 
         val innsendingIDatabase = innsendingRepository.findBySykepengesoknadId(soknad.id)!!
@@ -330,7 +330,6 @@ Hvilke dager kunne du ikke være arbeidssøker på grunn av behandling mellom 2.
         dokArkivLogiskVedleggRequest.requestLine shouldBeEqualTo "POST /rest/journalpostapi/v1/dokumentInfo/123456/logiskVedlegg HTTP/1.1"
         val dokArkivLogiskVedleggRequestBody = objectMapper.readValue<LogiskVedleggRequest>(dokArkivLogiskVedleggRequest.body.readUtf8())
         dokArkivLogiskVedleggRequestBody.tittel `should be equal to` "Antall behandlingsdager: 2 Behandlingsdager: 04-10-2023 11-10-2023"
-
     }
 
     @Test
