@@ -14,8 +14,6 @@ object DokArkivMockDispatcher : QueueDispatcher() {
             return responseQueue.take()
         }
         if (request.requestUrl?.encodedPath?.startsWith("/rest/journalpostapi/v1/journalpost") == true) {
-//            return MockResponse().setResponseCode(404)
-//                .setBody("Har ikke implemetert dok arkiv mock api for ${request.requestUrl}")
 
             return MockResponse().setBody(
                 JournalpostResponse(
@@ -26,10 +24,7 @@ object DokArkivMockDispatcher : QueueDispatcher() {
             ).addHeader("Content-Type", "application/json")
         }
 
-        // rest/journalpostapi/v1/dokumentInfo/{dokumentInfoId}/logiskVedlegg/
         if (request.requestUrl?.encodedPath?.endsWith("/logiskVedlegg") == true) {
-//            return MockResponse().setResponseCode(404)
-//                .setBody("Har ikke implemetert dok arkiv mock api for ${request.requestUrl}")
             return MockResponse().setBody(
                 LogiskVedleggResponse(
                     logiskVedleggId = "323971844"

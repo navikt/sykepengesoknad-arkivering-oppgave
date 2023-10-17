@@ -41,7 +41,6 @@ class AivenSoknadSendtListener(
             MDC.put(NAV_CALLID, getSafeNavCallIdHeaderAsString(cr.headers()))
 
             val dto = cr.value().tilSykepengesoknadDTO()
-            log.warn(dto.serialisertTilString())
             val aktorId = identService.hentAktorIdForFnr(dto.fnr)
 
             val sykepengesoknad = dto.toSykepengesoknad(aktorId)

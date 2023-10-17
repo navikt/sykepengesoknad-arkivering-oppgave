@@ -42,9 +42,6 @@ fun skapJournalpostRequest(
             id = soknad.fnr,
             idType = "FNR"
         )
-        // beskjed_saksbehandler = "hei fra øivind"
-        // er det her??? NEI :(
-        // behandlingsdager, vi kan ikke gjøre det her,... vi må opprette logisk vedlegg
     )
 }
 

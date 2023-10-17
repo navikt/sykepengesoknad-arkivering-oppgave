@@ -49,7 +49,7 @@ class DokArkivClient(
     }
 
     @Retryable(backoff = Backoff(delay = 5000))
-    fun opprettLogiskVedlegg(logiskVedleggRequest: LogiskVedleggRequest, dokumentId: String): LogiskVedleggResponse { // hvordan kan jeg unngå any her? hva er egentlig responsformatet? sendes det noe json? hvordan tester man?
+    fun opprettLogiskVedlegg(logiskVedleggRequest: LogiskVedleggRequest, dokumentId: String): LogiskVedleggResponse {
         try {
             val url = "$dokarkivUrl/rest/journalpostapi/v1/dokumentInfo/$dokumentId/logiskVedlegg"
 
@@ -59,7 +59,6 @@ class DokArkivClient(
 
             val entity = HttpEntity(logiskVedleggRequest, headers)
 
-            // val result = dokArkivRestTemplate.exchange(url, HttpMethod.POST, entity, JournalpostResponse::class.java)
             val result = dokArkivRestTemplate.exchange(url, HttpMethod.POST, entity, LogiskVedleggResponse::class.java)
 
             if (!result.statusCode.is2xxSuccessful) {
