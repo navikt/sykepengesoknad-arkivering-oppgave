@@ -50,7 +50,6 @@ class SykepengesoknadBackendClient(
                 throw RuntimeException(message)
             }
 
-
             result.body?.let { return it }
 
             val message = "Kall mot sykepengesoknad-backend returnerer ikke data"
