@@ -25,6 +25,7 @@ class LovMeClient(
         try {
             val headers = HttpHeaders()
             headers.contentType = MediaType.APPLICATION_JSON
+            headers.set("Nav-Call-Id", sykepengesoknad.id)
 
             val uri = UriComponentsBuilder
                 .fromHttpUrl(url)

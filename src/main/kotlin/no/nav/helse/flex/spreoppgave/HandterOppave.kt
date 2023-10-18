@@ -50,7 +50,7 @@ class HandterOppave(
                 )
             }
             eksisterendeOppgave.status == OppgaveStatus.Utsett -> {
-                log.info("Mottok utsett oppgave opprettelse for søknad ${oppgave.dokumentId} fra bømlo")
+                log.info("Mottok ${oppgave.oppdateringstype.name} oppgave for søknad ${oppgave.dokumentId} fra bømlo")
                 spreOppgaveRepository.updateOppgaveBySykepengesoknadId(
                     sykepengesoknadId = oppgave.dokumentId.toString(),
                     timeout = timeout(oppgave),

@@ -42,11 +42,12 @@ data class Soknad(
     val kvitteringer: List<PdfKvittering>? = null,
     val merknader: List<String>? = null,
     val utenlandskSykmelding: Boolean? = null,
-    val egenmeldingsdagerFraSykmelding: List<LocalDate>? = null
+    val egenmeldingsdagerFraSykmelding: List<LocalDate>? = null,
+    val medlemskapVurdering: String? = null
 ) {
 
     companion object {
-        fun lagSoknad(sykepengesoknad: Sykepengesoknad, fnr: String, navn: String): Soknad =
+        fun lagSoknad(sykepengesoknad: Sykepengesoknad, fnr: String, navn: String, endeligMedlemskapVurdering: String? = null): Soknad =
             Soknad(
                 aktorId = sykepengesoknad.aktorId,
                 soknadsId = sykepengesoknad.id,
@@ -75,7 +76,8 @@ data class Soknad(
                 kvitteringer = sykepengesoknad.hentPdfKvitteringer(),
                 merknader = sykepengesoknad.merknader,
                 utenlandskSykmelding = sykepengesoknad.utenlandskSykmelding,
-                egenmeldingsdagerFraSykmelding = sykepengesoknad.egenmeldingsdagerFraSykmelding?.sorted()
+                egenmeldingsdagerFraSykmelding = sykepengesoknad.egenmeldingsdagerFraSykmelding?.sorted(),
+                medlemskapVurdering = endeligMedlemskapVurdering
             )
 
         private fun endreRekkefolgePaSporsmalForPDF(sporsmal: List<Sporsmal>) =

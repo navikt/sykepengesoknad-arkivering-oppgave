@@ -11,6 +11,7 @@ import no.nav.helse.flex.domain.dto.Soknadstype
 import no.nav.helse.flex.domain.dto.Sykepengesoknad
 import no.nav.helse.flex.kafka.producer.RebehandleSykepengesoknadProducer
 import no.nav.helse.flex.logger
+import no.nav.helse.flex.medlemskap.MedlemskapVurdering
 import no.nav.helse.flex.repository.InnsendingDbRecord
 import no.nav.helse.flex.repository.InnsendingRepository
 import org.springframework.stereotype.Component
@@ -25,7 +26,8 @@ class SaksbehandlingsService(
     private val rebehandleSykepengesoknadProducer: RebehandleSykepengesoknadProducer,
     private val sykepengesoknadKvitteringerClient: SykepengesoknadKvitteringerClient,
     private val identService: IdentService,
-    private val pdlClient: PdlClient
+    private val pdlClient: PdlClient,
+    private val medlemskapVurdering: MedlemskapVurdering
 ) {
 
     private val log = logger()
@@ -48,20 +50,24 @@ class SaksbehandlingsService(
             )
             log.info("Journalført søknad: ${sykepengesoknad.id} med journalpostId: $jouralpostId")
         }
+
+        medlemskapVurdering.oppdaterInngåendeMedlemskapVurdering(sykepengesoknad)
+
         return innsendingId!!
     }
 
     fun opprettOppgave(sykepengesoknad: Sykepengesoknad, innsending: InnsendingDbRecord, speilRelatert: Boolean = false) {
         val fnr = identService.hentFnrForAktorId(sykepengesoknad.aktorId)
-
-        val soknad = opprettSoknad(sykepengesoknad, fnr)
+        val medlemskapVurdering = medlemskapVurdering.hentEndeligMedlemskapVurdering(sykepengesoknad)
+        val soknad = opprettSoknad(sykepengesoknad, fnr, medlemskapVurdering)
 
         val requestBody = OppgaveClient.lagRequestBody(
             aktorId = sykepengesoknad.aktorId,
             journalpostId = innsending.journalpostId!!,
             soknad = soknad,
             harRedusertVenteperiode = sykepengesoknad.harRedusertVenteperiode,
-            speilRelatert = speilRelatert
+            speilRelatert = speilRelatert,
+            medlemskapVurdering = medlemskapVurdering
         )
         val oppgaveResponse = oppgaveClient.opprettOppgave(requestBody)
 
@@ -96,10 +102,10 @@ class SaksbehandlingsService(
         rebehandleSykepengesoknadProducer.send(sykepengesoknad)
     }
 
-    fun opprettSoknad(sykepengesoknad: Sykepengesoknad, fnr: String): Soknad {
+    fun opprettSoknad(sykepengesoknad: Sykepengesoknad, fnr: String, endeligMedlemskapVurdering: String? = null): Soknad {
         val navn = pdlClient.hentFormattertNavn(fnr)
 
-        val soknad = Soknad.lagSoknad(sykepengesoknad, fnr, navn)
+        val soknad = Soknad.lagSoknad(sykepengesoknad, fnr, navn, endeligMedlemskapVurdering)
 
         return soknad.copy(kvitteringer = soknad.kvitteringer?.map { it.hentOgSettKvittering() })
     }

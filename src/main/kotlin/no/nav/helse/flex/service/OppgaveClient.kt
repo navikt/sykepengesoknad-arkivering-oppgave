@@ -19,6 +19,16 @@ import java.time.LocalDate
 import java.time.LocalDate.now
 import java.time.format.DateTimeFormatter
 
+private const val forkortetVentetid = "ae0247"
+private const val overgangssakFraSpeil = "ab0455"
+private const val utland = "ae0106"
+private const val medlemskap = "ab0269"
+private const val sykepengerUnderUtenlandsopphold = "ab0314"
+private const val enkeltståendeBehandlingsdager = "ab0351"
+private const val sykepengerForArbeidsledig = "ab0426"
+private const val reisetilskudd = "ab0237"
+private const val sykepenger = "ab0061"
+
 @Service
 class OppgaveClient(
     @Value("\${OPPGAVE_URL}")
@@ -60,7 +70,8 @@ class OppgaveClient(
             journalpostId: String,
             soknad: Soknad,
             harRedusertVenteperiode: Boolean = false,
-            speilRelatert: Boolean = false
+            speilRelatert: Boolean = false,
+            medlemskapVurdering: String? = null
         ): OppgaveRequest =
             OppgaveRequest(
                 opprettetAvEnhetsnr = "9999",
@@ -74,18 +85,20 @@ class OppgaveClient(
                 prioritet = "NORM"
             ).apply {
                 if (harRedusertVenteperiode) {
-                    this.behandlingstype = "ae0247"
+                    this.behandlingstype = forkortetVentetid
                 } else if (speilRelatert) {
-                    this.behandlingstema = "ab0455"
+                    this.behandlingstema = overgangssakFraSpeil
                 } else if (soknad.utenlandskSykmelding == true) {
-                    this.behandlingstype = "ae0106"
+                    this.behandlingstype = utland
+                } else if (medlemskapVurdering in listOf("NEI", "UAVKLART")) {
+                    this.behandlingstema = medlemskap
                 } else {
                     this.behandlingstema = when (soknad.soknadstype) {
-                        Soknadstype.OPPHOLD_UTLAND -> "ab0314"
-                        Soknadstype.BEHANDLINGSDAGER -> "ab0351"
-                        Soknadstype.ARBEIDSLEDIG -> "ab0426"
-                        Soknadstype.REISETILSKUDD, Soknadstype.GRADERT_REISETILSKUDD -> "ab0237"
-                        else -> "ab0061"
+                        Soknadstype.OPPHOLD_UTLAND -> sykepengerUnderUtenlandsopphold
+                        Soknadstype.BEHANDLINGSDAGER -> enkeltståendeBehandlingsdager
+                        Soknadstype.ARBEIDSLEDIG -> sykepengerForArbeidsledig
+                        Soknadstype.REISETILSKUDD, Soknadstype.GRADERT_REISETILSKUDD -> reisetilskudd
+                        else -> sykepenger
                     }
                 }
             }
