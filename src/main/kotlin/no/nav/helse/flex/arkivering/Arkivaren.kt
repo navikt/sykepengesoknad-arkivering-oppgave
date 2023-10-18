@@ -3,12 +3,13 @@ package no.nav.helse.flex.arkivering
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.helse.flex.client.DokArkivClient
 import no.nav.helse.flex.client.PDFClient
-import no.nav.helse.flex.domain.JournalpostRequest
-import no.nav.helse.flex.domain.Soknad
+import no.nav.helse.flex.domain.*
 import no.nav.helse.flex.domain.dto.PDFTemplate
 import no.nav.helse.flex.domain.dto.Soknadstype
 import no.nav.helse.flex.logger
 import org.springframework.stereotype.Component
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Component
 class Arkivaren(
@@ -18,6 +19,37 @@ class Arkivaren(
 ) {
 
     val log = logger()
+
+    fun transformDateFormat(date: String): String {
+        val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val outputFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+
+        val parsedDate = LocalDate.parse(date, inputFormatter)
+        return parsedDate.format(outputFormatter)
+    }
+
+    fun leggTilLogiskVedleggForBehandlingsDager(soknad: Soknad, journalpostResponse: MeassureBlock<JournalpostResponse>): String {
+        val dokumentInfoId = journalpostResponse.result.dokumenter.firstOrNull()?.dokumentInfoId ?: throw RuntimeException("Request til dokarkiv failer")
+
+        val behandlingsdagerUker = soknad.sporsmal
+            .filter { it.tag.startsWith("ENKELTSTAENDE_BEHANDLINGSDAGER_") }
+            .flatMap { it.undersporsmal ?: emptyList() }
+
+        val svarListe = behandlingsdagerUker
+            .flatMap { it.svar ?: emptyList() }
+            .filter { it.verdi != "Ikke til behandling" }
+
+        var behandlingsdagMessage = "Antall behandlingsdager: ${svarListe.size} "
+
+        if (svarListe.isNotEmpty()) {
+            behandlingsdagMessage += "Behandlingsdager: ${svarListe.joinToString(" ") { it.verdi?.let { v -> transformDateFormat(v) } ?: "" }}"
+        }
+
+        val request = LogiskVedleggRequest(tittel = behandlingsdagMessage)
+
+        val response = dokArkivClient.opprettLogiskVedlegg(request, dokumentInfoId)
+        return response.logiskVedleggId
+    }
 
     fun opprettJournalpost(soknad: Soknad): String {
         val pdf = measureTimeMillisWithResult {
@@ -30,12 +62,19 @@ class Arkivaren(
         val journalpostResponse = measureTimeMillisWithResult {
             dokArkivClient.opprettJournalpost(request, soknad.soknadsId!!)
         }
+
         if (!journalpostResponse.result.journalpostferdigstilt) {
             log.warn("Journalpost ${journalpostResponse.result.journalpostId} for søknad ${soknad.soknadsId} ble ikke ferdigstilt")
         }
 
         log.info("Arkiverte søknad ${soknad.soknadsId}. PDF tid: ${pdf.millis} . Dokarkiv tid: ${journalpostResponse.millis}")
         registry.counter("søknad_arkivert").increment()
+
+        val erBehandlingsDagSoknad = soknad.soknadstype == Soknadstype.BEHANDLINGSDAGER
+
+        if (erBehandlingsDagSoknad) {
+            leggTilLogiskVedleggForBehandlingsDager(soknad, journalpostResponse)
+        }
         return journalpostResponse.result.journalpostId
     }
 

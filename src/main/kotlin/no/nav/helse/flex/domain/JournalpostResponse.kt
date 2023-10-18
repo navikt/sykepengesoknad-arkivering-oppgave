@@ -12,6 +12,11 @@ data class JournalpostResponse(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+data class LogiskVedleggResponse(
+    val logiskVedleggId: String
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class DokumentInfo(
     val brevkode: String? = null,
     val dokumentInfoId: String? = null,

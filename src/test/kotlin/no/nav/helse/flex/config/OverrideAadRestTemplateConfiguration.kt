@@ -27,6 +27,10 @@ class OverrideAadRestTemplateConfiguration {
         restTemplateBuilder.build()
 
     @Bean
+    fun logiskVedleggRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate =
+        restTemplateBuilder.build()
+
+    @Bean
     fun pdlRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate =
         restTemplateBuilder.build()
 
