@@ -327,7 +327,7 @@ Hvilke dager kunne du ikke være arbeidssøker på grunn av behandling mellom 2.
         dokArkivRequestJournalpostBody.dokumenter[0].tittel `should be equal to` "Søknad om enkeltstående behandlingsdager fra arbeidsledig for periode: 02.10.2023 til 15.10.2023"
 
         val dokArkivLogiskVedleggRequest = dokArkivMockWebserver.takeRequest(1, TimeUnit.SECONDS)!!
-        dokArkivLogiskVedleggRequest.requestLine shouldBeEqualTo "POST /rest/journalpostapi/v1/dokumentInfo/123456/logiskVedlegg HTTP/1.1"
+        dokArkivLogiskVedleggRequest.requestLine shouldBeEqualTo "POST /rest/journalpostapi/v1/dokumentInfo/123456/logiskVedlegg/ HTTP/1.1"
         val dokArkivLogiskVedleggRequestBody = objectMapper.readValue<LogiskVedleggRequest>(dokArkivLogiskVedleggRequest.body.readUtf8())
         dokArkivLogiskVedleggRequestBody.tittel `should be equal to` "Antall behandlingsdager: 2 Behandlingsdager: 04-10-2023 11-10-2023"
     }

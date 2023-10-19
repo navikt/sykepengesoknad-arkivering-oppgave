@@ -23,7 +23,7 @@ object DokArkivMockDispatcher : QueueDispatcher() {
             ).addHeader("Content-Type", "application/json")
         }
 
-        if (request.requestUrl?.encodedPath?.endsWith("/logiskVedlegg") == true) {
+        if (request.requestUrl?.encodedPath?.endsWith("/logiskVedlegg/") == true) {
             return MockResponse().setBody(
                 LogiskVedleggResponse(
                     logiskVedleggId = "323971844"
