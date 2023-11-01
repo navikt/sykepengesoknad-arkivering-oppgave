@@ -142,6 +142,7 @@ Ja
             """.trimIndent()
         )
         assertThat(oppgaveRequestBody.tema).isEqualTo("SYK")
+
         assertThat(oppgaveRequestBody.oppgavetype).isEqualTo("SOK")
         assertThat(oppgaveRequestBody.prioritet).isEqualTo("NORM")
         assertThat(oppgaveRequestBody.behandlingstema).isNull()
@@ -159,6 +160,10 @@ Ja
         dokArkivRequest.requestLine shouldBeEqualTo "POST /rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true HTTP/1.1"
         val dokArkivRequestBody = objectMapper.readValue<JournalpostRequest>(dokArkivRequest.body.readUtf8())
         dokArkivRequestBody.dokumenter[0].tittel `should be equal to` "Søknad om sykepenger fra Selvstendig/Frilanser for periode: 01.05.2020 til 05.05.2020"
+
+        val pdlRequest = pdlMockWebserver.takeRequest(1, TimeUnit.SECONDS)!!
+        pdlRequest.headers["Behandlingsnummer"] `should be equal to` "B128"
+        pdlRequest.headers["Tema"] `should be equal to` "SYK"
     }
 
     @Test
