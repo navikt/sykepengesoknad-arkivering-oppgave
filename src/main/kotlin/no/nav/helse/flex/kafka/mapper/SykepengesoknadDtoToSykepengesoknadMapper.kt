@@ -38,6 +38,7 @@ private fun SvartypeDTO.mapSvartype(): Svartype {
         SvartypeDTO.TIMER -> Svartype.TIMER
         SvartypeDTO.FRITEKST -> Svartype.FRITEKST
         SvartypeDTO.IKKE_RELEVANT -> Svartype.IKKE_RELEVANT
+        SvartypeDTO.GRUPPE_AV_UNDERSPORSMAL -> Svartype.GRUPPE_AV_UNDERSPORSMAL
         SvartypeDTO.PROSENT -> Svartype.PROSENT
         SvartypeDTO.RADIO_GRUPPE -> Svartype.RADIO_GRUPPE
         SvartypeDTO.RADIO_GRUPPE_TIMER_PROSENT -> Svartype.RADIO_GRUPPE_TIMER_PROSENT
