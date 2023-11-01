@@ -23,6 +23,8 @@ class PdlClient(
     private val TEMA = "Tema"
     private val TEMA_SYK = "SYK"
     private val IDENT = "ident"
+    private val BEHANDLINGSNUMMER_KEY = "Behandlingsnummer"
+    private val BEHANDLINGSNUMMER_VALUE = "B128"
 
     @Retryable(exclude = [FunctionalPdlError::class])
     fun hentIdenter(ident: String): List<PdlIdent> {
@@ -34,7 +36,7 @@ class PdlClient(
         val responseEntity = pdlRestTemplate.exchange(
             "$pdlApiUrl/graphql",
             HttpMethod.POST,
-            HttpEntity(requestToJson(graphQLRequest), createHeaderWithTema()),
+            HttpEntity(requestToJson(graphQLRequest), createHeaders()),
             String::class.java
         )
 
@@ -61,7 +63,7 @@ class PdlClient(
         val responseEntity = pdlRestTemplate.exchange(
             "$pdlApiUrl/graphql",
             HttpMethod.POST,
-            HttpEntity(requestToJson(graphQLRequest), createHeaderWithTema()),
+            HttpEntity(requestToJson(graphQLRequest), createHeaders()),
             String::class.java
         )
 
@@ -78,9 +80,11 @@ class PdlClient(
         return navn
     }
 
-    private fun createHeaderWithTema(): HttpHeaders {
+    private fun createHeaders(): HttpHeaders {
         val headers = createHeader()
+
         headers[TEMA] = TEMA_SYK
+        headers[BEHANDLINGSNUMMER_KEY] = BEHANDLINGSNUMMER_VALUE
         return headers
     }
 
