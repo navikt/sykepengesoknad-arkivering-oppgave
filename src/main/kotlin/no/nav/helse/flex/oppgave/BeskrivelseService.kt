@@ -194,6 +194,7 @@ private fun beskrivSporsmal(sporsmal: Sporsmal, dybde: Int): String {
             RADIO_GRUPPE,
             RADIO_GRUPPE_TIMER_PROSENT,
             INFO_BEHANDLINGSDAGER,
+            GRUPPE_AV_UNDERSPORSMAL,
             IKKE_RELEVANT
         )
     ) {

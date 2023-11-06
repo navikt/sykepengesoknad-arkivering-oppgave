@@ -119,14 +119,13 @@ class MedlemskapVurderingTest : FellesTestoppsett() {
         Informasjon om hva du skal gjøre finner du på Navet, se
         https://navno.sharepoint.com/sites/fag-og-ytelser-eos-lovvalg-medlemskap/SitePages/Hvordan-vurderer-jeg-lovvalg-og-medlemskap.aspx
         
-        Har du oppholdstillatelse fra utlendingsdirektoratet?
+        Har du oppholdstillatelse fra Utlendingsdirektoratet?
         Ja
-            Når fikk du vedtak om oppholdstillatelse?
+            Hvilken dato fikk du denne oppholdstillatelsen?
             01.01.2023
         
-            Har du fått permanent oppholdstillatelse?
-            Nei
-                Hvilken periode har du fått oppholdstillatelse?
+            Er oppholdstillatelsen midlertidig eller permanent?
+            Midlertidig
                 13.12.2022 - 02.01.2023
         """.trimIndent()
     }
@@ -187,14 +186,13 @@ class MedlemskapVurderingTest : FellesTestoppsett() {
         Informasjon om hva du skal gjøre finner du på Navet, se
         https://navno.sharepoint.com/sites/fag-og-ytelser-eos-lovvalg-medlemskap/SitePages/Hvordan-vurderer-jeg-lovvalg-og-medlemskap.aspx
         
-        Har du oppholdstillatelse fra utlendingsdirektoratet?
+        Har du oppholdstillatelse fra Utlendingsdirektoratet?
         Ja
-            Når fikk du vedtak om oppholdstillatelse?
+            Hvilken dato fikk du denne oppholdstillatelsen?
             01.01.2023
         
-            Har du fått permanent oppholdstillatelse?
-            Nei
-                Hvilken periode har du fått oppholdstillatelse?
+            Er oppholdstillatelsen midlertidig eller permanent?
+            Midlertidig
                 13.12.2022 - 02.01.2023
         """.trimIndent()
     }
@@ -315,7 +313,7 @@ class MedlemskapVurderingTest : FellesTestoppsett() {
         Sporsmal(
             id = UUID.randomUUID().toString(),
             tag = "MEDLEMSKAP_OPPHOLDSTILLATELSE",
-            sporsmalstekst = "Har du oppholdstillatelse fra utlendingsdirektoratet?",
+            sporsmalstekst = "Har du oppholdstillatelse fra Utlendingsdirektoratet?",
             svartype = Svartype.JA_NEI,
             svar = listOf(Svar(verdi = "JA")),
             kriterieForVisningAvUndersporsmal = Visningskriterie.JA,
@@ -323,7 +321,7 @@ class MedlemskapVurderingTest : FellesTestoppsett() {
                 Sporsmal(
                     id = UUID.randomUUID().toString(),
                     tag = "MEDLEMSKAP_OPPHOLDSTILLATELSE_VEDTAKSDATO",
-                    sporsmalstekst = "Når fikk du vedtak om oppholdstillatelse?",
+                    sporsmalstekst = "Hvilken dato fikk du denne oppholdstillatelsen?",
                     svartype = Svartype.DATO,
                     min = "2013-10-09",
                     max = "2023-10-09",
@@ -331,20 +329,47 @@ class MedlemskapVurderingTest : FellesTestoppsett() {
                 ),
                 Sporsmal(
                     id = UUID.randomUUID().toString(),
-                    tag = "MEDLEMSKAP_OPPHOLDSTILLATELSE_PERMANENT",
-                    sporsmalstekst = "Har du fått permanent oppholdstillatelse?",
-                    svartype = Svartype.JA_NEI,
-                    svar = listOf(Svar(verdi = "NEI")),
-                    kriterieForVisningAvUndersporsmal = Visningskriterie.NEI,
+                    tag = "MEDLEMSKAP_OPPHOLDSTILLATELSE_GRUPPE",
+                    sporsmalstekst = "Er oppholdstillatelsen midlertidig eller permanent?",
+                    svartype = Svartype.RADIO_GRUPPE,
+                    svar = emptyList(),
                     undersporsmal = listOf(
                         Sporsmal(
                             id = UUID.randomUUID().toString(),
-                            tag = "MEDLEMSKAP_OPPHOLDSTILLATELSE_PERIODE",
-                            sporsmalstekst = "Hvilken periode har du fått oppholdstillatelse?",
-                            svartype = Svartype.PERIODE,
-                            min = "2013-10-09",
-                            max = "2033-10-09",
-                            svar = listOf(Svar(verdi = "{\"fom\":\"2022-12-13\",\"tom\":\"2023-01-02\"}"))
+                            tag = "MEDLEMSKAP_OPPHOLDSTILLATELSE_MIDLERTIDIG",
+                            sporsmalstekst = "Midlertidig",
+                            svartype = Svartype.RADIO,
+                            svar = listOf(Svar(verdi = "CHECKED")),
+                            kriterieForVisningAvUndersporsmal = Visningskriterie.CHECKED,
+                            undersporsmal = listOf(
+                                Sporsmal(
+                                    id = UUID.randomUUID().toString(),
+                                    tag = "MEDLEMSKAP_OPPHOLDSTILLATELSE_MIDLERTIDIG_PERIODE",
+                                    svartype = Svartype.PERIODE,
+                                    min = "2013-10-09",
+                                    max = "2033-10-09",
+                                    svar = listOf(Svar(verdi = "{\"fom\":\"2022-12-13\",\"tom\":\"2023-01-02\"}"))
+                                )
+                            )
+                        ),
+                        Sporsmal(
+                            id = UUID.randomUUID().toString(),
+                            tag = "MEDLEMSKAP_OPPHOLDSTILLATELSE_PERMANENT",
+                            sporsmalstekst = "Permanent",
+                            svartype = Svartype.RADIO,
+                            svar = emptyList(),
+                            kriterieForVisningAvUndersporsmal = Visningskriterie.CHECKED,
+                            undersporsmal = listOf(
+                                Sporsmal(
+                                    id = UUID.randomUUID().toString(),
+                                    tag = "MEDLEMSKAP_OPPHOLDSTILLATELSE_PERMANENT_DATO",
+                                    sporsmalstekst = "Fra og med",
+                                    svartype = Svartype.DATO,
+                                    min = "2013-10-09",
+                                    max = "2023-10-09",
+                                    svar = emptyList()
+                                )
+                            )
                         )
                     )
                 )
