@@ -289,46 +289,46 @@ Grad: 100
 
 Har du arbeidet utenfor Norge i løpet av de siste 12 månedene før du ble syk?
 Ja
-        I hvilket land arbeidet du?
-        Canada
-        Hvilken arbeidsgiver jobbet du for?
-        Oslo Kommune
-        I hvilken periode arbeidet du i utlandet?
-        13.12.2022 - 02.01.2023
+    I hvilket land arbeidet du?
+    Canada
+    Hvilken arbeidsgiver jobbet du for?
+    Oslo Kommune
+    I hvilken periode arbeidet du i utlandet?
+    13.12.2022 - 02.01.2023
 
 Har du oppholdt deg i utlandet i løpet av de siste 12 månedene før du ble syk?
 Ja
-        I hvilket land utenfor Norge har du oppholdt deg?
-        Sverige
-        Hva gjorde du i utlandet?
-        Jeg var på ferie
-        I hvilken periode oppholdt du deg i dette landet?
-        13.12.2022 - 02.01.2023
+    I hvilket land utenfor Norge har du oppholdt deg?
+    Sverige
+    Hva gjorde du i utlandet?
+    Jeg var på ferie
+    I hvilken periode oppholdt du deg i dette landet?
+    13.12.2022 - 02.01.2023
 
 Har du oppholdt deg utenfor EØS i løpet av de siste 12 månedene før du ble syk?
 Ja
-        I hvilket land utenfor EØS har du oppholdt deg?
-        USA
-        Hva gjorde du i utlandet?
-        Annet
-            Beskriv hva du gjorde
-            Handletur
-        I hvilken periode oppholdt du deg i dette landet?
-        13.12.2022 - 02.01.2023
+    I hvilket land utenfor EØS har du oppholdt deg?
+    USA
+    Hva gjorde du i utlandet?
+    Annet
+        Beskriv hva du gjorde
+        Handletur
+    I hvilken periode oppholdt du deg i dette landet?
+    13.12.2022 - 02.01.2023
 
-        I hvilket land utenfor EØS har du oppholdt deg?
-        Australia
-        Hva gjorde du i utlandet?
-        Jeg var på ferie
-        I hvilken periode oppholdt du deg i dette landet?
-        13.12.2022 - 02.01.2023
+    I hvilket land utenfor EØS har du oppholdt deg?
+    Australia
+    Hva gjorde du i utlandet?
+    Jeg var på ferie
+    I hvilken periode oppholdt du deg i dette landet?
+    13.12.2022 - 02.01.2023
 
-        I hvilket land utenfor EØS har du oppholdt deg?
-        Indonesia
-        Hva gjorde du i utlandet?
-        Jeg var på ferie
-        I hvilken periode oppholdt du deg i dette landet?
-        13.12.2022 - 02.01.2023
+    I hvilket land utenfor EØS har du oppholdt deg?
+    Indonesia
+    Hva gjorde du i utlandet?
+    Jeg var på ferie
+    I hvilken periode oppholdt du deg i dette landet?
+    13.12.2022 - 02.01.2023
 
 Har du oppholdstillatelse fra Utlendingsdirektoratet?
 Ja
