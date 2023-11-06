@@ -32,7 +32,7 @@ val testContainersVersion = "1.19.1"
 val kluentVersion = "1.73"
 val cloudStorageVersion = "2.29.0"
 val jaxWsApiVersion = "1.1"
-val commonsTextVersion = "1.10.0"
+val commonsTextVersion = "1.11.0"
 val unleashVersion = "8.4.0"
 
 dependencies {
