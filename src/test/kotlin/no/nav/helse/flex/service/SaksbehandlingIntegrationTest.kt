@@ -125,7 +125,7 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
         )
 
         await().atMost(Duration.ofSeconds(10)).until {
-            innsendingRepository.findBySykepengesoknadId(soknad.id)?.oppgaveId != null
+            innsendingRepository.findBySykepengesoknadId(soknad.id)?.behandlet != null
         }
 
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
@@ -191,7 +191,7 @@ Ja
         )
 
         await().atMost(Duration.ofSeconds(10)).until {
-            innsendingRepository.findBySykepengesoknadId(soknad.id)?.oppgaveId != null
+            innsendingRepository.findBySykepengesoknadId(soknad.id)?.behandlet != null
         }
 
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
@@ -289,7 +289,7 @@ Nei
         )
 
         await().atMost(Duration.ofSeconds(20)).until {
-            innsendingRepository.findBySykepengesoknadId(soknad.id)?.oppgaveId != null
+            innsendingRepository.findBySykepengesoknadId(soknad.id)?.behandlet != null
         }
 
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
@@ -365,7 +365,7 @@ Hvilke dager kunne du ikke være arbeidssøker på grunn av behandling mellom 2.
         )
 
         await().atMost(Duration.ofSeconds(10)).until {
-            innsendingRepository.findBySykepengesoknadId(soknad.id)?.oppgaveId != null
+            innsendingRepository.findBySykepengesoknadId(soknad.id)?.behandlet != null
         }
 
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!

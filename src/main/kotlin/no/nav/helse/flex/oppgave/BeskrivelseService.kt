@@ -194,6 +194,7 @@ private fun beskrivSporsmal(sporsmal: Sporsmal, dybde: Int): String {
             RADIO_GRUPPE,
             RADIO_GRUPPE_TIMER_PROSENT,
             INFO_BEHANDLINGSDAGER,
+            GRUPPE_AV_UNDERSPORSMAL,
             IKKE_RELEVANT
         )
     ) {
@@ -203,19 +204,18 @@ private fun beskrivSporsmal(sporsmal: Sporsmal, dybde: Int): String {
     val sporsmalBeskrivelse = sporsmal.formatterSporsmalOgSvar().joinToString("") { sporsmalOgSvar ->
         innrykk + sporsmalOgSvar
     }
-    val undersporsmålBeskrivelse = (
-        sporsmal.undersporsmalIgnorerRadioIGruppeTimerProsent()
-            ?.map { beskrivSporsmal(it, getNesteDybde(sporsmal, dybde)) }
-            ?.filter { it.isNotBlank() }
-            ?.joinToString("\n")
-            ?: ""
-        ).fjernTommeLinjerHvisMedlemskapsgruppe(sporsmal.tag)
+    val undersporsmålBeskrivelse = sporsmal.undersporsmalIgnorerRadioIGruppeTimerProsent()
+        ?.map { beskrivSporsmal(it, getNesteDybde(sporsmal, dybde)) }
+        ?.filter { it.isNotBlank() }
+        ?.joinToString("\n")
+        ?.fjernTommeLinjerHvisMedlemskapsgruppe(sporsmal)
+        ?: ""
 
     return sporsmalBeskrivelse.plus(undersporsmålBeskrivelse)
 }
 
-private fun String.fjernTommeLinjerHvisMedlemskapsgruppe(tag: String): String {
-    if (tag.contains("MEDLEMSKAP") && tag.contains("GRUPPERING")) {
+private fun String.fjernTommeLinjerHvisMedlemskapsgruppe(sporsmal: Sporsmal): String {
+    if (sporsmal.svartype == GRUPPE_AV_UNDERSPORSMAL && sporsmal.tag.contains("MEDLEMSKAP")) {
         return this.replace("\n\n", "\n")
     }
 
@@ -224,7 +224,7 @@ private fun String.fjernTommeLinjerHvisMedlemskapsgruppe(tag: String): String {
 
 private fun getNesteDybde(sporsmal: Sporsmal, dybde: Int): Int {
     return when (sporsmal.svartype) {
-        RADIO_GRUPPE, RADIO_GRUPPE_TIMER_PROSENT -> dybde
+        RADIO_GRUPPE, RADIO_GRUPPE_TIMER_PROSENT, GRUPPE_AV_UNDERSPORSMAL -> dybde
         else -> dybde + 1
     }
 }
