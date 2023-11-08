@@ -45,6 +45,13 @@ class Arkivaren(
             behandlingsdagMessage += "${svarListe.joinToString(" ") { it.verdi?.let { v -> transformDateFormat(v) } ?: "" }}"
         }
 
+        if (soknad.egenmeldingsdagerFraSykmelding?.isNotEmpty() == true) {
+            behandlingsdagMessage += "\n ${soknad.egenmeldingsdagerFraSykmelding.size} egenmeldingsdager, "
+            behandlingsdagMessage += soknad.egenmeldingsdagerFraSykmelding.joinToString(" ") {
+                "${it.dayOfMonth.toString().padStart(2, '0')}${it.monthValue.toString().padStart(2, '0')}${it.year.toString().substring(2)}"
+            }
+        }
+
         val request = LogiskVedleggRequest(tittel = behandlingsdagMessage)
 
         val response = dokArkivClient.opprettLogiskVedlegg(request, dokumentInfoId)
