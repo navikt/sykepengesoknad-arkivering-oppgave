@@ -22,7 +22,7 @@ class Arkivaren(
 
     fun transformDateFormat(date: String): String {
         val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val outputFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+        val outputFormatter = DateTimeFormatter.ofPattern("ddMMyy")
 
         val parsedDate = LocalDate.parse(date, inputFormatter)
         return parsedDate.format(outputFormatter)
