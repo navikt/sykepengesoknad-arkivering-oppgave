@@ -358,7 +358,9 @@
   ],
   "permitteringer": [],
   "merknaderFraSykmelding": null,
-  "egenmeldingsdagerFraSykmelding": null,
+  "egenmeldingsdagerFraSykmelding": [
+    "2023-10-03" 
+  ],
   "merknader": null,
   "sendTilGosys": null,
   "utenlandskSykmelding": false,
