@@ -42,13 +42,13 @@ class Arkivaren(
         var behandlingsdagMessage = "${svarListe.size} behandlingsdager, "
 
         if (svarListe.isNotEmpty()) {
-            behandlingsdagMessage += "${svarListe.joinToString(" ") { it.verdi?.let { v -> transformDateFormat(v) } ?: "" }}"
+            behandlingsdagMessage += "${svarListe.joinToString(" ") { it.verdi?.let { v -> transformDateFormat(v) + ","} ?: "" }}"
         }
 
         if (soknad.egenmeldingsdagerFraSykmelding?.isNotEmpty() == true) {
             behandlingsdagMessage += " / ${soknad.egenmeldingsdagerFraSykmelding.size} egenmeldingsdager, "
             behandlingsdagMessage += soknad.egenmeldingsdagerFraSykmelding.joinToString(" ") {
-                "${it.dayOfMonth.toString().padStart(2, '0')}${it.monthValue.toString().padStart(2, '0')}${it.year.toString().substring(2)}"
+                "${it.dayOfMonth.toString().padStart(2, '0')}${it.monthValue.toString().padStart(2, '0')}${it.year.toString().substring(2) + ","}"
             }
         }
 
