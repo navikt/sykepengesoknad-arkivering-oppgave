@@ -22,7 +22,7 @@ class Arkivaren(
 
     fun transformDateFormat(date: String): String {
         val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val outputFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+        val outputFormatter = DateTimeFormatter.ofPattern("ddMMyy")
 
         val parsedDate = LocalDate.parse(date, inputFormatter)
         return parsedDate.format(outputFormatter)
@@ -39,10 +39,17 @@ class Arkivaren(
             .flatMap { it.svar ?: emptyList() }
             .filter { it.verdi != "Ikke til behandling" }
 
-        var behandlingsdagMessage = "Antall behandlingsdager: ${svarListe.size} "
+        var behandlingsdagMessage = "${svarListe.size} behandlingsdager, "
 
         if (svarListe.isNotEmpty()) {
-            behandlingsdagMessage += "Behandlingsdager: ${svarListe.joinToString(" ") { it.verdi?.let { v -> transformDateFormat(v) } ?: "" }}"
+            behandlingsdagMessage += "${svarListe.joinToString(", ") { it.verdi?.let { v -> transformDateFormat(v)} ?: "" }}"
+        }
+
+        if (soknad.egenmeldingsdagerFraSykmelding?.isNotEmpty() == true) {
+            behandlingsdagMessage += " / ${soknad.egenmeldingsdagerFraSykmelding.size} egenmeldingsdager, "
+            behandlingsdagMessage += soknad.egenmeldingsdagerFraSykmelding.joinToString(", ") {
+                "${it.dayOfMonth.toString().padStart(2, '0')}${it.monthValue.toString().padStart(2, '0')}${it.year.toString().substring(2)}"
+            }
         }
 
         val request = LogiskVedleggRequest(tittel = behandlingsdagMessage)
