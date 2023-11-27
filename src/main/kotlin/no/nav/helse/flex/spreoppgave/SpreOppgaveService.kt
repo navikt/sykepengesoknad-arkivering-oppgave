@@ -35,24 +35,24 @@ class SpreOppgaverService(
         try {
             if (sykepengesoknad.status == "SENDT" && !ettersendtTilArbeidsgiver(sykepengesoknad)) {
                 val innsendingsId = saksbehandlingsService.behandleSoknad(sykepengesoknad)
-                if (sykepengesoknad.skalSynkeOppgaveOpprettelseMedBomlo()) {
-                    prosesserOppgave(
-                        OppgaveDTO(
-                            dokumentId = UUID.fromString(sykepengesoknad.id),
-                            dokumentType = DokumentTypeDTO.Søknad,
-                            oppdateringstype = OppdateringstypeDTO.Utsett,
-                            timeout = sykepengesoknad.sendtNav?.plusHours(timeout) ?: LocalDateTime.now()
-                                .plusHours(timeout)
-                        ),
-                        OppgaveKilde.Søknad
-                    )
+
+                val timeoutMinutes = if (sykepengesoknad.skalSynkeOppgaveOpprettelseMedBomlo()) {
+                    timeout * 60
                 } else {
-                    if (sykepengesoknad.skalBehandlesAvNav()) {
-                        val innsending = saksbehandlingsService.finnEksisterendeInnsending(sykepengesoknad.id)
-                            ?: throw RuntimeException("Fant ikke eksisterende innsending")
-                        saksbehandlingsService.opprettOppgave(sykepengesoknad, innsending)
-                    }
+                    0
                 }
+
+                prosesserOppgave(
+                    OppgaveDTO(
+                        dokumentId = UUID.fromString(sykepengesoknad.id),
+                        dokumentType = DokumentTypeDTO.Søknad,
+                        oppdateringstype = OppdateringstypeDTO.Utsett,
+                        timeout = sykepengesoknad.sendtNav?.plusMinutes(timeoutMinutes) ?: LocalDateTime.now()
+                            .plusMinutes(timeoutMinutes)
+                    ),
+                    OppgaveKilde.Søknad
+                )
+
                 saksbehandlingsService.settFerdigbehandlet(innsendingsId)
             }
         } catch (e: DbActionExecutionException) {

@@ -34,9 +34,6 @@ class BigQueryTest : FellesTestoppsett() {
     @Autowired
     lateinit var spreOppgaveRepository: SpreOppgaveRepository
 
-    @Autowired
-    lateinit var oppgaveOpprettelse: OppgaveOpprettelse
-
     private val tid = LocalDateTime.of(2022, 3, 7, 12, 37, 17).toInstant(ZoneOffset.UTC)
 
     @BeforeEach

@@ -5,6 +5,7 @@ import no.nav.helse.flex.domain.OppgaveDTO
 import no.nav.helse.flex.kafka.consumer.AivenSoknadSendtListener
 import no.nav.helse.flex.kafka.consumer.AivenSpreOppgaverListener
 import no.nav.helse.flex.mockdispatcher.*
+import no.nav.helse.flex.service.OppgaveOpprettelse
 import no.nav.helse.flex.sykepengesoknad.kafka.SykepengesoknadDTO
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import okhttp3.mockwebserver.MockWebServer
@@ -114,6 +115,9 @@ abstract class FellesTestoppsett {
 
     @MockBean
     lateinit var acknowledgment: Acknowledgment
+
+    @Autowired
+    lateinit var oppgaveOpprettelse: OppgaveOpprettelse
 
     @AfterAll
     fun `Disable unleash toggles`() {

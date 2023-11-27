@@ -2,6 +2,7 @@ package no.nav.helse.flex.e2e
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.flex.*
+import no.nav.helse.flex.mockdispatcher.SykepengesoknadMockDispatcher
 import no.nav.helse.flex.service.*
 import no.nav.helse.flex.sykepengesoknad.kafka.SoknadsstatusDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SoknadstypeDTO
@@ -9,6 +10,7 @@ import no.nav.helse.flex.sykepengesoknad.kafka.SporsmalDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SvarDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SvartypeDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SykepengesoknadDTO
+import okhttp3.mockwebserver.MockResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.test.annotation.DirtiesContext
@@ -48,6 +50,9 @@ class AvbruttSoknadFeilFristTest : FellesTestoppsett() {
             merknader = listOf("AVBRUTT_FEILINFO")
         )
         leggSøknadPåKafka(soknad)
+
+        SykepengesoknadMockDispatcher.enque(soknad)
+        oppgaveOpprettelse.behandleOppgaver()
 
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")

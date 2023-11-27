@@ -48,8 +48,6 @@ class E2ETest : FellesTestoppsett() {
     @Autowired
     lateinit var spreOppgaveRepository: SpreOppgaveRepository
 
-    @Autowired
-    lateinit var oppgaveOpprettelse: OppgaveOpprettelse
 
     @BeforeEach
     fun setup() {
@@ -252,12 +250,12 @@ class E2ETest : FellesTestoppsett() {
                 timeout = LocalDateTime.now().plusHours(1)
             )
         )
-        leggSoknadPaKafka(lagSoknad(soknadId = soknadId, sendtNav = null, sendtArbeidsgiver = LocalDateTime.now()))
 
         val oppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
         assertThat(oppgave.status).isEqualTo(OppgaveStatus.Utsett)
 
         assertThat(oppgave.avstemt).isFalse
+        leggSoknadPaKafka(lagSoknad(soknadId = soknadId, sendtNav = null, sendtArbeidsgiver = LocalDateTime.now()))
 
         oppgaveOpprettelse.behandleOppgaver()
 

@@ -18,8 +18,6 @@ import java.util.concurrent.TimeUnit
 @DirtiesContext
 class SpesialBehandlingstemaTest : FellesTestoppsett() {
 
-    @Autowired
-    lateinit var oppgaveOpprettelse: OppgaveOpprettelse
 
     val fnr = "fnr"
 
