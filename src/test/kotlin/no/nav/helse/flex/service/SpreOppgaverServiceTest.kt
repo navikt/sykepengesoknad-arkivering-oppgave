@@ -7,8 +7,6 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
-import no.nav.helse.flex.domain.dto.Arbeidssituasjon
-import no.nav.helse.flex.domain.dto.Soknadstype
 import no.nav.helse.flex.domain.dto.Sykepengesoknad
 import no.nav.helse.flex.repository.InnsendingDbRecord
 import no.nav.helse.flex.repository.SpreOppgaveRepository
@@ -117,5 +115,4 @@ class SpreOppgaverServiceTest {
         verify(saksbehandlingsService, times(1)).behandleSoknad(sykepengesoknad)
         verify(saksbehandlingsService, never()).opprettOppgave(sykepengesoknad, innsending(sykepengesoknad.id))
     }
-
 }

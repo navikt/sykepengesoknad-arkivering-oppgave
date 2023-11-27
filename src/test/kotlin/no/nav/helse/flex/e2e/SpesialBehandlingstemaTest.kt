@@ -9,7 +9,6 @@ import no.nav.helse.flex.service.*
 import okhttp3.mockwebserver.MockResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.annotation.DirtiesContext
 import søknad
 import java.util.UUID
@@ -17,7 +16,6 @@ import java.util.concurrent.TimeUnit
 
 @DirtiesContext
 class SpesialBehandlingstemaTest : FellesTestoppsett() {
-
 
     val fnr = "fnr"
 

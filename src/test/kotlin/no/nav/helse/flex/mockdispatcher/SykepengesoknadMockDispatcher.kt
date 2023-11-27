@@ -1,6 +1,5 @@
 package no.nav.helse.flex.mockdispatcher
 
-import no.nav.helse.flex.domain.Soknad
 import no.nav.helse.flex.mockSykepengesoknadDTO
 import no.nav.helse.flex.serialisertTilString
 import no.nav.helse.flex.sykepengesoknad.kafka.SykepengesoknadDTO
@@ -24,7 +23,7 @@ object SykepengesoknadMockDispatcher : QueueDispatcher() {
         ).addHeader("Content-Type", "application/json")
     }
 
-    fun enque(soknad: SykepengesoknadDTO){
+    fun enque(soknad: SykepengesoknadDTO) {
         SykepengesoknadMockDispatcher.enqueueResponse(
             MockResponse().setBody(
                 soknad.serialisertTilString()

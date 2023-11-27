@@ -10,7 +10,6 @@ import no.nav.helse.flex.repository.InnsendingDbRecord
 import no.nav.helse.flex.repository.OppgaveStatus
 import no.nav.helse.flex.repository.SpreOppgaveRepository
 import no.nav.helse.flex.serialisertTilString
-import no.nav.helse.flex.service.OppgaveOpprettelse
 import no.nav.helse.flex.service.SaksbehandlingsService
 import no.nav.helse.flex.`should be equal to ignoring nano and zone`
 import no.nav.helse.flex.skapConsumerRecord
@@ -47,7 +46,6 @@ class E2ETest : FellesTestoppsett() {
 
     @Autowired
     lateinit var spreOppgaveRepository: SpreOppgaveRepository
-
 
     @BeforeEach
     fun setup() {
@@ -261,7 +259,7 @@ class E2ETest : FellesTestoppsett() {
 
         val behandletOppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
         assertThat(behandletOppgave.status).isEqualTo(OppgaveStatus.Utsett)
-        assertThat(behandletOppgave.avstemt).isFalse
+        assertThat(behandletOppgave.avstemt).isTrue
     }
 
     @Test
@@ -280,12 +278,12 @@ class E2ETest : FellesTestoppsett() {
         val behandletOppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
         assertThat(behandletOppgave.status).isEqualTo(OppgaveStatus.Utsett)
         omFireTimer.tilOsloZone() `should be equal to ignoring nano and zone` behandletOppgave.timeout
-        assertThat(behandletOppgave.avstemt).isFalse
+        assertThat(behandletOppgave.avstemt).isTrue
 
         val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
         assertThat(oppgaveFraAiven.status).isEqualTo(OppgaveStatus.Utsett)
         omFireTimer.tilOsloZone() `should be equal to ignoring nano and zone` oppgaveFraAiven.timeout
-        assertThat(oppgaveFraAiven.avstemt).isFalse
+        assertThat(oppgaveFraAiven.avstemt).isTrue
     }
 
     @Test

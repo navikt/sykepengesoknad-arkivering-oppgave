@@ -8,11 +8,9 @@ import no.nav.helse.flex.domain.OppgaveDTO
 import no.nav.helse.flex.mockdispatcher.SykepengesoknadMockDispatcher
 import no.nav.helse.flex.service.*
 import no.nav.helse.flex.sykepengesoknad.kafka.SoknadstypeDTO
-import okhttp3.mockwebserver.MockResponse
 import org.amshove.kluent.`should be null`
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.annotation.DirtiesContext
 import søknad
 import java.util.UUID
@@ -21,16 +19,12 @@ import java.util.concurrent.TimeUnit
 @DirtiesContext
 class ArbeidsledigIntegrationTest : FellesTestoppsett() {
 
-
-
     @Test
     fun `En arbeidsledigsøknad får behandlingstema ab0426 og takler at bømlo sier opprett`() {
         val soknadId = UUID.randomUUID()
         val søknad = søknad(soknadId).copy(type = SoknadstypeDTO.ARBEIDSLEDIG)
 
-
         SykepengesoknadMockDispatcher.enque(søknad)
-
 
         leggSøknadPåKafka(søknad)
         oppgaveOpprettelse.behandleOppgaver()

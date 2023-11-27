@@ -7,7 +7,6 @@ import no.nav.helse.flex.repository.InnsendingDbRecord
 import no.nav.helse.flex.repository.OppgaveStatus
 import no.nav.helse.flex.repository.SpreOppgaveDbRecord
 import no.nav.helse.flex.repository.SpreOppgaveRepository
-import no.nav.helse.flex.service.OppgaveOpprettelse
 import no.nav.helse.flex.service.SaksbehandlingsService
 import org.amshove.kluent.`should be`
 import org.junit.jupiter.api.AfterEach

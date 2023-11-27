@@ -193,7 +193,6 @@ Ja
             )
         )
 
-
         await().atMost(Duration.ofSeconds(10)).until {
             innsendingRepository.findBySykepengesoknadId(soknad.id)?.behandlet != null
         }
