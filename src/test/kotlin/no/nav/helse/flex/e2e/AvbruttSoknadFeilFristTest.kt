@@ -2,7 +2,6 @@ package no.nav.helse.flex.e2e
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.flex.*
-import no.nav.helse.flex.kafka.consumer.AivenSoknadSendtListener
 import no.nav.helse.flex.service.*
 import no.nav.helse.flex.sykepengesoknad.kafka.SoknadsstatusDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SoknadstypeDTO
@@ -12,9 +11,6 @@ import no.nav.helse.flex.sykepengesoknad.kafka.SvartypeDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SykepengesoknadDTO
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.kafka.support.Acknowledgment
 import org.springframework.test.annotation.DirtiesContext
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -23,12 +19,6 @@ import java.util.concurrent.TimeUnit
 
 @DirtiesContext
 class AvbruttSoknadFeilFristTest : FellesTestoppsett() {
-
-    @MockBean
-    lateinit var acknowledgment: Acknowledgment
-
-    @Autowired
-    lateinit var aivenSoknadSendtListener: AivenSoknadSendtListener
 
     val fnr = "fnr"
 
@@ -64,7 +54,4 @@ class AvbruttSoknadFeilFristTest : FellesTestoppsett() {
         val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
         assertThat(oppgaveRequestBody.beskrivelse).startsWith("Ved en feil har brukeren, for akkurat denne søknadsperioden, fått beskjed om en annen frist enn hva folketrygdloven § 22-13 tredje ledd tilsier.")
     }
-
-    private fun leggSøknadPåKafka(søknad: SykepengesoknadDTO) =
-        aivenSoknadSendtListener.listen(skapConsumerRecord("key", søknad.serialisertTilString()), acknowledgment)
 }

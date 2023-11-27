@@ -5,38 +5,18 @@ import no.nav.helse.flex.*
 import no.nav.helse.flex.domain.DokumentTypeDTO
 import no.nav.helse.flex.domain.OppdateringstypeDTO
 import no.nav.helse.flex.domain.OppgaveDTO
-import no.nav.helse.flex.kafka.consumer.AivenSoknadSendtListener
-import no.nav.helse.flex.kafka.consumer.AivenSpreOppgaverListener
 import no.nav.helse.flex.service.*
-import no.nav.helse.flex.sykepengesoknad.kafka.SoknadsstatusDTO
-import no.nav.helse.flex.sykepengesoknad.kafka.SoknadstypeDTO
-import no.nav.helse.flex.sykepengesoknad.kafka.SporsmalDTO
-import no.nav.helse.flex.sykepengesoknad.kafka.SvarDTO
-import no.nav.helse.flex.sykepengesoknad.kafka.SvartypeDTO
-import no.nav.helse.flex.sykepengesoknad.kafka.SykepengesoknadDTO
 import okhttp3.mockwebserver.MockResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.kafka.support.Acknowledgment
 import org.springframework.test.annotation.DirtiesContext
-import java.time.LocalDate
-import java.time.LocalDateTime
+import søknad
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 @DirtiesContext
 class SpesialBehandlingstemaTest : FellesTestoppsett() {
-
-    @MockBean
-    lateinit var acknowledgment: Acknowledgment
-
-    @Autowired
-    lateinit var aivenSoknadSendtListener: AivenSoknadSendtListener
-
-    @Autowired
-    lateinit var aivenSpreOppgaverListener: AivenSpreOppgaverListener
 
     @Autowired
     lateinit var oppgaveOpprettelse: OppgaveOpprettelse
@@ -108,38 +88,4 @@ class SpesialBehandlingstemaTest : FellesTestoppsett() {
         val sykepengesoknadRequest = sykepengesoknadMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
         assertThat(sykepengesoknadRequest.requestLine).isEqualTo("GET /api/v3/soknader/${søknad.id}/kafkaformat HTTP/1.1")
     }
-
-    private fun leggSøknadPåKafka(søknad: SykepengesoknadDTO) =
-        aivenSoknadSendtListener.listen(skapConsumerRecord("key", søknad.serialisertTilString()), acknowledgment)
-
-    private fun leggOppgavePåAivenKafka(oppgave: OppgaveDTO) =
-        aivenSpreOppgaverListener.listen(skapConsumerRecord("key", oppgave.serialisertTilString()), acknowledgment)
-
-    private fun søknad(
-        soknadId: UUID = UUID.randomUUID(),
-        sendtNav: LocalDateTime? = LocalDateTime.now(),
-        sendtArbeidsgiver: LocalDateTime? = null,
-        utenlandskSykmelding: Boolean? = null
-    ) = SykepengesoknadDTO(
-        fnr = fnr,
-        id = soknadId.toString(),
-        opprettet = LocalDateTime.now(),
-        fom = LocalDate.of(2019, 5, 4),
-        tom = LocalDate.of(2019, 5, 8),
-        type = SoknadstypeDTO.ARBEIDSTAKERE,
-        sporsmal = listOf(
-            SporsmalDTO(
-                id = UUID.randomUUID().toString(),
-                tag = "TAGGEN",
-                sporsmalstekst = "Har systemet gode integrasjonstester?",
-                svartype = SvartypeDTO.JA_NEI,
-                svar = listOf(SvarDTO(verdi = "JA"))
-
-            )
-        ),
-        status = SoknadsstatusDTO.SENDT,
-        sendtNav = sendtNav,
-        sendtArbeidsgiver = sendtArbeidsgiver,
-        utenlandskSykmelding = utenlandskSykmelding
-    )
 }
