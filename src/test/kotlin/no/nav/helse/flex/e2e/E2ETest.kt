@@ -6,8 +6,6 @@ import no.nav.helse.flex.any
 import no.nav.helse.flex.domain.DokumentTypeDTO
 import no.nav.helse.flex.domain.OppdateringstypeDTO
 import no.nav.helse.flex.domain.OppgaveDTO
-import no.nav.helse.flex.kafka.consumer.AivenSoknadSendtListener
-import no.nav.helse.flex.kafka.consumer.AivenSpreOppgaverListener
 import no.nav.helse.flex.repository.InnsendingDbRecord
 import no.nav.helse.flex.repository.OppgaveStatus
 import no.nav.helse.flex.repository.SpreOppgaveRepository
@@ -29,7 +27,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.kafka.support.Acknowledgment
 import org.springframework.test.annotation.DirtiesContext
 import java.time.Instant
 import java.time.LocalDate
@@ -47,15 +44,6 @@ class E2ETest : FellesTestoppsett() {
 
     @MockBean
     lateinit var saksbehandlingsService: SaksbehandlingsService
-
-    @MockBean
-    lateinit var acknowledgment: Acknowledgment
-
-    @Autowired
-    lateinit var aivenSoknadSendtListener: AivenSoknadSendtListener
-
-    @Autowired
-    lateinit var aivenSpreOppgaverListener: AivenSpreOppgaverListener
 
     @Autowired
     lateinit var spreOppgaveRepository: SpreOppgaveRepository

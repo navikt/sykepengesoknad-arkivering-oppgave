@@ -1,15 +1,21 @@
 package no.nav.helse.flex
 
 import io.getunleash.FakeUnleash
+import no.nav.helse.flex.domain.OppgaveDTO
+import no.nav.helse.flex.kafka.consumer.AivenSoknadSendtListener
+import no.nav.helse.flex.kafka.consumer.AivenSpreOppgaverListener
 import no.nav.helse.flex.mockdispatcher.*
+import no.nav.helse.flex.sykepengesoknad.kafka.SykepengesoknadDTO
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
+import org.springframework.kafka.support.Acknowledgment
 import org.testcontainers.containers.KafkaContainer
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.utility.DockerImageName
@@ -100,6 +106,15 @@ abstract class FellesTestoppsett {
     @Autowired
     lateinit var fakeUnleash: FakeUnleash
 
+    @Autowired
+    lateinit var aivenSoknadSendtListener: AivenSoknadSendtListener
+
+    @Autowired
+    lateinit var aivenSpreOppgaverListener: AivenSpreOppgaverListener
+
+    @MockBean
+    lateinit var acknowledgment: Acknowledgment
+
     @AfterAll
     fun `Disable unleash toggles`() {
         fakeUnleash.disableAll()
@@ -115,4 +130,10 @@ abstract class FellesTestoppsett {
         while (kvitteringMockWebserver.takeRequest(1, TimeUnit.MILLISECONDS) != null) { /* ok */ }
         while (medlemskapMockWebserver.takeRequest(1, TimeUnit.MILLISECONDS) != null) { /* ok */ }
     }
+
+    fun leggSøknadPåKafka(søknad: SykepengesoknadDTO) =
+        aivenSoknadSendtListener.listen(skapConsumerRecord("key", søknad.serialisertTilString()), acknowledgment)
+
+    fun leggOppgavePåAivenKafka(oppgave: OppgaveDTO) =
+        aivenSpreOppgaverListener.listen(skapConsumerRecord("key", oppgave.serialisertTilString()), acknowledgment)
 }
