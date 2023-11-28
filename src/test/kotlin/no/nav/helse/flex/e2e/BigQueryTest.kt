@@ -30,8 +30,6 @@ class BigQueryTest : FellesTestoppsett() {
     @MockBean
     lateinit var saksbehandlingsService: SaksbehandlingsService
 
-    @Autowired
-    lateinit var spreOppgaveRepository: SpreOppgaveRepository
 
     private val tid = LocalDateTime.of(2022, 3, 7, 12, 37, 17).toInstant(ZoneOffset.UTC)
 

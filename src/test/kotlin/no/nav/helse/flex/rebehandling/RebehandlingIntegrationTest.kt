@@ -24,11 +24,6 @@ class RebehandlingIntegrationTest : FellesTestoppsett() {
     @Autowired
     private lateinit var aivenKafkaProducer: KafkaProducer<String, String>
 
-    @Autowired
-    private lateinit var innsendingRepository: InnsendingRepository
-
-    @Autowired
-    private lateinit var spreOppgaveRepository: SpreOppgaveRepository
 
     @Test
     fun `Behandling av søknad feiler og rebehandles`() {

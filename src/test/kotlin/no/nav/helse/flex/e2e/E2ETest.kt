@@ -44,9 +44,6 @@ class E2ETest : FellesTestoppsett() {
     @MockBean
     lateinit var saksbehandlingsService: SaksbehandlingsService
 
-    @Autowired
-    lateinit var spreOppgaveRepository: SpreOppgaveRepository
-
     @BeforeEach
     fun setup() {
         whenever(saksbehandlingsService.finnEksisterendeInnsending(any())).thenAnswer {

@@ -26,9 +26,6 @@ import java.time.temporal.ChronoUnit
 
 class SpreOppgaveRaceConditionTest : FellesTestoppsett() {
     @Autowired
-    lateinit var spreOppgaveRepository: SpreOppgaveRepository
-
-    @Autowired
     private lateinit var aivenKafkaProducer: KafkaProducer<String, String>
 
     private val søknad = mockSykepengesoknadDTO.copy(

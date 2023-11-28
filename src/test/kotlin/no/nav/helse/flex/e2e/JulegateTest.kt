@@ -22,8 +22,6 @@ class JulegateTest : FellesTestoppsett() {
         const val fnr = "fnr"
     }
 
-    @Autowired
-    lateinit var spreOppgaveRepository: SpreOppgaveRepository
 
     @Test
     fun `Utsett til Ferdig til Opprett`() {

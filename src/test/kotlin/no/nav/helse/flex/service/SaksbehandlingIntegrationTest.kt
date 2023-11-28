@@ -26,8 +26,6 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 class SaksbehandlingIntegrationTest : FellesTestoppsett() {
-    @Autowired
-    private lateinit var innsendingRepository: InnsendingRepository
 
     @Autowired
     private lateinit var aivenKafkaProducer: KafkaProducer<String, String>

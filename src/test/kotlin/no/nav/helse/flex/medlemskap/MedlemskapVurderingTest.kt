@@ -28,12 +28,6 @@ class MedlemskapVurderingTest : FellesTestoppsett() {
     @Autowired
     lateinit var saksbehandlingsService: SaksbehandlingsService
 
-    @Autowired
-    lateinit var medlemskapVurderingRepository: MedlemskapVurderingRepository
-
-    @Autowired
-    lateinit var innsendingRepository: InnsendingRepository
-
     @BeforeAll
     fun unleashToggle() {
         fakeUnleash.enable(UNLEASH_CONTEXT_MEDLEMSKAP_SPORSMAL)
