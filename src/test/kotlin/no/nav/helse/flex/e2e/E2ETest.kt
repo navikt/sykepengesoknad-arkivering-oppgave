@@ -254,7 +254,7 @@ class E2ETest : FellesTestoppsett() {
 
         val behandletOppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
         assertThat(behandletOppgave.status).isEqualTo(OppgaveStatus.Utsett)
-        assertThat(behandletOppgave.avstemt).isTrue
+        assertThat(behandletOppgave.avstemt).isFalse
     }
 
     @Test
@@ -273,12 +273,12 @@ class E2ETest : FellesTestoppsett() {
         val behandletOppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
         assertThat(behandletOppgave.status).isEqualTo(OppgaveStatus.Utsett)
         omFireTimer.tilOsloZone() `should be equal to ignoring nano and zone` behandletOppgave.timeout
-        assertThat(behandletOppgave.avstemt).isTrue
+        assertThat(behandletOppgave.avstemt).isFalse
 
         val oppgaveFraAiven = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
         assertThat(oppgaveFraAiven.status).isEqualTo(OppgaveStatus.Utsett)
         omFireTimer.tilOsloZone() `should be equal to ignoring nano and zone` oppgaveFraAiven.timeout
-        assertThat(oppgaveFraAiven.avstemt).isTrue
+        assertThat(oppgaveFraAiven.avstemt).isFalse
     }
 
     @Test

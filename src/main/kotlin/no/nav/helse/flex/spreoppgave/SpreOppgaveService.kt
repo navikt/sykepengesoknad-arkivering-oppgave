@@ -41,18 +41,18 @@ class SpreOppgaverService(
                 } else {
                     1
                 }
-
-                prosesserOppgave(
-                    OppgaveDTO(
-                        dokumentId = UUID.fromString(sykepengesoknad.id),
-                        dokumentType = DokumentTypeDTO.Søknad,
-                        oppdateringstype = OppdateringstypeDTO.Utsett,
-                        timeout = sykepengesoknad.sendtNav?.plusMinutes(timeoutMinutes) ?: LocalDateTime.now()
-                            .plusMinutes(timeoutMinutes)
-                    ),
-                    OppgaveKilde.Søknad
-                )
-
+                if (sykepengesoknad.skalBehandlesAvNav()) {
+                    prosesserOppgave(
+                        OppgaveDTO(
+                            dokumentId = UUID.fromString(sykepengesoknad.id),
+                            dokumentType = DokumentTypeDTO.Søknad,
+                            oppdateringstype = OppdateringstypeDTO.Utsett,
+                            timeout = sykepengesoknad.sendtNav?.plusMinutes(timeoutMinutes) ?: LocalDateTime.now()
+                                .plusMinutes(timeoutMinutes)
+                        ),
+                        OppgaveKilde.Søknad
+                    )
+                }
                 saksbehandlingsService.settFerdigbehandlet(innsendingsId)
             }
         } catch (e: DbActionExecutionException) {
