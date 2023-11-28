@@ -9,7 +9,6 @@ import no.nav.helse.flex.repository.SpreOppgaveRepository
 import no.nav.helse.flex.service.SaksbehandlingsService
 import org.springframework.data.relational.core.conversion.DbActionExecutionException
 import org.springframework.stereotype.Component
-import java.time.LocalDateTime
 import java.util.UUID
 
 @Component
@@ -45,7 +44,7 @@ class SpreOppgaverService(
                             dokumentId = UUID.fromString(sykepengesoknad.id),
                             dokumentType = DokumentTypeDTO.Søknad,
                             oppdateringstype = OppdateringstypeDTO.Utsett,
-                            timeout = (sykepengesoknad.sendtNav ?: LocalDateTime.now()).plusMinutes(timeoutMinutter)
+                            timeout = sykepengesoknad.sendtNav.plusMinutes(timeoutMinutter)
                         ),
                         OppgaveKilde.Søknad
                     )
