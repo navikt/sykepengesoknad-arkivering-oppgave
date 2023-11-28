@@ -55,7 +55,7 @@ class SpreOppgaverServiceTest {
     fun setup() {
         whenever(registry.counter(any())).thenReturn(counter)
         handterOppave = HandterOppave(spreOppgaveRepository, registry)
-        spreOppgaverService = SpreOppgaverService("1", saksbehandlingsService, spreOppgaveRepository, handterOppave)
+        spreOppgaverService = SpreOppgaverService(saksbehandlingsService, spreOppgaveRepository, handterOppave)
     }
 
     @Test

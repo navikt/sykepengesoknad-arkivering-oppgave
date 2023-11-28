@@ -12,18 +12,16 @@ det er noen sjekker som splitter disse av fra flyten til arbeidstakersøknader.
     * Med andre ord vil alle sendte sykepengesøknader som ikke er arbeidstakersøknader gå gjennom her,
       for `sendtArbeidsgiver` vil ikke være satt.
 2. Søknaden blir journalført i Gosys med PDF fra [`flex-sykepengesoknad-pdfgen`](flex-sykepengesoknad-pdfgen.md).
-3. Herfra kan en av to ting skje.
-    1. Det sjekkes om søknaden er en arbeidstakersøknad, og om søknaden skal behandles av Nav.
-        * Det at søknaden skal behandles av Nav er bare en sjekk på om `sendtNav`-feltet er satt med en dato.
-        * Dersom dette skjer, vil den gå gjennom flyten beskrevet i [sykepengesøknad for arbeidstakere](#sykepengesøknad-for-arbeidstakere).
-    2. Hvis forrige sjekk ikke gikk gjennom, vil det kun sjekkes om søknaden skal behandles av Nav og en oppgave i Gosys vil bli opprettet.
+3. Herfra skjer følgende.
+    * Det at søknaden skal behandles av Nav er bare en sjekk på om `sendtNav`-feltet er satt med en dato.
+    * Dersom dette skjer, vil den gå gjennom flyten beskrevet i [oppgavestyring mot spei](#oppgavestyring-mot-speil).
 4. Saksbehandlingssystemet internt i `sykepengesoknad-arkivering-oppgave` vil anse saken tilknyttet denne søknaden som ferdigbehandlet.
 
 ### Rebehandling
 Hvis det på noe som helst steg feiler, vil saksbehandlingssystemet internt i `sykepengesoknad-arkivering-oppgave` legge søknaden på en intern Kafka-topic som
 vil føre til forsøk på rebehandling. En rebehandling betyr at den beskrevne flyten forsøkes på nytt for søknaden.
 
-## Sykepengesøknad for arbeidstakere
+## Oppgavestyring mot Speil
 
 Vanligvis kreves det to ting for at en saksbehandler skal kunne behandle en søknad;
 journalføring av søknaden (med PDF), samt en oppgave i Gsak/Gosys.
@@ -66,8 +64,10 @@ disse oppgavene neste gang den kjører.
 Dersom `spedisjon` ikke svarer før `sykepengesoknad-arkivering-oppgave` har sett søknaden"
 I noen tilfeller kan det hende at `sykepengesoknad-arkivering-oppgave` kommer `spedisjon` i forkjøpet og finner en søknad
 som ikke har blitt behandlet i noen form av `spedisjon` enda. I dette tilfellet oppretter `sykepengesoknad-arkivering-oppgave`
-sin egen `Utsett`, og venter i 12 timer på svar fra `spedisjon`. Dette blir da en oppgave som
+sin egen `Utsett`, og venter i 48 timer på svar fra `spedisjon`. Dette blir da en oppgave som
 følger samme logikk som over.
+
+En del søknader har ikke spedisjon et forhold til, da setter vi timeout til 1 minutt slik at vi ikke venter for lenge på spedisjon.
 
 
 ## Data
