@@ -18,8 +18,10 @@ import org.awaitility.Awaitility.await
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import java.time.Duration
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -129,7 +131,7 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
             innsendingRepository.findBySykepengesoknadId(soknad.id)?.behandlet != null
         }
         SykepengesoknadMockDispatcher.enque(soknad)
-        oppgaveOpprettelse.behandleOppgaver()
+        oppgaveOpprettelse.behandleOppgaver(Instant.now().plus(1L, ChronoUnit.HOURS))
 
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
@@ -198,7 +200,7 @@ Ja
         }
         SykepengesoknadMockDispatcher.enque(soknad)
 
-        oppgaveOpprettelse.behandleOppgaver()
+        oppgaveOpprettelse.behandleOppgaver(Instant.now().plus(1L, ChronoUnit.HOURS))
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
 
@@ -298,7 +300,7 @@ Nei
         }
 
         SykepengesoknadMockDispatcher.enque(soknad)
-        oppgaveOpprettelse.behandleOppgaver()
+        oppgaveOpprettelse.behandleOppgaver(Instant.now().plus(1L, ChronoUnit.HOURS))
 
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
@@ -377,7 +379,7 @@ Hvilke dager kunne du ikke være arbeidssøker på grunn av behandling mellom 2.
         }
 
         SykepengesoknadMockDispatcher.enque(soknad)
-        oppgaveOpprettelse.behandleOppgaver()
+        oppgaveOpprettelse.behandleOppgaver(Instant.now().plus(1L, ChronoUnit.HOURS))
 
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")

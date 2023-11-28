@@ -39,7 +39,7 @@ class SpreOppgaverService(
                 val timeoutMinutes = if (sykepengesoknad.skalSynkeOppgaveOpprettelseMedBomlo()) {
                     timeout * 60
                 } else {
-                    0
+                    1
                 }
 
                 prosesserOppgave(
