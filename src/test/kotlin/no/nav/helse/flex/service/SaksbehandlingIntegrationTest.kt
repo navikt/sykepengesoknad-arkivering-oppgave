@@ -6,7 +6,6 @@ import no.nav.helse.flex.domain.*
 import no.nav.helse.flex.domain.dto.Svartype
 import no.nav.helse.flex.kafka.consumer.SYKEPENGESOKNAD_TOPIC
 import no.nav.helse.flex.mockdispatcher.SykepengesoknadMockDispatcher
-import no.nav.helse.flex.repository.InnsendingRepository
 import no.nav.helse.flex.sykepengesoknad.kafka.*
 import okhttp3.mockwebserver.MockResponse
 import org.amshove.kluent.`should be equal to`

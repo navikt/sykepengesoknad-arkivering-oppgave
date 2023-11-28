@@ -5,12 +5,10 @@ import no.nav.helse.flex.domain.DokumentTypeDTO
 import no.nav.helse.flex.domain.OppdateringstypeDTO
 import no.nav.helse.flex.domain.OppgaveDTO
 import no.nav.helse.flex.repository.OppgaveStatus
-import no.nav.helse.flex.repository.SpreOppgaveRepository
 import no.nav.helse.flex.serialisertTilString
 import no.nav.helse.flex.skapConsumerRecord
 import org.amshove.kluent.shouldBeEqualTo
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.annotation.DirtiesContext
 import java.time.Instant
 import java.util.UUID
@@ -21,7 +19,6 @@ class JulegateTest : FellesTestoppsett() {
     companion object {
         const val fnr = "fnr"
     }
-
 
     @Test
     fun `Utsett til Ferdig til Opprett`() {

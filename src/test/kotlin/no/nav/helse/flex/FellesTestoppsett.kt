@@ -12,7 +12,6 @@ import no.nav.helse.flex.service.OppgaveOpprettelse
 import no.nav.helse.flex.sykepengesoknad.kafka.SykepengesoknadDTO
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import okhttp3.mockwebserver.MockWebServer
-import org.awaitility.Awaitility
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.flex.FellesTestoppsett
 import no.nav.helse.flex.domain.dto.*
 import no.nav.helse.flex.objectMapper
-import no.nav.helse.flex.repository.InnsendingRepository
 import no.nav.helse.flex.serialisertTilString
 import no.nav.helse.flex.service.*
 import okhttp3.mockwebserver.MockResponse

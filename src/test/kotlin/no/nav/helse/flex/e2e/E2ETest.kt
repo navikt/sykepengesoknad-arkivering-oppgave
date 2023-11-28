@@ -8,7 +8,6 @@ import no.nav.helse.flex.domain.OppdateringstypeDTO
 import no.nav.helse.flex.domain.OppgaveDTO
 import no.nav.helse.flex.repository.InnsendingDbRecord
 import no.nav.helse.flex.repository.OppgaveStatus
-import no.nav.helse.flex.repository.SpreOppgaveRepository
 import no.nav.helse.flex.serialisertTilString
 import no.nav.helse.flex.service.SaksbehandlingsService
 import no.nav.helse.flex.`should be equal to ignoring nano and zone`
@@ -24,7 +23,6 @@ import org.amshove.kluent.`should be equal to`
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.annotation.DirtiesContext
 import java.time.Instant
