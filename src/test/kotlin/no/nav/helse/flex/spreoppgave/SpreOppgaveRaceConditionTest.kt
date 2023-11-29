@@ -7,7 +7,6 @@ import no.nav.helse.flex.domain.OppgaveDTO
 import no.nav.helse.flex.kafka.consumer.SPREOPPGAVER_TOPIC
 import no.nav.helse.flex.kafka.consumer.SYKEPENGESOKNAD_TOPIC
 import no.nav.helse.flex.mockSykepengesoknadDTO
-import no.nav.helse.flex.repository.SpreOppgaveRepository
 import no.nav.helse.flex.serialisertTilString
 import no.nav.helse.flex.spreoppgave.HandterOppgaveInterceptor.Companion.kallTilHåndterOppgaveFraBømlo
 import no.nav.helse.flex.spreoppgave.HandterOppgaveInterceptor.Companion.kallTilHåndterOppgaveFraSøknad
@@ -25,9 +24,6 @@ import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
 class SpreOppgaveRaceConditionTest : FellesTestoppsett() {
-    @Autowired
-    lateinit var spreOppgaveRepository: SpreOppgaveRepository
-
     @Autowired
     private lateinit var aivenKafkaProducer: KafkaProducer<String, String>
 

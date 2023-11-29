@@ -8,9 +8,7 @@ import no.nav.helse.flex.domain.OppdateringstypeDTO
 import no.nav.helse.flex.domain.OppgaveDTO
 import no.nav.helse.flex.repository.InnsendingDbRecord
 import no.nav.helse.flex.repository.OppgaveStatus
-import no.nav.helse.flex.repository.SpreOppgaveRepository
 import no.nav.helse.flex.serialisertTilString
-import no.nav.helse.flex.service.OppgaveOpprettelse
 import no.nav.helse.flex.service.SaksbehandlingsService
 import no.nav.helse.flex.`should be equal to ignoring nano and zone`
 import no.nav.helse.flex.skapConsumerRecord
@@ -25,7 +23,6 @@ import org.amshove.kluent.`should be equal to`
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.annotation.DirtiesContext
 import java.time.Instant
@@ -44,12 +41,6 @@ class E2ETest : FellesTestoppsett() {
 
     @MockBean
     lateinit var saksbehandlingsService: SaksbehandlingsService
-
-    @Autowired
-    lateinit var spreOppgaveRepository: SpreOppgaveRepository
-
-    @Autowired
-    lateinit var oppgaveOpprettelse: OppgaveOpprettelse
 
     @BeforeEach
     fun setup() {
@@ -252,12 +243,12 @@ class E2ETest : FellesTestoppsett() {
                 timeout = LocalDateTime.now().plusHours(1)
             )
         )
-        leggSoknadPaKafka(lagSoknad(soknadId = soknadId, sendtNav = null, sendtArbeidsgiver = LocalDateTime.now()))
 
         val oppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
         assertThat(oppgave.status).isEqualTo(OppgaveStatus.Utsett)
 
         assertThat(oppgave.avstemt).isFalse
+        leggSoknadPaKafka(lagSoknad(soknadId = soknadId, sendtNav = null, sendtArbeidsgiver = LocalDateTime.now()))
 
         oppgaveOpprettelse.behandleOppgaver()
 

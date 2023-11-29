@@ -7,8 +7,6 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
-import no.nav.helse.flex.domain.dto.Arbeidssituasjon
-import no.nav.helse.flex.domain.dto.Soknadstype
 import no.nav.helse.flex.domain.dto.Sykepengesoknad
 import no.nav.helse.flex.repository.InnsendingDbRecord
 import no.nav.helse.flex.repository.SpreOppgaveRepository
@@ -57,7 +55,7 @@ class SpreOppgaverServiceTest {
     fun setup() {
         whenever(registry.counter(any())).thenReturn(counter)
         handterOppave = HandterOppave(spreOppgaveRepository, registry)
-        spreOppgaverService = SpreOppgaverService("1", saksbehandlingsService, spreOppgaveRepository, handterOppave)
+        spreOppgaverService = SpreOppgaverService(saksbehandlingsService, spreOppgaveRepository, handterOppave)
     }
 
     @Test
@@ -116,58 +114,5 @@ class SpreOppgaverServiceTest {
         spreOppgaverService.soknadSendt(sykepengesoknad)
         verify(saksbehandlingsService, times(1)).behandleSoknad(sykepengesoknad)
         verify(saksbehandlingsService, never()).opprettOppgave(sykepengesoknad, innsending(sykepengesoknad.id))
-    }
-
-    @Test
-    fun utsetterBareArbeidstakerSoknader() {
-        whenever(saksbehandlingsService.finnEksisterendeInnsending(any())).thenAnswer { innsending(it.arguments[0].toString()) }
-
-        val arbeidstaker = objectMapper.readValue(
-            SpreOppgaverServiceTest::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"),
-            Sykepengesoknad::class.java
-        )
-        val frilanser = arbeidstaker.copy(
-            soknadstype = Soknadstype.SELVSTENDIGE_OG_FRILANSERE,
-            arbeidssituasjon = Arbeidssituasjon.FRILANSER,
-            sendtArbeidsgiver = null
-        )
-        val arbeidsledig = arbeidstaker.copy(
-            soknadstype = Soknadstype.ARBEIDSLEDIG,
-            arbeidssituasjon = Arbeidssituasjon.ARBEIDSLEDIG,
-            sendtArbeidsgiver = null
-        )
-        val annet = arbeidstaker.copy(
-            soknadstype = Soknadstype.ANNET_ARBEIDSFORHOLD,
-            arbeidssituasjon = Arbeidssituasjon.ANNET,
-            sendtArbeidsgiver = null
-        )
-        val behandlingsdagerSelvstendig = arbeidstaker.copy(
-            soknadstype = Soknadstype.BEHANDLINGSDAGER,
-            arbeidssituasjon = Arbeidssituasjon.NAERINGSDRIVENDE,
-            sendtArbeidsgiver = null
-        )
-        val behandlingsdagerArbeidstaker = arbeidstaker.copy(
-            soknadstype = Soknadstype.BEHANDLINGSDAGER,
-            arbeidssituasjon = Arbeidssituasjon.ARBEIDSTAKER
-        )
-        var hit = 0
-
-        spreOppgaverService.soknadSendt(arbeidstaker)
-        verify(saksbehandlingsService, never()).opprettOppgave(any(), any(), any())
-
-        spreOppgaverService.soknadSendt(frilanser)
-        verify(saksbehandlingsService, times(++hit)).opprettOppgave(any(), any(), any())
-
-        spreOppgaverService.soknadSendt(arbeidsledig)
-        verify(saksbehandlingsService, times(++hit)).opprettOppgave(any(), any(), any())
-
-        spreOppgaverService.soknadSendt(annet)
-        verify(saksbehandlingsService, times(++hit)).opprettOppgave(any(), any(), any())
-
-        spreOppgaverService.soknadSendt(behandlingsdagerSelvstendig)
-        verify(saksbehandlingsService, times(++hit)).opprettOppgave(any(), any(), any())
-
-        spreOppgaverService.soknadSendt(behandlingsdagerArbeidstaker)
-        verify(saksbehandlingsService, times(++hit)).opprettOppgave(any(), any(), any())
     }
 }

@@ -6,14 +6,11 @@ import no.nav.helse.flex.any
 import no.nav.helse.flex.repository.InnsendingDbRecord
 import no.nav.helse.flex.repository.OppgaveStatus
 import no.nav.helse.flex.repository.SpreOppgaveDbRecord
-import no.nav.helse.flex.repository.SpreOppgaveRepository
-import no.nav.helse.flex.service.OppgaveOpprettelse
 import no.nav.helse.flex.service.SaksbehandlingsService
 import org.amshove.kluent.`should be`
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.test.annotation.DirtiesContext
@@ -30,12 +27,6 @@ class BigQueryTest : FellesTestoppsett() {
 
     @MockBean
     lateinit var saksbehandlingsService: SaksbehandlingsService
-
-    @Autowired
-    lateinit var spreOppgaveRepository: SpreOppgaveRepository
-
-    @Autowired
-    lateinit var oppgaveOpprettelse: OppgaveOpprettelse
 
     private val tid = LocalDateTime.of(2022, 3, 7, 12, 37, 17).toInstant(ZoneOffset.UTC)
 

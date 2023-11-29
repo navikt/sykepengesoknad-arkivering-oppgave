@@ -14,7 +14,6 @@ DOKARKIV_URL: "http://dokarkiv"
 
 pdl.api.url: "http://pdl-api.pdl"
 
-DEFAULT_TIMEOUT_TIMER: "24"
 
 spring:
   profiles.active: test

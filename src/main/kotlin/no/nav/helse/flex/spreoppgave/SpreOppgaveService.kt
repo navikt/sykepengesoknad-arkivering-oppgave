@@ -7,21 +7,17 @@ import no.nav.helse.flex.domain.dto.Soknadstype.ARBEIDSTAKERE
 import no.nav.helse.flex.domain.dto.Sykepengesoknad
 import no.nav.helse.flex.repository.SpreOppgaveRepository
 import no.nav.helse.flex.service.SaksbehandlingsService
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.relational.core.conversion.DbActionExecutionException
 import org.springframework.stereotype.Component
-import java.time.LocalDateTime
 import java.util.UUID
 
 @Component
 class SpreOppgaverService(
-    @Value("\${DEFAULT_TIMEOUT_TIMER}")
-    private val defaultTimeoutTimer: String,
     private val saksbehandlingsService: SaksbehandlingsService,
     private val spreOppgaveRepository: SpreOppgaveRepository,
     private val handterOppave: HandterOppgaveInterface
 ) {
-    private val timeout = defaultTimeoutTimer.toLong()
+    private val timeoutTimer = 48.toLong()
 
     fun prosesserOppgave(oppgave: OppgaveDTO, kilde: OppgaveKilde) {
         val eksisterendeOppgave = spreOppgaveRepository.findBySykepengesoknadId(oppgave.dokumentId.toString())
@@ -35,23 +31,23 @@ class SpreOppgaverService(
         try {
             if (sykepengesoknad.status == "SENDT" && !ettersendtTilArbeidsgiver(sykepengesoknad)) {
                 val innsendingsId = saksbehandlingsService.behandleSoknad(sykepengesoknad)
-                if (sykepengesoknad.skalSynkeOppgaveOpprettelseMedBomlo()) {
+
+                val timeoutMinutter = if (sykepengesoknad.erSoknadSpeilKjennerTil()) {
+                    timeoutTimer * 60
+                } else {
+                    // Bømlo kjenner ikke disse søknadene. Lar de timeoute etter 1 minutt
+                    1
+                }
+                if (sykepengesoknad.sendtNav != null) {
                     prosesserOppgave(
                         OppgaveDTO(
                             dokumentId = UUID.fromString(sykepengesoknad.id),
                             dokumentType = DokumentTypeDTO.Søknad,
                             oppdateringstype = OppdateringstypeDTO.Utsett,
-                            timeout = sykepengesoknad.sendtNav?.plusHours(timeout) ?: LocalDateTime.now()
-                                .plusHours(timeout)
+                            timeout = sykepengesoknad.sendtNav.plusMinutes(timeoutMinutter)
                         ),
                         OppgaveKilde.Søknad
                     )
-                } else {
-                    if (sykepengesoknad.skalBehandlesAvNav()) {
-                        val innsending = saksbehandlingsService.finnEksisterendeInnsending(sykepengesoknad.id)
-                            ?: throw RuntimeException("Fant ikke eksisterende innsending")
-                        saksbehandlingsService.opprettOppgave(sykepengesoknad, innsending)
-                    }
                 }
                 saksbehandlingsService.settFerdigbehandlet(innsendingsId)
             }
@@ -63,12 +59,9 @@ class SpreOppgaverService(
         }
     }
 
-    private fun Sykepengesoknad.skalSynkeOppgaveOpprettelseMedBomlo(): Boolean {
-        return soknadstype == ARBEIDSTAKERE && skalBehandlesAvNav() && this.sendTilGosys != true
+    private fun Sykepengesoknad.erSoknadSpeilKjennerTil(): Boolean {
+        return soknadstype == ARBEIDSTAKERE && this.sendTilGosys != true
     }
-
-    private fun Sykepengesoknad.skalBehandlesAvNav() =
-        this.sendtNav != null
 
     private fun ettersendtTilArbeidsgiver(sykepengesoknad: Sykepengesoknad) =
         sykepengesoknad.sendtArbeidsgiver != null &&

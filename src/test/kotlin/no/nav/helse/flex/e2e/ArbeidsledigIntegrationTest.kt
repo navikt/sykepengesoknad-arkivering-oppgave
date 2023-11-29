@@ -2,38 +2,42 @@ package no.nav.helse.flex.e2e
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.flex.*
+import no.nav.helse.flex.domain.DokumentTypeDTO
+import no.nav.helse.flex.domain.OppdateringstypeDTO
+import no.nav.helse.flex.domain.OppgaveDTO
+import no.nav.helse.flex.mockdispatcher.SykepengesoknadMockDispatcher
 import no.nav.helse.flex.service.*
 import no.nav.helse.flex.sykepengesoknad.kafka.SoknadstypeDTO
-import okhttp3.mockwebserver.MockResponse
+import org.amshove.kluent.`should be null`
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.annotation.DirtiesContext
 import søknad
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 @DirtiesContext
 class ArbeidsledigIntegrationTest : FellesTestoppsett() {
 
-    @Autowired
-    lateinit var oppgaveOpprettelse: OppgaveOpprettelse
-
     @Test
-    fun `En arbeidsledigsøknad får behandlingstema ab0426`() {
+    fun `En arbeidsledigsøknad får behandlingstema ab0426 og takler at bømlo sier opprett`() {
         val soknadId = UUID.randomUUID()
         val søknad = søknad(soknadId).copy(type = SoknadstypeDTO.ARBEIDSLEDIG)
 
-        sykepengesoknadMockWebserver.enqueue(
-            MockResponse().setBody(søknad.serialisertTilString()).addHeader("Content-Type", "application/json")
-        )
+        SykepengesoknadMockDispatcher.enque(søknad)
+
         leggSøknadPåKafka(søknad)
+        oppgaveOpprettelse.behandleOppgaver(Instant.now().plus(1L, ChronoUnit.HOURS))
 
-        oppgaveOpprettelse.behandleOppgaver()
-
-        val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
+        val oppgaveRequest = oppgaveMockWebserver.takeRequest(2, TimeUnit.SECONDS)!!
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
         val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
         assertThat(oppgaveRequestBody.behandlingstema).isEqualTo("ab0426")
+
+        leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, soknadId))
+        oppgaveOpprettelse.behandleOppgaver()
+        oppgaveMockWebserver.takeRequest(1, TimeUnit.SECONDS).`should be null`()
     }
 }

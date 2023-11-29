@@ -9,17 +9,15 @@ import no.nav.helse.flex.service.*
 import okhttp3.mockwebserver.MockResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.annotation.DirtiesContext
 import søknad
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 @DirtiesContext
 class SpesialBehandlingstemaTest : FellesTestoppsett() {
-
-    @Autowired
-    lateinit var oppgaveOpprettelse: OppgaveOpprettelse
 
     val fnr = "fnr"
 
@@ -34,7 +32,7 @@ class SpesialBehandlingstemaTest : FellesTestoppsett() {
         leggSøknadPåKafka(søknad)
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.OpprettSpeilRelatert, soknadId))
 
-        oppgaveOpprettelse.behandleOppgaver()
+        oppgaveOpprettelse.behandleOppgaver(Instant.now().plus(1L, ChronoUnit.HOURS))
 
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
@@ -56,7 +54,7 @@ class SpesialBehandlingstemaTest : FellesTestoppsett() {
         leggSøknadPåKafka(søknad)
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, soknadId))
 
-        oppgaveOpprettelse.behandleOppgaver()
+        oppgaveOpprettelse.behandleOppgaver(Instant.now().plus(1L, ChronoUnit.HOURS))
 
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
@@ -78,7 +76,7 @@ class SpesialBehandlingstemaTest : FellesTestoppsett() {
         leggSøknadPåKafka(søknad)
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, soknadId))
 
-        oppgaveOpprettelse.behandleOppgaver()
+        oppgaveOpprettelse.behandleOppgaver(Instant.now().plus(1L, ChronoUnit.HOURS))
 
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")

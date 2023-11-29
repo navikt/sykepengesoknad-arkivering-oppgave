@@ -5,7 +5,7 @@ import no.nav.helse.flex.*
 import no.nav.helse.flex.domain.*
 import no.nav.helse.flex.domain.dto.Svartype
 import no.nav.helse.flex.kafka.consumer.SYKEPENGESOKNAD_TOPIC
-import no.nav.helse.flex.repository.InnsendingRepository
+import no.nav.helse.flex.mockdispatcher.SykepengesoknadMockDispatcher
 import no.nav.helse.flex.sykepengesoknad.kafka.*
 import okhttp3.mockwebserver.MockResponse
 import org.amshove.kluent.`should be equal to`
@@ -17,14 +17,14 @@ import org.awaitility.Awaitility.await
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import java.time.Duration
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 class SaksbehandlingIntegrationTest : FellesTestoppsett() {
-    @Autowired
-    private lateinit var innsendingRepository: InnsendingRepository
 
     @Autowired
     private lateinit var aivenKafkaProducer: KafkaProducer<String, String>
@@ -127,6 +127,8 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
         await().atMost(Duration.ofSeconds(10)).until {
             innsendingRepository.findBySykepengesoknadId(soknad.id)?.behandlet != null
         }
+        SykepengesoknadMockDispatcher.enque(soknad)
+        oppgaveOpprettelse.behandleOppgaver(Instant.now().plus(1L, ChronoUnit.HOURS))
 
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
@@ -193,7 +195,9 @@ Ja
         await().atMost(Duration.ofSeconds(10)).until {
             innsendingRepository.findBySykepengesoknadId(soknad.id)?.behandlet != null
         }
+        SykepengesoknadMockDispatcher.enque(soknad)
 
+        oppgaveOpprettelse.behandleOppgaver(Instant.now().plus(1L, ChronoUnit.HOURS))
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
 
@@ -292,6 +296,9 @@ Nei
             innsendingRepository.findBySykepengesoknadId(soknad.id)?.behandlet != null
         }
 
+        SykepengesoknadMockDispatcher.enque(soknad)
+        oppgaveOpprettelse.behandleOppgaver(Instant.now().plus(1L, ChronoUnit.HOURS))
+
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
 
@@ -367,6 +374,9 @@ Hvilke dager kunne du ikke være arbeidssøker på grunn av behandling mellom 2.
         await().atMost(Duration.ofSeconds(10)).until {
             innsendingRepository.findBySykepengesoknadId(soknad.id)?.behandlet != null
         }
+
+        SykepengesoknadMockDispatcher.enque(soknad)
+        oppgaveOpprettelse.behandleOppgaver(Instant.now().plus(1L, ChronoUnit.HOURS))
 
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")

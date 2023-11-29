@@ -3,9 +3,7 @@ package no.nav.helse.flex.rebehandling
 import no.nav.helse.flex.FellesTestoppsett
 import no.nav.helse.flex.kafka.consumer.SYKEPENGESOKNAD_TOPIC
 import no.nav.helse.flex.mockSykepengesoknadDTO
-import no.nav.helse.flex.repository.InnsendingRepository
 import no.nav.helse.flex.repository.OppgaveStatus
-import no.nav.helse.flex.repository.SpreOppgaveRepository
 import no.nav.helse.flex.serialisertTilString
 import okhttp3.mockwebserver.MockResponse
 import org.amshove.kluent.shouldBeEqualTo
@@ -23,12 +21,6 @@ class RebehandlingIntegrationTest : FellesTestoppsett() {
 
     @Autowired
     private lateinit var aivenKafkaProducer: KafkaProducer<String, String>
-
-    @Autowired
-    private lateinit var innsendingRepository: InnsendingRepository
-
-    @Autowired
-    private lateinit var spreOppgaveRepository: SpreOppgaveRepository
 
     @Test
     fun `Behandling av søknad feiler og rebehandles`() {
