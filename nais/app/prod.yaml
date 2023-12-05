@@ -2,7 +2,7 @@ azureTenant: nav.no
 kafkaPool: nav-prod
 db_tier: db-custom-1-3840
 cpu: 400m
-memory: 650Mi
+memory: 700Mi
 external-host:
   - dokarkiv.prod-fss-pub.nais.io
   - oppgave.prod-fss-pub.nais.io
