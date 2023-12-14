@@ -21,79 +21,81 @@ const val MEDLEMSKAP_VURDERING_REST_TEMPLATE_READ_TIMEOUT = 25L
 @Configuration
 @Profile("remote")
 class AadRestTemplateConfiguration {
-
     @Bean
     fun sykepengesoknadKvitteringerRestTemplate(
         restTemplateBuilder: RestTemplateBuilder,
         clientConfigurationProperties: ClientConfigurationProperties,
-        oAuth2AccessTokenService: OAuth2AccessTokenService
-    ): RestTemplate = downstreamRestTemplate(
-        registrationName = "sykepengesoknad-kvitteringer-client-credentials",
-        restTemplateBuilder = restTemplateBuilder,
-        clientConfigurationProperties = clientConfigurationProperties,
-        oAuth2AccessTokenService = oAuth2AccessTokenService
-    )
+        oAuth2AccessTokenService: OAuth2AccessTokenService,
+    ): RestTemplate =
+        downstreamRestTemplate(
+            registrationName = "sykepengesoknad-kvitteringer-client-credentials",
+            restTemplateBuilder = restTemplateBuilder,
+            clientConfigurationProperties = clientConfigurationProperties,
+            oAuth2AccessTokenService = oAuth2AccessTokenService,
+        )
 
     @Bean
     fun sykepengesoknadBackendRestTemplate(
         restTemplateBuilder: RestTemplateBuilder,
         clientConfigurationProperties: ClientConfigurationProperties,
-        oAuth2AccessTokenService: OAuth2AccessTokenService
-    ): RestTemplate = downstreamRestTemplate(
-        registrationName = "sykepengesoknad-backend-client-credentials",
-        restTemplateBuilder = restTemplateBuilder,
-        clientConfigurationProperties = clientConfigurationProperties,
-        oAuth2AccessTokenService = oAuth2AccessTokenService
-    )
+        oAuth2AccessTokenService: OAuth2AccessTokenService,
+    ): RestTemplate =
+        downstreamRestTemplate(
+            registrationName = "sykepengesoknad-backend-client-credentials",
+            restTemplateBuilder = restTemplateBuilder,
+            clientConfigurationProperties = clientConfigurationProperties,
+            oAuth2AccessTokenService = oAuth2AccessTokenService,
+        )
 
     @Bean
     fun pdlRestTemplate(
         restTemplateBuilder: RestTemplateBuilder,
         clientConfigurationProperties: ClientConfigurationProperties,
-        oAuth2AccessTokenService: OAuth2AccessTokenService
+        oAuth2AccessTokenService: OAuth2AccessTokenService,
     ): RestTemplate =
         downstreamRestTemplate(
             registrationName = "pdl-api-client-credentials",
             restTemplateBuilder = restTemplateBuilder,
             clientConfigurationProperties = clientConfigurationProperties,
-            oAuth2AccessTokenService = oAuth2AccessTokenService
+            oAuth2AccessTokenService = oAuth2AccessTokenService,
         )
 
     @Bean
     fun oppgaveRestTemplate(
         restTemplateBuilder: RestTemplateBuilder,
         clientConfigurationProperties: ClientConfigurationProperties,
-        oAuth2AccessTokenService: OAuth2AccessTokenService
+        oAuth2AccessTokenService: OAuth2AccessTokenService,
     ): RestTemplate =
         downstreamRestTemplate(
             registrationName = "oppgave-client-credentials",
             restTemplateBuilder = restTemplateBuilder,
             clientConfigurationProperties = clientConfigurationProperties,
-            oAuth2AccessTokenService = oAuth2AccessTokenService
+            oAuth2AccessTokenService = oAuth2AccessTokenService,
         )
 
     @Bean
     fun dokArkivRestTemplate(
         restTemplateBuilder: RestTemplateBuilder,
         clientConfigurationProperties: ClientConfigurationProperties,
-        oAuth2AccessTokenService: OAuth2AccessTokenService
+        oAuth2AccessTokenService: OAuth2AccessTokenService,
     ): RestTemplate =
         downstreamRestTemplate(
             registrationName = "dokarkiv-client-credentials",
             restTemplateBuilder = restTemplateBuilder,
             clientConfigurationProperties = clientConfigurationProperties,
-            oAuth2AccessTokenService = oAuth2AccessTokenService
+            oAuth2AccessTokenService = oAuth2AccessTokenService,
         )
 
     @Bean
     fun medlemskapVurderingRestTemplate(
         restTemplateBuilder: RestTemplateBuilder,
         clientConfigurationProperties: ClientConfigurationProperties,
-        oAuth2AccessTokenService: OAuth2AccessTokenService
+        oAuth2AccessTokenService: OAuth2AccessTokenService,
     ): RestTemplate {
         val registrationName = "medlemskap-vurdering-sykepenger-client-credentials"
-        val clientProperties = clientConfigurationProperties.registration[registrationName]
-            ?: throw RuntimeException("Fant ikke config for $registrationName.")
+        val clientProperties =
+            clientConfigurationProperties.registration[registrationName]
+                ?: throw RuntimeException("Fant ikke config for $registrationName.")
 
         return restTemplateBuilder
             .additionalInterceptors(bearerTokenInterceptor(clientProperties, oAuth2AccessTokenService))
@@ -106,10 +108,11 @@ class AadRestTemplateConfiguration {
         registrationName: String,
         restTemplateBuilder: RestTemplateBuilder,
         clientConfigurationProperties: ClientConfigurationProperties,
-        oAuth2AccessTokenService: OAuth2AccessTokenService
+        oAuth2AccessTokenService: OAuth2AccessTokenService,
     ): RestTemplate {
-        val clientProperties = clientConfigurationProperties.registration[registrationName]
-            ?: throw RuntimeException("Fant ikke config for $registrationName.")
+        val clientProperties =
+            clientConfigurationProperties.registration[registrationName]
+                ?: throw RuntimeException("Fant ikke config for $registrationName.")
         return restTemplateBuilder
             .additionalInterceptors(bearerTokenInterceptor(clientProperties, oAuth2AccessTokenService))
             .build()
@@ -117,7 +120,7 @@ class AadRestTemplateConfiguration {
 
     private fun bearerTokenInterceptor(
         clientProperties: ClientProperties,
-        oAuth2AccessTokenService: OAuth2AccessTokenService
+        oAuth2AccessTokenService: OAuth2AccessTokenService,
     ): ClientHttpRequestInterceptor {
         return ClientHttpRequestInterceptor { request: HttpRequest, body: ByteArray, execution: ClientHttpRequestExecution ->
             val response = oAuth2AccessTokenService.getAccessToken(clientProperties)

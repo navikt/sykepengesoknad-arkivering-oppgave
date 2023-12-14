@@ -18,7 +18,7 @@ object SykepengesoknadMockDispatcher : QueueDispatcher() {
         }
 
         return MockResponse().setBody(
-            mockSykepengesoknadDTO.serialisertTilString()
+            mockSykepengesoknadDTO.serialisertTilString(),
         ).addHeader("Content-Type", "application/json")
     }
 }

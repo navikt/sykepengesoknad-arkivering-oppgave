@@ -1,7 +1,6 @@
 package no.nav.helse.flex.domain.dto
 
 data class Sporsmal(
-
     val id: String,
     val tag: String,
     val sporsmalstekst: String? = null,
@@ -11,5 +10,5 @@ data class Sporsmal(
     val max: String? = null,
     val kriterieForVisningAvUndersporsmal: Visningskriterie? = null,
     val svar: List<Svar>? = null,
-    val undersporsmal: List<Sporsmal>? = null
+    val undersporsmal: List<Sporsmal>? = null,
 )

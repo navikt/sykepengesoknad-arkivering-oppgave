@@ -15,9 +15,8 @@ import java.time.format.DateTimeFormatter
 class Arkivaren(
     val pdfClient: PDFClient,
     val dokArkivClient: DokArkivClient,
-    val registry: MeterRegistry
+    val registry: MeterRegistry,
 ) {
-
     val log = logger()
 
     fun transformDateFormat(date: String): String {
@@ -28,21 +27,34 @@ class Arkivaren(
         return parsedDate.format(outputFormatter)
     }
 
-    fun leggTilLogiskVedleggForBehandlingsDager(soknad: Soknad, journalpostResponse: MeassureBlock<JournalpostResponse>): String {
-        val dokumentInfoId = journalpostResponse.result.dokumenter.firstOrNull()?.dokumentInfoId ?: throw RuntimeException("Request til dokarkiv failer")
+    fun leggTilLogiskVedleggForBehandlingsDager(
+        soknad: Soknad,
+        journalpostResponse: MeassureBlock<JournalpostResponse>,
+    ): String {
+        val dokumentInfoId =
+            journalpostResponse.result.dokumenter.firstOrNull()?.dokumentInfoId
+                ?: throw RuntimeException("Request til dokarkiv failer")
 
-        val behandlingsdagerUker = soknad.sporsmal
-            .filter { it.tag.startsWith("ENKELTSTAENDE_BEHANDLINGSDAGER_") }
-            .flatMap { it.undersporsmal ?: emptyList() }
+        val behandlingsdagerUker =
+            soknad.sporsmal
+                .filter { it.tag.startsWith("ENKELTSTAENDE_BEHANDLINGSDAGER_") }
+                .flatMap { it.undersporsmal ?: emptyList() }
 
-        val svarListe = behandlingsdagerUker
-            .flatMap { it.svar ?: emptyList() }
-            .filter { it.verdi != "Ikke til behandling" }
+        val svarListe =
+            behandlingsdagerUker
+                .flatMap { it.svar ?: emptyList() }
+                .filter { it.verdi != "Ikke til behandling" }
 
         var behandlingsdagMessage = "Antall behandlingsdager: ${svarListe.size} "
 
         if (svarListe.isNotEmpty()) {
-            behandlingsdagMessage += "Behandlingsdager: ${svarListe.joinToString(" ") { it.verdi?.let { v -> transformDateFormat(v) } ?: "" }}"
+            behandlingsdagMessage += "Behandlingsdager: ${
+                svarListe.joinToString(" ") {
+                    it.verdi?.let { v ->
+                        transformDateFormat(v)
+                    } ?: ""
+                }
+            }"
         }
 
         val request = LogiskVedleggRequest(tittel = behandlingsdagMessage)
@@ -52,16 +64,21 @@ class Arkivaren(
     }
 
     fun opprettJournalpost(soknad: Soknad): String {
-        val pdf = measureTimeMillisWithResult {
-            pdfClient.getPDF(soknad = soknad.sorterViktigeSporsmalFørst(), template = hentPDFTemplateEtterSoknadstype(soknad.soknadstype))
-        }
+        val pdf =
+            measureTimeMillisWithResult {
+                pdfClient.getPDF(
+                    soknad = soknad.sorterViktigeSporsmalFørst(),
+                    template = hentPDFTemplateEtterSoknadstype(soknad.soknadstype),
+                )
+            }
 
         val request: JournalpostRequest =
             skapJournalpostRequest(pdf = pdf.result, soknad = soknad)
 
-        val journalpostResponse = measureTimeMillisWithResult {
-            dokArkivClient.opprettJournalpost(request, soknad.soknadsId!!)
-        }
+        val journalpostResponse =
+            measureTimeMillisWithResult {
+                dokArkivClient.opprettJournalpost(request, soknad.soknadsId!!)
+            }
 
         if (!journalpostResponse.result.journalpostferdigstilt) {
             log.warn("Journalpost ${journalpostResponse.result.journalpostId} for søknad ${soknad.soknadsId} ble ikke ferdigstilt")
@@ -94,7 +111,7 @@ class Arkivaren(
 
 class MeassureBlock<T>(
     val millis: Long,
-    val result: T
+    val result: T,
 )
 
 inline fun <T> measureTimeMillisWithResult(block: () -> T): MeassureBlock<T> {
@@ -102,6 +119,6 @@ inline fun <T> measureTimeMillisWithResult(block: () -> T): MeassureBlock<T> {
     val result = block()
     return MeassureBlock(
         millis = System.currentTimeMillis() - start,
-        result = result
+        result = result,
     )
 }

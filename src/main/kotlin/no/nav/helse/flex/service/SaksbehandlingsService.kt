@@ -27,27 +27,28 @@ class SaksbehandlingsService(
     private val sykepengesoknadKvitteringerClient: SykepengesoknadKvitteringerClient,
     private val identService: IdentService,
     private val pdlClient: PdlClient,
-    private val medlemskapVurdering: MedlemskapVurdering
+    private val medlemskapVurdering: MedlemskapVurdering,
 ) {
-
     private val log = logger()
 
     fun behandleSoknad(sykepengesoknad: Sykepengesoknad): String {
         val eksisterendeInnsending = finnEksisterendeInnsending(sykepengesoknad.id)
-        val innsendingId = eksisterendeInnsending?.id
-            ?: innsendingRepository.save(
-                InnsendingDbRecord(
-                    sykepengesoknadId = sykepengesoknad.id
-                )
-            ).id
+        val innsendingId =
+            eksisterendeInnsending?.id
+                ?: innsendingRepository.save(
+                    InnsendingDbRecord(
+                        sykepengesoknadId = sykepengesoknad.id,
+                    ),
+                ).id
         val fnr = identService.hentFnrForAktorId(sykepengesoknad.aktorId)
 
         val soknad = opprettSoknad(sykepengesoknad, fnr)
         if (eksisterendeInnsending?.journalpostId.isNullOrBlank()) {
-            val jouralpostId = opprettJournalpost(
-                innsendingId!!,
-                soknad
-            )
+            val jouralpostId =
+                opprettJournalpost(
+                    innsendingId!!,
+                    soknad,
+                )
             log.info("Journalført søknad: ${sykepengesoknad.id} med journalpostId: $jouralpostId")
         }
 
@@ -56,19 +57,24 @@ class SaksbehandlingsService(
         return innsendingId!!
     }
 
-    fun opprettOppgave(sykepengesoknad: Sykepengesoknad, innsending: InnsendingDbRecord, speilRelatert: Boolean = false) {
+    fun opprettOppgave(
+        sykepengesoknad: Sykepengesoknad,
+        innsending: InnsendingDbRecord,
+        speilRelatert: Boolean = false,
+    ) {
         val fnr = identService.hentFnrForAktorId(sykepengesoknad.aktorId)
         val medlemskapVurdering = medlemskapVurdering.hentEndeligMedlemskapVurdering(sykepengesoknad)
         val soknad = opprettSoknad(sykepengesoknad, fnr, medlemskapVurdering)
 
-        val requestBody = OppgaveClient.lagRequestBody(
-            aktorId = sykepengesoknad.aktorId,
-            journalpostId = innsending.journalpostId!!,
-            soknad = soknad,
-            harRedusertVenteperiode = sykepengesoknad.harRedusertVenteperiode,
-            speilRelatert = speilRelatert,
-            medlemskapVurdering = medlemskapVurdering
-        )
+        val requestBody =
+            OppgaveClient.lagRequestBody(
+                aktorId = sykepengesoknad.aktorId,
+                journalpostId = innsending.journalpostId!!,
+                soknad = soknad,
+                harRedusertVenteperiode = sykepengesoknad.harRedusertVenteperiode,
+                speilRelatert = speilRelatert,
+                medlemskapVurdering = medlemskapVurdering,
+            )
         val oppgaveResponse = oppgaveClient.opprettOppgave(requestBody)
 
         innsendingRepository.updateOppgaveId(id = innsending.id!!, oppgaveId = oppgaveResponse.id.toString())
@@ -81,28 +87,37 @@ class SaksbehandlingsService(
         innsendingRepository.updateBehandlet(innsendingsId)
     }
 
-    fun opprettJournalpost(innsendingId: String, soknad: Soknad): String {
+    fun opprettJournalpost(
+        innsendingId: String,
+        soknad: Soknad,
+    ): String {
         val journalpostId = arkivaren.opprettJournalpost(soknad = soknad)
         innsendingRepository.updateJournalpostId(id = innsendingId, journalpostId = journalpostId)
         return journalpostId
     }
 
-    fun finnEksisterendeInnsending(sykepengesoknadId: String) =
-        innsendingRepository.findBySykepengesoknadId(sykepengesoknadId)
+    fun finnEksisterendeInnsending(sykepengesoknadId: String) = innsendingRepository.findBySykepengesoknadId(sykepengesoknadId)
 
-    fun innsendingFeilet(sykepengesoknad: Sykepengesoknad, e: Exception) {
+    fun innsendingFeilet(
+        sykepengesoknad: Sykepengesoknad,
+        e: Exception,
+    ) {
         val eksisterendeInnsending = finnEksisterendeInnsending(sykepengesoknad.id)
         tellInnsendingFeilet(sykepengesoknad.soknadstype)
         log.error(
             "Kunne ikke fullføre innsending av søknad med innsending id: {} og sykepengesøknad id: {}, legger på intern rebehandling-topic",
             eksisterendeInnsending?.id,
             sykepengesoknad.id,
-            e
+            e,
         )
         rebehandleSykepengesoknadProducer.send(sykepengesoknad)
     }
 
-    fun opprettSoknad(sykepengesoknad: Sykepengesoknad, fnr: String, endeligMedlemskapVurdering: String? = null): Soknad {
+    fun opprettSoknad(
+        sykepengesoknad: Sykepengesoknad,
+        fnr: String,
+        endeligMedlemskapVurdering: String? = null,
+    ): Soknad {
         val navn = pdlClient.hentFormattertNavn(fnr)
 
         val soknad = Soknad.lagSoknad(sykepengesoknad, fnr, navn, endeligMedlemskapVurdering)
@@ -112,7 +127,7 @@ class SaksbehandlingsService(
 
     private fun PdfKvittering.hentOgSettKvittering(): PdfKvittering {
         return this.copy(
-            b64data = Base64.getEncoder().encodeToString(sykepengesoknadKvitteringerClient.hentVedlegg(this.blobId))
+            b64data = Base64.getEncoder().encodeToString(sykepengesoknadKvitteringerClient.hentVedlegg(this.blobId)),
         )
     }
 
@@ -125,8 +140,8 @@ class SaksbehandlingsService(
                 "soknadstype",
                 soknadstype?.name ?: "UKJENT",
                 "help",
-                "Antall ferdigbehandlede innsendinger."
-            )
+                "Antall ferdigbehandlede innsendinger.",
+            ),
         ).increment()
     }
 
@@ -139,8 +154,8 @@ class SaksbehandlingsService(
                 "soknadstype",
                 soknadstype?.name ?: "UKJENT",
                 "help",
-                "Antall innsendinger hvor feil mot baksystemer gjorde at behandling ikke kunne fullføres."
-            )
+                "Antall innsendinger hvor feil mot baksystemer gjorde at behandling ikke kunne fullføres.",
+            ),
         ).increment()
     }
 }

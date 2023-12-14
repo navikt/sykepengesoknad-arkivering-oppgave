@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component
 
 @Component
 class IdentService(private val pdlClient: PdlClient) {
-
     val log = logger()
 
     fun hentAktorIdForFnr(fnr: String): String {

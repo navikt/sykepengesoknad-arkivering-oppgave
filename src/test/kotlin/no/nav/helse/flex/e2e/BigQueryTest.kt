@@ -27,7 +27,6 @@ import java.time.temporal.ChronoUnit
 
 @DirtiesContext
 class BigQueryTest : FellesTestoppsett() {
-
     @MockBean
     lateinit var saksbehandlingsService: SaksbehandlingsService
 
@@ -53,8 +52,8 @@ class BigQueryTest : FellesTestoppsett() {
                 status = OppgaveStatus.Opprett,
                 avstemt = true,
                 opprettet = enDagSiden,
-                modifisert = enDagSiden
-            )
+                modifisert = enDagSiden,
+            ),
         )
 
         // Bømlo har sagt det skal opprettes en Speil-relatert oppgave.
@@ -65,8 +64,8 @@ class BigQueryTest : FellesTestoppsett() {
                 status = OppgaveStatus.OpprettSpeilRelatert,
                 avstemt = true,
                 opprettet = enDagSiden,
-                modifisert = enDagSiden
-            )
+                modifisert = enDagSiden,
+            ),
         )
 
         // Utsett har timet ut, så det skal opprettes en oppgave.
@@ -77,8 +76,8 @@ class BigQueryTest : FellesTestoppsett() {
                 status = OppgaveStatus.Utsett,
                 avstemt = true,
                 opprettet = enDagSiden,
-                modifisert = enDagSiden
-            )
+                modifisert = enDagSiden,
+            ),
         )
 
         // Er ikke avstemt så det skal ikke opprettes en oppgave.
@@ -89,8 +88,8 @@ class BigQueryTest : FellesTestoppsett() {
                 status = OppgaveStatus.Opprett,
                 avstemt = false,
                 opprettet = enDagSiden,
-                modifisert = enDagSiden
-            )
+                modifisert = enDagSiden,
+            ),
         )
 
         // Utsett ikke nådd timeout så det skal ikke opprettes en oppgave.
@@ -101,8 +100,8 @@ class BigQueryTest : FellesTestoppsett() {
                 status = OppgaveStatus.Utsett,
                 avstemt = true,
                 opprettet = enDagSiden,
-                modifisert = enDagSiden
-            )
+                modifisert = enDagSiden,
+            ),
         )
 
         // Er ferdigbehandlet så det skal ikke opprettes en oppgave.
@@ -113,8 +112,8 @@ class BigQueryTest : FellesTestoppsett() {
                 status = OppgaveStatus.IkkeOpprett,
                 avstemt = true,
                 opprettet = enDagSiden,
-                modifisert = enDagSiden
-            )
+                modifisert = enDagSiden,
+            ),
         )
         oppgaveOpprettelse.behandleOppgaver(tid)
     }
@@ -125,7 +124,7 @@ class BigQueryTest : FellesTestoppsett() {
             InnsendingDbRecord(
                 id = "id",
                 sykepengesoknadId = it.arguments[0].toString(),
-                journalpostId = "journalpost"
+                journalpostId = "journalpost",
             )
         }
     }
@@ -146,9 +145,10 @@ class BigQueryTest : FellesTestoppsett() {
             ORDER BY modifisert
             """
 
-        val params = MapSqlParameterSource()
-            .addValue("status", listOf("Opprettet", "OpprettetSpeilRelatert", "OpprettetTimeout"))
-            .addValue("modifisert", Timestamp.from(tid))
+        val params =
+            MapSqlParameterSource()
+                .addValue("status", listOf("Opprettet", "OpprettetSpeilRelatert", "OpprettetTimeout"))
+                .addValue("modifisert", Timestamp.from(tid))
 
         val tilBigQuery = namedParameterJdbcTemplate.query(sql, params) { rs: ResultSet, _ -> rs.toBigQueryOpprettet() }
 
@@ -170,9 +170,10 @@ class BigQueryTest : FellesTestoppsett() {
             GROUP BY date(modifisert), status;
             """
 
-        val params = MapSqlParameterSource()
-            .addValue("status", listOf("Opprettet", "OpprettetSpeilRelatert", "OpprettetTimeout"))
-            .addValue("modifisert", Timestamp.from(tid))
+        val params =
+            MapSqlParameterSource()
+                .addValue("status", listOf("Opprettet", "OpprettetSpeilRelatert", "OpprettetTimeout"))
+                .addValue("modifisert", Timestamp.from(tid))
 
         val tilBigQuery = namedParameterJdbcTemplate.query(sql, params) { rs: ResultSet, _ -> rs.toBigQueryGruppert() }
 
@@ -187,7 +188,7 @@ class BigQueryTest : FellesTestoppsett() {
         return BigQueryOpprettet(
             sykepengesoknadId = getString("sykepengesoknad_id"),
             status = OppgaveStatus.valueOf(getString("status")),
-            opprettet = getTimestamp("opprettet").toInstant()
+            opprettet = getTimestamp("opprettet").toInstant(),
         )
     }
 
@@ -195,19 +196,19 @@ class BigQueryTest : FellesTestoppsett() {
         return BigQueryGruppert(
             dato = getDate("dato").toLocalDate(),
             status = OppgaveStatus.valueOf(getString("status")),
-            antall = getInt("antall")
+            antall = getInt("antall"),
         )
     }
 
     private data class BigQueryOpprettet(
         val sykepengesoknadId: String,
         val status: OppgaveStatus,
-        val opprettet: Instant
+        val opprettet: Instant,
     )
 
     private data class BigQueryGruppert(
         val dato: LocalDate,
         val status: OppgaveStatus,
-        val antall: Int
+        val antall: Int,
     )
 }

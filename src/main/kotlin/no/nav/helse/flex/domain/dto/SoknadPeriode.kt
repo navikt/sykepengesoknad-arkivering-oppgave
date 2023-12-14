@@ -7,5 +7,5 @@ data class SoknadPeriode(
     val tom: LocalDate? = null,
     val grad: Int? = null,
     val faktiskGrad: Int? = null,
-    val sykmeldingstype: String? = null
+    val sykmeldingstype: String? = null,
 )

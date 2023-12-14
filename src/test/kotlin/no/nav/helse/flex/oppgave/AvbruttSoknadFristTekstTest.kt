@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
 class AvbruttSoknadFristTekstTest {
-
     val forventetBeskrivelse = """Ved en feil har brukeren, for akkurat denne søknadsperioden, fått beskjed om en annen frist enn hva folketrygdloven § 22-13 tredje ledd tilsier. Hvis denne søknaden er sendt inn innen den alminnelige fristen, behandles søknaden som normalt, og du kan se vekk fra teksten under.
 
 Hvis søknaden er sendt inn senere, gjelder følgende:
@@ -27,15 +26,16 @@ Fordi du fikk feil informasjon knyttet til akkurat denne søknadsperioden, gjeld
 
     @Test
     fun testerTekst() {
-        val soknad = Soknad(
-            fom = LocalDate.of(2022, 3, 24),
-            tom = LocalDate.of(2022, 3, 28),
-            opprettet = LocalDate.EPOCH.atStartOfDay(),
-            soknadstype = Soknadstype.ARBEIDSLEDIG,
-            sporsmal = emptyList(),
-            merknader = listOf("AVBRUTT_FEILINFO"),
-            egenmeldingsdagerFraSykmelding = null
-        )
+        val soknad =
+            Soknad(
+                fom = LocalDate.of(2022, 3, 24),
+                tom = LocalDate.of(2022, 3, 28),
+                opprettet = LocalDate.EPOCH.atStartOfDay(),
+                soknadstype = Soknadstype.ARBEIDSLEDIG,
+                sporsmal = emptyList(),
+                merknader = listOf("AVBRUTT_FEILINFO"),
+                egenmeldingsdagerFraSykmelding = null,
+            )
 
         soknad.meldingDersomAvbruttFristFeil() `should be equal to` forventetBeskrivelse
     }

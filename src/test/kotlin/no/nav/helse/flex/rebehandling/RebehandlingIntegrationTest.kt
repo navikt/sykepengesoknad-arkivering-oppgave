@@ -20,7 +20,6 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 class RebehandlingIntegrationTest : FellesTestoppsett() {
-
     @Autowired
     private lateinit var aivenKafkaProducer: KafkaProducer<String, String>
 
@@ -44,8 +43,8 @@ class RebehandlingIntegrationTest : FellesTestoppsett() {
             ProducerRecord(
                 SYKEPENGESOKNAD_TOPIC,
                 id,
-                soknad.serialisertTilString()
-            )
+                soknad.serialisertTilString(),
+            ),
         )
 
         // Er satt opp med retry mot pdf, etter 3 feil legges søknaden til rebehandling

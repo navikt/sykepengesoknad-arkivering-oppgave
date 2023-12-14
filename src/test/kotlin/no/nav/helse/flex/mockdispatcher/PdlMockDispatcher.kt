@@ -23,27 +23,32 @@ object PdlMockDispatcher : QueueDispatcher() {
             HENT_IDENTER_QUERY -> {
                 return MockResponse().setBody(
                     GraphQLResponse(
-                        data = HentIdenterResponseData(
-                            hentIdenter = HentIdenter(
-                                identer = listOf(ident)
-                                    .map { PdlIdent(gruppe = FOLKEREGISTERIDENT, ident = it) }.toMutableList()
-                                    .also { it.add(PdlIdent(gruppe = AKTORID, ident = ident + "00")) }
-                            )
-                        ),
-                        errors = null
-                    ).serialisertTilString()
+                        data =
+                            HentIdenterResponseData(
+                                hentIdenter =
+                                    HentIdenter(
+                                        identer =
+                                            listOf(ident)
+                                                .map { PdlIdent(gruppe = FOLKEREGISTERIDENT, ident = it) }.toMutableList()
+                                                .also { it.add(PdlIdent(gruppe = AKTORID, ident = ident + "00")) },
+                                    ),
+                            ),
+                        errors = null,
+                    ).serialisertTilString(),
                 )
             }
             HENT_NAVN_QUERY -> {
                 return MockResponse().setBody(
                     GraphQLResponse(
-                        data = HentNavnResponseData(
-                            hentPerson = HentNavn(
-                                navn = listOf(Navn(fornavn = "Navn", mellomnavn = null, etternavn = "Navnesen"))
-                            )
-                        ),
-                        errors = null
-                    ).serialisertTilString()
+                        data =
+                            HentNavnResponseData(
+                                hentPerson =
+                                    HentNavn(
+                                        navn = listOf(Navn(fornavn = "Navn", mellomnavn = null, etternavn = "Navnesen")),
+                                    ),
+                            ),
+                        errors = null,
+                    ).serialisertTilString(),
                 )
             }
         }

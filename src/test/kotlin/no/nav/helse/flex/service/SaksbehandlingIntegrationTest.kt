@@ -31,33 +31,34 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
 
     @Test
     fun `test happycase`() {
-        val soknad = mockSykepengesoknadDTO.copy(
-            id = UUID.randomUUID().toString(),
-            opprettet = LocalDateTime.now(),
-            fom = LocalDate.of(2019, 5, 4),
-            tom = LocalDate.of(2019, 5, 8),
-            type = SoknadstypeDTO.ARBEIDSTAKERE,
-            sporsmal = listOf(
-                SporsmalDTO(
-                    id = UUID.randomUUID().toString(),
-                    tag = "TAGGEN",
-                    sporsmalstekst = "Har systemet gode integrasjonstester?",
-                    svartype = SvartypeDTO.JA_NEI,
-                    svar = listOf(SvarDTO(verdi = "JA"))
-
-                )
-            ),
-            status = SoknadsstatusDTO.SENDT,
-            sendtNav = LocalDateTime.now(),
-            fnr = "fnr"
-        )
+        val soknad =
+            mockSykepengesoknadDTO.copy(
+                id = UUID.randomUUID().toString(),
+                opprettet = LocalDateTime.now(),
+                fom = LocalDate.of(2019, 5, 4),
+                tom = LocalDate.of(2019, 5, 8),
+                type = SoknadstypeDTO.ARBEIDSTAKERE,
+                sporsmal =
+                    listOf(
+                        SporsmalDTO(
+                            id = UUID.randomUUID().toString(),
+                            tag = "TAGGEN",
+                            sporsmalstekst = "Har systemet gode integrasjonstester?",
+                            svartype = SvartypeDTO.JA_NEI,
+                            svar = listOf(SvarDTO(verdi = "JA")),
+                        ),
+                    ),
+                status = SoknadsstatusDTO.SENDT,
+                sendtNav = LocalDateTime.now(),
+                fnr = "fnr",
+            )
 
         aivenKafkaProducer.send(
             ProducerRecord(
                 SYKEPENGESOKNAD_TOPIC,
                 soknad.id,
-                soknad.serialisertTilString()
-            )
+                soknad.serialisertTilString(),
+            ),
         )
 
         await().atMost(Duration.ofSeconds(10)).until {
@@ -89,39 +90,40 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
                     oppgaveID,
                     "4488",
                     "SYK",
-                    "SOK"
-                ).serialisertTilString()
-            ).addHeader("Content-Type", "application/json")
+                    "SOK",
+                ).serialisertTilString(),
+            ).addHeader("Content-Type", "application/json"),
         )
 
-        val soknad = SykepengesoknadDTO(
-            id = UUID.randomUUID().toString(),
-            opprettet = LocalDateTime.now(),
-            fom = LocalDate.of(2020, 5, 1),
-            tom = LocalDate.of(2020, 5, 5),
-            type = SoknadstypeDTO.SELVSTENDIGE_OG_FRILANSERE,
-            sporsmal = listOf(
-                SporsmalDTO(
-                    id = UUID.randomUUID().toString(),
-                    tag = "TAGGEN",
-                    sporsmalstekst = "Har systemet gode integrasjonstester?",
-                    svartype = SvartypeDTO.JA_NEI,
-                    svar = listOf(SvarDTO(verdi = "JA"))
-
-                )
-            ),
-            status = SoknadsstatusDTO.SENDT,
-            sendtNav = LocalDateTime.now(),
-            fnr = "fnr",
-            harRedusertVenteperiode = true
-        )
+        val soknad =
+            SykepengesoknadDTO(
+                id = UUID.randomUUID().toString(),
+                opprettet = LocalDateTime.now(),
+                fom = LocalDate.of(2020, 5, 1),
+                tom = LocalDate.of(2020, 5, 5),
+                type = SoknadstypeDTO.SELVSTENDIGE_OG_FRILANSERE,
+                sporsmal =
+                    listOf(
+                        SporsmalDTO(
+                            id = UUID.randomUUID().toString(),
+                            tag = "TAGGEN",
+                            sporsmalstekst = "Har systemet gode integrasjonstester?",
+                            svartype = SvartypeDTO.JA_NEI,
+                            svar = listOf(SvarDTO(verdi = "JA")),
+                        ),
+                    ),
+                status = SoknadsstatusDTO.SENDT,
+                sendtNav = LocalDateTime.now(),
+                fnr = "fnr",
+                harRedusertVenteperiode = true,
+            )
 
         aivenKafkaProducer.send(
             ProducerRecord(
                 SYKEPENGESOKNAD_TOPIC,
                 soknad.id,
-                soknad.serialisertTilString()
-            )
+                soknad.serialisertTilString(),
+            ),
         )
 
         await().atMost(Duration.ofSeconds(10)).until {
@@ -135,11 +137,11 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
         assertThat(oppgaveRequestBody.journalpostId).isEqualTo("journalpostId")
         assertThat(oppgaveRequestBody.beskrivelse).isEqualTo(
             """
-Søknad om sykepenger fra Selvstendig Næringsdrivende / Frilanser for perioden 01.05.2020 - 05.05.2020
+            Søknad om sykepenger fra Selvstendig Næringsdrivende / Frilanser for perioden 01.05.2020 - 05.05.2020
 
-Har systemet gode integrasjonstester?
-Ja
-            """.trimIndent()
+            Har systemet gode integrasjonstester?
+            Ja
+            """.trimIndent(),
         )
         assertThat(oppgaveRequestBody.tema).isEqualTo("SYK")
 
@@ -157,9 +159,11 @@ Ja
         pdfRequest.requestLine shouldBeEqualTo "POST /api/v1/genpdf/syfosoknader/selvstendignaeringsdrivende HTTP/1.1"
 
         val dokArkivRequest = dokArkivMockWebserver.takeRequest(1, TimeUnit.SECONDS)!!
-        dokArkivRequest.requestLine shouldBeEqualTo "POST /rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true HTTP/1.1"
+        dokArkivRequest.requestLine shouldBeEqualTo
+            "POST /rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true HTTP/1.1"
         val dokArkivRequestBody = objectMapper.readValue<JournalpostRequest>(dokArkivRequest.body.readUtf8())
-        dokArkivRequestBody.dokumenter[0].tittel `should be equal to` "Søknad om sykepenger fra Selvstendig/Frilanser for periode: 01.05.2020 til 05.05.2020"
+        dokArkivRequestBody.dokumenter[0].tittel `should be equal to`
+            "Søknad om sykepenger fra Selvstendig/Frilanser for periode: 01.05.2020 til 05.05.2020"
 
         val pdlRequest = pdlMockWebserver.takeRequest(1, TimeUnit.SECONDS)!!
         pdlRequest.headers["Behandlingsnummer"] `should be equal to` "B128"
@@ -175,9 +179,9 @@ Ja
                     oppgaveID,
                     "4488",
                     "SYK",
-                    "SOK"
-                ).serialisertTilString()
-            ).addHeader("Content-Type", "application/json")
+                    "SOK",
+                ).serialisertTilString(),
+            ).addHeader("Content-Type", "application/json"),
         )
 
         val soknad = mockReisetilskuddDTO.copy(id = UUID.randomUUID().toString())
@@ -186,8 +190,8 @@ Ja
             ProducerRecord(
                 SYKEPENGESOKNAD_TOPIC,
                 soknad.id,
-                soknad.serialisertTilString()
-            )
+                soknad.serialisertTilString(),
+            ),
         )
 
         await().atMost(Duration.ofSeconds(10)).until {
@@ -201,41 +205,41 @@ Ja
         assertThat(oppgaveRequestBody.journalpostId).isEqualTo("journalpostId")
         assertThat(oppgaveRequestBody.beskrivelse).isEqualTo(
             """
-Søknad om reisetilskudd for perioden 18.03.2021 - 22.03.2021
+            Søknad om reisetilskudd for perioden 18.03.2021 - 22.03.2021
 
-Søknaden har vedlagt 2 kvitteringer med en sum på 1 338,00 kr
+            Søknaden har vedlagt 2 kvitteringer med en sum på 1 338,00 kr
 
-Arbeidsgiver: Barnehagen
-Organisasjonsnummer: 123454543
+            Arbeidsgiver: Barnehagen
+            Organisasjonsnummer: 123454543
 
-Periode 1:
-18.03.2021 - 22.03.2021
+            Periode 1:
+            18.03.2021 - 22.03.2021
 
-Brukte du bil eller offentlig transport til og fra jobben?
-Ja
-    Hva slags type transport bruker du?
-        Offentlig transport
-            Hvor mye betaler du vanligvis i måneden for offentlig transport?
-            20,00 kr
+            Brukte du bil eller offentlig transport til og fra jobben?
+            Ja
+                Hva slags type transport bruker du?
+                    Offentlig transport
+                        Hvor mye betaler du vanligvis i måneden for offentlig transport?
+                        20,00 kr
 
-        Bil
-            Hvor mange kilometer er kjøreturen mellom hjemmet ditt og jobben?
-            42 km
+                    Bil
+                        Hvor mange kilometer er kjøreturen mellom hjemmet ditt og jobben?
+                        42 km
 
-Reiste du med egen bil, leiebil eller kollega til jobben mellom 18. - 22. mars 2021?
-Ja
-    Hvilke dager reiste du med bil?
-    22.03.2021
-    21.03.2021
+            Reiste du med egen bil, leiebil eller kollega til jobben mellom 18. - 22. mars 2021?
+            Ja
+                Hvilke dager reiste du med bil?
+                22.03.2021
+                21.03.2021
 
-    Hadde du utgifter til bompenger?
-    Ja
-        Hvor mye betalte du i bompenger mellom hjemmet ditt og jobben?
-        30,00 kr
+                Hadde du utgifter til bompenger?
+                Ja
+                    Hvor mye betalte du i bompenger mellom hjemmet ditt og jobben?
+                    30,00 kr
 
-Legger arbeidsgiveren din ut for reisene?
-Nei
-            """.trimIndent()
+            Legger arbeidsgiveren din ut for reisene?
+            Nei
+            """.trimIndent(),
         )
         assertThat(oppgaveRequestBody.tema).isEqualTo("SYK")
         assertThat(oppgaveRequestBody.oppgavetype).isEqualTo("SOK")
@@ -273,9 +277,9 @@ Nei
                     oppgaveID,
                     "4488",
                     "SYK",
-                    "SOK"
-                ).serialisertTilString()
-            ).addHeader("Content-Type", "application/json")
+                    "SOK",
+                ).serialisertTilString(),
+            ).addHeader("Content-Type", "application/json"),
         )
 
         val soknad = mockBehandlingsdagerdDTO.copy(id = UUID.randomUUID().toString())
@@ -284,8 +288,8 @@ Nei
             ProducerRecord(
                 SYKEPENGESOKNAD_TOPIC,
                 soknad.id,
-                soknad.serialisertTilString()
-            )
+                soknad.serialisertTilString(),
+            ),
         )
 
         await().atMost(Duration.ofSeconds(20)).until {
@@ -299,16 +303,16 @@ Nei
         assertThat(oppgaveRequestBody.journalpostId).isEqualTo("journalpostId")
         assertThat(oppgaveRequestBody.beskrivelse).isEqualTo(
             """
-Søknad med enkeltstående behandlingsdager
+            Søknad med enkeltstående behandlingsdager
 
-Periode 1:
-02.10.2023 - 15.10.2023
+            Periode 1:
+            02.10.2023 - 15.10.2023
 
-Hvilke dager kunne du ikke være arbeidssøker på grunn av behandling mellom 2. - 15. oktober 2023?
-    04.10.2023
+            Hvilke dager kunne du ikke være arbeidssøker på grunn av behandling mellom 2. - 15. oktober 2023?
+                04.10.2023
 
-    11.10.2023
-            """.trimIndent()
+                11.10.2023
+            """.trimIndent(),
         )
         assertThat(oppgaveRequestBody.tema).isEqualTo("SYK")
         assertThat(oppgaveRequestBody.oppgavetype).isEqualTo("SOK")
@@ -327,9 +331,12 @@ Hvilke dager kunne du ikke være arbeidssøker på grunn av behandling mellom 2.
 
         val dokArkivRequestJournalpostRequest = dokArkivMockWebserver.takeRequest(1, TimeUnit.SECONDS)!!
 
-        dokArkivRequestJournalpostRequest.requestLine shouldBeEqualTo "POST /rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true HTTP/1.1"
-        val dokArkivRequestJournalpostBody = objectMapper.readValue<JournalpostRequest>(dokArkivRequestJournalpostRequest.body.readUtf8())
-        dokArkivRequestJournalpostBody.dokumenter[0].tittel `should be equal to` "Søknad om enkeltstående behandlingsdager fra arbeidsledig for periode: 02.10.2023 til 15.10.2023"
+        dokArkivRequestJournalpostRequest.requestLine shouldBeEqualTo
+            "POST /rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true HTTP/1.1"
+        val dokArkivRequestJournalpostBody =
+            objectMapper.readValue<JournalpostRequest>(dokArkivRequestJournalpostRequest.body.readUtf8())
+        dokArkivRequestJournalpostBody.dokumenter[0].tittel `should be equal to`
+            "Søknad om enkeltstående behandlingsdager fra arbeidsledig for periode: 02.10.2023 til 15.10.2023"
 
         val dokArkivLogiskVedleggRequest = dokArkivMockWebserver.takeRequest(1, TimeUnit.SECONDS)!!
         dokArkivLogiskVedleggRequest.requestLine shouldBeEqualTo "POST /rest/journalpostapi/v1/dokumentInfo/123456/logiskVedlegg/ HTTP/1.1"
@@ -346,22 +353,23 @@ Hvilke dager kunne du ikke være arbeidssøker på grunn av behandling mellom 2.
                     oppgaveID,
                     "4488",
                     "SYK",
-                    "SOK"
-                ).serialisertTilString()
-            ).addHeader("Content-Type", "application/json")
+                    "SOK",
+                ).serialisertTilString(),
+            ).addHeader("Content-Type", "application/json"),
         )
 
-        val soknad = mockReisetilskuddDTO.copy(
-            id = UUID.randomUUID().toString(),
-            type = SoknadstypeDTO.GRADERT_REISETILSKUDD
-        )
+        val soknad =
+            mockReisetilskuddDTO.copy(
+                id = UUID.randomUUID().toString(),
+                type = SoknadstypeDTO.GRADERT_REISETILSKUDD,
+            )
 
         aivenKafkaProducer.send(
             ProducerRecord(
                 SYKEPENGESOKNAD_TOPIC,
                 soknad.id,
-                soknad.serialisertTilString()
-            )
+                soknad.serialisertTilString(),
+            ),
         )
 
         await().atMost(Duration.ofSeconds(10)).until {
@@ -375,42 +383,42 @@ Hvilke dager kunne du ikke være arbeidssøker på grunn av behandling mellom 2.
         assertThat(oppgaveRequestBody.journalpostId).isEqualTo("journalpostId")
         assertThat(oppgaveRequestBody.beskrivelse).isEqualTo(
             """
-Søknad om sykepenger med reisetilskudd for perioden 18.03.2021 - 22.03.2021
+            Søknad om sykepenger med reisetilskudd for perioden 18.03.2021 - 22.03.2021
 
-Søknaden har vedlagt 2 kvitteringer med en sum på 1 338,00 kr
+            Søknaden har vedlagt 2 kvitteringer med en sum på 1 338,00 kr
 
-Arbeidsgiver: Barnehagen
-Organisasjonsnummer: 123454543
+            Arbeidsgiver: Barnehagen
+            Organisasjonsnummer: 123454543
 
-Periode 1:
-18.03.2021 - 22.03.2021
-Grad: 0
+            Periode 1:
+            18.03.2021 - 22.03.2021
+            Grad: 0
 
-Brukte du bil eller offentlig transport til og fra jobben?
-Ja
-    Hva slags type transport bruker du?
-        Offentlig transport
-            Hvor mye betaler du vanligvis i måneden for offentlig transport?
-            20,00 kr
+            Brukte du bil eller offentlig transport til og fra jobben?
+            Ja
+                Hva slags type transport bruker du?
+                    Offentlig transport
+                        Hvor mye betaler du vanligvis i måneden for offentlig transport?
+                        20,00 kr
 
-        Bil
-            Hvor mange kilometer er kjøreturen mellom hjemmet ditt og jobben?
-            42 km
+                    Bil
+                        Hvor mange kilometer er kjøreturen mellom hjemmet ditt og jobben?
+                        42 km
 
-Reiste du med egen bil, leiebil eller kollega til jobben mellom 18. - 22. mars 2021?
-Ja
-    Hvilke dager reiste du med bil?
-    22.03.2021
-    21.03.2021
+            Reiste du med egen bil, leiebil eller kollega til jobben mellom 18. - 22. mars 2021?
+            Ja
+                Hvilke dager reiste du med bil?
+                22.03.2021
+                21.03.2021
 
-    Hadde du utgifter til bompenger?
-    Ja
-        Hvor mye betalte du i bompenger mellom hjemmet ditt og jobben?
-        30,00 kr
+                Hadde du utgifter til bompenger?
+                Ja
+                    Hvor mye betalte du i bompenger mellom hjemmet ditt og jobben?
+                    30,00 kr
 
-Legger arbeidsgiveren din ut for reisene?
-Nei
-            """.trimIndent()
+            Legger arbeidsgiveren din ut for reisene?
+            Nei
+            """.trimIndent(),
         )
         assertThat(oppgaveRequestBody.tema).isEqualTo("SYK")
         assertThat(oppgaveRequestBody.oppgavetype).isEqualTo("SOK")
@@ -436,6 +444,7 @@ Nei
         val dokArkivRequest = dokArkivMockWebserver.takeRequest(1, TimeUnit.SECONDS)!!
         dokArkivRequest.requestLine shouldBeEqualTo "POST /rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true HTTP/1.1"
         val dokArkivRequestBody = objectMapper.readValue<JournalpostRequest>(dokArkivRequest.body.readUtf8())
-        dokArkivRequestBody.dokumenter[0].tittel `should be equal to` "Søknad om sykepenger med reisetilskudd for periode: 18.03.2021 til 22.03.2021"
+        dokArkivRequestBody.dokumenter[0].tittel `should be equal to`
+            "Søknad om sykepenger med reisetilskudd for periode: 18.03.2021 til 22.03.2021"
     }
 }

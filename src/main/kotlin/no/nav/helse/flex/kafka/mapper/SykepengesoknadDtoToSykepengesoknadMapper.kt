@@ -3,8 +3,7 @@ package no.nav.helse.flex.kafka.mapper
 import no.nav.helse.flex.domain.dto.*
 import no.nav.helse.flex.sykepengesoknad.kafka.*
 
-private fun SvarDTO.toSvar(): Svar =
-    Svar(verdi)
+private fun SvarDTO.toSvar(): Svar = Svar(verdi)
 
 private fun SporsmalDTO.toSporsmal(): Sporsmal =
     Sporsmal(
@@ -17,14 +16,15 @@ private fun SporsmalDTO.toSporsmal(): Sporsmal =
         max = max,
         kriterieForVisningAvUndersporsmal = kriterieForVisningAvUndersporsmal?.mapKriterie(),
         svar = svar!!.map { it.toSvar() },
-        undersporsmal = undersporsmal?.map { it.toSporsmal() }
+        undersporsmal = undersporsmal?.map { it.toSporsmal() },
     )
 
-private fun VisningskriteriumDTO.mapKriterie(): Visningskriterie = when (this) {
-    VisningskriteriumDTO.CHECKED -> Visningskriterie.CHECKED
-    VisningskriteriumDTO.NEI -> Visningskriterie.NEI
-    VisningskriteriumDTO.JA -> Visningskriterie.JA
-}
+private fun VisningskriteriumDTO.mapKriterie(): Visningskriterie =
+    when (this) {
+        VisningskriteriumDTO.CHECKED -> Visningskriterie.CHECKED
+        VisningskriteriumDTO.NEI -> Visningskriterie.NEI
+        VisningskriteriumDTO.JA -> Visningskriterie.JA
+    }
 
 private fun SvartypeDTO.mapSvartype(): Svartype {
     return when (this) {
@@ -63,7 +63,7 @@ private fun SoknadsperiodeDTO.toSoknadPeriode(): SoknadPeriode =
         tom = tom,
         grad = sykmeldingsgrad,
         faktiskGrad = faktiskGrad,
-        sykmeldingstype = sykmeldingstype?.name
+        sykmeldingstype = sykmeldingstype?.name,
     )
 
 private fun SoknadstypeDTO.tilSoknadstype(): Soknadstype =
@@ -78,9 +78,7 @@ private fun SoknadstypeDTO.tilSoknadstype(): Soknadstype =
         SoknadstypeDTO.GRADERT_REISETILSKUDD -> Soknadstype.GRADERT_REISETILSKUDD
     }
 
-fun SykepengesoknadDTO.toSykepengesoknad(
-    aktorId: String
-): Sykepengesoknad {
+fun SykepengesoknadDTO.toSykepengesoknad(aktorId: String): Sykepengesoknad {
     return Sykepengesoknad(
         id = id,
         sykmeldingId = sykmeldingId,
@@ -111,19 +109,21 @@ fun SykepengesoknadDTO.toSykepengesoknad(
         sendTilGosys = sendTilGosys,
         utenlandskSykmelding = utenlandskSykmelding,
         egenmeldingsdagerFraSykmelding = egenmeldingsdagerFraSykmelding,
-        medlemskapVurdering = medlemskapVurdering
+        medlemskapVurdering = medlemskapVurdering,
     )
 }
 
-private fun AvsendertypeDTO.mapAvsendertype(): Avsendertype = when (this) {
-    AvsendertypeDTO.BRUKER -> Avsendertype.BRUKER
-    AvsendertypeDTO.SYSTEM -> Avsendertype.SYSTEM
-}
+private fun AvsendertypeDTO.mapAvsendertype(): Avsendertype =
+    when (this) {
+        AvsendertypeDTO.BRUKER -> Avsendertype.BRUKER
+        AvsendertypeDTO.SYSTEM -> Avsendertype.SYSTEM
+    }
 
-private fun ArbeidssituasjonDTO.mapArbeidssituasjon(): Arbeidssituasjon = when (this) {
-    ArbeidssituasjonDTO.SELVSTENDIG_NARINGSDRIVENDE -> Arbeidssituasjon.NAERINGSDRIVENDE
-    ArbeidssituasjonDTO.FRILANSER -> Arbeidssituasjon.FRILANSER
-    ArbeidssituasjonDTO.ARBEIDSTAKER -> Arbeidssituasjon.ARBEIDSTAKER
-    ArbeidssituasjonDTO.ARBEIDSLEDIG -> Arbeidssituasjon.ARBEIDSLEDIG
-    ArbeidssituasjonDTO.ANNET -> Arbeidssituasjon.ANNET
-}
+private fun ArbeidssituasjonDTO.mapArbeidssituasjon(): Arbeidssituasjon =
+    when (this) {
+        ArbeidssituasjonDTO.SELVSTENDIG_NARINGSDRIVENDE -> Arbeidssituasjon.NAERINGSDRIVENDE
+        ArbeidssituasjonDTO.FRILANSER -> Arbeidssituasjon.FRILANSER
+        ArbeidssituasjonDTO.ARBEIDSTAKER -> Arbeidssituasjon.ARBEIDSTAKER
+        ArbeidssituasjonDTO.ARBEIDSLEDIG -> Arbeidssituasjon.ARBEIDSLEDIG
+        ArbeidssituasjonDTO.ANNET -> Arbeidssituasjon.ANNET
+    }

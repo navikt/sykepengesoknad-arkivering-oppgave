@@ -48,7 +48,7 @@ private fun Soknad.beskrivMerknaderFraSykmelding(): String {
 private fun Soknad.beskrivKvitteringer(): String {
     return if (kvitteringer != null && kvitteringer.isNotEmpty()) {
         "\nSøknaden har vedlagt ${kvitteringer.size} kvitteringer med en sum på ${
-        kvitteringSum.toString().formatterBelop()
+            kvitteringSum.toString().formatterBelop()
         } kr\n"
     } else {
         ""
@@ -57,13 +57,16 @@ private fun Soknad.beskrivKvitteringer(): String {
 
 private fun Merknad.beskrivMerknad(): String {
     return when (type) {
-        "UGYLDIG_TILBAKEDATERING" -> "OBS! Sykmeldingen er avslått grunnet ugyldig tilbakedatering"
-        "TILBAKEDATERING_KREVER_FLERE_OPPLYSNINGER" -> "OBS! Tilbakedatert sykmelding er til vurdering"
-        "TILBAKEDATERT_PAPIRSYKMELDING" -> "OBS! Sykmeldingen sendt til NAY for manuell kontroll grunnet tilbakedatering"
-        "UNDER_BEHANDLING" -> "OBS! Sykmeldingen er tilbakedatert. Tilbakedateringen var ikke behandlet når søknaden ble sendt. Sjekk gosys for resultat på tilbakedatering"
+        "UGYLDIG_TILBAKEDATERING" -> "OBS! Sykmeldingen er avslått grunnet ugyldig tilbakedatering."
+        "TILBAKEDATERING_KREVER_FLERE_OPPLYSNINGER" -> "OBS! Tilbakedatert sykmelding er til vurdering."
+        "TILBAKEDATERT_PAPIRSYKMELDING" -> "OBS! Sykmeldingen sendt til NAY for manuell kontroll grunnet tilbakedatering."
+        "UNDER_BEHANDLING" ->
+            "OBS! Sykmeldingen er tilbakedatert. Tilbakedateringen var ikke behandlet når søknaden " +
+                "ble sendt. Sjekk Gosys for resultat på tilbakedatering."
+
         else -> {
             log.warn("Ukjent merknadstype $type")
-            "OBS! Sykmeldingen har en merknad $this"
+            "OBS! Sykmeldingen har en merknad $this."
         }
     }
 }
@@ -89,9 +92,9 @@ private fun Soknad.lagTittel() =
             // Det kan finnes eldre søknader som mangler arbeidssituasjon
             val arbeidssituasjon = arbeidssituasjon?.navn ?: "Selvstendig Næringsdrivende / Frilanser"
             "Søknad om sykepenger fra $arbeidssituasjon for perioden ${fom!!.format(norskDato)} - ${
-            tom!!.format(
-                norskDato
-            )
+                tom!!.format(
+                    norskDato,
+                )
             }"
         }
 
@@ -101,14 +104,13 @@ private fun Soknad.lagTittel() =
         ANNET_ARBEIDSFORHOLD -> "Søknad om sykepenger med uavklart arbeidssituasjon"
         REISETILSKUDD -> "Søknad om reisetilskudd for perioden ${fom!!.format(norskDato)} - ${tom!!.format(norskDato)}"
         GRADERT_REISETILSKUDD -> "Søknad om sykepenger med reisetilskudd for perioden ${fom!!.format(norskDato)} - ${
-        tom!!.format(
-            norskDato
-        )
+            tom!!.format(
+                norskDato,
+            )
         }"
     }
 
-private fun Soknad.erKorrigert() =
-    korrigerer?.let { " KORRIGERING" } ?: ""
+private fun Soknad.erKorrigert() = korrigerer?.let { " KORRIGERING" } ?: ""
 
 private fun Soknad.beskrivArbeidsgiver() =
     if (arbeidssituasjon === ARBEIDSTAKER) {
@@ -130,21 +132,22 @@ private fun Soknad.beskrivPerioder() =
                         ""
                     }
                 } ?: ""
-                ) +
+            ) +
             (
                 periode.faktiskGrad?.let { faktiskGrad ->
                     "Oppgitt faktisk arbeidsgrad: $faktiskGrad\n"
                 } ?: ""
-                )
+            )
     }?.joinToString("") ?: ""
 
 // Er egen beskrivelse for selvstendig/frilanser fordi SoknadDTO Periode ikke inneholder feltet faktiskGrad før Mars 2020, slik som arbeidstakere
 private fun Soknad.beskrivFaktiskGradFrilansere(): String {
     if (soknadstype === SELVSTENDIGE_OG_FRILANSERE) {
-        val harJobbetMerEnnGradert = sporsmal
-            .asSequence()
-            .filter { it.tag.startsWith("JOBBET_DU_GRADERT_") || it.tag.startsWith("JOBBET_DU_100_PROSENT_") }
-            .any { it.svar?.asSequence()?.any { svar -> svar.verdi == "JA" } ?: false }
+        val harJobbetMerEnnGradert =
+            sporsmal
+                .asSequence()
+                .filter { it.tag.startsWith("JOBBET_DU_GRADERT_") || it.tag.startsWith("JOBBET_DU_100_PROSENT_") }
+                .any { it.svar?.asSequence()?.any { svar -> svar.verdi == "JA" } ?: false }
 
         val periodeMedFaktiskGrad = soknadPerioder?.any { it.faktiskGrad != null } ?: false
 
@@ -154,7 +157,7 @@ private fun Soknad.beskrivFaktiskGradFrilansere(): String {
                 OBS! Brukeren har jobbet mer enn uføregraden i sykmeldingen.
                 Se oppgitt arbeidsgrad lengre ned i oppgaven
                 
-            """.trimIndent()
+                """.trimIndent()
         }
     }
     return ""
@@ -171,7 +174,7 @@ private fun Soknad.beskrivMedlemskapVurdering(): String {
             Informasjon om hva du skal gjøre finner du på Navet, se
             https://navno.sharepoint.com/sites/fag-og-ytelser-eos-lovvalg-medlemskap/SitePages/Hvordan-vurderer-jeg-lovvalg-og-medlemskap.aspx
             
-        """.trimIndent()
+            """.trimIndent()
     }
     return ""
 }
@@ -185,30 +188,36 @@ private fun Sporsmal.skalVises() =
         else -> "NEI" != forsteSvarverdi()
     }
 
-private fun beskrivSporsmal(sporsmal: Sporsmal, dybde: Int): String {
+private fun beskrivSporsmal(
+    sporsmal: Sporsmal,
+    dybde: Int,
+): String {
     val innrykk = "\n" + nCopies(dybde, "    ").joinToString("")
     val svarverdier = sporsmal.svarverdier()
 
-    if (svarverdier.isEmpty() && sporsmal.svartype !in listOf(
+    if (svarverdier.isEmpty() && sporsmal.svartype !in
+        listOf(
             CHECKBOX_GRUPPE,
             RADIO_GRUPPE,
             RADIO_GRUPPE_TIMER_PROSENT,
             INFO_BEHANDLINGSDAGER,
-            IKKE_RELEVANT
+            IKKE_RELEVANT,
         )
     ) {
         return ""
     }
 
-    val sporsmalBeskrivelse = sporsmal.formatterSporsmalOgSvar().joinToString("") { sporsmalOgSvar ->
-        innrykk + sporsmalOgSvar
-    }
-    val undersporsmålBeskrivelse = (
-        sporsmal.undersporsmalIgnorerRadioIGruppeTimerProsent()
-            ?.map { beskrivSporsmal(it, getNesteDybde(sporsmal, dybde)) }
-            ?.filter { it.isNotBlank() }
-            ?.joinToString("\n")
-            ?: ""
+    val sporsmalBeskrivelse =
+        sporsmal.formatterSporsmalOgSvar().joinToString("") { sporsmalOgSvar ->
+            innrykk + sporsmalOgSvar
+        }
+    val undersporsmålBeskrivelse =
+        (
+            sporsmal.undersporsmalIgnorerRadioIGruppeTimerProsent()
+                ?.map { beskrivSporsmal(it, getNesteDybde(sporsmal, dybde)) }
+                ?.filter { it.isNotBlank() }
+                ?.joinToString("\n")
+                ?: ""
         ).fjernTommeLinjerHvisMedlemskapsgruppe(sporsmal.tag)
 
     return sporsmalBeskrivelse.plus(undersporsmålBeskrivelse)
@@ -222,7 +231,10 @@ private fun String.fjernTommeLinjerHvisMedlemskapsgruppe(tag: String): String {
     return this
 }
 
-private fun getNesteDybde(sporsmal: Sporsmal, dybde: Int): Int {
+private fun getNesteDybde(
+    sporsmal: Sporsmal,
+    dybde: Int,
+): Int {
     return when (sporsmal.svartype) {
         RADIO_GRUPPE, RADIO_GRUPPE_TIMER_PROSENT -> dybde
         else -> dybde + 1

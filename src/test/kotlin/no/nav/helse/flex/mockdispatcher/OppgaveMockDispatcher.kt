@@ -18,7 +18,7 @@ object OppgaveMockDispatcher : QueueDispatcher() {
         }
 
         return MockResponse().setBody(
-            OppgaveResponse(123, "4488", "SYK", "SOK").serialisertTilString()
+            OppgaveResponse(123, "4488", "SYK", "SOK").serialisertTilString(),
         ).addHeader("Content-Type", "application/json")
     }
 }

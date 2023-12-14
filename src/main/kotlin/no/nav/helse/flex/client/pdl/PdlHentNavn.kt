@@ -16,25 +16,26 @@ query(${"$"}ident: ID!){
 """
 
 data class HentNavnResponseData(
-    val hentPerson: HentNavn? = null
+    val hentPerson: HentNavn? = null,
 )
 
 data class HentNavn(
-    val navn: List<Navn>? = null
+    val navn: List<Navn>? = null,
 )
 
 data class Navn(
     val fornavn: String,
     val mellomnavn: String?,
-    val etternavn: String
+    val etternavn: String,
 )
 
 fun Navn.format(): String {
-    val navn: String = when {
-        fornavn.isBlank() -> etternavn
-        mellomnavn.isNullOrBlank() -> "$fornavn $etternavn"
-        else -> "$fornavn $mellomnavn $etternavn"
-    }
+    val navn: String =
+        when {
+            fornavn.isBlank() -> etternavn
+            mellomnavn.isNullOrBlank() -> "$fornavn $etternavn"
+            else -> "$fornavn $mellomnavn $etternavn"
+        }
 
     return WordUtils.capitalizeFully(navn, ' ', '-')
 }

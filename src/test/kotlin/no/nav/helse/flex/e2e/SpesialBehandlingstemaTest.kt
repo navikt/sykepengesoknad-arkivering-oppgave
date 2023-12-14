@@ -28,7 +28,6 @@ import java.util.concurrent.TimeUnit
 
 @DirtiesContext
 class SpesialBehandlingstemaTest : FellesTestoppsett() {
-
     @MockBean
     lateinit var acknowledgment: Acknowledgment
 
@@ -49,7 +48,7 @@ class SpesialBehandlingstemaTest : FellesTestoppsett() {
         val søknad = søknad(soknadId)
 
         sykepengesoknadMockWebserver.enqueue(
-            MockResponse().setBody(søknad.serialisertTilString()).addHeader("Content-Type", "application/json")
+            MockResponse().setBody(søknad.serialisertTilString()).addHeader("Content-Type", "application/json"),
         )
         leggSøknadPåKafka(søknad)
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.OpprettSpeilRelatert, soknadId))
@@ -71,7 +70,7 @@ class SpesialBehandlingstemaTest : FellesTestoppsett() {
         val søknad = søknad(soknadId)
 
         sykepengesoknadMockWebserver.enqueue(
-            MockResponse().setBody(søknad.serialisertTilString()).addHeader("Content-Type", "application/json")
+            MockResponse().setBody(søknad.serialisertTilString()).addHeader("Content-Type", "application/json"),
         )
         leggSøknadPåKafka(søknad)
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, soknadId))
@@ -93,7 +92,7 @@ class SpesialBehandlingstemaTest : FellesTestoppsett() {
         val søknad = søknad(soknadId, utenlandskSykmelding = true)
 
         sykepengesoknadMockWebserver.enqueue(
-            MockResponse().setBody(søknad.serialisertTilString()).addHeader("Content-Type", "application/json")
+            MockResponse().setBody(søknad.serialisertTilString()).addHeader("Content-Type", "application/json"),
         )
         leggSøknadPåKafka(søknad)
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, soknadId))
@@ -119,7 +118,7 @@ class SpesialBehandlingstemaTest : FellesTestoppsett() {
         soknadId: UUID = UUID.randomUUID(),
         sendtNav: LocalDateTime? = LocalDateTime.now(),
         sendtArbeidsgiver: LocalDateTime? = null,
-        utenlandskSykmelding: Boolean? = null
+        utenlandskSykmelding: Boolean? = null,
     ) = SykepengesoknadDTO(
         fnr = fnr,
         id = soknadId.toString(),
@@ -127,19 +126,19 @@ class SpesialBehandlingstemaTest : FellesTestoppsett() {
         fom = LocalDate.of(2019, 5, 4),
         tom = LocalDate.of(2019, 5, 8),
         type = SoknadstypeDTO.ARBEIDSTAKERE,
-        sporsmal = listOf(
-            SporsmalDTO(
-                id = UUID.randomUUID().toString(),
-                tag = "TAGGEN",
-                sporsmalstekst = "Har systemet gode integrasjonstester?",
-                svartype = SvartypeDTO.JA_NEI,
-                svar = listOf(SvarDTO(verdi = "JA"))
-
-            )
-        ),
+        sporsmal =
+            listOf(
+                SporsmalDTO(
+                    id = UUID.randomUUID().toString(),
+                    tag = "TAGGEN",
+                    sporsmalstekst = "Har systemet gode integrasjonstester?",
+                    svartype = SvartypeDTO.JA_NEI,
+                    svar = listOf(SvarDTO(verdi = "JA")),
+                ),
+            ),
         status = SoknadsstatusDTO.SENDT,
         sendtNav = sendtNav,
         sendtArbeidsgiver = sendtArbeidsgiver,
-        utenlandskSykmelding = utenlandskSykmelding
+        utenlandskSykmelding = utenlandskSykmelding,
     )
 }

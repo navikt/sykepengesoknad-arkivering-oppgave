@@ -19,11 +19,14 @@ class SpreOppgaverService(
     private val defaultTimeoutTimer: String,
     private val saksbehandlingsService: SaksbehandlingsService,
     private val spreOppgaveRepository: SpreOppgaveRepository,
-    private val handterOppave: HandterOppgaveInterface
+    private val handterOppave: HandterOppgaveInterface,
 ) {
     private val timeout = defaultTimeoutTimer.toLong()
 
-    fun prosesserOppgave(oppgave: OppgaveDTO, kilde: OppgaveKilde) {
+    fun prosesserOppgave(
+        oppgave: OppgaveDTO,
+        kilde: OppgaveKilde,
+    ) {
         val eksisterendeOppgave = spreOppgaveRepository.findBySykepengesoknadId(oppgave.dokumentId.toString())
         when (kilde) {
             OppgaveKilde.Søknad -> handterOppave.håndterOppgaveFraSøknad(eksisterendeOppgave, oppgave)
@@ -41,15 +44,17 @@ class SpreOppgaverService(
                             dokumentId = UUID.fromString(sykepengesoknad.id),
                             dokumentType = DokumentTypeDTO.Søknad,
                             oppdateringstype = OppdateringstypeDTO.Utsett,
-                            timeout = sykepengesoknad.sendtNav?.plusHours(timeout) ?: LocalDateTime.now()
-                                .plusHours(timeout)
+                            timeout =
+                                sykepengesoknad.sendtNav?.plusHours(timeout) ?: LocalDateTime.now()
+                                    .plusHours(timeout),
                         ),
-                        OppgaveKilde.Søknad
+                        OppgaveKilde.Søknad,
                     )
                 } else {
                     if (sykepengesoknad.skalBehandlesAvNav()) {
-                        val innsending = saksbehandlingsService.finnEksisterendeInnsending(sykepengesoknad.id)
-                            ?: throw RuntimeException("Fant ikke eksisterende innsending")
+                        val innsending =
+                            saksbehandlingsService.finnEksisterendeInnsending(sykepengesoknad.id)
+                                ?: throw RuntimeException("Fant ikke eksisterende innsending")
                         saksbehandlingsService.opprettOppgave(sykepengesoknad, innsending)
                     }
                 }
@@ -67,8 +72,7 @@ class SpreOppgaverService(
         return soknadstype == ARBEIDSTAKERE && skalBehandlesAvNav() && this.sendTilGosys != true
     }
 
-    private fun Sykepengesoknad.skalBehandlesAvNav() =
-        this.sendtNav != null
+    private fun Sykepengesoknad.skalBehandlesAvNav() = this.sendtNav != null
 
     private fun ettersendtTilArbeidsgiver(sykepengesoknad: Sykepengesoknad) =
         sykepengesoknad.sendtArbeidsgiver != null &&
@@ -76,5 +80,6 @@ class SpreOppgaverService(
 }
 
 enum class OppgaveKilde {
-    Søknad, Saksbehandling
+    Søknad,
+    Saksbehandling,
 }

@@ -9,32 +9,24 @@ import org.springframework.web.client.RestTemplate
 @Configuration
 @Profile("test")
 class OverrideAadRestTemplateConfiguration {
+    @Bean
+    fun sykepengesoknadKvitteringerRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate = restTemplateBuilder.build()
 
     @Bean
-    fun sykepengesoknadKvitteringerRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate =
-        restTemplateBuilder.build()
+    fun dokArkivRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate = restTemplateBuilder.build()
 
     @Bean
-    fun dokArkivRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate =
-        restTemplateBuilder.build()
+    fun oppgaveRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate = restTemplateBuilder.build()
 
     @Bean
-    fun oppgaveRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate =
-        restTemplateBuilder.build()
+    fun sykepengesoknadBackendRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate = restTemplateBuilder.build()
 
     @Bean
-    fun sykepengesoknadBackendRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate =
-        restTemplateBuilder.build()
+    fun logiskVedleggRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate = restTemplateBuilder.build()
 
     @Bean
-    fun logiskVedleggRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate =
-        restTemplateBuilder.build()
+    fun pdlRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate = restTemplateBuilder.build()
 
     @Bean
-    fun pdlRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate =
-        restTemplateBuilder.build()
-
-    @Bean
-    fun medlemskapVurderingRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate =
-        restTemplateBuilder.build()
+    fun medlemskapVurderingRestTemplate(restTemplateBuilder: RestTemplateBuilder): RestTemplate = restTemplateBuilder.build()
 }

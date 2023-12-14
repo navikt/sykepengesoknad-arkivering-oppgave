@@ -20,11 +20,6 @@ import java.util.UUID
 
 @DirtiesContext
 class JulegateTest : FellesTestoppsett() {
-
-    companion object {
-        const val fnr = "fnr"
-    }
-
     @MockBean
     lateinit var acknowledgment: Acknowledgment
 
@@ -55,7 +50,7 @@ class JulegateTest : FellesTestoppsett() {
             sykepengesoknadId = soknadId.toString(),
             timeout = Instant.now(),
             status = OppgaveStatus.Opprettet,
-            tidspunkt
+            tidspunkt,
         )
         spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString())!!.status shouldBeEqualTo OppgaveStatus.Opprettet
 

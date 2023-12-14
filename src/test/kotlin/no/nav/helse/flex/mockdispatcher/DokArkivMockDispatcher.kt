@@ -18,16 +18,16 @@ object DokArkivMockDispatcher : QueueDispatcher() {
                 JournalpostResponse(
                     dokumenter = listOf(DokumentInfo(dokumentInfoId = "123456")),
                     journalpostId = "journalpostId",
-                    journalpostferdigstilt = true
-                ).serialisertTilString()
+                    journalpostferdigstilt = true,
+                ).serialisertTilString(),
             ).addHeader("Content-Type", "application/json")
         }
 
         if (request.requestUrl?.encodedPath?.endsWith("/logiskVedlegg/") == true) {
             return MockResponse().setBody(
                 LogiskVedleggResponse(
-                    logiskVedleggId = "323971844"
-                ).serialisertTilString()
+                    logiskVedleggId = "323971844",
+                ).serialisertTilString(),
             ).addHeader("Content-Type", "application/json")
         }
 

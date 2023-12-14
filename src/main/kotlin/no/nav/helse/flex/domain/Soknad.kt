@@ -43,11 +43,15 @@ data class Soknad(
     val merknader: List<String>? = null,
     val utenlandskSykmelding: Boolean? = null,
     val egenmeldingsdagerFraSykmelding: List<LocalDate>? = null,
-    val medlemskapVurdering: String? = null
+    val medlemskapVurdering: String? = null,
 ) {
-
     companion object {
-        fun lagSoknad(sykepengesoknad: Sykepengesoknad, fnr: String, navn: String, endeligMedlemskapVurdering: String? = null): Soknad =
+        fun lagSoknad(
+            sykepengesoknad: Sykepengesoknad,
+            fnr: String,
+            navn: String,
+            endeligMedlemskapVurdering: String? = null,
+        ): Soknad =
             Soknad(
                 aktorId = sykepengesoknad.aktorId,
                 soknadsId = sykepengesoknad.id,
@@ -77,17 +81,17 @@ data class Soknad(
                 merknader = sykepengesoknad.merknader,
                 utenlandskSykmelding = sykepengesoknad.utenlandskSykmelding,
                 egenmeldingsdagerFraSykmelding = sykepengesoknad.egenmeldingsdagerFraSykmelding?.sorted(),
-                medlemskapVurdering = endeligMedlemskapVurdering
+                medlemskapVurdering = endeligMedlemskapVurdering,
             )
 
-        private fun endreRekkefolgePaSporsmalForPDF(sporsmal: List<Sporsmal>) =
-            sporsmal.sortedBy { plasseringSporsmalPDF(it) }
+        private fun endreRekkefolgePaSporsmalForPDF(sporsmal: List<Sporsmal>) = sporsmal.sortedBy { plasseringSporsmalPDF(it) }
 
-        private fun plasseringSporsmalPDF(sporsmal: Sporsmal) = when (sporsmal.tag) {
-            "BEKREFT_OPPLYSNINGER", "ANSVARSERKLARING" -> 1
-            "VAER_KLAR_OVER_AT" -> 2
-            else -> 0
-        }
+        private fun plasseringSporsmalPDF(sporsmal: Sporsmal) =
+            when (sporsmal.tag) {
+                "BEKREFT_OPPLYSNINGER", "ANSVARSERKLARING" -> 1
+                "VAER_KLAR_OVER_AT" -> 2
+                else -> 0
+            }
     }
 }
 
@@ -105,7 +109,7 @@ private fun Sykepengesoknad.hentPdfKvitteringer(): List<PdfKvittering>? {
                 blobId = it.blobId,
                 belop = it.belop,
                 typeUtgift = it.typeUtgift,
-                b64data = null
+                b64data = null,
             )
         }
 }
@@ -125,14 +129,15 @@ data class PdfKvittering(
     val b64data: String?,
     val blobId: String,
     val belop: Int,
-    val typeUtgift: String
+    val typeUtgift: String,
 )
 
 data class Kvittering(
     val blobId: String,
-    val belop: Int, // Beløp i øre . 100kr = 10000
+    // Beløp i øre. 100kr = 10000
+    val belop: Int,
     val typeUtgift: String,
-    val opprettet: Instant
+    val opprettet: Instant,
 )
 
 private fun String.tilKvittering(): Kvittering {

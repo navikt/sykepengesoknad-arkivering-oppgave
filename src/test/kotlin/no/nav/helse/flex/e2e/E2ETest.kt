@@ -38,12 +38,7 @@ import java.util.*
 
 @DirtiesContext
 class E2ETest : FellesTestoppsett() {
-
-    companion object {
-        const val aktorId = "aktørId"
-        const val fnr = "fnr"
-        val omFireTimer: LocalDateTime = LocalDateTime.now().plusHours(4)
-    }
+    private val omFireTimer: LocalDateTime = LocalDateTime.now().plusHours(4)
 
     @MockBean
     lateinit var saksbehandlingsService: SaksbehandlingsService
@@ -69,7 +64,7 @@ class E2ETest : FellesTestoppsett() {
             InnsendingDbRecord(
                 id = "iid",
                 sykepengesoknadId = it.arguments[0].toString(),
-                journalpostId = "journalpost"
+                journalpostId = "journalpost",
             )
         }
     }
@@ -123,7 +118,7 @@ class E2ETest : FellesTestoppsett() {
     }
 
     @Test
-    fun `vi behandler søknad så kommer Utsett fra Bømlo`() {
+    fun `Vi behandler søknad før det etterpå kommer Utsett fra Bømlo`() {
         val soknadId = UUID.randomUUID()
         leggSoknadPaKafka(lagSoknad(soknadId))
         leggOppgavePaAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, soknadId, omFireTimer))
@@ -140,7 +135,7 @@ class E2ETest : FellesTestoppsett() {
     }
 
     @Test
-    fun `vi behandler søknad så kommer Opprett fra Bømlo`() {
+    fun `Vi behandler søknad før det etterpå kommer Opprett fra Bømlo`() {
         val soknadId = UUID.randomUUID()
         leggSoknadPaKafka(lagSoknad(soknadId))
         leggOppgavePaAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, soknadId))
@@ -152,7 +147,7 @@ class E2ETest : FellesTestoppsett() {
     }
 
     @Test
-    fun `vi behandler søknad så kommer Ferdigbehandlet fra Bømlo`() {
+    fun `Vi behandler søknad før det etterpå kommer Ferdigbehandlet fra Bømlo`() {
         val soknadId = UUID.randomUUID()
         leggSoknadPaKafka(lagSoknad(soknadId))
         leggOppgavePaAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Ferdigbehandlet, soknadId))
@@ -176,7 +171,7 @@ class E2ETest : FellesTestoppsett() {
     }
 
     @Test
-    fun `oppgaven timer ut og vi oppretter oppgave`() {
+    fun `Oppgaven timer ut og vi oppretter oppgave`() {
         val soknadId = UUID.randomUUID()
         val timeout = LocalDateTime.now().minusHours(1)
 
@@ -213,8 +208,8 @@ class E2ETest : FellesTestoppsett() {
                 DokumentTypeDTO.Søknad,
                 OppdateringstypeDTO.OpprettSpeilRelatert,
                 soknadId,
-                omFireTimer
-            )
+                omFireTimer,
+            ),
         )
         leggSoknadPaKafka(lagSoknad(soknadId))
 
@@ -261,8 +256,8 @@ class E2ETest : FellesTestoppsett() {
                 dokumentType = DokumentTypeDTO.Søknad,
                 oppdateringstype = OppdateringstypeDTO.Utsett,
                 dokumentId = soknadId,
-                timeout = LocalDateTime.now().plusHours(1)
-            )
+                timeout = LocalDateTime.now().plusHours(1),
+            ),
         )
         leggSoknadPaKafka(lagSoknad(soknadId = soknadId, sendtNav = null, sendtArbeidsgiver = LocalDateTime.now()))
 
@@ -279,7 +274,7 @@ class E2ETest : FellesTestoppsett() {
     }
 
     @Test
-    fun `vi behandler søknaden uten oppgave så sender Bømlo Utsett`() {
+    fun `Vi behandler søknaden uten oppgave så sender Bømlo Utsett`() {
         val soknadId = UUID.randomUUID()
         leggSoknadPaKafka(lagSoknad(soknadId = soknadId, sendtNav = null, sendtArbeidsgiver = LocalDateTime.now()))
         leggOppgavePaAivenKafka(
@@ -287,8 +282,8 @@ class E2ETest : FellesTestoppsett() {
                 dokumentType = DokumentTypeDTO.Søknad,
                 oppdateringstype = OppdateringstypeDTO.Utsett,
                 dokumentId = soknadId,
-                timeout = omFireTimer
-            )
+                timeout = omFireTimer,
+            ),
         )
 
         val behandletOppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
@@ -303,15 +298,15 @@ class E2ETest : FellesTestoppsett() {
     }
 
     @Test
-    fun `tidspunkt for opprettet og modifisert er likt etter opprettelse`() {
+    fun `Tidspunkt for opprettet og modifisert er likt etter opprettelse`() {
         val soknadId = UUID.randomUUID()
         leggOppgavePaAivenKafka(
             OppgaveDTO(
                 DokumentTypeDTO.Søknad,
                 OppdateringstypeDTO.Opprett,
                 soknadId,
-                omFireTimer
-            )
+                omFireTimer,
+            ),
         )
         leggSoknadPaKafka(lagSoknad(soknadId))
 
@@ -321,15 +316,15 @@ class E2ETest : FellesTestoppsett() {
     }
 
     @Test
-    fun `tidspunkt for modifisert blir oppdatert når det lages oppgave`() {
+    fun `Tidspunkt for modifisert blir oppdatert når det lages oppgave`() {
         val soknadId = UUID.randomUUID()
         leggOppgavePaAivenKafka(
             OppgaveDTO(
                 DokumentTypeDTO.Søknad,
                 OppdateringstypeDTO.Opprett,
                 soknadId,
-                omFireTimer
-            )
+                omFireTimer,
+            ),
         )
         leggSoknadPaKafka(lagSoknad(soknadId))
 
@@ -350,26 +345,26 @@ class E2ETest : FellesTestoppsett() {
     private fun lagSoknad(
         soknadId: UUID = UUID.randomUUID(),
         sendtNav: LocalDateTime? = LocalDateTime.now(),
-        sendtArbeidsgiver: LocalDateTime? = null
+        sendtArbeidsgiver: LocalDateTime? = null,
     ) = SykepengesoknadDTO(
-        fnr = fnr,
+        fnr = "fnr",
         id = soknadId.toString(),
         opprettet = LocalDateTime.now(),
         fom = LocalDate.of(2019, 5, 4),
         tom = LocalDate.of(2019, 5, 8),
         type = SoknadstypeDTO.ARBEIDSTAKERE,
-        sporsmal = listOf(
-            SporsmalDTO(
-                id = UUID.randomUUID().toString(),
-                tag = "TAGGEN",
-                sporsmalstekst = "Har systemet gode integrasjonstester?",
-                svartype = SvartypeDTO.JA_NEI,
-                svar = listOf(SvarDTO(verdi = "JA"))
-
-            )
-        ),
+        sporsmal =
+            listOf(
+                SporsmalDTO(
+                    id = UUID.randomUUID().toString(),
+                    tag = "TAGGEN",
+                    sporsmalstekst = "Har systemet gode integrasjonstester?",
+                    svartype = SvartypeDTO.JA_NEI,
+                    svar = listOf(SvarDTO(verdi = "JA")),
+                ),
+            ),
         status = SoknadsstatusDTO.SENDT,
         sendtNav = sendtNav,
-        sendtArbeidsgiver = sendtArbeidsgiver
+        sendtArbeidsgiver = sendtArbeidsgiver,
     )
 }
