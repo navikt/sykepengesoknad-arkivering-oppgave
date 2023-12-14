@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.springframework.boot") version "3.1.5"
+    id("org.springframework.boot") version "3.2.0"
     id("io.spring.dependency-management") version "1.1.3"
     id("org.jlleitschuh.gradle.ktlint") version "12.0.3"
     kotlin("jvm") version "1.9.10"
@@ -27,7 +27,7 @@ val syfoKafkaVersion = "2021.07.20-09.39-6be2c52c"
 val sykepengesoknadKafkaVersion = "2023.10.31-09.28-24a9b46f"
 val mockitoKotlinVersion = "2.2.0"
 val logstashLogbackEncoderVersion = "7.4"
-val tokenSupportVersion = "3.1.7"
+val tokenSupportVersion = "3.2.0"
 val testContainersVersion = "1.19.1"
 val kluentVersion = "1.73"
 val cloudStorageVersion = "2.29.0"
