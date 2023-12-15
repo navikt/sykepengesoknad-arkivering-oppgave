@@ -14,7 +14,7 @@ class MedlemskapVurdering(
     private val log = logger()
 
     fun oppdaterInngåendeMedlemskapVurdering(sykepengesoknad: Sykepengesoknad) {
-        if (sykepengesoknad.soknadstype != Soknadstype.ARBEIDSTAKERE) {
+        if (!sykepengesoknad.skalGjøreMedlemskapVurering()) {
             return
         }
         if (medlemskapVurderingRepository.findBySykepengesoknadId(sykepengesoknad.id) != null) {
@@ -38,7 +38,7 @@ class MedlemskapVurdering(
     }
 
     fun hentEndeligMedlemskapVurdering(sykepengesoknad: Sykepengesoknad): String? {
-        if (sykepengesoknad.soknadstype != Soknadstype.ARBEIDSTAKERE) {
+        if (!sykepengesoknad.skalGjøreMedlemskapVurering()) {
             return null
         }
 
@@ -70,4 +70,6 @@ class MedlemskapVurdering(
 
         return null
     }
+
+    private fun Sykepengesoknad.skalGjøreMedlemskapVurering() = soknadstype in listOf(Soknadstype.ARBEIDSTAKERE, Soknadstype.GRADERT_REISETILSKUDD)
 }
