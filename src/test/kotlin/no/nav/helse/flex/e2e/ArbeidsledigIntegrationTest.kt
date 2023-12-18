@@ -29,7 +29,7 @@ class ArbeidsledigIntegrationTest : FellesTestoppsett() {
         SykepengesoknadMockDispatcher.enque(søknad)
 
         leggSøknadPåKafka(søknad)
-        oppgaveOpprettelse.behandleOppgaver(Instant.now().plus(1L, ChronoUnit.HOURS))
+        oppgaveOpprettelse.behandleOppgaver(Instant.now().plus(49, ChronoUnit.HOURS))
 
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(2, TimeUnit.SECONDS)!!
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")

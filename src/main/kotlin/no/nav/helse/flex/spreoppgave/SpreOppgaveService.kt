@@ -3,6 +3,7 @@ package no.nav.helse.flex.spreoppgave
 import no.nav.helse.flex.domain.DokumentTypeDTO
 import no.nav.helse.flex.domain.OppdateringstypeDTO
 import no.nav.helse.flex.domain.OppgaveDTO
+import no.nav.helse.flex.domain.dto.Soknadstype.ARBEIDSLEDIG
 import no.nav.helse.flex.domain.dto.Soknadstype.ARBEIDSTAKERE
 import no.nav.helse.flex.domain.dto.Sykepengesoknad
 import no.nav.helse.flex.repository.SpreOppgaveRepository
@@ -60,7 +61,7 @@ class SpreOppgaverService(
     }
 
     private fun Sykepengesoknad.erSoknadSpeilKjennerTil(): Boolean {
-        return soknadstype == ARBEIDSTAKERE && this.sendTilGosys != true
+        return (soknadstype == ARBEIDSTAKERE || soknadstype == ARBEIDSLEDIG) && this.sendTilGosys != true
     }
 
     private fun ettersendtTilArbeidsgiver(sykepengesoknad: Sykepengesoknad) =
