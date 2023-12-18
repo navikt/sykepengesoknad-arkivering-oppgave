@@ -2,10 +2,17 @@ package no.nav.helse.flex.medlemskap
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.flex.FellesTestoppsett
-import no.nav.helse.flex.domain.dto.*
+import no.nav.helse.flex.domain.dto.SoknadPeriode
+import no.nav.helse.flex.domain.dto.Soknadstype
+import no.nav.helse.flex.domain.dto.Sporsmal
+import no.nav.helse.flex.domain.dto.Svar
+import no.nav.helse.flex.domain.dto.Svartype
+import no.nav.helse.flex.domain.dto.Sykepengesoknad
+import no.nav.helse.flex.domain.dto.Visningskriterie
 import no.nav.helse.flex.objectMapper
 import no.nav.helse.flex.serialisertTilString
-import no.nav.helse.flex.service.*
+import no.nav.helse.flex.service.OppgaveRequest
+import no.nav.helse.flex.service.SaksbehandlingsService
 import okhttp3.mockwebserver.MockResponse
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldNotBe
@@ -39,8 +46,8 @@ class MedlemskapVurderingTest : FellesTestoppsett() {
     }
 
     @Test
-    fun `En frilansersøknad, blir ikke vurdert`() {
-        val soknad = soknad(medlemskapVurdering = null, soknadstype = Soknadstype.SELVSTENDIGE_OG_FRILANSERE)
+    fun `Frilansersøknad blir ikke vurdert`() {
+        val soknad = lagSoknad(medlemskapVurdering = null, soknadstype = Soknadstype.SELVSTENDIGE_OG_FRILANSERE)
 
         saksbehandlingsService.behandleSoknad(soknad)
 
@@ -48,8 +55,8 @@ class MedlemskapVurderingTest : FellesTestoppsett() {
     }
 
     @Test
-    fun `En arbeidstakersøknad uten inngående medlemskapvurdering, blir ikke vurdert`() {
-        val soknad = soknad(medlemskapVurdering = null)
+    fun `Arbeidstakersøknad uten inngående medlemskapvurdering blir ikke vurdert`() {
+        val soknad = lagSoknad(medlemskapVurdering = null)
 
         saksbehandlingsService.behandleSoknad(soknad)
 
@@ -57,8 +64,8 @@ class MedlemskapVurderingTest : FellesTestoppsett() {
     }
 
     @Test
-    fun `En arbeidstakersøknad som har inngående medlemskap vurdering UAVKLART og endelig vurdering NEI`() {
-        val soknad = soknad(medlemskapVurdering = "UAVKLART").copy(sporsmal = medlemskapSporsmal())
+    fun `Oppretter Gosys-oppgave for Arbeidstakere som har inngående og endelig medlemskapvurdering NEI`() {
+        val soknad = lagSoknad(medlemskapVurdering = "UAVKLART").copy(sporsmal = medlemskapSporsmal())
         saksbehandlingsService.behandleSoknad(soknad)
 
         val inngåendeVurdering = medlemskapVurderingRepository.findBySykepengesoknadId(soknad.id)
@@ -124,8 +131,8 @@ class MedlemskapVurderingTest : FellesTestoppsett() {
     }
 
     @Test
-    fun `En arbeidstakersøknad som har inngående og endelig medlemskap vurdering UAVKLART`() {
-        val soknad = soknad(medlemskapVurdering = "UAVKLART").copy(sporsmal = medlemskapSporsmal())
+    fun `Oppretter Gosys-oppgave for Arbeidstakere som har inngående og endelig medlemskapvurdering UAVKLART`() {
+        val soknad = lagSoknad(medlemskapVurdering = "UAVKLART").copy(sporsmal = medlemskapSporsmal())
         saksbehandlingsService.behandleSoknad(soknad)
 
         val inngåendeVurdering = medlemskapVurderingRepository.findBySykepengesoknadId(soknad.id)
@@ -191,8 +198,79 @@ class MedlemskapVurderingTest : FellesTestoppsett() {
     }
 
     @Test
-    fun `En arbeidstakersøknad med endelig vurdering JA, oppretter vanlig gosys oppgave`() {
-        val soknad = soknad(medlemskapVurdering = "UAVKLART")
+    fun `Oppretter Gosys-oppgave for Gradert Reisetilskudd som har inngående og endelig medlemskapvurdering UAVKLART`() {
+        val soknad = lagSoknad(
+            medlemskapVurdering = "UAVKLART",
+            soknadstype = Soknadstype.GRADERT_REISETILSKUDD
+        ).copy(sporsmal = medlemskapSporsmal())
+
+        saksbehandlingsService.behandleSoknad(soknad)
+
+        val inngåendeVurdering = medlemskapVurderingRepository.findBySykepengesoknadId(soknad.id)
+        inngåendeVurdering shouldNotBe null
+        inngåendeVurdering!!.sykepengesoknadId shouldBeEqualTo soknad.id
+        inngåendeVurdering.fnr shouldBeEqualTo soknad.fnr
+        inngåendeVurdering.fom shouldBeEqualTo soknad.fom
+        inngåendeVurdering.tom shouldBeEqualTo soknad.tom
+        inngåendeVurdering.inngaendeVurdering shouldBeEqualTo "UAVKLART"
+        inngåendeVurdering.vurderingId shouldBeEqualTo null
+        inngåendeVurdering.endeligVurdering shouldBeEqualTo null
+
+        val innsending = innsendingRepository.findBySykepengesoknadId(soknad.id)!!
+        innsending.sykepengesoknadId shouldBeEqualTo soknad.id
+        innsending.journalpostId shouldNotBe null
+
+        medlemskapMockWebserver.enqueue(
+            MockResponse().setBody(
+                EndeligVurderingResponse(
+                    soknad.id,
+                    "vurderingId",
+                    fnr,
+                    fom,
+                    tom,
+                    EndeligVurderingResponse.MedlemskapVurderingStatus.UAVKLART
+                ).serialisertTilString()
+            ).addHeader("Content-Type", "application/json")
+        )
+        saksbehandlingsService.opprettOppgave(soknad, innsending)
+
+        val endeligVurdering = medlemskapVurderingRepository.findBySykepengesoknadId(soknad.id)!!
+        endeligVurdering.inngaendeVurdering shouldBeEqualTo "UAVKLART"
+        endeligVurdering.vurderingId shouldBeEqualTo "vurderingId"
+        endeligVurdering.endeligVurdering shouldBeEqualTo "UAVKLART"
+
+        val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
+        oppgaveRequest.requestLine shouldBeEqualTo "POST /api/v1/oppgaver HTTP/1.1"
+        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
+        oppgaveRequestBody.behandlingstema shouldBeEqualTo "ab0269"
+        oppgaveRequestBody.beskrivelse shouldBeEqualTo """
+        Søknad om sykepenger med reisetilskudd for perioden 01.09.2023 - 20.09.2023
+
+        Periode 1:
+        01.09.2023 - 20.09.2023
+        Grad: 100
+        
+        Om bruker er medlem i folketrygden eller ikke, kunne ikke avklares automatisk.
+        Medlemskap status: UAVKLART
+        
+        Du må se på svarene til bruker.
+        Informasjon om hva du skal gjøre finner du på Navet, se
+        https://navno.sharepoint.com/sites/fag-og-ytelser-eos-lovvalg-medlemskap/SitePages/Hvordan-vurderer-jeg-lovvalg-og-medlemskap.aspx
+        
+        Har du oppholdstillatelse fra Utlendingsdirektoratet?
+        Ja
+            Hvilken dato fikk du denne oppholdstillatelsen?
+            01.01.2023
+        
+            Er oppholdstillatelsen midlertidig eller permanent?
+            Midlertidig
+                13.12.2022 - 02.01.2023
+        """.trimIndent()
+    }
+
+    @Test
+    fun `Oppretter vanlig Gosys oppgave for arbeidstakersøknad med endeligvurdering JA`() {
+        val soknad = lagSoknad(medlemskapVurdering = "UAVKLART")
         saksbehandlingsService.behandleSoknad(soknad)
 
         val inngåendeVurdering = medlemskapVurderingRepository.findBySykepengesoknadId(soknad.id)!!
@@ -238,8 +316,8 @@ class MedlemskapVurderingTest : FellesTestoppsett() {
     }
 
     @Test
-    fun `Når LovMe ikke finner inngående vurdring, oppretter vanlig gosys oppgave`() {
-        val soknad = soknad(medlemskapVurdering = "UAVKLART")
+    fun `Oppretter vanlig Gosys oppgave når LovMe ikke returnerer inngående vurdring, `() {
+        val soknad = lagSoknad(medlemskapVurdering = "UAVKLART")
         saksbehandlingsService.behandleSoknad(soknad)
 
         val inngåendeVurdering = medlemskapVurderingRepository.findBySykepengesoknadId(soknad.id)!!
@@ -273,7 +351,7 @@ class MedlemskapVurderingTest : FellesTestoppsett() {
         """.trimIndent()
     }
 
-    private fun soknad(
+    private fun lagSoknad(
         medlemskapVurdering: String?,
         soknadstype: Soknadstype = Soknadstype.ARBEIDSTAKERE
     ) = Sykepengesoknad(
