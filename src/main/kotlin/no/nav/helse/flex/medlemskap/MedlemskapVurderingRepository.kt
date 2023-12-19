@@ -21,5 +21,5 @@ data class MedlemskapVurderingDbRecord(
     val tom: LocalDate,
     val inngaendeVurdering: String,
     val vurderingId: String? = null,
-    val endeligVurdering: String? = null
+    val endeligVurdering: String? = null,
 )

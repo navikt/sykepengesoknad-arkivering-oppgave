@@ -14,11 +14,11 @@ import org.springframework.web.client.RestTemplate
 @EnableKafka
 @EnableScheduling
 class ApplicationConfig {
-
     @Bean
-    fun pdfGenRestTemplate(): RestTemplate = RestTemplate().apply {
-        messageConverters
-            .mapNotNull { it as? AbstractJackson2HttpMessageConverter }
-            .forEach { it.objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false) }
-    }
+    fun pdfGenRestTemplate(): RestTemplate =
+        RestTemplate().apply {
+            messageConverters
+                .mapNotNull { it as? AbstractJackson2HttpMessageConverter }
+                .forEach { it.objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false) }
+        }
 }

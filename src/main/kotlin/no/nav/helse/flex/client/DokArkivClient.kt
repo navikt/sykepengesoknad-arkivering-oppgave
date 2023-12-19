@@ -21,11 +21,13 @@ import org.springframework.web.client.RestTemplate
 class DokArkivClient(
     @Value("\${DOKARKIV_URL}")
     private val dokarkivUrl: String,
-    private val dokArkivRestTemplate: RestTemplate
+    private val dokArkivRestTemplate: RestTemplate,
 ) {
-
     @Retryable(backoff = Backoff(delay = 5000))
-    fun opprettJournalpost(pdfRequest: JournalpostRequest, id: String): JournalpostResponse {
+    fun opprettJournalpost(
+        pdfRequest: JournalpostRequest,
+        id: String,
+    ): JournalpostResponse {
         try {
             val url = "$dokarkivUrl/rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true"
 
@@ -49,7 +51,10 @@ class DokArkivClient(
     }
 
     @Retryable(backoff = Backoff(delay = 5000))
-    fun opprettLogiskVedlegg(logiskVedleggRequest: LogiskVedleggRequest, dokumentId: String): LogiskVedleggResponse {
+    fun opprettLogiskVedlegg(
+        logiskVedleggRequest: LogiskVedleggRequest,
+        dokumentId: String,
+    ): LogiskVedleggResponse {
         try {
             val url = "$dokarkivUrl/rest/journalpostapi/v1/dokumentInfo/$dokumentId/logiskVedlegg/"
 

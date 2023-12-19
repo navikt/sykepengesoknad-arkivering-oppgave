@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 class MedlemskapVurdering(
     private val medlemskapVurderingRepository: MedlemskapVurderingRepository,
     private val lovMeClient: LovMeClient,
-    private val medlemskapToggle: MedlemskapToggle
+    private val medlemskapToggle: MedlemskapToggle,
 ) {
     private val log = logger()
 
@@ -30,8 +30,8 @@ class MedlemskapVurdering(
                     sykepengesoknadId = sykepengesoknad.id,
                     fom = sykepengesoknad.fom!!,
                     tom = sykepengesoknad.tom!!,
-                    inngaendeVurdering = statusFraSoknad
-                )
+                    inngaendeVurdering = statusFraSoknad,
+                ),
             )
             return
         }
@@ -58,10 +58,11 @@ class MedlemskapVurdering(
         }
 
         val endeligVurdering = lovMeClient.hentEndeligMedlemskapVurdering(sykepengesoknad) ?: return null
-        val oppdatertVurdering = tidligereVurdering.copy(
-            vurderingId = endeligVurdering.vurdering_id,
-            endeligVurdering = endeligVurdering.status.name
-        )
+        val oppdatertVurdering =
+            tidligereVurdering.copy(
+                vurderingId = endeligVurdering.vurdering_id,
+                endeligVurdering = endeligVurdering.status.name,
+            )
         medlemskapVurderingRepository.save(oppdatertVurdering)
 
         if (medlemskapToggle.medlemskapToggleForBruker(sykepengesoknad.fnr)) {
@@ -71,5 +72,6 @@ class MedlemskapVurdering(
         return null
     }
 
-    private fun Sykepengesoknad.skalGjøreMedlemskapVurering() = soknadstype in listOf(Soknadstype.ARBEIDSTAKERE, Soknadstype.GRADERT_REISETILSKUDD)
+    private fun Sykepengesoknad.skalGjøreMedlemskapVurering() =
+        soknadstype in listOf(Soknadstype.ARBEIDSTAKERE, Soknadstype.GRADERT_REISETILSKUDD)
 }

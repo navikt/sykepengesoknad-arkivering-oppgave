@@ -20,7 +20,7 @@ interface SpreOppgaveRepository : CrudRepository<SpreOppgaveDbRecord, String> {
           AND (status = 'Opprett'
                OR status = 'OpprettSpeilRelatert'
                OR (status = 'Utsett' AND timeout < :timeout))
-        """
+        """,
     )
     fun findOppgaverTilOpprettelse(timeout: Instant): List<SpreOppgaveDbRecord>
 
@@ -32,13 +32,13 @@ interface SpreOppgaveRepository : CrudRepository<SpreOppgaveDbRecord, String> {
             status = :status,
             modifisert = :modifisert
         WHERE sykepengesoknad_id = :sykepengesoknadId
-        """
+        """,
     )
     fun updateOppgaveBySykepengesoknadId(
         sykepengesoknadId: String,
         timeout: Instant?,
         status: OppgaveStatus,
-        modifisert: Instant
+        modifisert: Instant,
     ): Boolean
 
     @Modifying
@@ -59,9 +59,15 @@ data class SpreOppgaveDbRecord(
     val opprettet: Instant = Instant.now(),
     val modifisert: Instant = Instant.now(),
     val timeout: Instant? = null,
-    val avstemt: Boolean? = false
+    val avstemt: Boolean? = false,
 )
 
 enum class OppgaveStatus {
-    Utsett, IkkeOpprett, Opprett, OpprettSpeilRelatert, Opprettet, OpprettetSpeilRelatert, OpprettetTimeout
+    Utsett,
+    IkkeOpprett,
+    Opprett,
+    OpprettSpeilRelatert,
+    Opprettet,
+    OpprettetSpeilRelatert,
+    OpprettetTimeout,
 }

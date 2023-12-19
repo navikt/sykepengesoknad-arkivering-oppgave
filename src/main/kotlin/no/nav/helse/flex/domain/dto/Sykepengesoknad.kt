@@ -33,5 +33,5 @@ data class Sykepengesoknad(
     val sendTilGosys: Boolean? = null,
     val utenlandskSykmelding: Boolean? = null,
     val egenmeldingsdagerFraSykmelding: List<LocalDate>?,
-    val medlemskapVurdering: String? = null
+    val medlemskapVurdering: String? = null,
 )

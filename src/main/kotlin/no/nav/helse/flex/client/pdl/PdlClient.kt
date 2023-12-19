@@ -13,32 +13,33 @@ import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
 import java.util.*
 
+private const val TEMA = "Tema"
+private const val TEMA_SYK = "SYK"
+private const val IDENT = "ident"
+private const val BEHANDLINGSNUMMER_KEY = "Behandlingsnummer"
+private const val BEHANDLINGSNUMMER_VALUE = "B128"
+
 @Component
 class PdlClient(
     @Value("\${PDL_URL}")
     private val pdlApiUrl: String,
-    private val pdlRestTemplate: RestTemplate
+    private val pdlRestTemplate: RestTemplate,
 ) {
-
-    private val TEMA = "Tema"
-    private val TEMA_SYK = "SYK"
-    private val IDENT = "ident"
-    private val BEHANDLINGSNUMMER_KEY = "Behandlingsnummer"
-    private val BEHANDLINGSNUMMER_VALUE = "B128"
-
     @Retryable(exclude = [FunctionalPdlError::class])
     fun hentIdenter(ident: String): List<PdlIdent> {
-        val graphQLRequest = GraphQLRequest(
-            query = HENT_IDENTER_QUERY,
-            variables = Collections.singletonMap(IDENT, ident)
-        )
+        val graphQLRequest =
+            GraphQLRequest(
+                query = HENT_IDENTER_QUERY,
+                variables = Collections.singletonMap(IDENT, ident),
+            )
 
-        val responseEntity = pdlRestTemplate.exchange(
-            "$pdlApiUrl/graphql",
-            HttpMethod.POST,
-            HttpEntity(requestToJson(graphQLRequest), createHeaders()),
-            String::class.java
-        )
+        val responseEntity =
+            pdlRestTemplate.exchange(
+                "$pdlApiUrl/graphql",
+                HttpMethod.POST,
+                HttpEntity(requestToJson(graphQLRequest), createHeaders()),
+                String::class.java,
+            )
 
         if (responseEntity.statusCode != HttpStatus.OK) {
             throw RuntimeException("PDL svarer med status ${responseEntity.statusCode} - ${responseEntity.body}")
@@ -46,26 +47,29 @@ class PdlClient(
 
         val parsedResponse = responseEntity.body?.let { objectMapper.readValue<GraphQLResponse<HentIdenterResponseData>>(it) }
 
-        val identer = parsedResponse?.data?.let {
-            it.hentIdenter?.identer
-        } ?: throw FunctionalPdlError("Fant ikke person, ingen body eller data. ${parsedResponse?.hentErrors()}")
+        val identer =
+            parsedResponse?.data?.let {
+                it.hentIdenter?.identer
+            } ?: throw FunctionalPdlError("Fant ikke person, ingen body eller data. ${parsedResponse?.hentErrors()}")
 
         return identer
     }
 
     @Retryable(exclude = [FunctionalPdlError::class])
     fun hentFormattertNavn(fnr: String): String {
-        val graphQLRequest = GraphQLRequest(
-            query = HENT_NAVN_QUERY,
-            variables = Collections.singletonMap(IDENT, fnr)
-        )
+        val graphQLRequest =
+            GraphQLRequest(
+                query = HENT_NAVN_QUERY,
+                variables = Collections.singletonMap(IDENT, fnr),
+            )
 
-        val responseEntity = pdlRestTemplate.exchange(
-            "$pdlApiUrl/graphql",
-            HttpMethod.POST,
-            HttpEntity(requestToJson(graphQLRequest), createHeaders()),
-            String::class.java
-        )
+        val responseEntity =
+            pdlRestTemplate.exchange(
+                "$pdlApiUrl/graphql",
+                HttpMethod.POST,
+                HttpEntity(requestToJson(graphQLRequest), createHeaders()),
+                String::class.java,
+            )
 
         if (responseEntity.statusCode != HttpStatus.OK) {
             throw RuntimeException("PDL svarer med status ${responseEntity.statusCode} - ${responseEntity.body}")
@@ -73,9 +77,10 @@ class PdlClient(
 
         val parsedResponse = responseEntity.body?.let { objectMapper.readValue<GraphQLResponse<HentNavnResponseData>>(it) }
 
-        val navn = parsedResponse?.data?.let {
-            it.hentPerson?.navn?.firstOrNull()?.format()
-        } ?: throw FunctionalPdlError("Fant ikke navn i pdl response. ${parsedResponse?.hentErrors()}")
+        val navn =
+            parsedResponse?.data?.let {
+                it.hentPerson?.navn?.firstOrNull()?.format()
+            } ?: throw FunctionalPdlError("Fant ikke navn i pdl response. ${parsedResponse?.hentErrors()}")
 
         return navn
     }

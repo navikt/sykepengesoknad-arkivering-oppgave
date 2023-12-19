@@ -14,7 +14,7 @@ import java.util.UUID
 @Primary
 class HandterOppgaveInterceptor(
     private val handterOppave: HandterOppave,
-    private val spreOppgaveRepository: SpreOppgaveRepository
+    private val spreOppgaveRepository: SpreOppgaveRepository,
 ) : HandterOppgaveInterface {
     companion object {
         val raceConditionUUID: UUID = UUID.randomUUID()
@@ -23,7 +23,10 @@ class HandterOppgaveInterceptor(
         var kallTilHåndterOppgaveFraSøknad = 0
     }
 
-    override fun håndterOppgaveFraBømlo(eksisterendeOppgave: SpreOppgaveDbRecord?, oppgave: OppgaveDTO) {
+    override fun håndterOppgaveFraBømlo(
+        eksisterendeOppgave: SpreOppgaveDbRecord?,
+        oppgave: OppgaveDTO,
+    ) {
         kallTilHåndterOppgaveFraBømlo += 1
         if (eksisterendeOppgave == null && oppgave.dokumentId == raceConditionUUID) {
             insertSpreOppgaveMellomHentingAvEksisterendeOgLagring()
@@ -33,7 +36,10 @@ class HandterOppgaveInterceptor(
         handterOppave.håndterOppgaveFraBømlo(eksisterendeOppgave, oppgave)
     }
 
-    override fun håndterOppgaveFraSøknad(eksisterendeOppgave: SpreOppgaveDbRecord?, oppgave: OppgaveDTO) {
+    override fun håndterOppgaveFraSøknad(
+        eksisterendeOppgave: SpreOppgaveDbRecord?,
+        oppgave: OppgaveDTO,
+    ) {
         kallTilHåndterOppgaveFraSøknad += 1
         if (eksisterendeOppgave == null && oppgave.dokumentId == raceConditionUUID) {
             insertSpreOppgaveMellomHentingAvEksisterendeOgLagring()
@@ -51,8 +57,8 @@ class HandterOppgaveInterceptor(
                 timeout = raceConditionTimeout,
                 status = OppgaveStatus.Utsett,
                 opprettet = tidspunkt,
-                modifisert = tidspunkt
-            )
+                modifisert = tidspunkt,
+            ),
         )
     }
 }

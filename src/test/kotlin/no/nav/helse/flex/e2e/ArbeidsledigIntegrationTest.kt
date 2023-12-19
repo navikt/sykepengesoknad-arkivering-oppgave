@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit
 
 @DirtiesContext
 class ArbeidsledigIntegrationTest : FellesTestoppsett() {
-
     @Test
     fun `En arbeidsledigsøknad får behandlingstema ab0426 og takler at bømlo sier opprett`() {
         val soknadId = UUID.randomUUID()

@@ -32,12 +32,7 @@ import java.util.*
 
 @DirtiesContext
 class E2ETest : FellesTestoppsett() {
-
-    companion object {
-        const val aktorId = "aktørId"
-        const val fnr = "fnr"
-        val omFireTimer: LocalDateTime = LocalDateTime.now().plusHours(4)
-    }
+    private val omFireTimer: LocalDateTime = LocalDateTime.now().plusHours(4)
 
     @MockBean
     lateinit var saksbehandlingsService: SaksbehandlingsService
@@ -48,7 +43,7 @@ class E2ETest : FellesTestoppsett() {
             InnsendingDbRecord(
                 id = "iid",
                 sykepengesoknadId = it.arguments[0].toString(),
-                journalpostId = "journalpost"
+                journalpostId = "journalpost",
             )
         }
     }
@@ -192,8 +187,8 @@ class E2ETest : FellesTestoppsett() {
                 DokumentTypeDTO.Søknad,
                 OppdateringstypeDTO.OpprettSpeilRelatert,
                 soknadId,
-                omFireTimer
-            )
+                omFireTimer,
+            ),
         )
         leggSoknadPaKafka(lagSoknad(soknadId))
 
@@ -240,8 +235,8 @@ class E2ETest : FellesTestoppsett() {
                 dokumentType = DokumentTypeDTO.Søknad,
                 oppdateringstype = OppdateringstypeDTO.Utsett,
                 dokumentId = soknadId,
-                timeout = LocalDateTime.now().plusHours(1)
-            )
+                timeout = LocalDateTime.now().plusHours(1),
+            ),
         )
 
         val oppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
@@ -266,8 +261,8 @@ class E2ETest : FellesTestoppsett() {
                 dokumentType = DokumentTypeDTO.Søknad,
                 oppdateringstype = OppdateringstypeDTO.Utsett,
                 dokumentId = soknadId,
-                timeout = omFireTimer
-            )
+                timeout = omFireTimer,
+            ),
         )
 
         val behandletOppgave = requireNotNull(spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString()))
@@ -289,8 +284,8 @@ class E2ETest : FellesTestoppsett() {
                 DokumentTypeDTO.Søknad,
                 OppdateringstypeDTO.Opprett,
                 soknadId,
-                omFireTimer
-            )
+                omFireTimer,
+            ),
         )
         leggSoknadPaKafka(lagSoknad(soknadId))
 
@@ -307,8 +302,8 @@ class E2ETest : FellesTestoppsett() {
                 DokumentTypeDTO.Søknad,
                 OppdateringstypeDTO.Opprett,
                 soknadId,
-                omFireTimer
-            )
+                omFireTimer,
+            ),
         )
         leggSoknadPaKafka(lagSoknad(soknadId))
 
@@ -329,26 +324,26 @@ class E2ETest : FellesTestoppsett() {
     private fun lagSoknad(
         soknadId: UUID = UUID.randomUUID(),
         sendtNav: LocalDateTime? = LocalDateTime.now(),
-        sendtArbeidsgiver: LocalDateTime? = null
+        sendtArbeidsgiver: LocalDateTime? = null,
     ) = SykepengesoknadDTO(
-        fnr = fnr,
+        fnr = "fnr",
         id = soknadId.toString(),
         opprettet = LocalDateTime.now(),
         fom = LocalDate.of(2019, 5, 4),
         tom = LocalDate.of(2019, 5, 8),
         type = SoknadstypeDTO.ARBEIDSTAKERE,
-        sporsmal = listOf(
-            SporsmalDTO(
-                id = UUID.randomUUID().toString(),
-                tag = "TAGGEN",
-                sporsmalstekst = "Har systemet gode integrasjonstester?",
-                svartype = SvartypeDTO.JA_NEI,
-                svar = listOf(SvarDTO(verdi = "JA"))
-
-            )
-        ),
+        sporsmal =
+            listOf(
+                SporsmalDTO(
+                    id = UUID.randomUUID().toString(),
+                    tag = "TAGGEN",
+                    sporsmalstekst = "Har systemet gode integrasjonstester?",
+                    svartype = SvartypeDTO.JA_NEI,
+                    svar = listOf(SvarDTO(verdi = "JA")),
+                ),
+            ),
         status = SoknadsstatusDTO.SENDT,
         sendtNav = sendtNav,
-        sendtArbeidsgiver = sendtArbeidsgiver
+        sendtArbeidsgiver = sendtArbeidsgiver,
     )
 }

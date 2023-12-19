@@ -16,11 +16,14 @@ import java.util.UUID
 class SpreOppgaverService(
     private val saksbehandlingsService: SaksbehandlingsService,
     private val spreOppgaveRepository: SpreOppgaveRepository,
-    private val handterOppave: HandterOppgaveInterface
+    private val handterOppave: HandterOppgaveInterface,
 ) {
     private val timeoutTimer = 48.toLong()
 
-    fun prosesserOppgave(oppgave: OppgaveDTO, kilde: OppgaveKilde) {
+    fun prosesserOppgave(
+        oppgave: OppgaveDTO,
+        kilde: OppgaveKilde,
+    ) {
         val eksisterendeOppgave = spreOppgaveRepository.findBySykepengesoknadId(oppgave.dokumentId.toString())
         when (kilde) {
             OppgaveKilde.Søknad -> handterOppave.håndterOppgaveFraSøknad(eksisterendeOppgave, oppgave)
@@ -33,21 +36,22 @@ class SpreOppgaverService(
             if (sykepengesoknad.status == "SENDT" && !ettersendtTilArbeidsgiver(sykepengesoknad)) {
                 val innsendingsId = saksbehandlingsService.behandleSoknad(sykepengesoknad)
 
-                val timeoutMinutter = if (sykepengesoknad.erSoknadSpeilKjennerTil()) {
-                    timeoutTimer * 60
-                } else {
-                    // Bømlo kjenner ikke disse søknadene. Lar de timeoute etter 1 minutt
-                    1
-                }
+                val timeoutMinutter =
+                    if (sykepengesoknad.erSoknadSpeilKjennerTil()) {
+                        timeoutTimer * 60
+                    } else {
+                        // Bømlo kjenner ikke disse søknadene. Lar de timeoute etter 1 minutt
+                        1
+                    }
                 if (sykepengesoknad.sendtNav != null) {
                     prosesserOppgave(
                         OppgaveDTO(
                             dokumentId = UUID.fromString(sykepengesoknad.id),
                             dokumentType = DokumentTypeDTO.Søknad,
                             oppdateringstype = OppdateringstypeDTO.Utsett,
-                            timeout = sykepengesoknad.sendtNav.plusMinutes(timeoutMinutter)
+                            timeout = sykepengesoknad.sendtNav.plusMinutes(timeoutMinutter),
                         ),
-                        OppgaveKilde.Søknad
+                        OppgaveKilde.Søknad,
                     )
                 }
                 saksbehandlingsService.settFerdigbehandlet(innsendingsId)
@@ -70,5 +74,6 @@ class SpreOppgaverService(
 }
 
 enum class OppgaveKilde {
-    Søknad, Saksbehandling
+    Søknad,
+    Saksbehandling,
 }

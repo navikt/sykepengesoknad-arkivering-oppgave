@@ -17,7 +17,7 @@ object KvitteringMockDispatcher : QueueDispatcher() {
         }
 
         return MockResponse().setBody(
-            Buffer().readFrom("123".encodeToByteArray().inputStream())
+            Buffer().readFrom("123".encodeToByteArray().inputStream()),
         )
     }
 }

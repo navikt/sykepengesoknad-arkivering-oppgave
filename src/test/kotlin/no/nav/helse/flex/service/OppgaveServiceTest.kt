@@ -20,7 +20,6 @@ import java.time.LocalDateTime
 import java.time.temporal.TemporalAdjusters.next
 
 class OppgaveServiceTest : FellesTestoppsett() {
-
     @Autowired
     lateinit var oppgaveClient: OppgaveClient
 
@@ -80,7 +79,13 @@ class OppgaveServiceTest : FellesTestoppsett() {
         val arbeidstaker = OppgaveClient.lagRequestBody(aktorId, journalpostId, lagSoknad(Soknadstype.ARBEIDSTAKERE))
         val arbeidsledig = OppgaveClient.lagRequestBody(aktorId, journalpostId, lagSoknad(Soknadstype.ARBEIDSLEDIG))
         val behandlingsdager = OppgaveClient.lagRequestBody(aktorId, journalpostId, lagSoknad(Soknadstype.BEHANDLINGSDAGER))
-        val redusertVenteperiode = OppgaveClient.lagRequestBody(aktorId, journalpostId, lagSoknad(Soknadstype.SELVSTENDIGE_OG_FRILANSERE), harRedusertVenteperiode = true)
+        val redusertVenteperiode =
+            OppgaveClient.lagRequestBody(
+                aktorId,
+                journalpostId,
+                lagSoknad(Soknadstype.SELVSTENDIGE_OG_FRILANSERE),
+                harRedusertVenteperiode = true,
+            )
 
         assertThat(utland.behandlingstema).isEqualTo("ab0314")
         assertThat(arbeidstaker.behandlingstema).isEqualTo("ab0061")
@@ -112,7 +117,7 @@ class OppgaveServiceTest : FellesTestoppsett() {
             sporsmal = ArrayList(),
             avsendertype = null,
             merknaderFraSykmelding = null,
-            egenmeldingsdagerFraSykmelding = null
+            egenmeldingsdagerFraSykmelding = null,
         )
     }
 }

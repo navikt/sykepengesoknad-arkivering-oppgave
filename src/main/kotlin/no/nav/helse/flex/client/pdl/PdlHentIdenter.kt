@@ -16,16 +16,16 @@ const val AKTORID = "AKTORID"
 const val FOLKEREGISTERIDENT = "FOLKEREGISTERIDENT"
 
 data class HentIdenterResponseData(
-    val hentIdenter: HentIdenter? = null
+    val hentIdenter: HentIdenter? = null,
 )
 
 data class HentIdenter(
-    val identer: List<PdlIdent>
+    val identer: List<PdlIdent>,
 )
 
 data class PdlIdent(
     val gruppe: String,
-    val ident: String
+    val ident: String,
 )
 
 fun List<PdlIdent>.aktorId(): String {

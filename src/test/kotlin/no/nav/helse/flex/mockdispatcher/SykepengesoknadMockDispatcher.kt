@@ -19,15 +19,15 @@ object SykepengesoknadMockDispatcher : QueueDispatcher() {
         }
 
         return MockResponse().setBody(
-            mockSykepengesoknadDTO.serialisertTilString()
+            mockSykepengesoknadDTO.serialisertTilString(),
         ).addHeader("Content-Type", "application/json")
     }
 
     fun enque(soknad: SykepengesoknadDTO) {
         SykepengesoknadMockDispatcher.enqueueResponse(
             MockResponse().setBody(
-                soknad.serialisertTilString()
-            ).addHeader("Content-Type", "application/json")
+                soknad.serialisertTilString(),
+            ).addHeader("Content-Type", "application/json"),
         )
     }
 }

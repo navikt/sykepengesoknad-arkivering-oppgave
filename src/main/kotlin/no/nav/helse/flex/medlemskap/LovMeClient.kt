@@ -17,7 +17,7 @@ import java.time.LocalDate
 class LovMeClient(
     private val medlemskapVurderingRestTemplate: RestTemplate,
     @Value("\${MEDLEMSKAP_VURDERING_URL}")
-    private val url: String
+    private val url: String,
 ) {
     private val log = logger()
 
@@ -27,30 +27,35 @@ class LovMeClient(
             headers.contentType = MediaType.APPLICATION_JSON
             headers.set("Nav-Call-Id", sykepengesoknad.id)
 
-            val uri = UriComponentsBuilder
-                .fromHttpUrl(url)
-                .pathSegment("flexvurdering")
-                .build()
-                .toUri()
+            val uri =
+                UriComponentsBuilder
+                    .fromHttpUrl(url)
+                    .pathSegment("flexvurdering")
+                    .build()
+                    .toUri()
 
-            val request = EndeligVurderingRequest(
-                sykepengesoknad.id,
-                sykepengesoknad.fnr,
-                sykepengesoknad.fom!!,
-                sykepengesoknad.tom!!
+            val request =
+                EndeligVurderingRequest(
+                    sykepengesoknad.id,
+                    sykepengesoknad.fnr,
+                    sykepengesoknad.fom!!,
+                    sykepengesoknad.tom!!,
+                )
+
+            val result =
+                medlemskapVurderingRestTemplate.exchange(
+                    uri,
+                    HttpMethod.POST,
+                    HttpEntity(request, headers),
+                    EndeligVurderingResponse::class.java,
+                )
+
+            return result.body ?: throw RuntimeException(
+                "LovMe returnerer ikke endelig medlemskap vurdering for " +
+                    "sykepengesoknadId: ${sykepengesoknad.id}",
             )
-
-            val result = medlemskapVurderingRestTemplate.exchange(
-                uri,
-                HttpMethod.POST,
-                HttpEntity(request, headers),
-                EndeligVurderingResponse::class.java
-            )
-
-            return result.body ?: throw RuntimeException("LovMe returnerer ikke endelig medlemskap vurdering for søknad id: ${sykepengesoknad.id}")
         } catch (e: Exception) {
-            // TODO: Ønsker vi at disse skal feile opprettelse av oppgave må vi kaste denne videre
-            log.warn("Klarte ikke finne endelig medlemskap vurdering for søknad ${sykepengesoknad.id}", e)
+            log.warn("Fant ikke endelig medlemskap vurdering for sykepengesoknadId ${sykepengesoknad.id}", e)
             return null
         }
     }
@@ -60,7 +65,7 @@ data class EndeligVurderingRequest(
     val sykepengesoknad_id: String,
     val fnr: String,
     val fom: LocalDate,
-    val tom: LocalDate
+    val tom: LocalDate,
 )
 
 data class EndeligVurderingResponse(
@@ -69,9 +74,11 @@ data class EndeligVurderingResponse(
     val fnr: String,
     val fom: LocalDate,
     val tom: LocalDate,
-    val status: MedlemskapVurderingStatus
+    val status: MedlemskapVurderingStatus,
 ) {
     enum class MedlemskapVurderingStatus {
-        JA, NEI, UAVKLART
+        JA,
+        NEI,
+        UAVKLART,
     }
 }

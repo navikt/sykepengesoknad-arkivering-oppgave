@@ -32,7 +32,6 @@ private class PostgreSQLContainer12 : PostgreSQLContainer<PostgreSQLContainer12>
 @SpringBootTest
 @EnableMockOAuth2Server
 abstract class FellesTestoppsett {
-
     companion object {
         val pdlMockWebserver: MockWebServer
         val pdfMockWebserver: MockWebServer
@@ -62,40 +61,47 @@ abstract class FellesTestoppsett {
                 }
             }.also { threads.add(it) }
 
-            pdlMockWebserver = MockWebServer().apply {
-                System.setProperty("PDL_URL", "http://localhost:$port")
-                dispatcher = PdlMockDispatcher
-            }
+            pdlMockWebserver =
+                MockWebServer().apply {
+                    System.setProperty("PDL_URL", "http://localhost:$port")
+                    dispatcher = PdlMockDispatcher
+                }
 
-            pdfMockWebserver = MockWebServer().apply {
-                System.setProperty("PDFGEN_URL", "http://localhost:$port")
-                dispatcher = PdfMockDispatcher
-            }
+            pdfMockWebserver =
+                MockWebServer().apply {
+                    System.setProperty("PDFGEN_URL", "http://localhost:$port")
+                    dispatcher = PdfMockDispatcher
+                }
 
-            dokArkivMockWebserver = MockWebServer().apply {
-                System.setProperty("DOKARKIV_URL", "http://localhost:$port")
-                dispatcher = DokArkivMockDispatcher
-            }
+            dokArkivMockWebserver =
+                MockWebServer().apply {
+                    System.setProperty("DOKARKIV_URL", "http://localhost:$port")
+                    dispatcher = DokArkivMockDispatcher
+                }
 
-            oppgaveMockWebserver = MockWebServer().apply {
-                System.setProperty("OPPGAVE_URL", "http://localhost:$port")
-                dispatcher = OppgaveMockDispatcher
-            }
+            oppgaveMockWebserver =
+                MockWebServer().apply {
+                    System.setProperty("OPPGAVE_URL", "http://localhost:$port")
+                    dispatcher = OppgaveMockDispatcher
+                }
 
-            sykepengesoknadMockWebserver = MockWebServer().apply {
-                System.setProperty("SYKEPENGESOKNAD_BACKEND_URL", "http://localhost:$port")
-                dispatcher = SykepengesoknadMockDispatcher
-            }
+            sykepengesoknadMockWebserver =
+                MockWebServer().apply {
+                    System.setProperty("SYKEPENGESOKNAD_BACKEND_URL", "http://localhost:$port")
+                    dispatcher = SykepengesoknadMockDispatcher
+                }
 
-            kvitteringMockWebserver = MockWebServer().apply {
-                System.setProperty("SYKEPENGESOKNAD_KVITTERINGER_URL", "http://localhost:$port")
-                dispatcher = KvitteringMockDispatcher
-            }
+            kvitteringMockWebserver =
+                MockWebServer().apply {
+                    System.setProperty("SYKEPENGESOKNAD_KVITTERINGER_URL", "http://localhost:$port")
+                    dispatcher = KvitteringMockDispatcher
+                }
 
-            medlemskapMockWebserver = MockWebServer().apply {
-                System.setProperty("MEDLEMSKAP_VURDERING_URL", "http://localhost:$port")
-                dispatcher = MedlemskapMockDispatcher
-            }
+            medlemskapMockWebserver =
+                MockWebServer().apply {
+                    System.setProperty("MEDLEMSKAP_VURDERING_URL", "http://localhost:$port")
+                    dispatcher = MedlemskapMockDispatcher
+                }
 
             threads.forEach { it.join() }
         }

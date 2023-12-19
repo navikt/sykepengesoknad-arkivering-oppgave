@@ -15,11 +15,6 @@ import java.util.UUID
 
 @DirtiesContext
 class JulegateTest : FellesTestoppsett() {
-
-    companion object {
-        const val fnr = "fnr"
-    }
-
     @Test
     fun `Utsett til Ferdig til Opprett`() {
         val soknadId = UUID.randomUUID()
@@ -41,7 +36,7 @@ class JulegateTest : FellesTestoppsett() {
             sykepengesoknadId = soknadId.toString(),
             timeout = Instant.now(),
             status = OppgaveStatus.Opprettet,
-            tidspunkt
+            tidspunkt,
         )
         spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString())!!.status shouldBeEqualTo OppgaveStatus.Opprettet
 
