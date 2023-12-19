@@ -18,13 +18,15 @@ import org.springframework.web.client.RestTemplate
 class PDFClient(
     @Value("\${PDFGEN_URL}")
     private val pdfgenUrl: String,
-    private val pdfGenRestTemplate: RestTemplate
+    private val pdfGenRestTemplate: RestTemplate,
 ) {
-
     val log = logger()
 
     @Retryable(backoff = Backoff(delay = 5000))
-    fun getPDF(soknad: Soknad, template: PDFTemplate): ByteArray {
+    fun getPDF(
+        soknad: Soknad,
+        template: PDFTemplate,
+    ): ByteArray {
         val url = "$pdfgenUrl/api/v1/genpdf/syfosoknader/" + template.endpoint
 
         val headers = HttpHeaders()
@@ -35,7 +37,9 @@ class PDFClient(
         val result = pdfGenRestTemplate.exchange(url, HttpMethod.POST, entity, ByteArray::class.java)
 
         if (result.statusCode != OK) {
-            throw RuntimeException("getPDF feiler med HTTP-" + result.statusCode + " for søknad om utenlandsopphold med id: " + soknad.soknadsId)
+            throw RuntimeException(
+                "getPDF feiler med HTTP-" + result.statusCode + " for søknad om utenlandsopphold med id: " + soknad.soknadsId,
+            )
         }
 
         return result.body!!

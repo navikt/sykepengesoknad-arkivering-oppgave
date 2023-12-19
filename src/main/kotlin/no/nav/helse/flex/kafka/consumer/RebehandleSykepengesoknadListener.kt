@@ -23,32 +23,36 @@ const val RETRY_TOPIC = "flex." + "sykepengesoknad-arkivering-oppgave-retry"
 class RebehandleSykepengesoknadListener(
     private val behandleFeiledeSoknaderService: BehandleFeiledeSoknaderService,
     private val innsendingRepository: InnsendingRepository,
-    private val rebebehandleSykepengesoknadProducer: RebehandleSykepengesoknadProducer
+    private val rebebehandleSykepengesoknadProducer: RebehandleSykepengesoknadProducer,
 ) {
     val log = logger()
 
     @KafkaListener(
         topics = [RETRY_TOPIC],
         containerFactory = "aivenKafkaListenerContainerFactory",
-        properties = [ "auto.offset.reset=earliest" ]
+        properties = [ "auto.offset.reset=earliest" ],
     )
-    fun listen(cr: ConsumerRecord<String, String>, acknowledgment: Acknowledgment) {
+    fun listen(
+        cr: ConsumerRecord<String, String>,
+        acknowledgment: Acknowledgment,
+    ) {
         val sykepengesoknad = cr.value().tilSykepengesoknad()
-        val behandlingstidspunkt = cr.headers().lastHeader(BEHANDLINGSTIDSPUNKT)
-            ?.value()
-            ?.let { String(it, StandardCharsets.UTF_8) }
-            ?.let { Instant.ofEpochMilli(it.toLong()) }
-            ?: Instant.now()
+        val behandlingstidspunkt =
+            cr.headers().lastHeader(BEHANDLINGSTIDSPUNKT)
+                ?.value()
+                ?.let { String(it, StandardCharsets.UTF_8) }
+                ?.let { Instant.ofEpochMilli(it.toLong()) }
+                ?: Instant.now()
 
         try {
             val sovetid = behandlingstidspunkt.toEpochMilli() - Instant.now().toEpochMilli()
             if (sovetid > 0) {
                 log.info(
                     "Mottok rebehandling av søknad ${sykepengesoknad.id} med behandlingstidspunkt ${
-                    behandlingstidspunkt.atOffset(
-                        ZoneOffset.UTC
-                    )
-                    } sover i $sovetid millisekunder"
+                        behandlingstidspunkt.atOffset(
+                            ZoneOffset.UTC,
+                        )
+                    } sover i $sovetid millisekunder",
                 )
                 acknowledgment.nack(Duration.ofMillis(sovetid))
             } else {

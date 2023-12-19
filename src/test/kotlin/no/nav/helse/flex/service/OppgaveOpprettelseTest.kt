@@ -55,23 +55,23 @@ class OppgaveOpprettelseTest {
                 fom = LocalDate.of(2019, 5, 4),
                 tom = LocalDate.of(2019, 5, 8),
                 type = SoknadstypeDTO.ARBEIDSTAKERE,
-                sporsmal = listOf(
-                    SporsmalDTO(
-                        id = UUID.randomUUID().toString(),
-                        tag = "TAGGEN",
-                        sporsmalstekst = "Fungerer rebehandlinga?",
-                        svartype = SvartypeDTO.JA_NEI,
-                        svar = listOf(SvarDTO(verdi = "JA"))
-
-                    )
-                ),
+                sporsmal =
+                    listOf(
+                        SporsmalDTO(
+                            id = UUID.randomUUID().toString(),
+                            tag = "TAGGEN",
+                            sporsmalstekst = "Fungerer rebehandlinga?",
+                            svartype = SvartypeDTO.JA_NEI,
+                            svar = listOf(SvarDTO(verdi = "JA")),
+                        ),
+                    ),
                 status = SoknadsstatusDTO.SENDT,
                 sendtNav = LocalDateTime.now(),
-                fnr = "fnr"
-            )
+                fnr = "fnr",
+            ),
         )
         whenever(identService.hentAktorIdForFnr(any())).thenReturn(
-            "aktor"
+            "aktor",
         )
     }
 
@@ -92,9 +92,9 @@ class OppgaveOpprettelseTest {
                     status = OppgaveStatus.Utsett,
                     opprettet = OffsetDateTime.now().minusHours(2).toInstant(),
                     modifisert = OffsetDateTime.now().minusHours(1).toInstant(),
-                    avstemt = false
-                )
-            )
+                    avstemt = false,
+                ),
+            ),
         )
         oppgaveOpprettelse.behandleOppgaver()
         verify(saksbehandlingsService, never()).opprettOppgave(any(), any(), any())
@@ -111,9 +111,9 @@ class OppgaveOpprettelseTest {
                     status = OppgaveStatus.Utsett,
                     opprettet = OffsetDateTime.now().minusHours(2).toInstant(),
                     modifisert = OffsetDateTime.now().minusHours(1).toInstant(),
-                    avstemt = false
-                )
-            )
+                    avstemt = false,
+                ),
+            ),
         )
         oppgaveOpprettelse.behandleOppgaver()
         verify(saksbehandlingsService, never()).opprettOppgave(any(), any(), any())
@@ -132,9 +132,9 @@ class OppgaveOpprettelseTest {
                     status = OppgaveStatus.Utsett,
                     opprettet = OffsetDateTime.now().minusDays(2).toInstant(),
                     modifisert = OffsetDateTime.now().minusHours(1).toInstant(),
-                    avstemt = false
-                )
-            )
+                    avstemt = false,
+                ),
+            ),
         )
         oppgaveOpprettelse.behandleOppgaver()
         verify(saksbehandlingsService, never()).opprettOppgave(any(), any(), any())
@@ -154,16 +154,16 @@ class OppgaveOpprettelseTest {
                     status = OppgaveStatus.Utsett,
                     opprettet = OffsetDateTime.now().minusHours(2).toInstant(),
                     modifisert = OffsetDateTime.now().minusHours(1).toInstant(),
-                    avstemt = true
-                )
-            )
+                    avstemt = true,
+                ),
+            ),
         )
         whenever(saksbehandlingsService.finnEksisterendeInnsending(soknadId)).thenReturn(
             InnsendingDbRecord(
                 id = "iid",
                 sykepengesoknadId = soknadId,
-                journalpostId = "journalpost"
-            )
+                journalpostId = "journalpost",
+            ),
         )
 
         val tidspunkt = Instant.now()
@@ -175,7 +175,7 @@ class OppgaveOpprettelseTest {
                 sykepengesoknadId = soknadId,
                 timeout = null,
                 status = OppgaveStatus.OpprettetTimeout,
-                tidspunkt
+                tidspunkt,
             )
     }
 
@@ -194,7 +194,7 @@ class OppgaveOpprettelseTest {
                     status = OppgaveStatus.Utsett,
                     opprettet = OffsetDateTime.now().minusHours(2).toInstant(),
                     modifisert = OffsetDateTime.now().minusHours(1).toInstant(),
-                    avstemt = true
+                    avstemt = true,
                 ),
                 SpreOppgaveDbRecord(
                     sykepengesoknadId = soknadId2.toString(),
@@ -202,7 +202,7 @@ class OppgaveOpprettelseTest {
                     status = OppgaveStatus.Utsett,
                     opprettet = OffsetDateTime.now().minusHours(2).toInstant(),
                     modifisert = OffsetDateTime.now().minusHours(1).toInstant(),
-                    avstemt = true
+                    avstemt = true,
                 ),
                 SpreOppgaveDbRecord(
                     sykepengesoknadId = soknadId3.toString(),
@@ -210,15 +210,15 @@ class OppgaveOpprettelseTest {
                     status = OppgaveStatus.Utsett,
                     opprettet = OffsetDateTime.now().minusHours(2).toInstant(),
                     modifisert = OffsetDateTime.now().minusHours(1).toInstant(),
-                    avstemt = true
-                )
-            )
+                    avstemt = true,
+                ),
+            ),
         )
         whenever(saksbehandlingsService.finnEksisterendeInnsending(any())).thenAnswer {
             InnsendingDbRecord(
                 id = "id",
                 sykepengesoknadId = it.arguments[0].toString(),
-                journalpostId = "journalpost"
+                journalpostId = "journalpost",
             )
         }
         whenever(sykepengesoknadBackendClient.hentSoknad(soknadId2.toString())).thenThrow(RuntimeException("I AM ERROR"))
@@ -232,14 +232,14 @@ class OppgaveOpprettelseTest {
                 sykepengesoknadId = soknadId1.toString(),
                 timeout = null,
                 status = OppgaveStatus.OpprettetTimeout,
-                tidspunkt
+                tidspunkt,
             )
         verify(spreOppgaveRepository, times(1))
             .updateOppgaveBySykepengesoknadId(
                 sykepengesoknadId = soknadId3.toString(),
                 timeout = null,
                 status = OppgaveStatus.OpprettetTimeout,
-                tidspunkt
+                tidspunkt,
             )
     }
 
@@ -254,16 +254,16 @@ class OppgaveOpprettelseTest {
                     status = OppgaveStatus.Utsett,
                     opprettet = OffsetDateTime.now().minusHours(2).toInstant(),
                     modifisert = OffsetDateTime.now().minusHours(1).toInstant(),
-                    avstemt = true
-                )
-            )
+                    avstemt = true,
+                ),
+            ),
         )
         whenever(saksbehandlingsService.finnEksisterendeInnsending(soknadId.toString())).thenReturn(
             InnsendingDbRecord(
                 id = "id",
                 sykepengesoknadId = soknadId.toString(),
-                journalpostId = "journalpost"
-            )
+                journalpostId = "journalpost",
+            ),
         )
         whenever(environmentToggles.isQ()).thenReturn(true)
         whenever(sykepengesoknadBackendClient.hentSoknad(soknadId.toString())).thenThrow(SøknadIkkeFunnetException("finner ikke"))
@@ -275,7 +275,7 @@ class OppgaveOpprettelseTest {
                 sykepengesoknadId = soknadId.toString(),
                 timeout = null,
                 status = OppgaveStatus.IkkeOpprett,
-                modifisertTidspunkt
+                modifisertTidspunkt,
             )
     }
 
@@ -290,16 +290,16 @@ class OppgaveOpprettelseTest {
                     status = OppgaveStatus.Utsett,
                     opprettet = OffsetDateTime.now().minusHours(2).toInstant(),
                     modifisert = OffsetDateTime.now().minusHours(1).toInstant(),
-                    avstemt = true
-                )
-            )
+                    avstemt = true,
+                ),
+            ),
         )
         whenever(saksbehandlingsService.finnEksisterendeInnsending(soknadId.toString())).thenReturn(
             InnsendingDbRecord(
                 id = "id",
                 sykepengesoknadId = soknadId.toString(),
-                journalpostId = "journalpost"
-            )
+                journalpostId = "journalpost",
+            ),
         )
         whenever(environmentToggles.isQ()).thenReturn(false)
         whenever(sykepengesoknadBackendClient.hentSoknad(soknadId.toString())).thenThrow(SøknadIkkeFunnetException("msg"))

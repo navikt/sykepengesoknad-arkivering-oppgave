@@ -8,9 +8,8 @@ const val UNLEASH_CONTEXT_MEDLEMSKAP_SPORSMAL = "sykepengesoknad-backend-soknad-
 
 @Component
 class MedlemskapToggle(
-    private val unleash: Unleash
+    private val unleash: Unleash,
 ) {
-
     fun medlemskapToggleForBruker(fnr: String): Boolean {
         val unleashContext = UnleashContext.builder().userId(fnr).build()
         return unleash.isEnabled(UNLEASH_CONTEXT_MEDLEMSKAP_SPORSMAL, unleashContext)

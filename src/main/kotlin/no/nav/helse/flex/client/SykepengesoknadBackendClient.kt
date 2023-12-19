@@ -19,30 +19,31 @@ import org.springframework.web.util.UriComponentsBuilder
 class SykepengesoknadBackendClient(
     @Value("\${SYKEPENGESOKNAD_BACKEND_URL}")
     private val url: String,
-    private val sykepengesoknadBackendRestTemplate: RestTemplate
+    private val sykepengesoknadBackendRestTemplate: RestTemplate,
 ) {
-
     private val log = logger()
 
     fun hentSoknad(soknadId: String): SykepengesoknadDTO {
         try {
-            val uri = UriComponentsBuilder
-                .fromHttpUrl(url)
-                .path("/api/v3/soknader/{soknadId}/kafkaformat")
-                .buildAndExpand(mapOf("soknadId" to soknadId))
-                .toUri()
+            val uri =
+                UriComponentsBuilder
+                    .fromHttpUrl(url)
+                    .path("/api/v3/soknader/{soknadId}/kafkaformat")
+                    .buildAndExpand(mapOf("soknadId" to soknadId))
+                    .toUri()
 
             val headers = HttpHeaders()
             headers.contentType = MediaType.APPLICATION_JSON
             headers.set(NAV_CALLID, callId())
 
-            val result = sykepengesoknadBackendRestTemplate
-                .exchange(
-                    uri,
-                    HttpMethod.GET,
-                    HttpEntity<Any>(headers),
-                    SykepengesoknadDTO::class.java
-                )
+            val result =
+                sykepengesoknadBackendRestTemplate
+                    .exchange(
+                        uri,
+                        HttpMethod.GET,
+                        HttpEntity<Any>(headers),
+                        SykepengesoknadDTO::class.java,
+                    )
 
             if (result.statusCode != OK) {
                 val message = "Kall mot sykepengesoknad-backend feiler med HTTP-" + result.statusCode

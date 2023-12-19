@@ -18,11 +18,17 @@ interface InnsendingRepository : CrudRepository<InnsendingDbRecord, String> {
 
     @Modifying
     @Query("""UPDATE innsending SET oppgave_id = :oppgaveId WHERE id = :id""")
-    fun updateOppgaveId(id: String, oppgaveId: String): Boolean
+    fun updateOppgaveId(
+        id: String,
+        oppgaveId: String,
+    ): Boolean
 
     @Modifying
     @Query("""UPDATE innsending SET journalpost_id = :journalpostId WHERE id = :id""")
-    fun updateJournalpostId(id: String, journalpostId: String): Boolean
+    fun updateJournalpostId(
+        id: String,
+        journalpostId: String,
+    ): Boolean
 }
 
 @Table("innsending")
@@ -32,5 +38,5 @@ data class InnsendingDbRecord(
     val sykepengesoknadId: String,
     val journalpostId: String? = null,
     val oppgaveId: String? = null,
-    val behandlet: Instant? = null
+    val behandlet: Instant? = null,
 )

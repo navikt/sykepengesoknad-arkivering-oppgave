@@ -24,7 +24,7 @@ class OppgaveOpprettelse(
     private val sykepengesoknadBackendClient: SykepengesoknadBackendClient,
     private val environmentToggles: EnvironmentToggles,
     private val registry: MeterRegistry,
-    private val identService: IdentService
+    private val identService: IdentService,
 ) {
     private val log = logger()
 
@@ -51,13 +51,13 @@ class OppgaveOpprettelse(
                     saksbehandlingsService.opprettOppgave(
                         sykepengesoknad = soknad,
                         innsending = innsending,
-                        speilRelatert = it.status == OppgaveStatus.OpprettSpeilRelatert
+                        speilRelatert = it.status == OppgaveStatus.OpprettSpeilRelatert,
                     )
                     spreOppgaveRepository.updateOppgaveBySykepengesoknadId(
                         sykepengesoknadId = it.sykepengesoknadId,
                         timeout = null,
                         status = tilOpprettetStatus(it.status),
-                        tid
+                        tid,
                     )
                 } else {
                     log.info("Fant ikke eksisterende innsending, ignorerer søknad med id ${it.sykepengesoknadId}")
@@ -79,7 +79,7 @@ class OppgaveOpprettelse(
                         sykepengesoknadId = it.sykepengesoknadId,
                         timeout = null,
                         status = OppgaveStatus.IkkeOpprett,
-                        tid
+                        tid,
                     )
                 } else {
                     log.error("SøknadIkkeFunnetException ved opprettelse av oppgave ${it.sykepengesoknadId}", e)
@@ -103,7 +103,7 @@ class OppgaveOpprettelse(
     private fun tellTimeout() {
         registry.counter(
             "bomlo.timeout",
-            Tags.of("type", "info")
+            Tags.of("type", "info"),
         ).increment()
     }
 }

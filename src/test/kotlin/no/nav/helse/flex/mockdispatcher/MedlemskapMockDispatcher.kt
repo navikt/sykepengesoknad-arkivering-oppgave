@@ -29,8 +29,8 @@ object MedlemskapMockDispatcher : QueueDispatcher() {
                 fom = requestBody.fom,
                 tom = requestBody.tom,
                 vurdering_id = UUID.randomUUID().toString(),
-                status = EndeligVurderingResponse.MedlemskapVurderingStatus.JA
-            ).serialisertTilString()
+                status = EndeligVurderingResponse.MedlemskapVurderingStatus.JA,
+            ).serialisertTilString(),
         ).addHeader("Content-Type", "application/json")
     }
 }

@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit
 
 @DirtiesContext
 class SpesialBehandlingstemaTest : FellesTestoppsett() {
-
     val fnr = "fnr"
 
     @Test
@@ -27,7 +26,7 @@ class SpesialBehandlingstemaTest : FellesTestoppsett() {
         val søknad = søknad(soknadId)
 
         sykepengesoknadMockWebserver.enqueue(
-            MockResponse().setBody(søknad.serialisertTilString()).addHeader("Content-Type", "application/json")
+            MockResponse().setBody(søknad.serialisertTilString()).addHeader("Content-Type", "application/json"),
         )
         leggSøknadPåKafka(søknad)
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.OpprettSpeilRelatert, soknadId))
@@ -49,7 +48,7 @@ class SpesialBehandlingstemaTest : FellesTestoppsett() {
         val søknad = søknad(soknadId)
 
         sykepengesoknadMockWebserver.enqueue(
-            MockResponse().setBody(søknad.serialisertTilString()).addHeader("Content-Type", "application/json")
+            MockResponse().setBody(søknad.serialisertTilString()).addHeader("Content-Type", "application/json"),
         )
         leggSøknadPåKafka(søknad)
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, soknadId))
@@ -71,7 +70,7 @@ class SpesialBehandlingstemaTest : FellesTestoppsett() {
         val søknad = søknad(soknadId, utenlandskSykmelding = true)
 
         sykepengesoknadMockWebserver.enqueue(
-            MockResponse().setBody(søknad.serialisertTilString()).addHeader("Content-Type", "application/json")
+            MockResponse().setBody(søknad.serialisertTilString()).addHeader("Content-Type", "application/json"),
         )
         leggSøknadPåKafka(søknad)
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, soknadId))

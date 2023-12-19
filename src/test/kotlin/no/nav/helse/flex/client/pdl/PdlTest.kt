@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
 class PdlTest : FellesTestoppsett() {
-
     @Autowired
     private lateinit var identService: IdentService
 

@@ -14,27 +14,26 @@ import java.time.Instant
 interface HandterOppgaveInterface {
     fun håndterOppgaveFraBømlo(
         eksisterendeOppgave: SpreOppgaveDbRecord?,
-        oppgave: OppgaveDTO
+        oppgave: OppgaveDTO,
     )
 
     fun håndterOppgaveFraSøknad(
         eksisterendeOppgave: SpreOppgaveDbRecord?,
-        oppgave: OppgaveDTO
+        oppgave: OppgaveDTO,
     )
 }
 
 @Component
 class HandterOppave(
     private val spreOppgaveRepository: SpreOppgaveRepository,
-    registry: MeterRegistry
+    registry: MeterRegistry,
 ) : HandterOppgaveInterface {
-
     private val log = logger()
     private val gjenopplivetCounter = registry.counter("gjenopplivet_oppgave")
 
     override fun håndterOppgaveFraBømlo(
         eksisterendeOppgave: SpreOppgaveDbRecord?,
-        oppgave: OppgaveDTO
+        oppgave: OppgaveDTO,
     ) {
         val tidspunkt = Instant.now()
         when {
@@ -45,8 +44,8 @@ class HandterOppave(
                         timeout = timeout(oppgave),
                         status = oppgave.oppdateringstype.tilOppgaveStatus(),
                         opprettet = tidspunkt,
-                        modifisert = tidspunkt
-                    )
+                        modifisert = tidspunkt,
+                    ),
                 )
             }
             eksisterendeOppgave.status == OppgaveStatus.Utsett -> {
@@ -55,7 +54,7 @@ class HandterOppave(
                     sykepengesoknadId = oppgave.dokumentId.toString(),
                     timeout = timeout(oppgave),
                     status = oppgave.oppdateringstype.tilOppgaveStatus(),
-                    tidspunkt
+                    tidspunkt,
                 )
             }
             eksisterendeOppgave.status == OppgaveStatus.IkkeOpprett && oppgave.oppdateringstype == OppdateringstypeDTO.Opprett -> {
@@ -65,18 +64,21 @@ class HandterOppave(
                     sykepengesoknadId = oppgave.dokumentId.toString(),
                     timeout = timeout(oppgave),
                     status = oppgave.oppdateringstype.tilOppgaveStatus(),
-                    tidspunkt
+                    tidspunkt,
                 )
             }
             else -> {
-                log.info("Gjør ikke ${oppgave.oppdateringstype.name} for søknad ${oppgave.dokumentId} fordi status er ${eksisterendeOppgave.status.name}")
+                log.info(
+                    "Gjør ikke ${oppgave.oppdateringstype.name} for søknad ${oppgave.dokumentId} fordi status " +
+                        "er ${eksisterendeOppgave.status.name}",
+                )
             }
         }
     }
 
     override fun håndterOppgaveFraSøknad(
         eksisterendeOppgave: SpreOppgaveDbRecord?,
-        oppgave: OppgaveDTO
+        oppgave: OppgaveDTO,
     ) {
         log.info("Avstemmer oppgave opprettelse for søknad ${oppgave.dokumentId}")
         if (eksisterendeOppgave != null) {
@@ -90,8 +92,8 @@ class HandterOppave(
                     status = oppgave.oppdateringstype.tilOppgaveStatus(),
                     avstemt = true,
                     opprettet = now,
-                    modifisert = now
-                )
+                    modifisert = now,
+                ),
             )
         }
     }
@@ -105,9 +107,10 @@ internal fun timeout(oppgave: OppgaveDTO) =
         null
     }
 
-private fun OppdateringstypeDTO.tilOppgaveStatus() = when (this) {
-    OppdateringstypeDTO.Utsett -> OppgaveStatus.Utsett
-    OppdateringstypeDTO.Ferdigbehandlet -> OppgaveStatus.IkkeOpprett
-    OppdateringstypeDTO.OpprettSpeilRelatert -> OppgaveStatus.OpprettSpeilRelatert
-    OppdateringstypeDTO.Opprett -> OppgaveStatus.Opprett
-}
+private fun OppdateringstypeDTO.tilOppgaveStatus() =
+    when (this) {
+        OppdateringstypeDTO.Utsett -> OppgaveStatus.Utsett
+        OppdateringstypeDTO.Ferdigbehandlet -> OppgaveStatus.IkkeOpprett
+        OppdateringstypeDTO.OpprettSpeilRelatert -> OppgaveStatus.OpprettSpeilRelatert
+        OppdateringstypeDTO.Opprett -> OppgaveStatus.Opprett
+    }

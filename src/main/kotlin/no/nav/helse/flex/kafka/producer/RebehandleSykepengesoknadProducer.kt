@@ -18,7 +18,7 @@ import java.time.OffsetDateTime
 class RebehandleSykepengesoknadProducer(
     @Value("\${rebehandling.delay.sekunder}")
     private val delaySekunder: Long,
-    private val aivenKafkaConfig: AivenKafkaConfig
+    private val aivenKafkaConfig: AivenKafkaConfig,
 ) {
     val log = logger()
     var producer = aivenKafkaConfig.skapProducer()
@@ -26,7 +26,7 @@ class RebehandleSykepengesoknadProducer(
     fun send(
         sykepengesoknad: Sykepengesoknad,
         retries: Int = 20,
-        sleepMillis: Long = 500
+        sleepMillis: Long = 500,
     ) {
         try {
             producer.send(
@@ -39,11 +39,11 @@ class RebehandleSykepengesoknadProducer(
                         it.add(
                             RecordHeader(
                                 BEHANDLINGSTIDSPUNKT,
-                                OffsetDateTime.now().plusSeconds(delaySekunder).toInstant().toEpochMilli().toString().toByteArray()
-                            )
+                                OffsetDateTime.now().plusSeconds(delaySekunder).toInstant().toEpochMilli().toString().toByteArray(),
+                            ),
                         )
-                    }
-                )
+                    },
+                ),
             ).get()
         } catch (e: Exception) {
             if (e.isTopicAuthException()) {

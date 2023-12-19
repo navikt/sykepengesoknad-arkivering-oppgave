@@ -23,9 +23,8 @@ const val SYKEPENGESOKNAD_TOPIC = "flex." + "sykepengesoknad"
 @Component
 class AivenSoknadSendtListener(
     private val spreOppgaverService: SpreOppgaverService,
-    private val identService: IdentService
+    private val identService: IdentService,
 ) {
-
     private val log = logger()
 
     @KafkaListener(
@@ -33,9 +32,12 @@ class AivenSoknadSendtListener(
         id = "soknadSendt",
         idIsGroup = false,
         concurrency = "3",
-        containerFactory = "aivenKafkaListenerContainerFactory"
+        containerFactory = "aivenKafkaListenerContainerFactory",
     )
-    fun listen(cr: ConsumerRecord<String, String>, acknowledgment: Acknowledgment) {
+    fun listen(
+        cr: ConsumerRecord<String, String>,
+        acknowledgment: Acknowledgment,
+    ) {
         try {
             MDC.put(NAV_CALLID, getSafeNavCallIdHeaderAsString(cr.headers()))
 

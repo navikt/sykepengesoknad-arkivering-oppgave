@@ -25,18 +25,20 @@ const val SPREOPPGAVER_TOPIC = "tbd." + "spre-oppgaver"
 @Component
 class AivenSpreOppgaverListener(
     private val spreOppgaverService: SpreOppgaverService,
-    private val registry: MeterRegistry
+    private val registry: MeterRegistry,
 ) {
-
     private val log = logger()
 
     @KafkaListener(
         topics = [SPREOPPGAVER_TOPIC],
         id = "spreOppgave",
         idIsGroup = false,
-        containerFactory = "aivenKafkaListenerContainerFactory"
+        containerFactory = "aivenKafkaListenerContainerFactory",
     )
-    fun listen(cr: ConsumerRecord<String, String>, acknowledgment: Acknowledgment) {
+    fun listen(
+        cr: ConsumerRecord<String, String>,
+        acknowledgment: Acknowledgment,
+    ) {
         val oppgaveDTO = cr.value().tilSpreOppgaveDTO()
 
         try {
@@ -70,8 +72,8 @@ class AivenSpreOppgaverListener(
                 "type",
                 "info",
                 "oppdateringstype",
-                oppgave.oppdateringstype.name
-            )
+                oppgave.oppdateringstype.name,
+            ),
         ).increment()
     }
 

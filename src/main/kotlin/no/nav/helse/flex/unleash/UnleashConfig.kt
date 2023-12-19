@@ -13,15 +13,15 @@ import org.springframework.context.annotation.Profile
 @Profile("remote")
 class UnleashConfig(
     @Value("\${UNLEASH_SERVER_API_URL}") val apiUrl: String,
-    @Value("\${UNLEASH_SERVER_API_TOKEN}") val apiToken: String
+    @Value("\${UNLEASH_SERVER_API_TOKEN}") val apiToken: String,
 ) : DisposableBean {
-
-    private val config: UnleashConfig = UnleashConfig.builder()
-        .appName("sykepengesoknad-arkivering-oppgave")
-        .unleashAPI("$apiUrl/api")
-        .apiKey(apiToken)
-        .synchronousFetchOnInitialisation(true)
-        .build()
+    private val config: UnleashConfig =
+        UnleashConfig.builder()
+            .appName("sykepengesoknad-arkivering-oppgave")
+            .unleashAPI("$apiUrl/api")
+            .apiKey(apiToken)
+            .synchronousFetchOnInitialisation(true)
+            .build()
     private val defaultUnleash = DefaultUnleash(config)
 
     @Bean

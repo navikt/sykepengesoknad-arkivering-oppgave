@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit
 
 @DirtiesContext
 class SaksbehandlingsServiceTest : FellesTestoppsett() {
-
     @SpyBean
     lateinit var arkivaren: Arkivaren
 
@@ -30,10 +29,12 @@ class SaksbehandlingsServiceTest : FellesTestoppsett() {
     @Test
     fun behandlerSoknaderSomEttersendesTilNavDerDetManglerOppgave() {
         val now = LocalDateTime.now()
-        val sykepengesoknadUtenOppgave = objectMapper.readValue(this::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
-            .copy(sendtNav = null, sendtArbeidsgiver = now)
-        val sykepengesoknadEttersendingTilNAV = objectMapper.readValue(this::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
-            .copy(sendtNav = now, sendtArbeidsgiver = now)
+        val sykepengesoknadUtenOppgave =
+            objectMapper.readValue(this::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
+                .copy(sendtNav = null, sendtArbeidsgiver = now)
+        val sykepengesoknadEttersendingTilNAV =
+            objectMapper.readValue(this::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
+                .copy(sendtNav = now, sendtArbeidsgiver = now)
 
         val oppgaveRequestFør = oppgaveMockWebserver.requestCount
         saksbehandlingsService.behandleSoknad(sykepengesoknadUtenOppgave)
@@ -59,22 +60,22 @@ class SaksbehandlingsServiceTest : FellesTestoppsett() {
         assertThat(oppgaveRequestBody.journalpostId).isEqualTo("journalpostId")
         assertThat(oppgaveRequestBody.beskrivelse).isEqualTo(
             """
-Søknad om sykepenger for perioden 16.10.2018 - 24.10.2018
+            Søknad om sykepenger for perioden 16.10.2018 - 24.10.2018
 
-Arbeidsgiver: ARBEIDSGIVER A/S
-Organisasjonsnummer: 1257358
+            Arbeidsgiver: ARBEIDSGIVER A/S
+            Organisasjonsnummer: 1257358
 
-Periode 1:
-16.10.2018 - 20.10.2018
-Grad: 100
+            Periode 1:
+            16.10.2018 - 20.10.2018
+            Grad: 100
 
-Periode 2:
-21.10.2018 - 24.10.2018
-Grad: 40
+            Periode 2:
+            21.10.2018 - 24.10.2018
+            Grad: 40
 
-Betaler arbeidsgiveren lønnen din når du er syk?
-Vet ikke
-            """.trimIndent()
+            Betaler arbeidsgiveren lønnen din når du er syk?
+            Vet ikke
+            """.trimIndent(),
         )
         assertThat(oppgaveRequestBody.tema).isEqualTo("SYK")
         assertThat(oppgaveRequestBody.oppgavetype).isEqualTo("SOK")
@@ -82,15 +83,13 @@ Vet ikke
         assertThat(oppgaveRequestBody.behandlingstema).isEqualTo("ab0061")
     }
 
-    private fun innsending(
-        sykepengesoknadUtenOppgave: Sykepengesoknad
-    ): InnsendingDbRecord {
+    private fun innsending(sykepengesoknadUtenOppgave: Sykepengesoknad): InnsendingDbRecord {
         return InnsendingDbRecord(
             id = "innsending-guid",
             sykepengesoknadId = sykepengesoknadUtenOppgave.id,
             journalpostId = "journalpostId",
             oppgaveId = null,
-            behandlet = Instant.now()
+            behandlet = Instant.now(),
         )
     }
 }

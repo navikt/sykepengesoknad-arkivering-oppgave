@@ -7,13 +7,17 @@ data class OppgaveDTO(
     val dokumentType: DokumentTypeDTO,
     val oppdateringstype: OppdateringstypeDTO,
     val dokumentId: UUID,
-    val timeout: LocalDateTime? = null
+    val timeout: LocalDateTime? = null,
 )
 
 enum class OppdateringstypeDTO {
-    Utsett, Opprett, Ferdigbehandlet, OpprettSpeilRelatert
+    Utsett,
+    Opprett,
+    Ferdigbehandlet,
+    OpprettSpeilRelatert,
 }
 
 enum class DokumentTypeDTO {
-    Inntektsmelding, Søknad
+    Inntektsmelding,
+    Søknad,
 }

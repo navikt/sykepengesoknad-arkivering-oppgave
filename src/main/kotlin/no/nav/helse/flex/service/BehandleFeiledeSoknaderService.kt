@@ -10,13 +10,16 @@ import org.springframework.stereotype.Component
 class BehandleFeiledeSoknaderService(private val spreOppgaverService: SpreOppgaverService) {
     private val log = logger()
 
-    fun behandleFeiletSoknad(innsending: InnsendingDbRecord?, sykepengesoknad: Sykepengesoknad) {
+    fun behandleFeiletSoknad(
+        innsending: InnsendingDbRecord?,
+        sykepengesoknad: Sykepengesoknad,
+    ) {
         try {
             if (innsending?.behandlet != null) {
                 log.warn(
                     "Forsøkte å rebehandle ferdigbehandlet søknad med innsendingid: {} og søknadsid: {}",
                     innsending.id,
-                    sykepengesoknad.id
+                    sykepengesoknad.id,
                 )
             } else {
                 spreOppgaverService.soknadSendt(sykepengesoknad)

@@ -13,7 +13,9 @@ Pga feilinformasjonen om fristen, er akkurat denne søknaden unntatt hovedregele
 
 Selv om søknaden innvilges, skal det i dette tilfellet sendes melding om vedtak til bruker, hvor bruker får informasjon om at søknaden er innvilget etter en unntaksregel. Forslag til tekst som kan brukes:
 
-"NAV har innvilget søknaden din om sykepenger for perioden ${fom!!.format(DatoUtil.norskDato)} - ${tom!!.format(DatoUtil.norskDato)}. Du får utbetalt kr xx. [tilpass teksten hvis arbeidsgiver skal ha refusjon]
+"NAV har innvilget søknaden din om sykepenger for perioden ${fom!!.format(
+            DatoUtil.norskDato,
+        )} - ${tom!!.format(DatoUtil.norskDato)}. Du får utbetalt kr xx. [tilpass teksten hvis arbeidsgiver skal ha refusjon]
 
 Vanligvis gis sykepenger kun for opptil tre måneder før den måneden da kravet ble satt fram, jf. folketrygdloven § 22-13 tredje ledd. Det betyr at du har søkt så seint at NAV vanligvis ville avslått søknaden din. Men i søknaden om sykepenger for akkurat denne sykmeldingsperioden, ga NAV deg beskjed om at fristen for å søke var $feilinformertFrist. Denne fristen var feil, men fordi NAV ga deg misvisende opplysninger, får du likevel sykepenger for denne perioden. Vi har brukt en unntaksregel i folketrygdloven § 22-13 syvende ledd andre punktum når vi har behandlet søknaden din.
 

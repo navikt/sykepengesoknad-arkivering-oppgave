@@ -27,10 +27,11 @@ class SpreOppgaveRaceConditionTest : FellesTestoppsett() {
     @Autowired
     private lateinit var aivenKafkaProducer: KafkaProducer<String, String>
 
-    private val søknad = mockSykepengesoknadDTO.copy(
-        id = raceConditionUUID.toString(),
-        sendtNav = LocalDateTime.now()
-    )
+    private val søknad =
+        mockSykepengesoknadDTO.copy(
+            id = raceConditionUUID.toString(),
+            sendtNav = LocalDateTime.now(),
+        )
 
     @AfterEach
     fun `slett spre oppgaver`() {
@@ -50,19 +51,19 @@ class SpreOppgaveRaceConditionTest : FellesTestoppsett() {
                     dokumentType = DokumentTypeDTO.Søknad,
                     oppdateringstype = OppdateringstypeDTO.Utsett,
                     dokumentId = raceConditionUUID,
-                    timeout = timeoutFraBømlo
-                ).serialisertTilString()
-            )
+                    timeout = timeoutFraBømlo,
+                ).serialisertTilString(),
+            ),
         )
 
         await().atMost(Duration.ofSeconds(10)).until {
             spreOppgaveRepository.findBySykepengesoknadId(
-                raceConditionUUID.toString()
+                raceConditionUUID.toString(),
             )?.timeout == timeoutFraBømlo.tilOsloZone().toInstant()
         }
 
         spreOppgaveRepository.findBySykepengesoknadId(
-            raceConditionUUID.toString()
+            raceConditionUUID.toString(),
         )!!.timeout shouldBeEqualTo timeoutFraBømlo.tilOsloZone().toInstant()
 
         kallTilHåndterOppgaveFraBømlo shouldBeEqualTo 2
@@ -76,18 +77,18 @@ class SpreOppgaveRaceConditionTest : FellesTestoppsett() {
             ProducerRecord(
                 SYKEPENGESOKNAD_TOPIC,
                 søknad.id,
-                søknad.serialisertTilString()
-            )
+                søknad.serialisertTilString(),
+            ),
         )
 
         await().atMost(Duration.ofSeconds(10)).until {
             spreOppgaveRepository.findBySykepengesoknadId(
-                raceConditionUUID.toString()
+                raceConditionUUID.toString(),
             )?.avstemt == true
         }
 
         spreOppgaveRepository.findBySykepengesoknadId(
-            raceConditionUUID.toString()
+            raceConditionUUID.toString(),
         )!!.timeout shouldBeEqualTo raceConditionTimeout
 
         kallTilHåndterOppgaveFraSøknad shouldBeEqualTo 2
