@@ -2,6 +2,7 @@ package no.nav.helse.flex.service
 
 import no.nav.helse.flex.FellesTestoppsett
 import no.nav.helse.flex.domain.Soknad
+import no.nav.helse.flex.domain.dto.Arbeidssituasjon
 import no.nav.helse.flex.domain.dto.Soknadstype
 import okhttp3.mockwebserver.MockResponse
 import org.assertj.core.api.Assertions.assertThat
@@ -112,7 +113,7 @@ class OppgaveServiceTest : FellesTestoppsett() {
             arbeidsgiver = "arbeidsgiver",
             korrigerer = null,
             korrigertAv = null,
-            arbeidssituasjon = null,
+            arbeidssituasjon = Arbeidssituasjon.ARBEIDSTAKER,
             soknadPerioder = ArrayList(),
             sporsmal = ArrayList(),
             avsendertype = null,

@@ -109,7 +109,7 @@ class BeskrivelseServiceTest {
         val beskrivelse = lagBeskrivelse(soknad)
 
         val beskrivelseArbeidstakerMedNeisvar =
-            """Søknad om sykepenger for perioden 02.01.1970 - 30.08.1973
+            """Søknad om sykepenger for perioden 02.01.1970 til 30.08.1973
 OBS! Sykmeldingen er avslått grunnet ugyldig tilbakedatering
 """
         assertThat(beskrivelse).isEqualTo(beskrivelseArbeidstakerMedNeisvar)
@@ -130,7 +130,7 @@ OBS! Sykmeldingen er avslått grunnet ugyldig tilbakedatering
         val beskrivelse = lagBeskrivelse(soknad)
 
         val beskrivelseArbeidstakerMedNeisvar =
-            """Søknad om sykepenger for perioden 02.01.1970 - 30.08.1973
+            """Søknad om sykepenger for perioden 02.01.1970 til 30.08.1973
 OBS! Sykmeldingen er avslått grunnet ugyldig tilbakedatering
 OBS! Tilbakedatert sykmelding er til vurdering
 """
@@ -151,7 +151,7 @@ OBS! Tilbakedatert sykmelding er til vurdering
         val beskrivelse = lagBeskrivelse(soknad)
 
         val beskrivelseArbeidstakerMedNeisvar =
-            """Søknad om sykepenger for perioden 02.01.1970 - 30.08.1973
+            """Søknad om sykepenger for perioden 02.01.1970 til 30.08.1973
 OBS! Sykmeldingen er tilbakedatert. Tilbakedateringen var ikke behandlet når søknaden ble sendt. Sjekk gosys for resultat på tilbakedatering
 """
         assertThat(beskrivelse).isEqualTo(beskrivelseArbeidstakerMedNeisvar)
@@ -166,7 +166,7 @@ OBS! Sykmeldingen er tilbakedatert. Tilbakedateringen var ikke behandlet når s�
         val beskrivelse = lagBeskrivelse(soknad)
 
         val beskrivelseArbeidstakerMedNeisvar =
-            """Søknad om sykepenger for perioden 02.01.1970 - 30.08.1973
+            """Søknad om sykepenger for perioden 02.01.1970 til 30.08.1973
 OBS! Sykmeldingen har en merknad Merknad(type=SVINDEL, beskrivelse=Farlig)
 """
         assertThat(beskrivelse).isEqualTo(beskrivelseArbeidstakerMedNeisvar)
@@ -197,23 +197,6 @@ OBS! Sykmeldingen har en merknad Merknad(type=SVINDEL, beskrivelse=Farlig)
         val beskrivelse = lagBeskrivelse(soknad)
 
         assertThat(beskrivelse).isEqualTo(BESKRIVELSE_ARBEIDSTAKER_MED_NEI_SVAR_KORRIGERT)
-    }
-
-    @Test
-    fun talerAtArbeidssituasjonIkkeErSatt() {
-        val sykepengesoknad =
-            objectMapper.readValue(
-                BeskrivelseServiceTest::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"),
-                Sykepengesoknad::class.java,
-            )
-        val soknad =
-            Soknad.lagSoknad(sykepengesoknad, "fnr", "navn").copy(
-                arbeidssituasjon = null,
-                soknadstype = Soknadstype.SELVSTENDIGE_OG_FRILANSERE,
-            )
-        val beskrivelse = lagBeskrivelse(soknad)
-
-        assertThat(beskrivelse).isNotEmpty()
     }
 
     @Test

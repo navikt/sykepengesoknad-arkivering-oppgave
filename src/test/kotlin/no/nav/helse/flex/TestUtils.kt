@@ -36,7 +36,7 @@ const val BESKRIVELSE_UTLAND_MED_SVARTYPE_LAND =
         "    Nei"
 
 const val BESKRIVELSE_SOKNAD_SELVSTENDIG_MED_NEI_SVAR =
-    "Søknad om sykepenger fra frilanser for perioden 20.05.2018 - 28.05.2018\n" +
+    "Søknad om sykepenger for frilanser for perioden 20.05.2018 til 28.05.2018\n" +
         "\n" +
         "Periode 1:\n" +
         "20.05.2018 - 24.05.2018\n" +
@@ -47,7 +47,7 @@ const val BESKRIVELSE_SOKNAD_SELVSTENDIG_MED_NEI_SVAR =
         "Grad: 40\n"
 
 const val BESKRIVELSE_SELVSTENDIG_MANGE_SVAR =
-    "Søknad om sykepenger fra frilanser for perioden 20.05.2018 - 28.05.2018\n" +
+    "Søknad om sykepenger for frilanser for perioden 20.05.2018 til 28.05.2018\n" +
         "\n" +
         "Periode 1:\n" +
         "20.05.2018 - 24.05.2018\n" +
@@ -115,7 +115,7 @@ const val BESKRIVELSE_SELVSTENDIG_MANGE_SVAR =
         "    Ja"
 
 const val BESKRIVELSE_ARBEIDSTAKER_MED_NEI_SVAR =
-    "Søknad om sykepenger for perioden 16.10.2018 - 24.10.2018\n" +
+    "Søknad om sykepenger for perioden 16.10.2018 til 24.10.2018\n" +
         "\n" +
         "Arbeidsgiver: ARBEIDSGIVER A/S" +
         "\n" +
@@ -134,7 +134,7 @@ const val BESKRIVELSE_ARBEIDSTAKER_MED_NEI_SVAR =
         "Vet ikke"
 
 const val BESKRIVELSE_ARBEIDSTAKER_MANGE_SVAR =
-    "Søknad om sykepenger for perioden 16.10.2018 - 24.10.2018\n" +
+    "Søknad om sykepenger for perioden 16.10.2018 til 24.10.2018\n" +
         "\n" +
         "Arbeidsgiver: ARBEIDSGIVER A/S" +
         "\n" +
@@ -209,7 +209,7 @@ const val BESKRIVELSE_ARBEIDSTAKER_MANGE_SVAR =
         "Vet ikke"
 
 const val BESKRIVELSE_ARBEIDSTAKER_MED_NEI_SVAR_KORRIGERT =
-    "Søknad om sykepenger for perioden 16.10.2018 - 24.10.2018 KORRIGERING\n" +
+    "Søknad om sykepenger for perioden 16.10.2018 til 24.10.2018 KORRIGERING\n" +
         "\n" +
         "Arbeidsgiver: ARBEIDSGIVER A/S" +
         "\n" +
@@ -228,7 +228,7 @@ const val BESKRIVELSE_ARBEIDSTAKER_MED_NEI_SVAR_KORRIGERT =
         "Vet ikke"
 
 const val BESKRIVELSE_BEHANDLINGSDAGER_MED_NEI_SVAR =
-    "Søknad med enkeltstående behandlingsdager\n" +
+    "Søknad om enkeltstående behandlingsdager for arbeidstaker for perioden 11.12.2019 til 17.12.2019\n" +
         "\n" +
         "Arbeidsgiver: LØNNS- OG REGNSKAPSSENTERET" +
         "\n" +
@@ -242,7 +242,7 @@ const val BESKRIVELSE_BEHANDLINGSDAGER_MED_NEI_SVAR =
         "    Ikke til behandling"
 
 const val BESKRIVELSE_BEHANDLINGSDAGER_MED_MANGE_SVAR =
-    "Søknad med enkeltstående behandlingsdager\n" +
+    "Søknad om enkeltstående behandlingsdager for arbeidstaker for perioden 12.12.2019 til 18.12.2019\n" +
         "\n" +
         "Arbeidsgiver: LØNNS- OG REGNSKAPSSENTERET" +
         "\n" +
@@ -264,7 +264,7 @@ const val BESKRIVELSE_BEHANDLINGSDAGER_MED_MANGE_SVAR =
         "            Er du sykmeldt fra dette?\n" +
         "            Ja"
 
-const val BESKRIVELSE_ARBEIDSTAKER_MED_TIMER_OG_DERETTER_PROSENT = """Søknad om sykepenger for perioden 16.10.2018 - 24.10.2018
+const val BESKRIVELSE_ARBEIDSTAKER_MED_TIMER_OG_DERETTER_PROSENT = """Søknad om sykepenger for perioden 16.10.2018 til 24.10.2018
 
 Arbeidsgiver: ARBEIDSGIVER A/S
 Organisasjonsnummer: 1257358
@@ -287,7 +287,7 @@ Ja
     Hvor mye jobbet du totalt 16. - 20. oktober 2018 hos ARBEIDSGIVER A/S?
     51 prosent"""
 
-const val BESKRIVELSE_MEDLEMSKAP = """Søknad om sykepenger for perioden 01.01.2023 - 07.01.2023
+const val BESKRIVELSE_MEDLEMSKAP = """Søknad om sykepenger for perioden 01.01.2023 til 07.01.2023
 
 Arbeidsgiver: Butikken
 Organisasjonsnummer: 123454543

@@ -60,7 +60,7 @@ class SaksbehandlingsServiceTest : FellesTestoppsett() {
         assertThat(oppgaveRequestBody.journalpostId).isEqualTo("journalpostId")
         assertThat(oppgaveRequestBody.beskrivelse).isEqualTo(
             """
-            Søknad om sykepenger for perioden 16.10.2018 - 24.10.2018
+            Søknad om sykepenger for perioden 16.10.2018 til 24.10.2018
 
             Arbeidsgiver: ARBEIDSGIVER A/S
             Organisasjonsnummer: 1257358

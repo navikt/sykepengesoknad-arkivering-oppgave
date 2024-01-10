@@ -2,13 +2,7 @@ package no.nav.helse.flex.medlemskap
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.flex.FellesTestoppsett
-import no.nav.helse.flex.domain.dto.SoknadPeriode
-import no.nav.helse.flex.domain.dto.Soknadstype
-import no.nav.helse.flex.domain.dto.Sporsmal
-import no.nav.helse.flex.domain.dto.Svar
-import no.nav.helse.flex.domain.dto.Svartype
-import no.nav.helse.flex.domain.dto.Sykepengesoknad
-import no.nav.helse.flex.domain.dto.Visningskriterie
+import no.nav.helse.flex.domain.dto.*
 import no.nav.helse.flex.objectMapper
 import no.nav.helse.flex.serialisertTilString
 import no.nav.helse.flex.service.OppgaveRequest
@@ -46,7 +40,11 @@ class MedlemskapVurderingTest : FellesTestoppsett() {
 
     @Test
     fun `Frilansersøknad blir ikke vurdert`() {
-        val soknad = lagSoknad(medlemskapVurdering = null, soknadstype = Soknadstype.SELVSTENDIGE_OG_FRILANSERE)
+        val soknad =
+            lagSoknad(
+                medlemskapVurdering = null,
+                soknadstype = Soknadstype.SELVSTENDIGE_OG_FRILANSERE,
+            ).copy(arbeidssituasjon = Arbeidssituasjon.FRILANSER)
 
         saksbehandlingsService.behandleSoknad(soknad)
 
@@ -106,7 +104,7 @@ class MedlemskapVurderingTest : FellesTestoppsett() {
         oppgaveRequestBody.behandlingstema shouldBeEqualTo "ab0269"
         oppgaveRequestBody.beskrivelse shouldBeEqualTo
             """
-            Søknad om sykepenger for perioden 01.09.2023 - 20.09.2023
+            Søknad om sykepenger for perioden 01.09.2023 til 20.09.2023
 
             Periode 1:
             01.09.2023 - 20.09.2023
@@ -174,7 +172,7 @@ class MedlemskapVurderingTest : FellesTestoppsett() {
         oppgaveRequestBody.behandlingstema shouldBeEqualTo "ab0269"
         oppgaveRequestBody.beskrivelse shouldBeEqualTo
             """
-            Søknad om sykepenger for perioden 01.09.2023 - 20.09.2023
+            Søknad om sykepenger for perioden 01.09.2023 til 20.09.2023
 
             Periode 1:
             01.09.2023 - 20.09.2023
@@ -247,7 +245,7 @@ class MedlemskapVurderingTest : FellesTestoppsett() {
         oppgaveRequestBody.behandlingstema shouldBeEqualTo "ab0269"
         oppgaveRequestBody.beskrivelse shouldBeEqualTo
             """
-            Søknad om sykepenger med reisetilskudd for perioden 01.09.2023 - 20.09.2023
+            Søknad om sykepenger med reisetilskudd for perioden 01.09.2023 til 20.09.2023
 
             Periode 1:
             01.09.2023 - 20.09.2023
@@ -308,7 +306,7 @@ class MedlemskapVurderingTest : FellesTestoppsett() {
         oppgaveRequestBody.behandlingstema shouldBeEqualTo "ab0061"
         oppgaveRequestBody.beskrivelse shouldBeEqualTo
             """
-            Søknad om sykepenger for perioden 01.09.2023 - 20.09.2023
+            Søknad om sykepenger for perioden 01.09.2023 til 20.09.2023
 
             Periode 1:
             01.09.2023 - 20.09.2023
@@ -345,7 +343,7 @@ class MedlemskapVurderingTest : FellesTestoppsett() {
         oppgaveRequestBody.behandlingstema shouldBeEqualTo "ab0061"
         oppgaveRequestBody.beskrivelse shouldBeEqualTo
             """
-            Søknad om sykepenger for perioden 01.09.2023 - 20.09.2023
+            Søknad om sykepenger for perioden 01.09.2023 til 20.09.2023
 
             Periode 1:
             01.09.2023 - 20.09.2023
