@@ -77,7 +77,7 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
         val dokArkivRequest = dokArkivMockWebserver.takeRequest(1, TimeUnit.SECONDS)!!
         dokArkivRequest.requestLine shouldBeEqualTo "POST /rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true HTTP/1.1"
         val dokArkivRequestBody = objectMapper.readValue<JournalpostRequest>(dokArkivRequest.body.readUtf8())
-        dokArkivRequestBody.dokumenter[0].tittel `should be equal to` "Søknad om sykepenger 04.05.2019 - 08.05.2019"
+        dokArkivRequestBody.dokumenter[0].tittel `should be equal to` "Søknad om sykepenger for perioden 04.05.2019 til 08.05.2019"
     }
 
     @Test
@@ -101,6 +101,7 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
                 fom = LocalDate.of(2020, 5, 1),
                 tom = LocalDate.of(2020, 5, 5),
                 type = SoknadstypeDTO.SELVSTENDIGE_OG_FRILANSERE,
+                arbeidssituasjon = ArbeidssituasjonDTO.FRILANSER,
                 sporsmal =
                     listOf(
                         SporsmalDTO(
@@ -138,7 +139,7 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
         assertThat(oppgaveRequestBody.journalpostId).isEqualTo("journalpostId")
         assertThat(oppgaveRequestBody.beskrivelse).isEqualTo(
             """
-            Søknad om sykepenger fra Selvstendig Næringsdrivende / Frilanser for perioden 01.05.2020 - 05.05.2020
+            Søknad om sykepenger for frilanser for perioden 01.05.2020 til 05.05.2020
 
             Har systemet gode integrasjonstester?
             Ja
@@ -162,8 +163,8 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
         val dokArkivRequest = dokArkivMockWebserver.takeRequest(1, TimeUnit.SECONDS)!!
         dokArkivRequest.requestLine shouldBeEqualTo "POST /rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true HTTP/1.1"
         val dokArkivRequestBody = objectMapper.readValue<JournalpostRequest>(dokArkivRequest.body.readUtf8())
-        dokArkivRequestBody.dokumenter[0].tittel `should be equal to` "Søknad om sykepenger fra Selvstendig/Frilanser " +
-            "for periode: 01.05.2020 til 05.05.2020"
+        dokArkivRequestBody.dokumenter[0].tittel `should be equal to`
+            "Søknad om sykepenger for frilanser for perioden 01.05.2020 til 05.05.2020"
 
         val pdlRequest = pdlMockWebserver.takeRequest(1, TimeUnit.SECONDS)!!
         pdlRequest.headers["Behandlingsnummer"] `should be equal to` "B128"
@@ -207,7 +208,7 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
         assertThat(oppgaveRequestBody.journalpostId).isEqualTo("journalpostId")
         assertThat(oppgaveRequestBody.beskrivelse).isEqualTo(
             """
-            Søknad om reisetilskudd for perioden 18.03.2021 - 22.03.2021
+            Søknad om reisetilskudd for perioden 18.03.2021 til 22.03.2021
 
             Søknaden har vedlagt 2 kvitteringer med en sum på 1 338,00 kr
 
@@ -267,7 +268,7 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
         val dokArkivRequest = dokArkivMockWebserver.takeRequest(1, TimeUnit.SECONDS)!!
         dokArkivRequest.requestLine shouldBeEqualTo "POST /rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true HTTP/1.1"
         val dokArkivRequestBody = objectMapper.readValue<JournalpostRequest>(dokArkivRequest.body.readUtf8())
-        dokArkivRequestBody.dokumenter[0].tittel `should be equal to` "Søknad om reisetilskudd for periode: 18.03.2021 til 22.03.2021"
+        dokArkivRequestBody.dokumenter[0].tittel `should be equal to` "Søknad om reisetilskudd for perioden 18.03.2021 til 22.03.2021"
     }
 
     @Test
@@ -308,7 +309,7 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
         assertThat(oppgaveRequestBody.journalpostId).isEqualTo("journalpostId")
         assertThat(oppgaveRequestBody.beskrivelse).isEqualTo(
             """
-            Søknad med enkeltstående behandlingsdager
+            Søknad om enkeltstående behandlingsdager for arbeidsledig for perioden 02.10.2023 til 15.10.2023
 
             Periode 1:
             02.10.2023 - 15.10.2023
@@ -341,7 +342,7 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
         val dokArkivRequestJournalpostBody =
             objectMapper.readValue<JournalpostRequest>(dokArkivRequestJournalpostRequest.body.readUtf8())
         dokArkivRequestJournalpostBody.dokumenter[0].tittel `should be equal to`
-            "Søknad om enkeltstående behandlingsdager fra arbeidsledig for periode: 02.10.2023 til 15.10.2023"
+            "Søknad om enkeltstående behandlingsdager for arbeidsledig for perioden 02.10.2023 til 15.10.2023"
 
         val dokArkivLogiskVedleggRequest = dokArkivMockWebserver.takeRequest(1, TimeUnit.SECONDS)!!
         dokArkivLogiskVedleggRequest.requestLine shouldBeEqualTo "POST /rest/journalpostapi/v1/dokumentInfo/123456/logiskVedlegg/ HTTP/1.1"
@@ -393,7 +394,7 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
         assertThat(oppgaveRequestBody.journalpostId).isEqualTo("journalpostId")
         assertThat(oppgaveRequestBody.beskrivelse).isEqualTo(
             """
-            Søknad om sykepenger med reisetilskudd for perioden 18.03.2021 - 22.03.2021
+            Søknad om sykepenger med reisetilskudd for perioden 18.03.2021 til 22.03.2021
 
             Søknaden har vedlagt 2 kvitteringer med en sum på 1 338,00 kr
 
@@ -455,6 +456,6 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
         dokArkivRequest.requestLine shouldBeEqualTo "POST /rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true HTTP/1.1"
         val dokArkivRequestBody = objectMapper.readValue<JournalpostRequest>(dokArkivRequest.body.readUtf8())
         dokArkivRequestBody.dokumenter[0].tittel `should be equal to` "Søknad om sykepenger med reisetilskudd for " +
-            "periode: 18.03.2021 til 22.03.2021"
+            "perioden 18.03.2021 til 22.03.2021"
     }
 }

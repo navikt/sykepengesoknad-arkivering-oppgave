@@ -8,6 +8,7 @@ import no.nav.helse.flex.domain.dto.Merknad
 import no.nav.helse.flex.domain.dto.Soknadstype.*
 import no.nav.helse.flex.domain.dto.Sporsmal
 import no.nav.helse.flex.domain.dto.Svartype.*
+import no.nav.helse.flex.tittel.skapTittel
 import no.nav.helse.flex.util.DatoUtil.norskDato
 import no.nav.helse.flex.util.PeriodeMapper.jsonTilPeriode
 import org.slf4j.LoggerFactory
@@ -21,7 +22,7 @@ fun lagBeskrivelse(soknad: Soknad): String {
     return soknad.meldingDersomAvbruttFristFeil() +
         soknad.meldingDersomEgenmeldtSykmelding() +
         soknad.meldingDersomAvsendertypeErSystem() +
-        soknad.lagTittel() +
+        soknad.skapTittel() +
         soknad.erKorrigert() + "\n" +
         soknad.beskrivMerknaderFraSykmelding() +
         soknad.beskrivKvitteringer() +
@@ -82,31 +83,6 @@ private fun Soknad.meldingDersomAvsendertypeErSystem() =
         "Denne søknaden er autogenerert på grunn av et registrert dødsfall\n"
     } else {
         ""
-    }
-
-private fun Soknad.lagTittel() =
-    when (soknadstype) {
-        ARBEIDSTAKERE -> "Søknad om sykepenger for perioden ${fom!!.format(norskDato)} - ${tom!!.format(norskDato)}"
-        SELVSTENDIGE_OG_FRILANSERE -> {
-            // Det kan finnes eldre søknader som mangler arbeidssituasjon
-            val arbeidssituasjon = arbeidssituasjon?.navn ?: "Selvstendig Næringsdrivende / Frilanser"
-            "Søknad om sykepenger fra $arbeidssituasjon for perioden ${fom!!.format(norskDato)} - ${
-                tom!!.format(
-                    norskDato,
-                )
-            }"
-        }
-
-        OPPHOLD_UTLAND -> "Søknad om å beholde sykepenger utenfor EØS"
-        ARBEIDSLEDIG -> "Søknad om sykepenger for arbeidsledig"
-        BEHANDLINGSDAGER -> "Søknad med enkeltstående behandlingsdager"
-        ANNET_ARBEIDSFORHOLD -> "Søknad om sykepenger med uavklart arbeidssituasjon"
-        REISETILSKUDD -> "Søknad om reisetilskudd for perioden ${fom!!.format(norskDato)} - ${tom!!.format(norskDato)}"
-        GRADERT_REISETILSKUDD -> "Søknad om sykepenger med reisetilskudd for perioden ${fom!!.format(norskDato)} - ${
-            tom!!.format(
-                norskDato,
-            )
-        }"
     }
 
 private fun Soknad.erKorrigert() = korrigerer?.let { " KORRIGERING" } ?: ""
