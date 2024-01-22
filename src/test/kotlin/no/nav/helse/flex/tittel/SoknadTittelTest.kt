@@ -96,7 +96,6 @@ class SoknadTittelTest {
         ).skapTittel() shouldBeEqualTo "Søknad om sykepenger for jordbruker for perioden 04.03.2021 til 05.03.2021"
     }
 
-
     @Test
     fun `fornuftig tittel for reisetilskudd`() {
         grunnsoknad.copy(
