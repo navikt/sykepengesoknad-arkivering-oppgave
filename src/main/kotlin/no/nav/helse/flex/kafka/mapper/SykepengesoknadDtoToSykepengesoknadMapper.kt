@@ -126,4 +126,6 @@ private fun ArbeidssituasjonDTO.mapArbeidssituasjon(): Arbeidssituasjon =
         ArbeidssituasjonDTO.ARBEIDSTAKER -> Arbeidssituasjon.ARBEIDSTAKER
         ArbeidssituasjonDTO.ARBEIDSLEDIG -> Arbeidssituasjon.ARBEIDSLEDIG
         ArbeidssituasjonDTO.ANNET -> Arbeidssituasjon.ANNET
+        ArbeidssituasjonDTO.FISKER -> Arbeidssituasjon.FISKER
+        ArbeidssituasjonDTO.JORDBRUKER -> Arbeidssituasjon.JORDBRUKER
     }

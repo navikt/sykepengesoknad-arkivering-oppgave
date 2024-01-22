@@ -5,5 +5,7 @@ enum class Arbeidssituasjon(var navn: String) {
     FRILANSER("frilanser"),
     ARBEIDSTAKER("arbeidstaker"),
     ARBEIDSLEDIG("arbeidsledig"),
+    FISKER("fisker"),
+    JORDBRUKER("jordbruker"),
     ANNET("annet"),
 }
