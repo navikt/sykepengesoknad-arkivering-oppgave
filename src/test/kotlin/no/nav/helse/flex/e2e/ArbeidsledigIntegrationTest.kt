@@ -1,5 +1,6 @@
 package no.nav.helse.flex.e2e
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.flex.*
 import no.nav.helse.flex.domain.DokumentTypeDTO
@@ -7,8 +8,10 @@ import no.nav.helse.flex.domain.OppdateringstypeDTO
 import no.nav.helse.flex.domain.OppgaveDTO
 import no.nav.helse.flex.mockdispatcher.SykepengesoknadMockDispatcher
 import no.nav.helse.flex.service.*
+import no.nav.helse.flex.sykepengesoknad.kafka.ArbeidssituasjonDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SoknadstypeDTO
 import org.amshove.kluent.`should be null`
+import org.amshove.kluent.shouldBeEqualTo
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.test.annotation.DirtiesContext
@@ -23,7 +26,7 @@ class ArbeidsledigIntegrationTest : FellesTestoppsett() {
     @Test
     fun `En arbeidsledigsøknad får behandlingstema ab0426 og takler at bømlo sier opprett`() {
         val soknadId = UUID.randomUUID()
-        val søknad = søknad(soknadId).copy(type = SoknadstypeDTO.ARBEIDSLEDIG)
+        val søknad = søknad(soknadId).copy(type = SoknadstypeDTO.ARBEIDSLEDIG, arbeidssituasjon = ArbeidssituasjonDTO.ARBEIDSLEDIG)
 
         SykepengesoknadMockDispatcher.enque(søknad)
 
@@ -38,5 +41,9 @@ class ArbeidsledigIntegrationTest : FellesTestoppsett() {
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, soknadId))
         oppgaveOpprettelse.behandleOppgaver()
         oppgaveMockWebserver.takeRequest(1, TimeUnit.SECONDS).`should be null`()
+
+        val pdfRequest = pdfMockWebserver.takeRequest(10, TimeUnit.SECONDS)!!
+        val pdfRequestBody = objectMapper.readValue<JsonNode>(pdfRequest.body.readUtf8())
+        pdfRequestBody.get("arbeidssituasjonTekst").textValue() shouldBeEqualTo "arbeidsledig"
     }
 }

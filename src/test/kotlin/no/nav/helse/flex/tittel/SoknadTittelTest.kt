@@ -81,6 +81,22 @@ class SoknadTittelTest {
     }
 
     @Test
+    fun `fornuftig tittel for fisker`() {
+        grunnsoknad.copy(
+            arbeidssituasjon = Arbeidssituasjon.FISKER,
+            soknadstype = Soknadstype.SELVSTENDIGE_OG_FRILANSERE,
+        ).skapTittel() shouldBeEqualTo "Søknad om sykepenger for fisker for perioden 04.03.2021 til 05.03.2021"
+    }
+
+    @Test
+    fun `fornuftig tittel for jorbruker`() {
+        grunnsoknad.copy(
+            arbeidssituasjon = Arbeidssituasjon.JORDBRUKER,
+            soknadstype = Soknadstype.SELVSTENDIGE_OG_FRILANSERE,
+        ).skapTittel() shouldBeEqualTo "Søknad om sykepenger for jordbruker for perioden 04.03.2021 til 05.03.2021"
+    }
+
+    @Test
     fun `fornuftig tittel for reisetilskudd`() {
         grunnsoknad.copy(
             arbeidssituasjon = Arbeidssituasjon.ARBEIDSLEDIG,
