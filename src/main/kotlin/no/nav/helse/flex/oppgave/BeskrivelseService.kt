@@ -259,12 +259,17 @@ private fun Sporsmal.forsteSvarverdi(): String {
     return svar?.firstOrNull()?.verdi ?: ""
 }
 
+val norskLocale =
+    Locale.Builder()
+        .setLanguage("nb")
+        .setRegion("NO")
+        .build()
+
 private fun String.formatterBelop(): String {
     val context = this.toInt()
     val kr = context / 100
     val øre = context % 100
-    @Suppress("DEPRECATION")
-    return "%,d,%02d".format(locale = Locale("nb"), kr, øre)
+    return "%,d,%02d".format(locale = norskLocale, kr, øre)
 }
 
 private fun formatterDato(svarverdi: String?): String {
