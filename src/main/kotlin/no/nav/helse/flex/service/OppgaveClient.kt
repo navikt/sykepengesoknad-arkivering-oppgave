@@ -20,6 +20,7 @@ import java.time.LocalDate.now
 import java.time.format.DateTimeFormatter
 
 private const val FORKORTET_VENTETID = "ae0247"
+private const val TILBAKEDATERING = "ae0239"
 private const val OVERGANGSSAK_FRA_SPEIL = "ab0455"
 private const val UTLAND = "ae0106"
 private const val MEDLEMSKAP = "ab0269"
@@ -87,6 +88,8 @@ class OppgaveClient(
             ).apply {
                 if (harRedusertVenteperiode) {
                     this.behandlingstype = FORKORTET_VENTETID
+                } else if (soknad.gjelderTilbakedatering()) {
+                    this.behandlingstype = TILBAKEDATERING
                 } else if (speilRelatert) {
                     this.behandlingstema = OVERGANGSSAK_FRA_SPEIL
                 } else if (soknad.utenlandskSykmelding == true) {
@@ -112,6 +115,17 @@ class OppgaveClient(
                 else -> idag.plusDays(5)
             }
     }
+}
+
+private fun Soknad.gjelderTilbakedatering(): Boolean {
+    return this.merknaderFraSykmelding?.any {
+        listOf(
+            "UGYLDIG_TILBAKEDATERING",
+            "TILBAKEDATERING_KREVER_FLERE_OPPLYSNINGER",
+            "TILBAKEDATERT_PAPIRSYKMELDING",
+            "UNDER_BEHANDLING",
+        ).contains(it.type)
+    } ?: false
 }
 
 data class OppgaveRequest(

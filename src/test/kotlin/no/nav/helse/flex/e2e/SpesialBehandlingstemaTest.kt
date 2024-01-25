@@ -6,6 +6,7 @@ import no.nav.helse.flex.domain.DokumentTypeDTO
 import no.nav.helse.flex.domain.OppdateringstypeDTO
 import no.nav.helse.flex.domain.OppgaveDTO
 import no.nav.helse.flex.service.*
+import no.nav.helse.flex.sykepengesoknad.kafka.MerknadDTO
 import okhttp3.mockwebserver.MockResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -81,6 +82,28 @@ class SpesialBehandlingstemaTest : FellesTestoppsett() {
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
         val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
         assertThat(oppgaveRequestBody.behandlingstype).isEqualTo("ae0106")
+
+        val sykepengesoknadRequest = sykepengesoknadMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
+        assertThat(sykepengesoknadRequest.requestLine).isEqualTo("GET /api/v3/soknader/${søknad.id}/kafkaformat HTTP/1.1")
+    }
+
+    @Test
+    fun `En søknad under behandling for tilbakedatering får behandlingstype ae0239`() {
+        val soknadId = UUID.randomUUID()
+        val søknad = søknad(soknadId).copy(merknaderFraSykmelding = listOf(MerknadDTO("UNDER_BEHANDLING", "bla bla")))
+
+        sykepengesoknadMockWebserver.enqueue(
+            MockResponse().setBody(søknad.serialisertTilString()).addHeader("Content-Type", "application/json"),
+        )
+        leggSøknadPåKafka(søknad)
+        leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, soknadId))
+
+        oppgaveOpprettelse.behandleOppgaver(Instant.now().plus(1L, ChronoUnit.HOURS))
+
+        val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
+        assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
+        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
+        assertThat(oppgaveRequestBody.behandlingstype).isEqualTo("ae0239")
 
         val sykepengesoknadRequest = sykepengesoknadMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
         assertThat(sykepengesoknadRequest.requestLine).isEqualTo("GET /api/v3/soknader/${søknad.id}/kafkaformat HTTP/1.1")
