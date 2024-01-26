@@ -110,6 +110,7 @@ fun SykepengesoknadDTO.toSykepengesoknad(aktorId: String): Sykepengesoknad {
         utenlandskSykmelding = utenlandskSykmelding,
         egenmeldingsdagerFraSykmelding = egenmeldingsdagerFraSykmelding,
         medlemskapVurdering = medlemskapVurdering,
+        fiskerBlad = fiskerBlad?.name,
     )
 }
 
