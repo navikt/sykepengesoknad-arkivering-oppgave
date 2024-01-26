@@ -49,7 +49,7 @@ class IntegrasjonsTest : FellesTestoppsett() {
     }
 
     @Test
-    fun `En fiskersøknad med fiskerblad i oppgavebeskrivelsen`()  {
+    fun `En fiskersøknad med fiskerblad i oppgavebeskrivelsen`() {
         val soknadId = UUID.randomUUID()
         val søknad =
             søknad(soknadId).copy(
