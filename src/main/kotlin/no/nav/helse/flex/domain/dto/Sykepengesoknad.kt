@@ -34,4 +34,5 @@ data class Sykepengesoknad(
     val utenlandskSykmelding: Boolean? = null,
     val egenmeldingsdagerFraSykmelding: List<LocalDate>?,
     val medlemskapVurdering: String? = null,
+    val fiskerBlad: String? = null,
 )

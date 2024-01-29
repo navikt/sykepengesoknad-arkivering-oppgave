@@ -45,6 +45,7 @@ data class Soknad(
     val utenlandskSykmelding: Boolean? = null,
     val egenmeldingsdagerFraSykmelding: List<LocalDate>? = null,
     val medlemskapVurdering: String? = null,
+    val fiskerBlad: String? = null,
 ) {
     @JsonSerialize
     fun arbeidssituasjonTekst(): String? {
@@ -88,6 +89,7 @@ data class Soknad(
                 utenlandskSykmelding = sykepengesoknad.utenlandskSykmelding,
                 egenmeldingsdagerFraSykmelding = sykepengesoknad.egenmeldingsdagerFraSykmelding?.sorted(),
                 medlemskapVurdering = endeligMedlemskapVurdering,
+                fiskerBlad = sykepengesoknad.fiskerBlad,
             )
 
         private fun endreRekkefolgePaSporsmalForPDF(sporsmal: List<Sporsmal>) = sporsmal.sortedBy { plasseringSporsmalPDF(it) }

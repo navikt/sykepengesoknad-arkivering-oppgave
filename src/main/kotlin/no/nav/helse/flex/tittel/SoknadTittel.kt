@@ -21,6 +21,13 @@ private fun Soknad.skapTittelForNaringsdrivendeFrilanser(): String {
 private fun Soknad.presentabelArbeidssituasjon(): String? {
     return when (this.arbeidssituasjon) {
         Arbeidssituasjon.NAERINGSDRIVENDE -> "næringsdrivende"
+        Arbeidssituasjon.FISKER -> {
+            var fiskeTekst = "fisker"
+            if (fiskerBlad != null) {
+                fiskeTekst += " på blad $fiskerBlad"
+            }
+            return fiskeTekst
+        }
         null -> throw RuntimeException(
             "Arbeidssituasjon er null, dette skal ikke kunne skje på nye data. " +
                 "Det er 2 gamle næringsdrivende søknader som mangler arbeidssituasjon",
