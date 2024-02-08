@@ -66,14 +66,20 @@ class SaksbehandlingsService(
         val medlemskapVurdering = medlemskapVurdering.hentEndeligMedlemskapVurdering(sykepengesoknad)
         val soknad = opprettSoknad(sykepengesoknad, fnr, medlemskapVurdering)
 
-        val requestBody =
-            OppgaveClient.lagRequestBody(
-                aktorId = sykepengesoknad.aktorId,
-                journalpostId = innsending.journalpostId!!,
-                soknad = soknad,
+        val behandlingstemaOgType =
+            finnBehandlingstemaOgType(
+                soknad = sykepengesoknad,
                 harRedusertVenteperiode = sykepengesoknad.harRedusertVenteperiode,
                 speilRelatert = speilRelatert,
                 medlemskapVurdering = medlemskapVurdering,
+            )
+
+        val requestBody =
+            lagOppgaveRequest(
+                aktorId = sykepengesoknad.aktorId,
+                journalpostId = innsending.journalpostId!!,
+                soknad = soknad,
+                behandlingstemaOgType = behandlingstemaOgType,
             )
         val oppgaveResponse = oppgaveClient.opprettOppgave(requestBody)
 

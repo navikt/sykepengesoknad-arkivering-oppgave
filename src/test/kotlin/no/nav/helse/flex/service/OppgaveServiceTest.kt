@@ -29,22 +29,22 @@ class OppgaveServiceTest : FellesTestoppsett() {
 
     @Test
     fun innsendingLordagOgSondagGirSammeFristSomMandag() {
-        assertThat(OppgaveClient.omTreUkedager(now().with(next(SATURDAY))).dayOfWeek).isEqualTo(THURSDAY)
-        assertThat(OppgaveClient.omTreUkedager(now().with(next(SUNDAY))).dayOfWeek).isEqualTo(THURSDAY)
-        assertThat(OppgaveClient.omTreUkedager(now().with(next(MONDAY))).dayOfWeek).isEqualTo(THURSDAY)
+        assertThat(omTreUkedager(now().with(next(SATURDAY))).dayOfWeek).isEqualTo(THURSDAY)
+        assertThat(omTreUkedager(now().with(next(SUNDAY))).dayOfWeek).isEqualTo(THURSDAY)
+        assertThat(omTreUkedager(now().with(next(MONDAY))).dayOfWeek).isEqualTo(THURSDAY)
     }
 
     @Test
     fun fristSettesOmTreDagerUtenomHelg() {
-        assertThat(OppgaveClient.omTreUkedager(now().with(next(MONDAY))).dayOfWeek).isEqualTo(THURSDAY)
-        assertThat(OppgaveClient.omTreUkedager(now().with(next(TUESDAY))).dayOfWeek).isEqualTo(FRIDAY)
+        assertThat(omTreUkedager(now().with(next(MONDAY))).dayOfWeek).isEqualTo(THURSDAY)
+        assertThat(omTreUkedager(now().with(next(TUESDAY))).dayOfWeek).isEqualTo(FRIDAY)
     }
 
     @Test
     fun toDagerLeggesTilOverHelg() {
-        assertThat(OppgaveClient.omTreUkedager(now().with(next(WEDNESDAY))).dayOfWeek).isEqualTo(MONDAY)
-        assertThat(OppgaveClient.omTreUkedager(now().with(next(THURSDAY))).dayOfWeek).isEqualTo(TUESDAY)
-        assertThat(OppgaveClient.omTreUkedager(now().with(next(FRIDAY))).dayOfWeek).isEqualTo(WEDNESDAY)
+        assertThat(omTreUkedager(now().with(next(WEDNESDAY))).dayOfWeek).isEqualTo(MONDAY)
+        assertThat(omTreUkedager(now().with(next(THURSDAY))).dayOfWeek).isEqualTo(TUESDAY)
+        assertThat(omTreUkedager(now().with(next(FRIDAY))).dayOfWeek).isEqualTo(WEDNESDAY)
     }
 
     @Test
@@ -52,14 +52,14 @@ class OppgaveServiceTest : FellesTestoppsett() {
         oppgaveMockWebserver.enqueue(MockResponse().setResponseCode(500))
 
         assertThrows(RuntimeException::class.java) {
-            val oppgaveRequest = OppgaveClient.lagRequestBody(aktorId, journalpostId, lagSoknad(Soknadstype.ARBEIDSTAKERE))
+            val oppgaveRequest = lagOppgaveRequest(aktorId, journalpostId, lagSoknad(Soknadstype.ARBEIDSTAKERE), behandlingstema("1337"))
             oppgaveClient.opprettOppgave(oppgaveRequest)
         }
     }
 
     @Test
     fun lagRequestBodyLagerRequestMedRiktigeFelter() {
-        val body = OppgaveClient.lagRequestBody(aktorId, journalpostId, lagSoknad(Soknadstype.ARBEIDSTAKERE))
+        val body = lagOppgaveRequest(aktorId, journalpostId, lagSoknad(Soknadstype.ARBEIDSTAKERE), behandlingstema("ab0061"))
 
         assertThat(body.tildeltEnhetsnr).isEqualTo(null)
         assertThat(body.opprettetAvEnhetsnr).isEqualTo("9999")
@@ -72,27 +72,6 @@ class OppgaveServiceTest : FellesTestoppsett() {
         assertThat(body.aktivDato).isNotEmpty()
         assertThat(body.fristFerdigstillelse).isNotEmpty()
         assertThat(body.prioritet).isEqualTo("NORM")
-    }
-
-    @Test
-    fun lagRequestBodySetterRiktigBehandlingstema() {
-        val utland = OppgaveClient.lagRequestBody(aktorId, journalpostId, lagSoknad(Soknadstype.OPPHOLD_UTLAND))
-        val arbeidstaker = OppgaveClient.lagRequestBody(aktorId, journalpostId, lagSoknad(Soknadstype.ARBEIDSTAKERE))
-        val arbeidsledig = OppgaveClient.lagRequestBody(aktorId, journalpostId, lagSoknad(Soknadstype.ARBEIDSLEDIG))
-        val behandlingsdager = OppgaveClient.lagRequestBody(aktorId, journalpostId, lagSoknad(Soknadstype.BEHANDLINGSDAGER))
-        val redusertVenteperiode =
-            OppgaveClient.lagRequestBody(
-                aktorId,
-                journalpostId,
-                lagSoknad(Soknadstype.SELVSTENDIGE_OG_FRILANSERE),
-                harRedusertVenteperiode = true,
-            )
-
-        assertThat(utland.behandlingstema).isEqualTo("ab0314")
-        assertThat(arbeidstaker.behandlingstema).isEqualTo("ab0061")
-        assertThat(arbeidsledig.behandlingstema).isEqualTo("ab0426")
-        assertThat(behandlingsdager.behandlingstema).isEqualTo("ab0351")
-        assertThat(redusertVenteperiode.behandlingstype).isEqualTo("ae0247")
     }
 
     private fun lagSoknad(soknadstype: Soknadstype): Soknad {

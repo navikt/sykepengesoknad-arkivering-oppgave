@@ -29,7 +29,7 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
     private lateinit var aivenKafkaProducer: KafkaProducer<String, String>
 
     @Test
-    fun `test happycase`() {
+    fun `test arbeidstaker`() {
         val soknad =
             mockSykepengesoknadDTO.copy(
                 id = UUID.randomUUID().toString(),
@@ -78,6 +78,22 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
         dokArkivRequest.requestLine shouldBeEqualTo "POST /rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true HTTP/1.1"
         val dokArkivRequestBody = objectMapper.readValue<JournalpostRequest>(dokArkivRequest.body.readUtf8())
         dokArkivRequestBody.dokumenter[0].tittel `should be equal to` "Søknad om sykepenger for perioden 04.05.2019 til 08.05.2019"
+
+        // Lar den time ut
+        oppgaveOpprettelse.behandleOppgaver(Instant.now().plus(5L, ChronoUnit.DAYS))
+
+        val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
+        assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
+
+        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
+        assertThat(oppgaveRequestBody.journalpostId).isEqualTo("journalpostId")
+
+        assertThat(oppgaveRequestBody.tema).isEqualTo("SYK")
+
+        assertThat(oppgaveRequestBody.oppgavetype).isEqualTo("SOK")
+        assertThat(oppgaveRequestBody.prioritet).isEqualTo("NORM")
+        assertThat(oppgaveRequestBody.behandlingstema).isEqualTo("ab0061")
+        assertThat(oppgaveRequestBody.behandlingstype).isNull()
     }
 
     @Test
