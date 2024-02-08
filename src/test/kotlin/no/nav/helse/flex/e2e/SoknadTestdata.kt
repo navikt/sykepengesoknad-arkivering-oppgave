@@ -16,6 +16,7 @@ fun søknad(
     fom = LocalDate.of(2019, 5, 4),
     tom = LocalDate.of(2019, 5, 8),
     type = SoknadstypeDTO.ARBEIDSTAKERE,
+    sykmeldingId = UUID.randomUUID().toString(),
     sporsmal =
         listOf(
             SporsmalDTO(

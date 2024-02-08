@@ -16,6 +16,7 @@ import no.nav.helse.flex.repository.InnsendingRepository
 import no.nav.helse.flex.repository.SpreOppgaveRepository
 import no.nav.helse.flex.service.OppgaveOpprettelse
 import no.nav.helse.flex.sykepengesoknad.kafka.SykepengesoknadDTO
+import no.nav.helse.flex.tilbakedaterte.OppgaverForTilbakedaterteRepository
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.jupiter.api.AfterAll
@@ -142,6 +143,9 @@ abstract class FellesTestOppsett {
 
     @Autowired
     lateinit var medlemskapVurderingRepository: MedlemskapVurderingRepository
+
+    @Autowired
+    lateinit var oppgaverForTilbakedaterteRepository: OppgaverForTilbakedaterteRepository
 
     @AfterAll
     fun `Disable unleash toggles`() {

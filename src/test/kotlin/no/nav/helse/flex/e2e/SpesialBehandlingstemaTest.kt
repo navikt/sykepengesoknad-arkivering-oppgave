@@ -8,6 +8,9 @@ import no.nav.helse.flex.domain.OppgaveDTO
 import no.nav.helse.flex.service.*
 import no.nav.helse.flex.sykepengesoknad.kafka.MerknadDTO
 import okhttp3.mockwebserver.MockResponse
+import org.amshove.kluent.`should be equal to`
+import org.amshove.kluent.shouldBeEmpty
+import org.amshove.kluent.shouldHaveSize
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.test.annotation.DirtiesContext
@@ -89,6 +92,7 @@ class SpesialBehandlingstemaTest : FellesTestOppsett() {
 
     @Test
     fun `En søknad under behandling for tilbakedatering får behandlingstype ae0239`() {
+        oppgaverForTilbakedaterteRepository.findAll().toList().shouldBeEmpty()
         val soknadId = UUID.randomUUID()
         val søknad = søknad(soknadId).copy(merknaderFraSykmelding = listOf(MerknadDTO("UNDER_BEHANDLING", "bla bla")))
 
@@ -107,5 +111,10 @@ class SpesialBehandlingstemaTest : FellesTestOppsett() {
 
         val sykepengesoknadRequest = sykepengesoknadMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
         assertThat(sykepengesoknadRequest.requestLine).isEqualTo("GET /api/v3/soknader/${søknad.id}/kafkaformat HTTP/1.1")
+
+        val tilbakedaterte = oppgaverForTilbakedaterteRepository.findAll().toList()
+        tilbakedaterte.shouldHaveSize(1)
+        tilbakedaterte.first().sykepengesoknadUuid `should be equal to` soknadId.toString()
+        tilbakedaterte.first().sykmeldingUuid `should be equal to` søknad.sykmeldingId
     }
 }
