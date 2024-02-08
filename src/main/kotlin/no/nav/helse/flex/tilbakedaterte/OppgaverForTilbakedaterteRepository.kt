@@ -7,7 +7,10 @@ import org.springframework.stereotype.Repository
 import java.time.Instant
 
 @Repository
-interface OppgaverForTilbakedaterteRepository : CrudRepository<OppgaverForTilbakedaterteDbRecord, String>
+interface OppgaverForTilbakedaterteRepository : CrudRepository<OppgaverForTilbakedaterteDbRecord, String>{
+
+    fun findBySykmeldingUuid(sykmeldingUuid: String): List<OppgaverForTilbakedaterteDbRecord>
+}
 
 @Table("oppgaver_for_tilbakedaterte")
 data class OppgaverForTilbakedaterteDbRecord(
@@ -16,6 +19,13 @@ data class OppgaverForTilbakedaterteDbRecord(
     val sykepengesoknadUuid: String,
     val sykmeldingUuid: String,
     val oppgaveId: String,
+    val status: String,
     val opprettet: Instant,
     val oppdatert: Instant?,
 )
+
+enum class OppgaverForTilbakedaterteStatus{
+    OPPRETTET,
+    OPPDATERT,
+    OPPGAVE_ALLEREDE_FERDIGSTILT,
+}
