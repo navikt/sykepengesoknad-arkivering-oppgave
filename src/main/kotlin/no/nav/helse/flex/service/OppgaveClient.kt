@@ -47,11 +47,62 @@ class OppgaveClient(
     }
 
     fun hentOppgave(oppgaveId: String): HentOppgaveResponse {
-        TODO("Not yet implemented")
+        return try {
+            val uriString = UriComponentsBuilder.fromHttpUrl("$url/api/v1/oppgaver/$oppgaveId")
+
+            val headers = HttpHeaders()
+            headers.contentType = MediaType.APPLICATION_JSON
+            headers["X-Correlation-ID"] = callId()
+
+            val result =
+                oppgaveRestTemplate
+                    .exchange(
+                        uriString.toUriString(),
+                        HttpMethod.GET,
+                        HttpEntity<Any>(null, headers),
+                        HentOppgaveResponse::class.java,
+                    )
+
+            if (!result.statusCode.is2xxSuccessful) {
+                throw RuntimeException("Oppretting av oppgave feiler med HTTP-${result.statusCode}")
+            }
+
+            result.body
+                ?: throw RuntimeException("Oppgave-respons mangler ved henting av oppgave for oppgaveid $oppgaveId")
+        } catch (e: HttpClientErrorException) {
+            throw RuntimeException("HttpClientErrorException ved henting av oppgave for oppgaveid $oppgaveId", e)
+        }
     }
 
-    fun oppdaterOppgave(oppgaveId: String, oppdaterOppgaveReqeust: OppdaterOppgaveReqeust) {
-        TODO("Not yet implemented")
+    fun oppdaterOppgave(
+        oppgaveId: String,
+        oppdaterOppgaveReqeust: OppdaterOppgaveReqeust,
+    ): HentOppgaveResponse  {
+        return try {
+            val uriString = UriComponentsBuilder.fromHttpUrl("$url/api/v1/oppgaver/$oppgaveId")
+
+            val headers = HttpHeaders()
+            headers.contentType = MediaType.APPLICATION_JSON
+            headers["X-Correlation-ID"] = callId()
+
+            val result =
+                oppgaveRestTemplate
+                    .exchange(
+                        uriString.toUriString(),
+                        HttpMethod.PATCH,
+                        HttpEntity<Any>(oppdaterOppgaveReqeust, headers),
+                        HentOppgaveResponse::class.java,
+                    )
+
+            if (!result.statusCode.is2xxSuccessful) {
+                throw RuntimeException("Oppretting av oppgave feiler med HTTP-${result.statusCode}")
+            }
+
+            result.body
+                ?: throw RuntimeException("Oppgave-respons mangler ved oppdatering av oppgave for oppgaveid $oppgaveId")
+        } catch (e: HttpClientErrorException) {
+            throw RuntimeException("HttpClientErrorException ved oppdatering av oppgave for oppgaveid $oppgaveId", e)
+        }
     }
 }
 
@@ -87,5 +138,5 @@ data class OpprettOppgaveResponse(
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class HentOppgaveResponse(
-    val status: String
+    val status: String,
 )
