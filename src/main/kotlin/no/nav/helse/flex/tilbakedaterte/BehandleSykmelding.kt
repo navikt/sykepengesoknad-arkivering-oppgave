@@ -1,15 +1,19 @@
 package no.nav.helse.flex.tilbakedaterte
 
-import no.nav.helse.flex.service.HentOppgaveResponse
-import no.nav.helse.flex.service.OppdaterOppgaveReqeust
-import no.nav.helse.flex.service.OppgaveClient
+import no.nav.helse.flex.client.SykepengesoknadBackendClient
+import no.nav.helse.flex.kafka.mapper.toSykepengesoknad
+import no.nav.helse.flex.medlemskap.MedlemskapVurdering
+import no.nav.helse.flex.service.*
 import no.nav.syfo.sykmelding.kafka.model.SykmeldingKafkaMessage
 import org.springframework.stereotype.Component
 
 @Component
 class BehandleSykmelding(
-    val oppgaverForTilbakedaterteRepository: OppgaverForTilbakedaterteRepository,
-    val oppgaveClient: OppgaveClient,
+    private val oppgaverForTilbakedaterteRepository: OppgaverForTilbakedaterteRepository,
+    private val oppgaveClient: OppgaveClient,
+    private val medlemskapVurdering: MedlemskapVurdering,
+    private val sykepengesoknadBackendClient: SykepengesoknadBackendClient,
+    private val identService: IdentService,
 ) {
     fun prosesserSykmelding(
         key: String,
@@ -29,10 +33,25 @@ class BehandleSykmelding(
 
             val hentetOppgave = oppgaveClient.hentOppgave(it.oppgaveId)
             if (hentetOppgave.kanOppdateres()) {
-                val oppdaterOppgaveReqeust = OppdaterOppgaveReqeust(
-                    behandlingstema = null,
-                    behandlingstype = null
-                )
+                val aktorid = identService.hentAktorIdForFnr(melding.kafkaMetadata.fnr)
+                val sykepengesoknad =
+                    sykepengesoknadBackendClient.hentSoknad(it.sykepengesoknadUuid).toSykepengesoknad(aktorid)
+
+                val medlemskapVurdering = medlemskapVurdering.hentEndeligMedlemskapVurdering(sykepengesoknad)
+
+                val behandlingstemaOgType =
+                    finnBehandlingstemaOgType(
+                        soknad = sykepengesoknad,
+                        harRedusertVenteperiode = sykepengesoknad.harRedusertVenteperiode,
+                        speilRelatert = false,
+                        medlemskapVurdering = medlemskapVurdering,
+                    )
+
+                val oppdaterOppgaveReqeust =
+                    OppdaterOppgaveReqeust(
+                        behandlingstema = behandlingstemaOgType.behandlingstema,
+                        behandlingstype = behandlingstemaOgType.behandlingstype,
+                    )
                 oppgaveClient.oppdaterOppgave(it.oppgaveId, oppdaterOppgaveReqeust)
             }
         }
@@ -40,5 +59,11 @@ class BehandleSykmelding(
 }
 
 private fun HentOppgaveResponse.kanOppdateres(): Boolean {
-    TODO("Not yet implemented")
+    if (status == "FERDIGSTILT") {
+        return false
+    }
+    if (status == "FEILREGISTRERT") {
+        return false
+    }
+    return true
 }
