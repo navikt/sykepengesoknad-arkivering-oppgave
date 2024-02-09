@@ -18,7 +18,7 @@ class OppgaveClient(
     private val url: String,
     private val oppgaveRestTemplate: RestTemplate,
 ) {
-    fun opprettOppgave(request: OppgaveRequest): OppgaveResponse {
+    fun opprettOppgave(request: OppgaveRequest): OpprettOppgaveResponse {
         return try {
             val uriString = UriComponentsBuilder.fromHttpUrl("$url/api/v1/oppgaver")
 
@@ -32,7 +32,7 @@ class OppgaveClient(
                         uriString.toUriString(),
                         HttpMethod.POST,
                         HttpEntity<Any>(request, headers),
-                        OppgaveResponse::class.java,
+                        OpprettOppgaveResponse::class.java,
                     )
 
             if (!result.statusCode.is2xxSuccessful) {
@@ -44,6 +44,14 @@ class OppgaveClient(
         } catch (e: HttpClientErrorException) {
             throw RuntimeException("Feil ved oppretting av oppgave for journalpostId ${request.journalpostId}", e)
         }
+    }
+
+    fun hentOppgave(oppgaveId: String): HentOppgaveResponse {
+        TODO("Not yet implemented")
+    }
+
+    fun oppdaterOppgave(oppgaveId: String, oppdaterOppgaveReqeust: OppdaterOppgaveReqeust) {
+        TODO("Not yet implemented")
     }
 }
 
@@ -62,12 +70,22 @@ data class OppgaveRequest(
     val prioritet: String,
 )
 
+data class OppdaterOppgaveReqeust(
+    var behandlingstype: String? = null,
+    var behandlingstema: String? = null,
+)
+
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class OppgaveResponse(
+data class OpprettOppgaveResponse(
     val id: Int,
     val tildeltEnhetsnr: String,
     val tema: String,
     val oppgavetype: String,
     val behandlingstema: String? = null,
     val behandlingstype: String? = null,
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class HentOppgaveResponse(
+    val status: String
 )

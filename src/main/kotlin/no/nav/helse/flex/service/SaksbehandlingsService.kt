@@ -16,6 +16,7 @@ import no.nav.helse.flex.repository.InnsendingDbRecord
 import no.nav.helse.flex.repository.InnsendingRepository
 import no.nav.helse.flex.tilbakedaterte.OppgaverForTilbakedaterteDbRecord
 import no.nav.helse.flex.tilbakedaterte.OppgaverForTilbakedaterteRepository
+import no.nav.helse.flex.tilbakedaterte.OppgaverForTilbakedaterteStatus
 import org.springframework.stereotype.Component
 import java.time.Instant
 import java.util.*
@@ -96,6 +97,7 @@ class SaksbehandlingsService(
                     oppgaveId = oppgaveResponse.id.toString(),
                     opprettet = Instant.now(),
                     oppdatert = null,
+                    status = OppgaverForTilbakedaterteStatus.OPPRETTET,
                 ),
             )
         }
