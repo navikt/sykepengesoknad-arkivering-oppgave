@@ -101,7 +101,7 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
         val oppgaveID = 2
         oppgaveMockWebserver.enqueue(
             MockResponse().setBody(
-                OppgaveResponse(
+                OpprettOppgaveResponse(
                     oppgaveID,
                     "4488",
                     "SYK",
@@ -192,7 +192,7 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
         val oppgaveID = 3
         oppgaveMockWebserver.enqueue(
             MockResponse().setBody(
-                OppgaveResponse(
+                OpprettOppgaveResponse(
                     oppgaveID,
                     "4488",
                     "SYK",
@@ -292,7 +292,7 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
         val oppgaveID = 99
         oppgaveMockWebserver.enqueue(
             MockResponse().setBody(
-                OppgaveResponse(
+                OpprettOppgaveResponse(
                     oppgaveID,
                     "4488",
                     "SYK",
@@ -373,7 +373,7 @@ class SaksbehandlingIntegrationTest : FellesTestoppsett() {
         val oppgaveID = 3
         oppgaveMockWebserver.enqueue(
             MockResponse().setBody(
-                OppgaveResponse(
+                OpprettOppgaveResponse(
                     oppgaveID,
                     "4488",
                     "SYK",

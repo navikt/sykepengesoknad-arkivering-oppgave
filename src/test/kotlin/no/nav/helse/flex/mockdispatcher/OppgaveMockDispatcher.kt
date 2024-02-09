@@ -1,7 +1,7 @@
 package no.nav.helse.flex.mockdispatcher
 
 import no.nav.helse.flex.serialisertTilString
-import no.nav.helse.flex.service.OppgaveResponse
+import no.nav.helse.flex.service.OpprettOppgaveResponse
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.QueueDispatcher
 import okhttp3.mockwebserver.RecordedRequest
@@ -18,7 +18,7 @@ object OppgaveMockDispatcher : QueueDispatcher() {
         }
 
         return MockResponse().setBody(
-            OppgaveResponse(123, "4488", "SYK", "SOK").serialisertTilString(),
+            OpprettOppgaveResponse(123, "4488", "SYK", "SOK").serialisertTilString(),
         ).addHeader("Content-Type", "application/json")
     }
 }

@@ -27,10 +27,9 @@ class SykmeldingSendtBekreftetAivenConsumer(
         idIsGroup = false,
         containerFactory = "aivenKafkaListenerContainerFactory",
         properties = [
-            "auto.offset.reset=latest", //TODO endre til none etter prodsetting
+            "auto.offset.reset=latest", // TODO endre til none etter prodsetting
         ],
-
-        )
+    )
     fun listen(
         cr: ConsumerRecord<String, String?>,
         acknowledgment: Acknowledgment,

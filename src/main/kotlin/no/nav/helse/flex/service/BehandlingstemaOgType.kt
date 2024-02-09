@@ -3,16 +3,16 @@ package no.nav.helse.flex.service
 import no.nav.helse.flex.domain.dto.Soknadstype
 import no.nav.helse.flex.domain.dto.Sykepengesoknad
 
-private const val FORKORTET_VENTETID = "ae0247"
-private const val TILBAKEDATERING = "ae0239"
-private const val OVERGANGSSAK_FRA_SPEIL = "ab0455"
-private const val UTLAND = "ae0106"
-private const val MEDLEMSKAP = "ab0269"
-private const val SYKEPENGER_UNDER_UTENLANDSOPPHOLD = "ab0314"
-private const val ENKELTSTAENDE_BEHANDLINGSDAGER = "ab0351"
-private const val SYKEPENGER_FOR_ARBEIDSLEDIG = "ab0426"
-private const val REISETILSKUDD = "ab0237"
-private const val SYKEPENGER = "ab0061"
+const val FORKORTET_VENTETID = "ae0247"
+const val TILBAKEDATERING = "ae0239"
+const val OVERGANGSSAK_FRA_SPEIL = "ab0455"
+const val UTLAND = "ae0106"
+const val MEDLEMSKAP = "ab0269"
+const val SYKEPENGER_UNDER_UTENLANDSOPPHOLD = "ab0314"
+const val ENKELTSTAENDE_BEHANDLINGSDAGER = "ab0351"
+const val SYKEPENGER_FOR_ARBEIDSLEDIG = "ab0426"
+const val REISETILSKUDD = "ab0237"
+const val SYKEPENGER = "ab0061"
 
 fun finnBehandlingstemaOgType(
     soknad: Sykepengesoknad,

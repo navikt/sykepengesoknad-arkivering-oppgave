@@ -4,6 +4,7 @@ CREATE TABLE OPPGAVER_FOR_TILBAKEDATERTE
     sykepengesoknad_uuid VARCHAR                  NOT NULL,
     sykmelding_uuid      VARCHAR                  NOT NULL,
     oppgave_id           VARCHAR                  NOT NULL,
+    status               VARCHAR                  NOT NULL,
     opprettet            TIMESTAMP WITH TIME ZONE NOT NULL,
     oppdatert            TIMESTAMP WITH TIME ZONE
 );
