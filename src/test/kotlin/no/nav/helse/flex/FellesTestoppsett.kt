@@ -5,7 +5,13 @@ import no.nav.helse.flex.domain.OppgaveDTO
 import no.nav.helse.flex.kafka.consumer.AivenSoknadSendtListener
 import no.nav.helse.flex.kafka.consumer.AivenSpreOppgaverListener
 import no.nav.helse.flex.medlemskap.MedlemskapVurderingRepository
-import no.nav.helse.flex.mockdispatcher.*
+import no.nav.helse.flex.mockdispatcher.DokArkivMockDispatcher
+import no.nav.helse.flex.mockdispatcher.KvitteringMockDispatcher
+import no.nav.helse.flex.mockdispatcher.MedlemskapMockDispatcher
+import no.nav.helse.flex.mockdispatcher.OppgaveMockDispatcher
+import no.nav.helse.flex.mockdispatcher.PdfMockDispatcher
+import no.nav.helse.flex.mockdispatcher.PdlMockDispatcher
+import no.nav.helse.flex.mockdispatcher.SykepengesoknadMockDispatcher
 import no.nav.helse.flex.repository.InnsendingRepository
 import no.nav.helse.flex.repository.SpreOppgaveRepository
 import no.nav.helse.flex.service.OppgaveOpprettelse
@@ -26,7 +32,7 @@ import org.testcontainers.utility.DockerImageName
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
-private class PostgreSQLContainer12 : PostgreSQLContainer<PostgreSQLContainer12>("postgres:12-alpine")
+private class PostgreSQLContainer14 : PostgreSQLContainer<PostgreSQLContainer14>("postgres:14-alpine")
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest
@@ -45,7 +51,7 @@ abstract class FellesTestoppsett {
             val threads = mutableListOf<Thread>()
 
             thread {
-                PostgreSQLContainer12().apply {
+                PostgreSQLContainer14().apply {
                     withCommand("postgres", "-c", "wal_level=logical")
                     start()
                     System.setProperty("spring.datasource.url", "$jdbcUrl&reWriteBatchedInserts=true")
@@ -55,7 +61,7 @@ abstract class FellesTestoppsett {
             }.also { threads.add(it) }
 
             thread {
-                KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.4.1")).apply {
+                KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.5.3")).apply {
                     start()
                     System.setProperty("KAFKA_BROKERS", bootstrapServers)
                 }
