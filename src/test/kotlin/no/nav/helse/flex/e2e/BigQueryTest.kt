@@ -1,7 +1,7 @@
 package no.nav.helse.flex.e2e
 
 import com.nhaarman.mockitokotlin2.whenever
-import no.nav.helse.flex.FellesTestoppsett
+import no.nav.helse.flex.FellesTestOppsett
 import no.nav.helse.flex.any
 import no.nav.helse.flex.repository.InnsendingDbRecord
 import no.nav.helse.flex.repository.OppgaveStatus
@@ -23,7 +23,7 @@ import java.time.ZoneOffset
 import java.time.temporal.ChronoUnit
 
 @DirtiesContext
-class BigQueryTest : FellesTestoppsett() {
+class BigQueryTest : FellesTestOppsett() {
     @MockBean
     lateinit var saksbehandlingsService: SaksbehandlingsService
 

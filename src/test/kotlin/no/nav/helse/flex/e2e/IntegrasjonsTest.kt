@@ -23,7 +23,7 @@ import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 @DirtiesContext
-class IntegrasjonsTest : FellesTestoppsett() {
+class IntegrasjonsTest : FellesTestOppsett() {
     @Test
     fun `En arbeidsledigsøknad får behandlingstema ab0426 og takler at bømlo sier opprett`() {
         val soknadId = UUID.randomUUID()

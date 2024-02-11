@@ -21,7 +21,7 @@ import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 @DirtiesContext
-class AvbruttSoknadFeilFristTest : FellesTestoppsett() {
+class AvbruttSoknadFeilFristTest : FellesTestOppsett() {
     val fnr = "fnr"
 
     @Test

@@ -1,6 +1,6 @@
 package no.nav.helse.flex.e2e
 
-import no.nav.helse.flex.FellesTestoppsett
+import no.nav.helse.flex.FellesTestOppsett
 import no.nav.helse.flex.domain.DokumentTypeDTO
 import no.nav.helse.flex.domain.OppdateringstypeDTO
 import no.nav.helse.flex.domain.OppgaveDTO
@@ -14,7 +14,7 @@ import java.time.Instant
 import java.util.UUID
 
 @DirtiesContext
-class JulegateTest : FellesTestoppsett() {
+class JulegateTest : FellesTestOppsett() {
     @Test
     fun `Utsett til Ferdig til Opprett`() {
         val soknadId = UUID.randomUUID()

@@ -37,7 +37,7 @@ private class PostgreSQLContainer14 : PostgreSQLContainer<PostgreSQLContainer14>
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest
 @EnableMockOAuth2Server
-abstract class FellesTestoppsett {
+abstract class FellesTestOppsett {
     companion object {
         val pdlMockWebserver: MockWebServer
         val pdfMockWebserver: MockWebServer

@@ -1,7 +1,7 @@
 package no.nav.helse.flex.medlemskap
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import no.nav.helse.flex.FellesTestoppsett
+import no.nav.helse.flex.FellesTestOppsett
 import no.nav.helse.flex.domain.dto.*
 import no.nav.helse.flex.objectMapper
 import no.nav.helse.flex.serialisertTilString
@@ -19,7 +19,7 @@ import java.time.LocalDateTime
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class MedlemskapVurderingTest : FellesTestoppsett() {
+class MedlemskapVurderingTest : FellesTestOppsett() {
     val fnr = "12121234343"
     val fom = LocalDate.of(2023, 9, 1)
     val tom = LocalDate.of(2023, 9, 20)

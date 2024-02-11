@@ -1,7 +1,7 @@
 package no.nav.helse.flex.e2e
 
 import com.nhaarman.mockitokotlin2.whenever
-import no.nav.helse.flex.FellesTestoppsett
+import no.nav.helse.flex.FellesTestOppsett
 import no.nav.helse.flex.any
 import no.nav.helse.flex.domain.DokumentTypeDTO
 import no.nav.helse.flex.domain.OppdateringstypeDTO
@@ -31,7 +31,7 @@ import java.time.LocalDateTime
 import java.util.*
 
 @DirtiesContext
-class E2ETest : FellesTestoppsett() {
+class E2ETest : FellesTestOppsett() {
     private val omFireTimer: LocalDateTime = LocalDateTime.now().plusHours(4)
 
     @MockBean

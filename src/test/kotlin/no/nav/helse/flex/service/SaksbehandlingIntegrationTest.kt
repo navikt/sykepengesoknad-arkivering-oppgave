@@ -24,7 +24,7 @@ import java.time.temporal.ChronoUnit
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class SaksbehandlingIntegrationTest : FellesTestoppsett() {
+class SaksbehandlingIntegrationTest : FellesTestOppsett() {
     @Autowired
     private lateinit var aivenKafkaProducer: KafkaProducer<String, String>
 
