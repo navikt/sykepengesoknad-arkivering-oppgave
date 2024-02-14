@@ -18,7 +18,7 @@ import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 @DirtiesContext
-class SpesialBehandlingstemaTest : FellesTestoppsett() {
+class SpesialBehandlingstemaTest : FellesTestOppsett() {
     val fnr = "fnr"
 
     @Test

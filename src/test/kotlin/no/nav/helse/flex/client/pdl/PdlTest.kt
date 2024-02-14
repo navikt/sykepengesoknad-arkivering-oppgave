@@ -1,12 +1,12 @@
 package no.nav.helse.flex.client.pdl
 
-import no.nav.helse.flex.FellesTestoppsett
+import no.nav.helse.flex.FellesTestOppsett
 import no.nav.helse.flex.service.IdentService
 import org.amshove.kluent.shouldBeEqualTo
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
-class PdlTest : FellesTestoppsett() {
+class PdlTest : FellesTestOppsett() {
     @Autowired
     private lateinit var identService: IdentService
 

@@ -1,6 +1,6 @@
 package no.nav.helse.flex.service
 
-import no.nav.helse.flex.FellesTestoppsett
+import no.nav.helse.flex.FellesTestOppsett
 import no.nav.helse.flex.domain.Soknad
 import no.nav.helse.flex.domain.dto.Arbeidssituasjon
 import no.nav.helse.flex.domain.dto.Soknadstype
@@ -20,7 +20,7 @@ import java.time.LocalDate.now
 import java.time.LocalDateTime
 import java.time.temporal.TemporalAdjusters.next
 
-class OppgaveServiceTest : FellesTestoppsett() {
+class OppgaveServiceTest : FellesTestOppsett() {
     @Autowired
     lateinit var oppgaveClient: OppgaveClient
 

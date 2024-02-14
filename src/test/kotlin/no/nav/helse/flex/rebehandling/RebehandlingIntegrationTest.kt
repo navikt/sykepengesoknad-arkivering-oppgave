@@ -1,6 +1,6 @@
 package no.nav.helse.flex.rebehandling
 
-import no.nav.helse.flex.FellesTestoppsett
+import no.nav.helse.flex.FellesTestOppsett
 import no.nav.helse.flex.kafka.consumer.SYKEPENGESOKNAD_TOPIC
 import no.nav.helse.flex.mockSykepengesoknadDTO
 import no.nav.helse.flex.repository.OppgaveStatus
@@ -17,7 +17,7 @@ import java.time.Duration
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class RebehandlingIntegrationTest : FellesTestoppsett() {
+class RebehandlingIntegrationTest : FellesTestOppsett() {
     @Autowired
     private lateinit var aivenKafkaProducer: KafkaProducer<String, String>
 

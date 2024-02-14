@@ -1,6 +1,6 @@
 package no.nav.helse.flex.spreoppgave
 
-import no.nav.helse.flex.FellesTestoppsett
+import no.nav.helse.flex.FellesTestOppsett
 import no.nav.helse.flex.domain.DokumentTypeDTO
 import no.nav.helse.flex.domain.OppdateringstypeDTO
 import no.nav.helse.flex.domain.OppgaveDTO
@@ -23,7 +23,7 @@ import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
-class SpreOppgaveRaceConditionTest : FellesTestoppsett() {
+class SpreOppgaveRaceConditionTest : FellesTestOppsett() {
     @Autowired
     private lateinit var aivenKafkaProducer: KafkaProducer<String, String>
 

@@ -1,7 +1,7 @@
 package no.nav.helse.flex.service
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import no.nav.helse.flex.FellesTestoppsett
+import no.nav.helse.flex.FellesTestOppsett
 import no.nav.helse.flex.any
 import no.nav.helse.flex.arkivering.Arkivaren
 import no.nav.helse.flex.domain.dto.Sykepengesoknad
@@ -19,7 +19,7 @@ import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 
 @DirtiesContext
-class SaksbehandlingsServiceTest : FellesTestoppsett() {
+class SaksbehandlingsServiceTest : FellesTestOppsett() {
     @SpyBean
     lateinit var arkivaren: Arkivaren
 
