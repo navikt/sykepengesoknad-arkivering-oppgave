@@ -77,7 +77,7 @@ class OppgaveClient(
     fun oppdaterOppgave(
         oppgaveId: String,
         oppdaterOppgaveReqeust: OppdaterOppgaveReqeust,
-    ): HentOppgaveResponse  {
+    ): HentOppgaveResponse {
         return try {
             val uriString = UriComponentsBuilder.fromHttpUrl("$url/api/v1/oppgaver/$oppgaveId")
 
@@ -95,7 +95,7 @@ class OppgaveClient(
                     )
 
             if (!result.statusCode.is2xxSuccessful) {
-                throw RuntimeException("Oppretting av oppgave feiler med HTTP-${result.statusCode}")
+                throw RuntimeException("Oppdatering av oppgave feiler med HTTP-${result.statusCode}")
             }
 
             result.body

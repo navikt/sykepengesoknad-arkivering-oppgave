@@ -16,8 +16,8 @@ const val SYKMELDINGSENDT_TOPIC = "teamsykmelding." + "syfo-sendt-sykmelding"
 const val SYKMELDINGBEKREFTET_TOPIC = "teamsykmelding." + "syfo-bekreftet-sykmelding"
 
 @Component
-class SykmeldingSendtBekreftetAivenConsumer(
-    private val behandleSykmeldingOgBestillAktivering: BehandleSykmelding,
+class SykmeldingSendtBekreftetConsumer(
+    private val behandleSykmelding: BehandleSykmelding,
 ) {
     val log = logger()
 
@@ -38,7 +38,7 @@ class SykmeldingSendtBekreftetAivenConsumer(
         val melding = cr.value()?.tilSykmeldingKafkaMessage()
 
         try {
-            behandleSykmeldingOgBestillAktivering.prosesserSykmelding(cr.key(), melding)
+            behandleSykmelding.prosesserSykmelding(cr.key(), melding)
             acknowledgment.acknowledge()
         } finally {
             MDC.remove(NAV_CALLID)

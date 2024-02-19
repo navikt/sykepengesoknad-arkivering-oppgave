@@ -3,9 +3,11 @@ package no.nav.helse.flex.tilbakedaterte
 import no.nav.helse.flex.client.SykepengesoknadBackendClient
 import no.nav.helse.flex.kafka.mapper.toSykepengesoknad
 import no.nav.helse.flex.medlemskap.MedlemskapVurdering
+import no.nav.helse.flex.oppgave.log
 import no.nav.helse.flex.service.*
 import no.nav.syfo.sykmelding.kafka.model.SykmeldingKafkaMessage
 import org.springframework.stereotype.Component
+import java.time.Instant
 
 @Component
 class BehandleSykmelding(
@@ -22,13 +24,20 @@ class BehandleSykmelding(
         if (melding == null) {
             return
         }
-        if (melding.sykmelding.merknader?.isNotEmpty() == true) {
-            return
-        }
 
         oppgaverForTilbakedaterteRepository.findBySykmeldingUuid(melding.sykmelding.id).forEach {
             if (it.status != OppgaverForTilbakedaterteStatus.OPPRETTET) {
                 return
+            }
+
+            if (melding.sykmelding.merknader?.isNotEmpty() == true) {
+                oppgaverForTilbakedaterteRepository.save(
+                    it.copy(
+                        status = OppgaverForTilbakedaterteStatus.IKKE_GODKJENT,
+                        oppdatert = Instant.now(),
+                    ),
+                )
+                return@forEach
             }
 
             val hentetOppgave = oppgaveClient.hentOppgave(it.oppgaveId)
@@ -52,7 +61,24 @@ class BehandleSykmelding(
                         behandlingstema = behandlingstemaOgType.behandlingstema,
                         behandlingstype = behandlingstemaOgType.behandlingstype,
                     )
+                log.info(
+                    "Oppdaterer oppgave ${it.oppgaveId} med behandlingstema ${behandlingstemaOgType.behandlingstema} " +
+                        "og behandlingstype ${behandlingstemaOgType.behandlingstype}",
+                )
                 oppgaveClient.oppdaterOppgave(it.oppgaveId, oppdaterOppgaveReqeust)
+                oppgaverForTilbakedaterteRepository.save(
+                    it.copy(
+                        status = OppgaverForTilbakedaterteStatus.OPPDATERT,
+                        oppdatert = Instant.now(),
+                    ),
+                )
+            } else {
+                oppgaverForTilbakedaterteRepository.save(
+                    it.copy(
+                        status = OppgaverForTilbakedaterteStatus.OPPGAVE_ALLEREDE_FERDIGSTILT,
+                        oppdatert = Instant.now(),
+                    ),
+                )
             }
         }
     }

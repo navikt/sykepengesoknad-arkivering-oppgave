@@ -27,4 +27,5 @@ enum class OppgaverForTilbakedaterteStatus {
     OPPRETTET,
     OPPDATERT,
     OPPGAVE_ALLEREDE_FERDIGSTILT,
+    IKKE_GODKJENT,
 }
