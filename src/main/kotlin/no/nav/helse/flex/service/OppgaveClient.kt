@@ -64,7 +64,7 @@ class OppgaveClient(
                     )
 
             if (!result.statusCode.is2xxSuccessful) {
-                throw RuntimeException("Oppretting av oppgave feiler med HTTP-${result.statusCode}")
+                throw RuntimeException("Henting av oppgave feiler med HTTP-${result.statusCode}")
             }
 
             result.body
