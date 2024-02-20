@@ -18,7 +18,7 @@ class OppgaveClient(
     private val url: String,
     private val oppgaveRestTemplate: RestTemplate,
 ) {
-    fun opprettOppgave(request: OppgaveRequest): OppgaveResponse {
+    fun opprettOppgave(request: OppgaveRequest): OpprettOppgaveResponse {
         return try {
             val uriString = UriComponentsBuilder.fromHttpUrl("$url/api/v1/oppgaver")
 
@@ -32,7 +32,7 @@ class OppgaveClient(
                         uriString.toUriString(),
                         HttpMethod.POST,
                         HttpEntity<Any>(request, headers),
-                        OppgaveResponse::class.java,
+                        OpprettOppgaveResponse::class.java,
                     )
 
             if (!result.statusCode.is2xxSuccessful) {
@@ -43,6 +43,65 @@ class OppgaveClient(
                 ?: throw RuntimeException("Oppgave-respons mangler ved oppretting av oppgave for journalpostId ${request.journalpostId}")
         } catch (e: HttpClientErrorException) {
             throw RuntimeException("Feil ved oppretting av oppgave for journalpostId ${request.journalpostId}", e)
+        }
+    }
+
+    fun hentOppgave(oppgaveId: String): HentOppgaveResponse {
+        return try {
+            val uriString = UriComponentsBuilder.fromHttpUrl("$url/api/v1/oppgaver/$oppgaveId")
+
+            val headers = HttpHeaders()
+            headers.contentType = MediaType.APPLICATION_JSON
+            headers["X-Correlation-ID"] = callId()
+
+            val result =
+                oppgaveRestTemplate
+                    .exchange(
+                        uriString.toUriString(),
+                        HttpMethod.GET,
+                        HttpEntity<Any>(null, headers),
+                        HentOppgaveResponse::class.java,
+                    )
+
+            if (!result.statusCode.is2xxSuccessful) {
+                throw RuntimeException("Henting av oppgave feiler med HTTP-${result.statusCode}")
+            }
+
+            result.body
+                ?: throw RuntimeException("Oppgave-respons mangler ved henting av oppgave for oppgaveid $oppgaveId")
+        } catch (e: HttpClientErrorException) {
+            throw RuntimeException("HttpClientErrorException ved henting av oppgave for oppgaveid $oppgaveId", e)
+        }
+    }
+
+    fun oppdaterOppgave(
+        oppgaveId: String,
+        oppdaterOppgaveReqeust: OppdaterOppgaveReqeust,
+    ): HentOppgaveResponse {
+        return try {
+            val uriString = UriComponentsBuilder.fromHttpUrl("$url/api/v1/oppgaver/$oppgaveId")
+
+            val headers = HttpHeaders()
+            headers.contentType = MediaType.APPLICATION_JSON
+            headers["X-Correlation-ID"] = callId()
+
+            val result =
+                oppgaveRestTemplate
+                    .exchange(
+                        uriString.toUriString(),
+                        HttpMethod.PATCH,
+                        HttpEntity<Any>(oppdaterOppgaveReqeust, headers),
+                        HentOppgaveResponse::class.java,
+                    )
+
+            if (!result.statusCode.is2xxSuccessful) {
+                throw RuntimeException("Oppdatering av oppgave feiler med HTTP-${result.statusCode}")
+            }
+
+            result.body
+                ?: throw RuntimeException("Oppgave-respons mangler ved oppdatering av oppgave for oppgaveid $oppgaveId")
+        } catch (e: HttpClientErrorException) {
+            throw RuntimeException("HttpClientErrorException ved oppdatering av oppgave for oppgaveid $oppgaveId", e)
         }
     }
 }
@@ -62,12 +121,22 @@ data class OppgaveRequest(
     val prioritet: String,
 )
 
+data class OppdaterOppgaveReqeust(
+    var behandlingstype: String? = null,
+    var behandlingstema: String? = null,
+)
+
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class OppgaveResponse(
+data class OpprettOppgaveResponse(
     val id: Int,
     val tildeltEnhetsnr: String,
     val tema: String,
     val oppgavetype: String,
     val behandlingstema: String? = null,
     val behandlingstype: String? = null,
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class HentOppgaveResponse(
+    val status: String,
 )

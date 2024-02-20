@@ -14,7 +14,11 @@ import no.nav.helse.flex.logger
 import no.nav.helse.flex.medlemskap.MedlemskapVurdering
 import no.nav.helse.flex.repository.InnsendingDbRecord
 import no.nav.helse.flex.repository.InnsendingRepository
+import no.nav.helse.flex.tilbakedaterte.OppgaverForTilbakedaterteDbRecord
+import no.nav.helse.flex.tilbakedaterte.OppgaverForTilbakedaterteRepository
+import no.nav.helse.flex.tilbakedaterte.OppgaverForTilbakedaterteStatus
 import org.springframework.stereotype.Component
+import java.time.Instant
 import java.util.*
 
 @Component
@@ -24,6 +28,7 @@ class SaksbehandlingsService(
     private val innsendingRepository: InnsendingRepository,
     private val registry: MeterRegistry,
     private val rebehandleSykepengesoknadProducer: RebehandleSykepengesoknadProducer,
+    private val oppgaverForTilbakedaterteRepository: OppgaverForTilbakedaterteRepository,
     private val sykepengesoknadKvitteringerClient: SykepengesoknadKvitteringerClient,
     private val identService: IdentService,
     private val pdlClient: PdlClient,
@@ -84,7 +89,18 @@ class SaksbehandlingsService(
         val oppgaveResponse = oppgaveClient.opprettOppgave(requestBody)
 
         innsendingRepository.updateOppgaveId(id = innsending.id!!, oppgaveId = oppgaveResponse.id.toString())
-
+        if (requestBody.behandlingstype == TILBAKEDATERING) {
+            oppgaverForTilbakedaterteRepository.save(
+                OppgaverForTilbakedaterteDbRecord(
+                    sykepengesoknadUuid = sykepengesoknad.id,
+                    sykmeldingUuid = sykepengesoknad.sykmeldingId ?: throw RuntimeException("SykmeldingId mangler"),
+                    oppgaveId = oppgaveResponse.id.toString(),
+                    opprettet = Instant.now(),
+                    oppdatert = null,
+                    status = OppgaverForTilbakedaterteStatus.OPPRETTET,
+                ),
+            )
+        }
         tellInnsendingBehandlet(soknad.soknadstype)
         log.info("Oppretter oppgave ${innsending.id} for ${soknad.soknadstype.name.lowercase()} søknad: ${soknad.soknadsId}")
     }

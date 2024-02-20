@@ -16,7 +16,10 @@ import no.nav.helse.flex.repository.InnsendingRepository
 import no.nav.helse.flex.repository.SpreOppgaveRepository
 import no.nav.helse.flex.service.OppgaveOpprettelse
 import no.nav.helse.flex.sykepengesoknad.kafka.SykepengesoknadDTO
+import no.nav.helse.flex.tilbakedaterte.OppgaverForTilbakedaterteRepository
+import no.nav.helse.flex.tilbakedaterte.SykmeldingSendtBekreftetConsumer
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
+import no.nav.syfo.sykmelding.kafka.model.SykmeldingKafkaMessage
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.TestInstance
@@ -128,6 +131,9 @@ abstract class FellesTestOppsett {
     @Autowired
     lateinit var aivenSpreOppgaverListener: AivenSpreOppgaverListener
 
+    @Autowired
+    lateinit var sykmeldingSendtBekreftetConsumer: SykmeldingSendtBekreftetConsumer
+
     @MockBean
     lateinit var acknowledgment: Acknowledgment
 
@@ -142,6 +148,9 @@ abstract class FellesTestOppsett {
 
     @Autowired
     lateinit var medlemskapVurderingRepository: MedlemskapVurderingRepository
+
+    @Autowired
+    lateinit var oppgaverForTilbakedaterteRepository: OppgaverForTilbakedaterteRepository
 
     @AfterAll
     fun `Disable unleash toggles`() {
@@ -171,4 +180,10 @@ abstract class FellesTestOppsett {
 
     fun leggOppgavePåAivenKafka(oppgave: OppgaveDTO) =
         aivenSpreOppgaverListener.listen(skapConsumerRecord("key", oppgave.serialisertTilString()), acknowledgment)
+
+    fun leggSykmeldingPåKafka(sykmelding: SykmeldingKafkaMessage) =
+        sykmeldingSendtBekreftetConsumer.listen(
+            skapConsumerRecord(sykmelding.sykmelding.id, sykmelding.serialisertTilString()),
+            acknowledgment,
+        )
 }
