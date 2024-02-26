@@ -61,6 +61,7 @@ private fun Merknad.beskrivMerknad(): String {
         "UGYLDIG_TILBAKEDATERING" -> "OBS! Sykmeldingen er avslått grunnet ugyldig tilbakedatering"
         "TILBAKEDATERING_KREVER_FLERE_OPPLYSNINGER" -> "OBS! Tilbakedatert sykmelding er til vurdering"
         "TILBAKEDATERT_PAPIRSYKMELDING" -> "OBS! Sykmeldingen sendt til NAY for manuell kontroll grunnet tilbakedatering"
+        "DELVIS_GODKJENT" -> "OBS! Tilbakedatert sykmelding er delvis godkjent"
         "UNDER_BEHANDLING" ->
             "OBS! Sykmeldingen er tilbakedatert. Tilbakedateringen var ikke behandlet når søknaden " +
                 "ble sendt. Sjekk gosys for resultat på tilbakedatering"

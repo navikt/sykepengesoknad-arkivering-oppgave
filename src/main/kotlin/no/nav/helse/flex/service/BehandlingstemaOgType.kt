@@ -66,6 +66,7 @@ private fun Sykepengesoknad.gjelderTilbakedatering(): Boolean {
             "TILBAKEDATERING_KREVER_FLERE_OPPLYSNINGER",
             "TILBAKEDATERT_PAPIRSYKMELDING",
             "UNDER_BEHANDLING",
+            "DELVIS_GODKJENT",
         ).contains(it.type)
     } ?: false
 }
