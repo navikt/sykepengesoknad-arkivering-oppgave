@@ -1,6 +1,9 @@
 azureTenant: trygdeetaten.no
 kafkaPool: nav-dev
 db_tier: db-f1-micro
+db_type: POSTGRES_12
+minReplicas: 1
+maxReplicas: 1
 cpu: 100m
 memory: 600Mi
 external-host:
