@@ -3,13 +3,14 @@ package no.nav.helse.flex.tittel
 import no.nav.helse.flex.domain.Soknad
 import no.nav.helse.flex.domain.dto.Arbeidssituasjon
 import no.nav.helse.flex.domain.dto.Soknadstype
+import no.nav.helse.flex.domain.dto.harInntektsopplysninger
 import no.nav.helse.flex.util.DatoUtil
 
 fun Soknad.periodeTekst(): String = "for perioden ${fom!!.format(DatoUtil.norskDato)} til ${tom!!.format(DatoUtil.norskDato)}"
 
 private fun Soknad.skapTittelForNaringsdrivendeFrilanser(): String {
     val vedlegg =
-        if (sporsmal.any { it.tag.contains("INNTEKTSOPPLYSNINGER") }) {
+        if (sporsmal.harInntektsopplysninger()) {
             " - med vedlegg inntektsopplysninger"
         } else {
             ""
@@ -28,6 +29,7 @@ private fun Soknad.presentabelArbeidssituasjon(): String? {
             }
             return fiskeTekst
         }
+
         null -> throw RuntimeException(
             "Arbeidssituasjon er null, dette skal ikke kunne skje på nye data. " +
                 "Det er 2 gamle næringsdrivende søknader som mangler arbeidssituasjon",

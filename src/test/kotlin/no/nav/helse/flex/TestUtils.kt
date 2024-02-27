@@ -348,3 +348,23 @@ Ja
     Midlertidig
         Periode for oppholdstillatelse
         13.12.2022 - 02.01.2023"""
+
+const val INNTEKTSOPPLYSNINGER = """Søknad om sykepenger for perioden 16.10.2018 til 24.10.2018
+
+Arbeidsgiver: ARBEIDSGIVER A/S
+Organisasjonsnummer: 1257358
+
+Periode 1:
+16.10.2018 - 20.10.2018
+Grad: 100
+Oppgitt faktisk arbeidsgrad: 79
+
+Periode 2:
+21.10.2018 - 24.10.2018
+Grad: 40
+Oppgitt faktisk arbeidsgrad: 440
+
+Inntektsopplysninger
+
+Er det drift?
+100 timer"""

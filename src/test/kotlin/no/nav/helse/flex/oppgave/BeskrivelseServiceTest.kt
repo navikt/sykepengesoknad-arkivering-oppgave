@@ -6,11 +6,9 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import no.nav.helse.flex.*
 import no.nav.helse.flex.domain.Soknad
+import no.nav.helse.flex.domain.dto.*
 import no.nav.helse.flex.domain.dto.Avsendertype.BRUKER
 import no.nav.helse.flex.domain.dto.Avsendertype.SYSTEM
-import no.nav.helse.flex.domain.dto.Merknad
-import no.nav.helse.flex.domain.dto.Soknadstype
-import no.nav.helse.flex.domain.dto.Sykepengesoknad
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
@@ -268,6 +266,35 @@ OBS! Sykmeldingen har en merknad Merknad(type=SVINDEL, beskrivelse=Farlig)
         val beskrivelse = lagBeskrivelse(soknad)
 
         assertThat(beskrivelse).isEqualTo(BESKRIVELSE_ARBEIDSTAKER_MED_TIMER_OG_DERETTER_PROSENT)
+    }
+
+    @Test
+    fun soknadMedInntektsopplysninger() {
+        val sykepengesoknad =
+            objectMapper.readValue(
+                BeskrivelseServiceTest::class.java.getResource("/soknadArbeidstakerMedTimerOgDeretterProsent.json"),
+                Sykepengesoknad::class.java,
+            ).copy(
+                sporsmal =
+                    listOf(
+                        Sporsmal(
+                            id = "1",
+                            tag = "INNTEKTSOPPLYSNINGER_DRIFT_I_VIRKSOMHETEN",
+                            svartype = Svartype.TIMER,
+                            sporsmalstekst = "Er det drift?",
+                            svar =
+                                listOf(
+                                    Svar(
+                                        verdi = "100",
+                                    ),
+                                ),
+                        ),
+                    ),
+            )
+        val soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn")
+        val beskrivelse = lagBeskrivelse(soknad)
+
+        assertThat(beskrivelse).isEqualTo(INNTEKTSOPPLYSNINGER)
     }
 }
 
