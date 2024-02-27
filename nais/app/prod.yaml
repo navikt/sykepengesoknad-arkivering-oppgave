@@ -2,8 +2,8 @@ azureTenant: nav.no
 kafkaPool: nav-prod
 db_tier: db-custom-1-3840
 db_type: POSTGRES_12
-minReplicas: 1
-maxReplicas: 1
+minReplicas: 0
+maxReplicas: 0
 cpu: 400m
 memory: 700Mi
 external-host:
