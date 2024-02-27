@@ -8,6 +8,7 @@ import no.nav.helse.flex.domain.dto.Merknad
 import no.nav.helse.flex.domain.dto.Soknadstype.*
 import no.nav.helse.flex.domain.dto.Sporsmal
 import no.nav.helse.flex.domain.dto.Svartype.*
+import no.nav.helse.flex.domain.dto.harInntektsopplysninger
 import no.nav.helse.flex.tittel.skapTittel
 import no.nav.helse.flex.util.DatoUtil.norskDato
 import no.nav.helse.flex.util.PeriodeMapper.jsonTilPeriode
@@ -30,6 +31,7 @@ fun lagBeskrivelse(soknad: Soknad): String {
         soknad.beskrivPerioder() +
         soknad.beskrivFaktiskGradFrilansere() +
         soknad.beskrivMedlemskapVurdering() +
+        soknad.beskrivInntektsopplysninger() +
         soknad.sporsmal
             .filter { it.skalVises() }
             .map { sporsmal -> beskrivSporsmal(sporsmal, 0) }
@@ -149,6 +151,17 @@ private fun Soknad.beskrivMedlemskapVurdering(): String {
             Du må se på svarene til bruker.
             Informasjon om hva du skal gjøre finner du på Navet, se
             https://navno.sharepoint.com/sites/fag-og-ytelser-eos-lovvalg-medlemskap/SitePages/Hvordan-vurderer-jeg-lovvalg-og-medlemskap.aspx
+            
+            """.trimIndent()
+    }
+    return ""
+}
+
+private fun Soknad.beskrivInntektsopplysninger(): String {
+    if (sporsmal.harInntektsopplysninger()) {
+        return """
+            
+            Inntektsopplysninger
             
             """.trimIndent()
     }
