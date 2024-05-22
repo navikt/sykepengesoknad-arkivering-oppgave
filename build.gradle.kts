@@ -31,7 +31,7 @@ val kluentVersion = "1.73"
 val cloudStorageVersion = "2.38.0"
 val jaxWsApiVersion = "1.1"
 val commonsTextVersion = "1.12.0"
-val unleashVersion = "9.2.1"
+val unleashVersion = "9.2.2"
 
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
