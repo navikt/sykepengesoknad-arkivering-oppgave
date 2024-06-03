@@ -124,6 +124,7 @@ data class OppgaveRequest(
 data class OppdaterOppgaveReqeust(
     var behandlingstype: String? = null,
     var behandlingstema: String? = null,
+    var status: String? = null,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
