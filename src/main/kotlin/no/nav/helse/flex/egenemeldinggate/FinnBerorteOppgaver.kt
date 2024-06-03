@@ -3,6 +3,7 @@ package no.nav.helse.flex.egenemeldinggate
 import no.nav.helse.flex.logger
 import no.nav.helse.flex.repository.InnsendingRepository
 import no.nav.helse.flex.repository.SpreOppgaveRepository
+import no.nav.helse.flex.service.OppdaterOppgaveReqeust
 import no.nav.helse.flex.service.OppgaveClient
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
@@ -32,6 +33,8 @@ class FinnBerorteOppgaver(
         log.info("Fant ${oppgaver.size} berørte oppgave av egenmeldinggate")
         var antallFeilregisrert = 0
         var antallAndreStatuser = 0
+        var antallOpprettetOgPatchet = 0
+        var antallFerdigstilt = 0
         val statuser = mutableMapOf<String, Int>()
         if (oppgaver.size == 6639) {
             oppgaver.forEachIndexed { index, spreOppgaveDbRecord ->
@@ -43,11 +46,30 @@ class FinnBerorteOppgaver(
                     val hentetOppgave = oppgaveClient.hentOppgave(innsending.oppgaveId)
                     if (hentetOppgave.status == "FEILREGISTRERT") {
                         antallFeilregisrert++
-                        log.info("Oppgave ${innsending.oppgaveId} er feilregistrert")
+                        log.info("Oppgave ${innsending.oppgaveId} er FEILREGISTRERT")
+                    } else if (hentetOppgave.status == "FERDIGSTILT") {
+                        statuser[hentetOppgave.status] = statuser.getOrDefault(hentetOppgave.status, 0) + 1
+                        antallFerdigstilt++
+                        log.info(
+                            "Oppgave ${innsending.oppgaveId} med søknadid ${innsending.sykepengesoknadId} er " +
+                                "ferdigstilt allerede. Sjekk denne manuelt senere",
+                        )
+                    } else if (hentetOppgave.status == "OPPRETTET") {
+                        statuser[hentetOppgave.status] = statuser.getOrDefault(hentetOppgave.status, 0) + 1
+                        antallOpprettetOgPatchet++
+
+                        oppgaveClient.oppdaterOppgave(
+                            innsending.oppgaveId,
+                            OppdaterOppgaveReqeust(
+                                status = "FEILREGISTRERT",
+                            ),
+                        )
+
+                        log.info("Oppgave ${innsending.oppgaveId} var opprettet, vi endret til FEILREGISTRERT")
                     } else {
                         antallAndreStatuser++
                         statuser[hentetOppgave.status] = statuser.getOrDefault(hentetOppgave.status, 0) + 1
-                        log.info("Oppgave ${innsending.oppgaveId} har status ${hentetOppgave.status}")
+                        log.info("Oppgave ${innsending.oppgaveId} har en helt annen status ${hentetOppgave.status}")
                     }
                     /*
                     log.info(
