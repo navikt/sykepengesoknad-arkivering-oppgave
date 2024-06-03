@@ -28,7 +28,7 @@ interface SpreOppgaveRepository : CrudRepository<SpreOppgaveDbRecord, String> {
         """
         SELECT *
         FROM  oppgavestyring
-        WHERE status = 'OpprettTimeout'
+        WHERE status = 'OpprettetTimeout'
           AND modifisert > :modifisertEtter
           AND opprettet > :opprettetEtter
         """,
