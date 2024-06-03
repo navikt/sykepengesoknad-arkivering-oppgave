@@ -80,7 +80,7 @@ class SaksbehandlingIntegrationTest : FellesTestOppsett() {
         dokArkivRequestBody.dokumenter[0].tittel `should be equal to` "Søknad om sykepenger for perioden 04.05.2019 til 08.05.2019"
 
         // Lar den time ut
-        oppgaveOpprettelse.behandleOppgaver(Instant.now().plus(5L, ChronoUnit.DAYS))
+        oppgaveOpprettelse.behandleOppgaver(Instant.now().plus(10L, ChronoUnit.DAYS))
 
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
