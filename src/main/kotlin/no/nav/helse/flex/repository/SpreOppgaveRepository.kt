@@ -19,7 +19,8 @@ interface SpreOppgaveRepository : CrudRepository<SpreOppgaveDbRecord, String> {
         WHERE  avstemt = true
           AND (status = 'Opprett'
                OR status = 'OpprettSpeilRelatert'
-               OR (status = 'Utsett' AND timeout < :timeout))
+               OR (status = 'Utsett' AND timeout < :timeout)
+               OR (status = 'VenterPaBomlo' AND timeout < :timeout))
         """,
     )
     fun findOppgaverTilOpprettelse(timeout: Instant): List<SpreOppgaveDbRecord>
@@ -64,6 +65,7 @@ data class SpreOppgaveDbRecord(
 
 enum class OppgaveStatus {
     Utsett,
+    VenterPaBomlo,
     IkkeOpprett,
     Opprett,
     OpprettSpeilRelatert,

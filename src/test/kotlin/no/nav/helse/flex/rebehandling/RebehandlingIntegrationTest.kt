@@ -59,6 +59,6 @@ class RebehandlingIntegrationTest : FellesTestOppsett() {
 
         val spreOppgave = spreOppgaveRepository.findBySykepengesoknadId(soknad.id)
         spreOppgave!!.sykepengesoknadId shouldBeEqualTo soknad.id
-        spreOppgave.status shouldBeEqualTo OppgaveStatus.Utsett
+        spreOppgave.status shouldBeEqualTo OppgaveStatus.VenterPaBomlo
     }
 }

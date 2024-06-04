@@ -48,7 +48,7 @@ class HandterOppave(
                     ),
                 )
             }
-            eksisterendeOppgave.status == OppgaveStatus.Utsett -> {
+            (eksisterendeOppgave.status == OppgaveStatus.Utsett || eksisterendeOppgave.status == OppgaveStatus.VenterPaBomlo) -> {
                 log.info("Mottok ${oppgave.oppdateringstype.name} oppgave for søknad ${oppgave.dokumentId} fra bømlo")
                 spreOppgaveRepository.updateOppgaveBySykepengesoknadId(
                     sykepengesoknadId = oppgave.dokumentId.toString(),
@@ -100,7 +100,7 @@ class HandterOppave(
 }
 
 internal fun timeout(oppgave: OppgaveDTO) =
-    if (oppgave.oppdateringstype == OppdateringstypeDTO.Utsett) {
+    if (oppgave.oppdateringstype == OppdateringstypeDTO.Utsett || oppgave.oppdateringstype == OppdateringstypeDTO.VenterPaBomlo) {
         oppgave.timeout?.tilOsloZone()
             ?.toInstant()
     } else {
@@ -113,4 +113,5 @@ private fun OppdateringstypeDTO.tilOppgaveStatus() =
         OppdateringstypeDTO.Ferdigbehandlet -> OppgaveStatus.IkkeOpprett
         OppdateringstypeDTO.OpprettSpeilRelatert -> OppgaveStatus.OpprettSpeilRelatert
         OppdateringstypeDTO.Opprett -> OppgaveStatus.Opprett
+        OppdateringstypeDTO.VenterPaBomlo -> OppgaveStatus.VenterPaBomlo
     }
