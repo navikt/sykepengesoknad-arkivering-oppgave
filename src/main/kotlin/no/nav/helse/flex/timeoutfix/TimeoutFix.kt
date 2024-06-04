@@ -22,10 +22,21 @@ class TimeoutFix(
 
     fun behandleOppgaver(tid: Instant = Instant.now()) {
         log.info("Finner oppgaver som skal få ny timeout")
-        val oppgaver = spreOppgaveRepository.finnOppgaverMedTimeout(OffsetDateTime.of(2024, 6, 6, 3, 0, 0, 0, ZoneOffset.UTC).toInstant())
-
+        val oppgaver =
+            spreOppgaveRepository.finnOppgaverMedTimeout(
+                OffsetDateTime.of(2024, 6, 6, 3, 0, 0, 0, ZoneOffset.UTC).toInstant(),
+            )
+        val timeout = OffsetDateTime.now().plusMinutes(30).toInstant()
         if (oppgaver.size == 571) {
             log.info("Fant 571 oppgaver som skal få ny timeout")
+            oppgaver.forEach {
+                log.info("Oppdaterer oppgave med sykepengesoknadId ${it.sykepengesoknadId} til ny timeout $timeout")
+                spreOppgaveRepository.save(
+                    it.copy(
+                        timeout = timeout,
+                    ),
+                )
+            }
         } else {
             log.warn("Fant ${oppgaver.size} oppgaver. Forventet 571")
         }
