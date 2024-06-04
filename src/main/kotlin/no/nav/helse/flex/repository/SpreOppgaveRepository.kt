@@ -24,15 +24,6 @@ interface SpreOppgaveRepository : CrudRepository<SpreOppgaveDbRecord, String> {
     )
     fun findOppgaverTilOpprettelse(timeout: Instant): List<SpreOppgaveDbRecord>
 
-    @Query(
-        """
-        SELECT *
-        FROM oppgavestyring
-        WHERE status = 'Utsett' AND timeout = :timeout
-        """,
-    )
-    fun finnOppgaverMedTimeout(timeout: Instant): List<SpreOppgaveDbRecord>
-
     @Modifying
     @Query(
         """
