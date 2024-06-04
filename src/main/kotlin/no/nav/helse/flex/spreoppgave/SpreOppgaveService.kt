@@ -18,7 +18,7 @@ class SpreOppgaverService(
     private val spreOppgaveRepository: SpreOppgaveRepository,
     private val handterOppave: HandterOppgaveInterface,
 ) {
-    private val timeoutTimer = 200.toLong()
+    private val timeoutTimer = (7 * 24).toLong()
 
     fun prosesserOppgave(
         oppgave: OppgaveDTO,
