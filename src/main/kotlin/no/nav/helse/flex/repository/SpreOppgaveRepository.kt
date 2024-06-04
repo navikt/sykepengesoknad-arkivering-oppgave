@@ -27,16 +27,11 @@ interface SpreOppgaveRepository : CrudRepository<SpreOppgaveDbRecord, String> {
     @Query(
         """
         SELECT *
-        FROM  oppgavestyring
-        WHERE status = 'OpprettetTimeout'
-          AND modifisert > :modifisertEtter
-          AND opprettet > :opprettetEtter
+        FROM oppgavestyring
+        WHERE status = 'Utsett' AND timeout = :timeout
         """,
     )
-    fun finnBerorteOppgaver(
-        modifisertEtter: Instant,
-        opprettetEtter: Instant,
-    ): List<SpreOppgaveDbRecord>
+    fun finnOppgaverMedTimeout(timeout: Instant): List<SpreOppgaveDbRecord>
 
     @Modifying
     @Query(
