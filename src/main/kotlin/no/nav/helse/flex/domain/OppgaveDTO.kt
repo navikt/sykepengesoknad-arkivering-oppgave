@@ -12,6 +12,7 @@ data class OppgaveDTO(
 
 enum class OppdateringstypeDTO {
     Utsett,
+    VenterPaBomlo,
     Opprett,
     Ferdigbehandlet,
     OpprettSpeilRelatert,

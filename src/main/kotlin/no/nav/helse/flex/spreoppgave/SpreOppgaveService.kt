@@ -48,7 +48,7 @@ class SpreOppgaverService(
                         OppgaveDTO(
                             dokumentId = UUID.fromString(sykepengesoknad.id),
                             dokumentType = DokumentTypeDTO.Søknad,
-                            oppdateringstype = OppdateringstypeDTO.Utsett,
+                            oppdateringstype = OppdateringstypeDTO.VenterPaBomlo,
                             timeout = sykepengesoknad.sendtNav.plusMinutes(timeoutMinutter),
                         ),
                         OppgaveKilde.Søknad,
