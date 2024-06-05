@@ -61,7 +61,7 @@ class OppgaveOpprettelse(
                     )
                 } else {
                     log.info("Fant ikke eksisterende innsending, ignorerer søknad med id ${it.sykepengesoknadId}")
-                    if (environmentToggles.isQ() && it.opprettet < OffsetDateTime.now().minusDays(1).toInstant()) {
+                    if (environmentToggles.isDevGcp() && it.opprettet < OffsetDateTime.now().minusDays(1).toInstant()) {
                         // Dette skjer hvis Bømlo selv mocker opp søknader som ikke går gjennom sykepengesoknad-backend
                         log.info("Sletter oppgave fra ${it.opprettet} siden den ikke har en tilhørende søknad")
                         spreOppgaveRepository.deleteOppgaveBySykepengesoknadId(it.sykepengesoknadId)
@@ -73,7 +73,7 @@ class OppgaveOpprettelse(
                     tellTimeout()
                 }
             } catch (e: SøknadIkkeFunnetException) {
-                if (environmentToggles.isQ()) {
+                if (environmentToggles.isDevGcp()) {
                     log.warn("Søknaden ${it.sykepengesoknadId} finnes ikke i Q, hopper over oppgaveopprettelse og fortsetter")
                     spreOppgaveRepository.updateOppgaveBySykepengesoknadId(
                         sykepengesoknadId = it.sykepengesoknadId,

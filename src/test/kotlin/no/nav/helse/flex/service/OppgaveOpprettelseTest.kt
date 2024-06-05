@@ -123,7 +123,7 @@ class OppgaveOpprettelseTest {
     @Test
     fun `sletter oppgave(i test) om vi mangler innsending og den er gammel`() {
         mockRegistry()
-        whenever(environmentToggles.isQ()).thenReturn(true)
+        whenever(environmentToggles.isDevGcp()).thenReturn(true)
         whenever(spreOppgaveRepository.findOppgaverTilOpprettelse(any())).thenReturn(
             listOf(
                 SpreOppgaveDbRecord(
@@ -265,7 +265,7 @@ class OppgaveOpprettelseTest {
                 journalpostId = "journalpost",
             ),
         )
-        whenever(environmentToggles.isQ()).thenReturn(true)
+        whenever(environmentToggles.isDevGcp()).thenReturn(true)
         whenever(sykepengesoknadBackendClient.hentSoknad(soknadId.toString())).thenThrow(SøknadIkkeFunnetException("finner ikke"))
         val modifisertTidspunkt = Instant.now()
         oppgaveOpprettelse.behandleOppgaver(modifisertTidspunkt)
@@ -301,7 +301,7 @@ class OppgaveOpprettelseTest {
                 journalpostId = "journalpost",
             ),
         )
-        whenever(environmentToggles.isQ()).thenReturn(false)
+        whenever(environmentToggles.isDevGcp()).thenReturn(false)
         whenever(sykepengesoknadBackendClient.hentSoknad(soknadId.toString())).thenThrow(SøknadIkkeFunnetException("msg"))
         assertThrows(SøknadIkkeFunnetException::class.java) {
             oppgaveOpprettelse.behandleOppgaver()

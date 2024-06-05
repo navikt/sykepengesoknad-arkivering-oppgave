@@ -7,5 +7,5 @@ import org.springframework.stereotype.Component
 class EnvironmentToggles(
     @Value("\${NAIS_CLUSTER_NAME}") private val naisCluster: String,
 ) {
-    fun isQ() = "dev-gcp" == naisCluster
+    fun isDevGcp() = "dev-gcp" == naisCluster
 }
