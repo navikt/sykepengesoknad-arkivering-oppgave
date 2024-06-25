@@ -65,6 +65,7 @@ private fun Merknad.beskrivMerknad(): String {
         "UNDER_BEHANDLING" ->
             "OBS! Sykmeldingen er tilbakedatert. Tilbakedateringen var ikke behandlet når søknaden " +
                 "ble sendt. Sjekk gosys for resultat på tilbakedatering"
+
         else -> {
             log.warn("Ukjent merknadstype $type")
             "OBS! Sykmeldingen har en merknad $this"
@@ -140,19 +141,33 @@ private fun Soknad.beskrivFaktiskGradFrilansere(): String {
 }
 
 private fun Soknad.beskrivMedlemskapVurdering(): String {
-    if (medlemskapVurdering in listOf("UAVKLART", "NEI")) {
-        return """
+    return when (medlemskapVurdering) {
+        "UAVKLART" ->
+            """
             
             Om bruker er medlem i folketrygden eller ikke, kunne ikke avklares automatisk.
-            Medlemskap status: $medlemskapVurdering
+            Medlemskap status: UAVKLART
             
             Du må se på svarene til bruker.
             Informasjon om hva du skal gjøre finner du på Navet, se
             https://navno.sharepoint.com/sites/fag-og-ytelser-eos-lovvalg-medlemskap/SitePages/Hvordan-vurderer-jeg-lovvalg-og-medlemskap.aspx
             
             """.trimIndent()
+
+        "NEI" ->
+            """
+
+            Om bruker er medlem i folketrygden eller ikke er automatisk avklart.
+            Medlemskap status: NEI
+
+            Se på medlemskapsfanen i Gosys for å finne riktig periode.
+            Se på dokumentet i Gosys for å finne arbeidsgiver.
+            Se i Aa-registeret om bruker har samme arbeidsgiver som i vedtaket/A1 fra utlandet.
+            Hvis Ja: Bruker er ikke medlem. Hvis Nei: Kontakt bruker/arbeidsgiver for å avklare brukers situasjon.
+
+            """.trimIndent()
+        else -> ""
     }
-    return ""
 }
 
 private fun Soknad.beskrivInntektsopplysninger(): String {

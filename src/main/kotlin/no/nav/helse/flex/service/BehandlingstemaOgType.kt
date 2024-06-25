@@ -3,16 +3,16 @@ package no.nav.helse.flex.service
 import no.nav.helse.flex.domain.dto.Soknadstype
 import no.nav.helse.flex.domain.dto.Sykepengesoknad
 
-const val FORKORTET_VENTETID = "ae0247"
-const val TILBAKEDATERING = "ae0239"
-const val OVERGANGSSAK_FRA_SPEIL = "ab0455"
-const val UTLAND = "ae0106"
-const val MEDLEMSKAP = "ab0269"
-const val SYKEPENGER_UNDER_UTENLANDSOPPHOLD = "ab0314"
-const val ENKELTSTAENDE_BEHANDLINGSDAGER = "ab0351"
-const val SYKEPENGER_FOR_ARBEIDSLEDIG = "ab0426"
-const val REISETILSKUDD = "ab0237"
-const val SYKEPENGER = "ab0061"
+const val BEHANDLINGSTEMA_FORKORTET_VENTETID = "ae0247"
+const val BEHANDLINGSTEMA_TILBAKEDATERING = "ae0239"
+const val BEHANDLINGSTEMA_OVERGANGSSAK_FRA_SPEIL = "ab0455"
+const val BEHANDLINGSTEMA_UTLAND = "ae0106"
+const val BEHANDLINGSTEMA_MEDLEMSKAP = "ab0269"
+const val BEHANDLINGSTEMA_SYKEPENGER_UNDER_UTENLANDSOPPHOLD = "ab0314"
+const val BEHANDLINGSTEMA_ENKELTSTAENDE_BEHANDLINGSDAGER = "ab0351"
+const val BEHANDLINGSTEMA_SYKEPENGER_FOR_ARBEIDSLEDIG = "ab0426"
+const val BEHANDLINGSTEMA_REISETILSKUDD = "ab0237"
+const val BEHANDLINGSTEMA_SYKEPENGER = "ab0061"
 
 fun finnBehandlingstemaOgType(
     soknad: Sykepengesoknad,
@@ -21,27 +21,27 @@ fun finnBehandlingstemaOgType(
     medlemskapVurdering: String?,
 ): BehandlingstemaOgType {
     if (harRedusertVenteperiode) {
-        return behandlingstype(FORKORTET_VENTETID)
+        return behandlingstype(BEHANDLINGSTEMA_FORKORTET_VENTETID)
     }
     if (soknad.gjelderTilbakedatering()) {
-        return behandlingstype(TILBAKEDATERING)
+        return behandlingstype(BEHANDLINGSTEMA_TILBAKEDATERING)
     }
     if (speilRelatert) {
-        return behandlingstema(OVERGANGSSAK_FRA_SPEIL)
+        return behandlingstema(BEHANDLINGSTEMA_OVERGANGSSAK_FRA_SPEIL)
     }
     if (soknad.utenlandskSykmelding == true) {
-        return behandlingstype(UTLAND)
+        return behandlingstype(BEHANDLINGSTEMA_UTLAND)
     }
-    if (medlemskapVurdering in listOf("NEI", "UAVKLART")) {
-        return behandlingstema(MEDLEMSKAP)
+    if (medlemskapVurdering in listOf("UAVKLART", "NEI")) {
+        return behandlingstema(BEHANDLINGSTEMA_MEDLEMSKAP)
     }
     return behandlingstema(
         when (soknad.soknadstype) {
-            Soknadstype.OPPHOLD_UTLAND -> SYKEPENGER_UNDER_UTENLANDSOPPHOLD
-            Soknadstype.BEHANDLINGSDAGER -> ENKELTSTAENDE_BEHANDLINGSDAGER
-            Soknadstype.ARBEIDSLEDIG -> SYKEPENGER_FOR_ARBEIDSLEDIG
-            Soknadstype.REISETILSKUDD, Soknadstype.GRADERT_REISETILSKUDD -> REISETILSKUDD
-            else -> SYKEPENGER
+            Soknadstype.OPPHOLD_UTLAND -> BEHANDLINGSTEMA_SYKEPENGER_UNDER_UTENLANDSOPPHOLD
+            Soknadstype.BEHANDLINGSDAGER -> BEHANDLINGSTEMA_ENKELTSTAENDE_BEHANDLINGSDAGER
+            Soknadstype.ARBEIDSLEDIG -> BEHANDLINGSTEMA_SYKEPENGER_FOR_ARBEIDSLEDIG
+            Soknadstype.REISETILSKUDD, Soknadstype.GRADERT_REISETILSKUDD -> BEHANDLINGSTEMA_REISETILSKUDD
+            else -> BEHANDLINGSTEMA_SYKEPENGER
         },
     )
 }
