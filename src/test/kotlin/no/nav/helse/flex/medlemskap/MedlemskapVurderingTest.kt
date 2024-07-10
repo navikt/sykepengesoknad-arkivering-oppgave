@@ -53,52 +53,6 @@ class MedlemskapVurderingTest : FellesTestOppsett() {
     }
 
     @Test
-    fun `Søknad uten inngående vurdering blir ikke vurdert`() {
-        val soknad = lagSoknad(medlemskapVurdering = null)
-
-        saksbehandlingsService.behandleSoknad(soknad)
-
-        medlemskapVurderingRepository.findBySykepengesoknadId(soknad.id) shouldBeEqualTo null
-
-        saksbehandlingsService.opprettOppgave(soknad, innsendingRepository.findBySykepengesoknadId(soknad.id)!!)
-        medlemskapMockWebserver.takeRequest(100, TimeUnit.MILLISECONDS) shouldBe null
-
-        val oppgaveRequest = hentOgValiderOppgaveRequest()
-        behandlingsteamOgBeskrivelseFraOppgaveRequest(oppgaveRequest).let { (behandlingstema, beskrivelse) ->
-            behandlingstema shouldBeEqualTo BEHANDLINGSTEMA_SYKEPENGER
-            beskrivelse shouldBeEqualTo
-                """
-                |$oppgaveOverskrift
-                """.trimMargin()
-        }
-    }
-
-    @Test
-    fun `Frilansersøknad har ikke inngående vurdering og blir ikke vurdert`() {
-        val soknad =
-            lagSoknad(
-                medlemskapVurdering = null,
-                soknadstype = Soknadstype.SELVSTENDIGE_OG_FRILANSERE,
-            ).copy(arbeidssituasjon = Arbeidssituasjon.FRILANSER)
-
-        saksbehandlingsService.behandleSoknad(soknad)
-
-        medlemskapVurderingRepository.findBySykepengesoknadId(soknad.id) shouldBeEqualTo null
-
-        saksbehandlingsService.opprettOppgave(soknad, innsendingRepository.findBySykepengesoknadId(soknad.id)!!)
-        medlemskapMockWebserver.takeRequest(100, TimeUnit.MILLISECONDS) shouldBe null
-
-        val oppgaveRequest = hentOgValiderOppgaveRequest()
-        behandlingsteamOgBeskrivelseFraOppgaveRequest(oppgaveRequest).let { (behandlingstema, beskrivelse) ->
-            behandlingstema shouldBeEqualTo BEHANDLINGSTEMA_SYKEPENGER
-            beskrivelse shouldBeEqualTo
-                """
-                |$oppgaveOverskriftForFrilanser
-                """.trimMargin()
-        }
-    }
-
-    @Test
     fun `Søknad med inngående UAVKLART med brukerspørsmål og endelig UAVKLART har UAVKLART i Gosys-oppgave`() {
         val soknad = lagSoknad(medlemskapVurdering = "UAVKLART").copy(sporsmal = lagSporsmalOmOppholdstillatelse())
         saksbehandlingsService.behandleSoknad(soknad)
@@ -312,6 +266,52 @@ class MedlemskapVurderingTest : FellesTestOppsett() {
             beskrivelse shouldBeEqualTo
                 """
                 |$oppgaveOverskrift
+                """.trimMargin()
+        }
+    }
+
+    @Test
+    fun `Søknad uten inngående vurdering blir ikke vurdert`() {
+        val soknad = lagSoknad(medlemskapVurdering = null)
+
+        saksbehandlingsService.behandleSoknad(soknad)
+
+        medlemskapVurderingRepository.findBySykepengesoknadId(soknad.id) shouldBeEqualTo null
+
+        saksbehandlingsService.opprettOppgave(soknad, innsendingRepository.findBySykepengesoknadId(soknad.id)!!)
+        medlemskapMockWebserver.takeRequest(100, TimeUnit.MILLISECONDS) shouldBe null
+
+        val oppgaveRequest = hentOgValiderOppgaveRequest()
+        behandlingsteamOgBeskrivelseFraOppgaveRequest(oppgaveRequest).let { (behandlingstema, beskrivelse) ->
+            behandlingstema shouldBeEqualTo BEHANDLINGSTEMA_SYKEPENGER
+            beskrivelse shouldBeEqualTo
+                """
+                |$oppgaveOverskrift
+                """.trimMargin()
+        }
+    }
+
+    @Test
+    fun `Frilansersøknad har ikke inngående vurdering og blir ikke vurdert`() {
+        val soknad =
+            lagSoknad(
+                medlemskapVurdering = null,
+                soknadstype = Soknadstype.SELVSTENDIGE_OG_FRILANSERE,
+            ).copy(arbeidssituasjon = Arbeidssituasjon.FRILANSER)
+
+        saksbehandlingsService.behandleSoknad(soknad)
+
+        medlemskapVurderingRepository.findBySykepengesoknadId(soknad.id) shouldBeEqualTo null
+
+        saksbehandlingsService.opprettOppgave(soknad, innsendingRepository.findBySykepengesoknadId(soknad.id)!!)
+        medlemskapMockWebserver.takeRequest(100, TimeUnit.MILLISECONDS) shouldBe null
+
+        val oppgaveRequest = hentOgValiderOppgaveRequest()
+        behandlingsteamOgBeskrivelseFraOppgaveRequest(oppgaveRequest).let { (behandlingstema, beskrivelse) ->
+            behandlingstema shouldBeEqualTo BEHANDLINGSTEMA_SYKEPENGER
+            beskrivelse shouldBeEqualTo
+                """
+                |$oppgaveOverskriftForFrilanser
                 """.trimMargin()
         }
     }
