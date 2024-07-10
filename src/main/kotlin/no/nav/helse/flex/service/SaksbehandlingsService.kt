@@ -190,20 +190,24 @@ class SaksbehandlingsService(
         return this.sporsmal.any { it.tag.startsWith("MEDLEMSKAP_") }
     }
 
-    // TODO: Denne må gjenskapes i tester, og den er vanskelig å lese.
     private fun hentEndeligMedlemskapVurdering(
         sykepengesoknad: Sykepengesoknad,
         inngaendeVurdering: String?,
     ): String? {
-        return if (inngaendeVurdering == "UAVKLART" && sykepengesoknad.harMedlemskapSporsmal()) {
-            // Returnerer UAVKLART hvis endeligVurdering er null er siden det kan skyldes at LovMe ikke har svart selv
-            // om vi vet at bruker HAR svart på medlemskapsspørsmål.
-            medlemskapVurdering.hentEndeligMedlemskapVurdering(sykepengesoknad) ?: "UAVKLART"
-        } else if (inngaendeVurdering == "NEI") {
-            // Returnerer NEI hvis inngående vurdering er NEI, siden vi da ikke spør om endelig vurdering.
-            "NEI"
-        } else {
-            null
+        return when (inngaendeVurdering) {
+            "UAVKLART" -> {
+                if (sykepengesoknad.harMedlemskapSporsmal()) {
+                    // Returnerer UAVKLART hvis endeligVurdering er null er siden det kan skyldes at LovMe ikke har
+                    // svart selv om vi vet at bruker har svart på medlemskapsspørsmål.
+                    medlemskapVurdering.hentEndeligMedlemskapVurdering(sykepengesoknad) ?: "UAVKLART"
+                } else {
+                    null
+                }
+            }
+            // Returnerer NEI so, endelig vurdring hvis inngående vurdering er NEI, siden vi da ikke spør om
+            // endelig vurdering, men NEI skal behandles som en medlemskapsoppgave.
+            "NEI" -> "NEI"
+            else -> null
         }
     }
 }
