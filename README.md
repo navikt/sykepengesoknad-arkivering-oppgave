@@ -69,19 +69,36 @@ følger samme logikk som over.
 
 En del søknader har ikke spedisjon et forhold til, da setter vi timeout til 1 minutt slik at vi ikke venter for lenge på spedisjon.
 
+## Behandlingstype Medlemskap
+
+Når en sykepengesøknad mottas på Kafaka og feltet `medlemskapsvurdering` er satt, lagres verdien i databasen. Når det 
+eventuelt opprettes en Gosys-oppgave på den samme søknaden brukes verdien(e) til å avgjøre om oppgaven skal inneholde informasjon
+om bruker er medlems i folketrygden eller ikke, eller om dette må avklares. Følgende scenarios kan oppstå: 
+
+| Inngående Vurdering              | Endelig Vurdering           | Behandlingstype  | Gosys-oppgave                          |
+|----------------------------------|-----------------------------|------------------|----------------------------------------|
+| null (ingen inngående vurdering) | null (sjekker ikke)         | SYKEPENGER       | null (ingen informasjon)               |
+| UAVKLART (brukerspørsmål)        | UAVKLART                    | MEDLEMSKAP       | UAVKLART (uavklart-tekst + brukersvar) |
+| UAVKLART (brukerspørsmål)        | null (feil fra LovMe)       | MEDLEMSKAP       | UAVKLART (uavklart-tekst + brukersvar) |
+| UAVKLART (brukerspørsmål)        | NEI                         | MEDLEMSKAP       | NEI (nei-tekst + brukersvar)           |
+| NEI                              | null (sjekker ikke)         | MEDLEMSKAP       | NEI (nei-tekst)                        |
+| UAVKLART (brukerspørsmål)        | JA                          | SYKEPENGER       | null (ingen informasjon)               |
+| UAVKLART                         | null (sjekker ikke)         | SYKEPENGER       | null (ingen informasjon)               |
+| JA                               | null (sjekker ikke)         | SYKEPENGER       | null (ingen informasjon)               |
+                                  |
 
 ## Data
 Applikasjonen har en database i GCP. 
 
-Tabellen `INNSENDING` lenker sykepengesøknad id med journalpostid og oppgaveid. Det slettes ikke data fra tabellen.
+Tabellen `innsending` lenker sykepengesøknad id med journalpostid og oppgaveid. Det slettes ikke data fra tabellen.
 
-Tabellen `OPPGAVESTYRING` holder informasjon om en sykepengesøknad skal få sin oppgave oppretta i gosys eller om denne oppgaven blir behandlet i ny løsning.
+Tabellen `oppgavestyring` holder informasjon om en sykepengesøknad skal få sin oppgave oppretta i gosys eller om denne oppgaven blir behandlet i ny løsning.
 Det slettes ikke data fra tabellen. Dataene kopieres også nattlig over til et bigquery datasett.
 
 
 # Komme i gang
 
-Bygges med gradle. Standard spring boot oppsett.
+Bygges med gradle. Standard Spring Boot oppsett.
 
 ---
 
