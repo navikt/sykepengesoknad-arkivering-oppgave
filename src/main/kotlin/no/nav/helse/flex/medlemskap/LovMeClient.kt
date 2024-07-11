@@ -50,12 +50,14 @@ class LovMeClient(
                     EndeligVurderingResponse::class.java,
                 )
 
-            return result.body ?: throw RuntimeException(
-                "LovMe returnerer ikke endelig medlemskap vurdering for " +
-                    "sykepengesoknadId: ${sykepengesoknad.id}",
-            )
+            return if (result.body != null) {
+                result.body
+            } else {
+                log.error("Mottok svar fra LovMe, men uten endelig medlemskapsvurdering for sykepengesoknadId: ${sykepengesoknad.id}.")
+                null
+            }
         } catch (e: Exception) {
-            log.warn("Fant ikke endelig medlemskap vurdering for sykepengesoknadId ${sykepengesoknad.id}", e)
+            log.error("Fant ikke endelig medlemskap vurdering for sykepengesoknadId ${sykepengesoknad.id}.", e)
             return null
         }
     }

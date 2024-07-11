@@ -12,6 +12,7 @@ import no.nav.helse.flex.domain.dto.Sykepengesoknad
 import no.nav.helse.flex.kafka.producer.RebehandleSykepengesoknadProducer
 import no.nav.helse.flex.logger
 import no.nav.helse.flex.medlemskap.MedlemskapVurdering
+import no.nav.helse.flex.medlemskap.MedlemskapVurderingRepository
 import no.nav.helse.flex.repository.InnsendingDbRecord
 import no.nav.helse.flex.repository.InnsendingRepository
 import no.nav.helse.flex.tilbakedaterte.OppgaverForTilbakedaterteDbRecord
@@ -33,6 +34,7 @@ class SaksbehandlingsService(
     private val identService: IdentService,
     private val pdlClient: PdlClient,
     private val medlemskapVurdering: MedlemskapVurdering,
+    private val medlemskapVurderingRepository: MedlemskapVurderingRepository,
 ) {
     private val log = logger()
 
@@ -54,9 +56,8 @@ class SaksbehandlingsService(
                     innsendingId!!,
                     soknad,
                 )
-            log.info("Journalført søknad: ${sykepengesoknad.id} med journalpostId: $jouralpostId")
+            log.info("Journalført søknad: ${sykepengesoknad.id} med journalpostId: $jouralpostId.")
         }
-
         medlemskapVurdering.oppdaterInngåendeMedlemskapVurdering(sykepengesoknad)
 
         return innsendingId!!
@@ -68,15 +69,19 @@ class SaksbehandlingsService(
         speilRelatert: Boolean = false,
     ) {
         val fnr = identService.hentFnrForAktorId(sykepengesoknad.aktorId)
-        val medlemskapVurdering = medlemskapVurdering.hentEndeligMedlemskapVurdering(sykepengesoknad)
-        val soknad = opprettSoknad(sykepengesoknad, fnr, medlemskapVurdering)
+        val endeligVurdering =
+            hentEndeligMedlemskapVurdering(
+                sykepengesoknad,
+                medlemskapVurderingRepository.findBySykepengesoknadId(sykepengesoknad.id)?.inngaendeVurdering,
+            )
+        val soknad = opprettSoknad(sykepengesoknad, fnr, endeligVurdering)
 
         val behandlingstemaOgType =
             finnBehandlingstemaOgType(
                 soknad = sykepengesoknad,
                 harRedusertVenteperiode = sykepengesoknad.harRedusertVenteperiode,
                 speilRelatert = speilRelatert,
-                medlemskapVurdering = medlemskapVurdering,
+                medlemskapVurdering = endeligVurdering,
             )
 
         val requestBody =
@@ -89,7 +94,7 @@ class SaksbehandlingsService(
         val oppgaveResponse = oppgaveClient.opprettOppgave(requestBody)
 
         innsendingRepository.updateOppgaveId(id = innsending.id!!, oppgaveId = oppgaveResponse.id.toString())
-        if (requestBody.behandlingstype == TILBAKEDATERING) {
+        if (requestBody.behandlingstype == BEHANDLINGSTEMA_TILBAKEDATERING) {
             oppgaverForTilbakedaterteRepository.save(
                 OppgaverForTilbakedaterteDbRecord(
                     sykepengesoknadUuid = sykepengesoknad.id,
@@ -179,5 +184,30 @@ class SaksbehandlingsService(
                 "Antall innsendinger hvor feil mot baksystemer gjorde at behandling ikke kunne fullføres.",
             ),
         ).increment()
+    }
+
+    private fun Sykepengesoknad.harMedlemskapSporsmal(): Boolean {
+        return this.sporsmal.any { it.tag.startsWith("MEDLEMSKAP_") }
+    }
+
+    private fun hentEndeligMedlemskapVurdering(
+        sykepengesoknad: Sykepengesoknad,
+        inngaendeVurdering: String?,
+    ): String? {
+        return when (inngaendeVurdering) {
+            "UAVKLART" -> {
+                if (sykepengesoknad.harMedlemskapSporsmal()) {
+                    // Returnerer UAVKLART hvis endeligVurdering er null er siden det kan skyldes at LovMe ikke har
+                    // svart selv om vi vet at bruker har svart på medlemskapsspørsmål.
+                    medlemskapVurdering.hentEndeligMedlemskapVurdering(sykepengesoknad) ?: "UAVKLART"
+                } else {
+                    null
+                }
+            }
+            // Returnerer NEI so, endelig vurdring hvis inngående vurdering er NEI, siden vi da ikke spør om
+            // endelig vurdering, men NEI skal behandles som en medlemskapsoppgave.
+            "NEI" -> "NEI"
+            else -> null
+        }
     }
 }
