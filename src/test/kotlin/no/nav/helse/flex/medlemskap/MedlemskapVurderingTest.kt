@@ -215,13 +215,11 @@ class MedlemskapVurderingTest : FellesTestOppsett() {
         hentLagretEndeligVurdering(soknad) shouldBeEqualTo "JA"
 
         val oppgaveRequest = hentOgValiderOppgaveRequest()
-        // TODO: Burde denne egentlig ha medlemskapsspørsmålene med JA siden det har gått til avklart (JA)?
         behandlingsteamOgBeskrivelseFraOppgaveRequest(oppgaveRequest).let { (behandlingstema, beskrivelse) ->
             behandlingstema shouldBeEqualTo BEHANDLINGSTEMA_SYKEPENGER
             beskrivelse shouldBeEqualTo
                 """
                 |$oppgaveOverskrift
-                |$oppgaveSporsmal
                 """.trimMargin()
         }
     }

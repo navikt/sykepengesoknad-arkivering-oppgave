@@ -11,12 +11,13 @@ import no.nav.helse.flex.domain.dto.harInntektsopplysninger
 import no.nav.helse.flex.tittel.skapTittel
 import no.nav.helse.flex.util.DatoUtil.norskDato
 import no.nav.helse.flex.util.PeriodeMapper.jsonTilPeriode
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.util.*
 import java.util.Collections.nCopies
 
-val log = LoggerFactory.getLogger("no.nav.helse.oppgave.BeskrivelseService")
+val log: Logger = LoggerFactory.getLogger("no.nav.helse.oppgave.BeskrivelseService")
 
 fun lagBeskrivelse(soknad: Soknad): String {
     return soknad.meldingDersomEgenmeldtSykmelding() +
@@ -31,7 +32,7 @@ fun lagBeskrivelse(soknad: Soknad): String {
         soknad.beskrivMedlemskapVurdering() +
         soknad.beskrivInntektsopplysninger() +
         soknad.sporsmal
-            .filter { it.skalVises() }
+            .filter { it.skalVises(soknad.medlemskapVurdering) }
             .map { sporsmal -> beskrivSporsmal(sporsmal, 0) }
             .filter { it.isNotBlank() }
             .joinToString("\n")
@@ -181,14 +182,21 @@ private fun Soknad.beskrivInntektsopplysninger(): String {
     return ""
 }
 
-private fun Sporsmal.skalVises() =
-    when (tag) {
+private fun Sporsmal.skalVises(medlemskapVurdering: String?): Boolean {
+    // Hvis endelig medlemskapsvurdering er JA (avklart) trenger vi ikke å vise medlemskapsspørsmålene med tilhørende
+    // svar som eventuelt gjorde at vurderingen gikk fra uavklart til avklart siden det bare blir for saksbehandler.
+    if (tag.startsWith("MEDLEMSKAP_") && medlemskapVurdering == "JA") {
+        return false
+    }
+
+    return when (tag) {
         "ANSVARSERKLARING", "BEKREFT_OPPLYSNINGER", "EGENMELDINGER", "FRAVER_FOR_BEHANDLING" -> false
         "ARBEIDSGIVER" -> true
         "UTBETALING" -> true
         "FRISKMELDT" -> "NEI" == forsteSvarverdi()
         else -> "NEI" != forsteSvarverdi()
     }
+}
 
 private fun beskrivSporsmal(
     sporsmal: Sporsmal,
