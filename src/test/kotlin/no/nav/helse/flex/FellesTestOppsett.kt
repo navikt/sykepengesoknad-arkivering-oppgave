@@ -64,7 +64,7 @@ abstract class FellesTestOppsett {
             }.also { threads.add(it) }
 
             thread {
-                KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.5.3")).apply {
+                KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.6.1")).apply {
                     start()
                     System.setProperty("KAFKA_BROKERS", bootstrapServers)
                 }

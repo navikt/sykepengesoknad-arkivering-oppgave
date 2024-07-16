@@ -2,7 +2,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id("org.springframework.boot") version "3.2.5"
+    id("org.springframework.boot") version "3.3.1"
     id("io.spring.dependency-management") version "1.1.6"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
     kotlin("jvm") version "1.9.24"
@@ -25,7 +25,7 @@ val syfoKafkaVersion = "2021.07.20-09.39-6be2c52c"
 val sykepengesoknadKafkaVersion = "2024.05.04-08.31-672172ee"
 val mockitoKotlinVersion = "2.2.0"
 val logstashLogbackEncoderVersion = "7.4"
-val tokenSupportVersion = "4.1.7"
+val tokenSupportVersion = "5.0.1"
 val testContainersVersion = "1.20.0"
 val kluentVersion = "1.73"
 val cloudStorageVersion = "2.40.1"
@@ -44,7 +44,7 @@ dependencies {
     implementation("org.hibernate.validator:hibernate-validator")
     implementation("org.springframework.kafka:spring-kafka")
     implementation("org.postgresql:postgresql")
-    implementation("org.flywaydb:flyway-core")
+    implementation("org.flywaydb:flyway-database-postgresql")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.apache.httpcomponents.client5:httpclient5")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
