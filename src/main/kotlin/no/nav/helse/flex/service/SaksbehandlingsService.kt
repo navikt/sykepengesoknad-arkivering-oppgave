@@ -91,6 +91,7 @@ class SaksbehandlingsService(
                 soknad = soknad,
                 behandlingstemaOgType = behandlingstemaOgType,
             )
+        log.info("AktørId før response er ${sykepengesoknad.aktorId} og fnr før response er $fnr")
         val oppgaveResponse = oppgaveClient.opprettOppgave(requestBody)
 
         innsendingRepository.updateOppgaveId(id = innsending.id!!, oppgaveId = oppgaveResponse.id.toString())

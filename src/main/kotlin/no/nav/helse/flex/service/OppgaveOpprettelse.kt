@@ -47,6 +47,7 @@ class OppgaveOpprettelse(
                 if (innsending != null) {
                     val soknadDTO = sykepengesoknadBackendClient.hentSoknad(it.sykepengesoknadId)
                     val aktorId = identService.hentAktorIdForFnr(soknadDTO.fnr)
+                    log.info("Aktørid er $aktorId og soknadDTO sin fnr er ${soknadDTO.fnr}")
                     val soknad = soknadDTO.toSykepengesoknad(aktorId)
                     saksbehandlingsService.opprettOppgave(
                         sykepengesoknad = soknad,
