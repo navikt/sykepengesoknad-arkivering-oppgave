@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component
 class MedlemskapVurdering(
     private val medlemskapVurderingRepository: MedlemskapVurderingRepository,
     private val lovMeClient: LovMeClient,
-    private val medlemskapToggle: MedlemskapToggle,
 ) {
     private val log = logger()
 
@@ -49,13 +48,9 @@ class MedlemskapVurdering(
         }
 
         // Returnerer endelig vurdering hvis den allerede finnes.
-        if (tidligereVurdering.endeligVurdering != null) {
-            log.info("Søknad ${sykepengesoknad.id} har allerede endelig vurdering: ${tidligereVurdering.endeligVurdering}")
-
-            if (medlemskapToggle.medlemskapToggleForBruker(sykepengesoknad.fnr)) {
-                return tidligereVurdering.endeligVurdering
-            }
-            return null
+        tidligereVurdering.endeligVurdering?.let {
+            log.info("Søknad ${sykepengesoknad.id} har allerede endelig vurdering: $it.")
+            return it
         }
 
         // Gjør at vi lagrer "null" som endelig vurdering hvis kallet til LovMe feiler.
@@ -68,12 +63,7 @@ class MedlemskapVurdering(
             )
 
         medlemskapVurderingRepository.save(oppdatertVurdering)
-
-        if (medlemskapToggle.medlemskapToggleForBruker(sykepengesoknad.fnr)) {
-            return oppdatertVurdering.endeligVurdering
-        }
-
-        return null
+        return oppdatertVurdering.endeligVurdering
     }
 
     private fun Sykepengesoknad.skalHaMedlemskapVurering() =
