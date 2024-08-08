@@ -22,7 +22,6 @@ import okhttp3.mockwebserver.RecordedRequest
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldBeEqualTo
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
@@ -40,11 +39,6 @@ class MedlemskapVurderingTest : FellesTestOppsett() {
 
     @Autowired
     lateinit var saksbehandlingsService: SaksbehandlingsService
-
-    @BeforeAll
-    fun unleashToggle() {
-        fakeUnleash.enable(UNLEASH_CONTEXT_MEDLEMSKAP_SPORSMAL)
-    }
 
     @AfterEach
     fun slettFraDatabase() {
