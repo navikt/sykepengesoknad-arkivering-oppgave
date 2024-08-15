@@ -54,6 +54,7 @@ private fun SvartypeDTO.mapSvartype(): Svartype {
         SvartypeDTO.COMBOBOX_SINGLE -> Svartype.COMBOBOX_SINGLE
         SvartypeDTO.COMBOBOX_MULTI -> Svartype.COMBOBOX_MULTI
         SvartypeDTO.BEKREFTELSESPUNKTER -> Svartype.BEKREFTELSESPUNKTER
+        SvartypeDTO.OPPSUMMERING -> Svartype.OPPSUMMERING
     }
 }
 

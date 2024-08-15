@@ -27,4 +27,5 @@ enum class Svartype {
     COMBOBOX_SINGLE,
     COMBOBOX_MULTI,
     BEKREFTELSESPUNKTER,
+    OPPSUMMERING,
 }
