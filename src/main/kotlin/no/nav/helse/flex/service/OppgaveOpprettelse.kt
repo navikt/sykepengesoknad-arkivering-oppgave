@@ -88,7 +88,7 @@ class OppgaveOpprettelse(
                 }
             } catch (e: RuntimeException) {
                 log.error("Runtime-feil ved opprettelse av oppgave ${it.sykepengesoknadId}", e)
-                if(it.sykepengesoknadId == "fe677030-f434-3ba9-a523-d2a845049def") {
+                if (it.sykepengesoknadId == "fe677030-f434-3ba9-a523-d2a845049def") {
                     spreOppgaveRepository.deleteOppgaveBySykepengesoknadId(it.sykepengesoknadId)
                 }
             }
