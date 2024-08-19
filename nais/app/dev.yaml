@@ -20,8 +20,8 @@ env:
   PDL_API_AAD_CLIENT_ID: dev-fss.pdl.pdl-api
   DOKARKIV_URL: https://dokarkiv.dev-fss-pub.nais.io
   DOKARKIV_AAD_CLIENT_ID: dev-fss.teamdokumenthandtering.dokarkiv-q1
-  OPPGAVE_URL: https://oppgave-q2.nais.preprod.local/api/v1/oppgaver
-  OPPGAVE_AAD_CLIENT_ID: dev-fss.oppgavehandtering.oppgave
+  OPPGAVE_URL: https://oppgave-q1.dev-fss-pub.nais.io
+  OPPGAVE_AAD_CLIENT_ID: dev-fss.oppgavehandtering.oppgave-q1
   SYKEPENGESOKNAD_KVITTERINGER_URL: http://sykepengesoknad-kvitteringer
   SYKEPENGESOKNAD_KVITTERINGER_AAD_CLIENT_ID: dev-gcp.flex.sykepengesoknad-kvitteringer
   MEDLEMSKAP_VURDERING_URL: http://medlemskap-sykepenger-listener.medlemskap
