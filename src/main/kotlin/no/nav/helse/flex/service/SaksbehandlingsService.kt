@@ -138,7 +138,7 @@ class SaksbehandlingsService(
             sykepengesoknad.id,
             e,
         )
-//        rebehandleSykepengesoknadProducer.send(sykepengesoknad)
+        rebehandleSykepengesoknadProducer.send(sykepengesoknad)
     }
 
     fun opprettSoknad(
