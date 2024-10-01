@@ -86,6 +86,19 @@ class BeskrivelseServiceTest {
     }
 
     @Test
+    fun soknadForSelvstendigeMedMangeSvarNy() {
+        val sykepengesoknad =
+            objectMapper.readValue(
+                BeskrivelseServiceTest::class.java.getResource("/soknadSelvstendigMangeSvarNy.json"),
+                Sykepengesoknad::class.java,
+            )
+        val soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn")
+        val beskrivelse = lagBeskrivelse(soknad)
+
+        assertThat(beskrivelse).isEqualTo(beskrivelseSelvstendigeMedMangeSvar())
+    }
+
+    @Test
     fun soknadForArbeidstakereMedNeisvar() {
         val sykepengesoknad =
             objectMapper.readValue(

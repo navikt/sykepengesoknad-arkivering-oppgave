@@ -1,0 +1,723 @@
+{
+  "id": "0ef8832d-30e3-46e3-9dce-15aa2165b634",
+  "aktorId": "aktorId-745463060",
+  "fnr": "fnr-745463060",
+  "sykmeldingId": "8a34b602-59df-46af-816a-9ee06ea0c5ba",
+  "soknadstype": "SELVSTENDIGE_OG_FRILANSERE",
+  "status": "SENDT",
+  "fom": "2024-09-01",
+  "tom": "2024-09-28",
+  "opprettet": "2024-09-29T00:00:00",
+  "sendtNAV": "2024-09-29T22:02:18.003339",
+  "sendtArbeidsgiver": null,
+  "avbruttDato": null,
+  "startSykeforlop": "2024-09-01",
+  "sykmeldingUtskrevet": "2024-09-01",
+  "arbeidsgiver": null,
+  "korrigerer": null,
+  "korrigertAv": null,
+  "arbeidssituasjon": "NAERINGSDRIVENDE",
+  "soknadPerioder": [
+    {
+      "fom": "2024-09-01",
+      "tom": "2024-09-28",
+      "grad": 100,
+      "faktiskGrad": 32,
+      "sykmeldingstype": "AKTIVITET_IKKE_MULIG"
+    }
+  ],
+  "sporsmal": [
+    {
+      "id": "3cae240f-2528-3df1-89f2-07b734b54bbf",
+      "tag": "ANSVARSERKLARING",
+      "sporsmalstekst": "Jeg vil svare så godt jeg kan på spørsmålene i søknaden.",
+      "undertekst": null,
+      "svartype": "CHECKBOX_PANEL",
+      "min": null,
+      "max": null,
+      "metadata": null,
+      "kriterieForVisningAvUndersporsmal": null,
+      "svar": [
+        {
+          "verdi": "CHECKED"
+        }
+      ],
+      "undersporsmal": []
+    },
+    {
+      "id": "7e175dae-48a0-349f-997d-61169c403630",
+      "tag": "TILBAKE_I_ARBEID",
+      "sporsmalstekst": "Var du tilbake i fullt arbeid som selvstendig næringsdrivende før sykmeldingsperioden utløp 28. september 2024?",
+      "undertekst": null,
+      "svartype": "JA_NEI",
+      "min": null,
+      "max": null,
+      "metadata": null,
+      "kriterieForVisningAvUndersporsmal": "JA",
+      "svar": [
+        {
+          "verdi": "JA"
+        }
+      ],
+      "undersporsmal": [
+        {
+          "id": "0582b682-6103-322a-bd8a-5a327cc66c89",
+          "tag": "TILBAKE_NAR",
+          "sporsmalstekst": "Når begynte du å jobbe igjen?",
+          "undertekst": null,
+          "svartype": "DATO",
+          "min": "2024-09-01",
+          "max": "2024-09-28",
+          "metadata": null,
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [
+            {
+              "verdi": "2024-09-27"
+            }
+          ],
+          "undersporsmal": []
+        }
+      ]
+    },
+    {
+      "id": "f933bfaa-e343-3cac-b8c5-6b022b2dbbfd",
+      "tag": "ARBEID_UNDERVEIS_100_PROSENT_0",
+      "sporsmalstekst": "I perioden 1. - 26. september 2024 var du 100% sykmeldt som selvstendig næringsdrivende. Jobbet du noe i denne perioden?",
+      "undertekst": null,
+      "svartype": "JA_NEI",
+      "min": null,
+      "max": null,
+      "metadata": null,
+      "kriterieForVisningAvUndersporsmal": "JA",
+      "svar": [
+        {
+          "verdi": "JA"
+        }
+      ],
+      "undersporsmal": [
+        {
+          "id": "31e5a973-bd0e-3dda-8357-3f3d6718b676",
+          "tag": "HVOR_MYE_HAR_DU_JOBBET_0",
+          "sporsmalstekst": "Oppgi arbeidsmengde i timer eller prosent:",
+          "undertekst": null,
+          "svartype": "RADIO_GRUPPE_TIMER_PROSENT",
+          "min": null,
+          "max": null,
+          "metadata": null,
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [],
+          "undersporsmal": [
+            {
+              "id": "a87031dc-e7f6-35f7-acea-789d68f1422a",
+              "tag": "HVOR_MYE_PROSENT_0",
+              "sporsmalstekst": "Prosent",
+              "undertekst": null,
+              "svartype": "RADIO",
+              "min": null,
+              "max": null,
+              "metadata": null,
+              "kriterieForVisningAvUndersporsmal": "CHECKED",
+              "svar": [],
+              "undersporsmal": [
+                {
+                  "id": "a18b11f5-9c02-3d8d-bcd0-e68ba56083ae",
+                  "tag": "HVOR_MYE_PROSENT_VERDI_0",
+                  "sporsmalstekst": "Oppgi hvor mange prosent av din normale arbeidstid du jobbet i perioden 1. - 26. september 2024?",
+                  "undertekst": "Oppgi i prosent. Eksempel: 40",
+                  "svartype": "PROSENT",
+                  "min": "1",
+                  "max": "99",
+                  "metadata": null,
+                  "kriterieForVisningAvUndersporsmal": null,
+                  "svar": [],
+                  "undersporsmal": []
+                }
+              ]
+            },
+            {
+              "id": "c1e7911d-e3f4-386b-8563-eb902fdab237",
+              "tag": "HVOR_MYE_TIMER_0",
+              "sporsmalstekst": "Timer",
+              "undertekst": null,
+              "svartype": "RADIO",
+              "min": null,
+              "max": null,
+              "metadata": null,
+              "kriterieForVisningAvUndersporsmal": "CHECKED",
+              "svar": [
+                {
+                  "verdi": "CHECKED"
+                }
+              ],
+              "undersporsmal": [
+                {
+                  "id": "7386ae6f-1079-3455-b567-ac8ca615aea4",
+                  "tag": "HVOR_MYE_TIMER_VERDI_0",
+                  "sporsmalstekst": "Oppgi totalt antall timer du jobbet i perioden 1. - 26. september 2024",
+                  "undertekst": "Eksempel: 8,5",
+                  "svartype": "TIMER",
+                  "min": "1",
+                  "max": "557",
+                  "metadata": null,
+                  "kriterieForVisningAvUndersporsmal": null,
+                  "svar": [
+                    {
+                      "verdi": "37"
+                    }
+                  ],
+                  "undersporsmal": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "0569e705-12a0-363c-ae5e-1e160d7dc51f",
+          "tag": "JOBBER_DU_NORMAL_ARBEIDSUKE_0",
+          "sporsmalstekst": "Jobber du vanligvis 37,5 timer i uka?",
+          "undertekst": null,
+          "svartype": "JA_NEI",
+          "min": null,
+          "max": null,
+          "metadata": null,
+          "kriterieForVisningAvUndersporsmal": "NEI",
+          "svar": [
+            {
+              "verdi": "NEI"
+            }
+          ],
+          "undersporsmal": [
+            {
+              "id": "1ec3a63b-b4ba-3f2f-880a-e6021f8a8223",
+              "tag": "HVOR_MANGE_TIMER_PER_UKE_0",
+              "sporsmalstekst": "Oppgi timer per uke",
+              "undertekst": "Eksempel: 8,5",
+              "svartype": "TIMER",
+              "min": "1",
+              "max": "150",
+              "metadata": null,
+              "kriterieForVisningAvUndersporsmal": null,
+              "svar": [
+                {
+                  "verdi": "30"
+                }
+              ],
+              "undersporsmal": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "be9276a2-2546-3400-84eb-ddc927e87216",
+      "tag": "ARBEID_UTENFOR_NORGE",
+      "sporsmalstekst": "Har du arbeidet i utlandet i løpet av de siste 12 månedene?",
+      "undertekst": null,
+      "svartype": "JA_NEI",
+      "min": null,
+      "max": null,
+      "metadata": null,
+      "kriterieForVisningAvUndersporsmal": null,
+      "svar": [
+        {
+          "verdi": "JA"
+        }
+      ],
+      "undersporsmal": []
+    },
+    {
+      "id": "a430d0ff-72bd-3a9c-8a77-552c7406a0f4",
+      "tag": "ANDRE_INNTEKTSKILDER",
+      "sporsmalstekst": "Har du annen inntekt?",
+      "undertekst": null,
+      "svartype": "JA_NEI",
+      "min": null,
+      "max": null,
+      "metadata": null,
+      "kriterieForVisningAvUndersporsmal": "JA",
+      "svar": [
+        {
+          "verdi": "JA"
+        }
+      ],
+      "undersporsmal": [
+        {
+          "id": "42bbf53f-5860-35ea-81cb-9b1856e06174",
+          "tag": "HVILKE_ANDRE_INNTEKTSKILDER",
+          "sporsmalstekst": "Hvilke inntektskilder har du?",
+          "undertekst": null,
+          "svartype": "CHECKBOX_GRUPPE",
+          "min": null,
+          "max": null,
+          "metadata": null,
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [],
+          "undersporsmal": [
+            {
+              "id": "2cb4f31c-92f5-3e05-86b1-5526b8a1566f",
+              "tag": "INNTEKTSKILDE_ARBEIDSFORHOLD",
+              "sporsmalstekst": "arbeidsforhold",
+              "undertekst": null,
+              "svartype": "CHECKBOX",
+              "min": null,
+              "max": null,
+              "metadata": null,
+              "kriterieForVisningAvUndersporsmal": "CHECKED",
+              "svar": [],
+              "undersporsmal": [
+                {
+                  "id": "b00785fa-8ccd-3293-83ca-0a22d78df558",
+                  "tag": "INNTEKTSKILDE_ARBEIDSFORHOLD_ER_DU_SYKMELDT",
+                  "sporsmalstekst": "Er du sykmeldt fra dette?",
+                  "undertekst": null,
+                  "svartype": "JA_NEI",
+                  "min": null,
+                  "max": null,
+                  "metadata": null,
+                  "kriterieForVisningAvUndersporsmal": null,
+                  "svar": [],
+                  "undersporsmal": []
+                }
+              ]
+            },
+            {
+              "id": "30912da7-cdc4-32f2-adcf-d6e862be2744",
+              "tag": "INNTEKTSKILDE_JORDBRUKER",
+              "sporsmalstekst": "jordbruk / fiske / reindrift",
+              "undertekst": null,
+              "svartype": "CHECKBOX",
+              "min": null,
+              "max": null,
+              "metadata": null,
+              "kriterieForVisningAvUndersporsmal": "CHECKED",
+              "svar": [],
+              "undersporsmal": [
+                {
+                  "id": "ec87b58c-97fb-36ab-a071-ae4ae8eeed30",
+                  "tag": "INNTEKTSKILDE_JORDBRUKER_ER_DU_SYKMELDT",
+                  "sporsmalstekst": "Er du sykmeldt fra dette?",
+                  "undertekst": null,
+                  "svartype": "JA_NEI",
+                  "min": null,
+                  "max": null,
+                  "metadata": null,
+                  "kriterieForVisningAvUndersporsmal": null,
+                  "svar": [],
+                  "undersporsmal": []
+                }
+              ]
+            },
+            {
+              "id": "c23a0120-3a3d-36d8-b8cb-36b59934ca82",
+              "tag": "INNTEKTSKILDE_FRILANSER_SELVSTENDIG",
+              "sporsmalstekst": "frilanser",
+              "undertekst": null,
+              "svartype": "CHECKBOX",
+              "min": null,
+              "max": null,
+              "metadata": null,
+              "kriterieForVisningAvUndersporsmal": "CHECKED",
+              "svar": [
+                {
+                  "id": "40186612-9288-4ef4-a45d-580446dd777f",
+                  "verdi": "CHECKED"
+                }
+              ],
+              "undersporsmal": [
+                {
+                  "id": "ce66763c-ccb9-360d-9779-b2bc373aea78",
+                  "tag": "INNTEKTSKILDE_FRILANSER_SELVSTENDIG_ER_DU_SYKMELDT",
+                  "sporsmalstekst": "Er du sykmeldt fra dette?",
+                  "undertekst": null,
+                  "svartype": "JA_NEI",
+                  "min": null,
+                  "max": null,
+                  "metadata": null,
+                  "kriterieForVisningAvUndersporsmal": null,
+                  "svar": [
+                    {
+                      "verdi": "NEI"
+                    }
+                  ],
+                  "undersporsmal": []
+                }
+              ]
+            },
+            {
+              "id": "e9f63fd0-af53-3cfc-825e-f7efd768947c",
+              "tag": "INNTEKTSKILDE_ANNET",
+              "sporsmalstekst": "annet",
+              "undertekst": null,
+              "svartype": "CHECKBOX",
+              "min": null,
+              "max": null,
+              "metadata": null,
+              "kriterieForVisningAvUndersporsmal": null,
+              "svar": [],
+              "undersporsmal": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "238f2598-4124-3a57-802c-8d75b20e810b",
+      "tag": "OPPHOLD_UTENFOR_EOS",
+      "sporsmalstekst": "Var du på reise utenfor EU/EØS mens du var sykmeldt 1. - 26. september 2024?",
+      "undertekst": null,
+      "svartype": "JA_NEI",
+      "min": null,
+      "max": null,
+      "metadata": null,
+      "kriterieForVisningAvUndersporsmal": "JA",
+      "svar": [
+        {
+          "verdi": "JA"
+        }
+      ],
+      "undersporsmal": [
+        {
+          "id": "443fa9ec-ef13-31e8-9801-831c6485a47f",
+          "tag": "OPPHOLD_UTENFOR_EOS_NAR",
+          "sporsmalstekst": "Når var du utenfor EU/EØS?",
+          "undertekst": null,
+          "svartype": "PERIODER",
+          "min": "2024-09-01",
+          "max": "2024-09-26",
+          "metadata": null,
+          "kriterieForVisningAvUndersporsmal": null,
+          "svar": [
+            {
+              "verdi": "{\"fom\":\"2024-09-23\",\"tom\":\"2024-09-26\"}"
+            }
+          ],
+          "undersporsmal": []
+        }
+      ]
+    },
+    {
+      "id": "3be2cf50-2782-32a5-a683-327516ae98e4",
+      "tag": "INNTEKTSOPPLYSNINGER_VIRKSOMHETEN_AVVIKLET",
+      "sporsmalstekst": "Har du avviklet virksomheten din før du ble sykmeldt?",
+      "undertekst": null,
+      "svartype": "RADIO_GRUPPE",
+      "min": null,
+      "max": null,
+      "metadata": null,
+      "kriterieForVisningAvUndersporsmal": null,
+      "svar": [],
+      "undersporsmal": [
+        {
+          "id": "1298e21d-b2a3-3191-9f83-1cc7df024662",
+          "tag": "INNTEKTSOPPLYSNINGER_VIRKSOMHETEN_AVVIKLET_JA",
+          "sporsmalstekst": "Ja",
+          "undertekst": null,
+          "svartype": "RADIO",
+          "min": null,
+          "max": null,
+          "metadata": null,
+          "kriterieForVisningAvUndersporsmal": "CHECKED",
+          "svar": [],
+          "undersporsmal": [
+            {
+              "id": "b020c0c5-f504-3e08-ad01-2dbbcb8dd67f",
+              "tag": "INNTEKTSOPPLYSNINGER_VIRKSOMHETEN_AVVIKLET_NAR",
+              "sporsmalstekst": "Når ble virksomheten avviklet?",
+              "undertekst": null,
+              "svartype": "DATO",
+              "min": null,
+              "max": "2024-08-31",
+              "metadata": null,
+              "kriterieForVisningAvUndersporsmal": null,
+              "svar": [],
+              "undersporsmal": []
+            }
+          ]
+        },
+        {
+          "id": "38accb27-9b8e-35fa-b3d3-52527d9af5b2",
+          "tag": "INNTEKTSOPPLYSNINGER_VIRKSOMHETEN_AVVIKLET_NEI",
+          "sporsmalstekst": "Nei",
+          "undertekst": null,
+          "svartype": "RADIO",
+          "min": null,
+          "max": null,
+          "metadata": null,
+          "kriterieForVisningAvUndersporsmal": "CHECKED",
+          "svar": [
+            {
+              "verdi": "CHECKED"
+            }
+          ],
+          "undersporsmal": [
+            {
+              "id": "f88fc143-9d8e-3ec2-8258-f8c6fc6c82b7",
+              "tag": "INNTEKTSOPPLYSNINGER_NY_I_ARBEIDSLIVET",
+              "sporsmalstekst": "Er du ny i arbeidslivet etter 1. januar 2019?",
+              "undertekst": null,
+              "svartype": "RADIO_GRUPPE",
+              "min": null,
+              "max": null,
+              "metadata": null,
+              "kriterieForVisningAvUndersporsmal": null,
+              "svar": [],
+              "undersporsmal": [
+                {
+                  "id": "07e5a6c5-f7da-3716-b59a-da7da1087385",
+                  "tag": "INNTEKTSOPPLYSNINGER_NY_I_ARBEIDSLIVET_JA",
+                  "sporsmalstekst": "Ja",
+                  "undertekst": null,
+                  "svartype": "RADIO",
+                  "min": null,
+                  "max": null,
+                  "metadata": null,
+                  "kriterieForVisningAvUndersporsmal": "CHECKED",
+                  "svar": [],
+                  "undersporsmal": [
+                    {
+                      "id": "97b64337-6c7a-3a9b-974a-9e11d8345882",
+                      "tag": "INNTEKTSOPPLYSNINGER_NY_I_ARBEIDSLIVET_DATO",
+                      "sporsmalstekst": "Når begynte du i arbeidslivet?",
+                      "undertekst": null,
+                      "svartype": "DATO",
+                      "min": "2019-09-01",
+                      "max": "2024-08-31",
+                      "metadata": null,
+                      "kriterieForVisningAvUndersporsmal": null,
+                      "svar": [],
+                      "undersporsmal": []
+                    }
+                  ]
+                },
+                {
+                  "id": "64024a33-d09c-3c54-b39c-125eab850735",
+                  "tag": "INNTEKTSOPPLYSNINGER_NY_I_ARBEIDSLIVET_NEI",
+                  "sporsmalstekst": "Nei",
+                  "undertekst": null,
+                  "svartype": "RADIO",
+                  "min": null,
+                  "max": null,
+                  "metadata": null,
+                  "kriterieForVisningAvUndersporsmal": "CHECKED",
+                  "svar": [
+                    {
+                      "verdi": "CHECKED"
+                    }
+                  ],
+                  "undersporsmal": [
+                    {
+                      "id": "2c2b411a-ee40-3bb8-98d0-4b68104f9ffa",
+                      "tag": "INNTEKTSOPPLYSNINGER_VARIG_ENDRING",
+                      "sporsmalstekst": "Har det skjedd en varig endring i arbeidssituasjonen eller virksomheten din i mellom 1. september 2019 og frem tilsykmeldingstidspunktet?",
+                      "undertekst": null,
+                      "svartype": "JA_NEI",
+                      "min": null,
+                      "max": null,
+                      "metadata": null,
+                      "kriterieForVisningAvUndersporsmal": "JA",
+                      "svar": [
+                        {
+                          "verdi": "JA"
+                        }
+                      ],
+                      "undersporsmal": [
+                        {
+                          "id": "c5ecab60-308b-3fbe-af10-e747f8bbd7c0",
+                          "tag": "INNTEKTSOPPLYSNINGER_VARIG_ENDRING_BEGRUNNELSE",
+                          "sporsmalstekst": "Hvilken endring har skjedd i din arbeidssituasjon eller virksomhet?",
+                          "undertekst": "Du kan velge en eller flere alternativer",
+                          "svartype": "CHECKBOX_GRUPPE",
+                          "min": null,
+                          "max": null,
+                          "metadata": null,
+                          "kriterieForVisningAvUndersporsmal": null,
+                          "svar": [],
+                          "undersporsmal": [
+                            {
+                              "id": "eb8cde8d-5a53-3f9c-adf3-0303689d2b01",
+                              "tag": "INNTEKTSOPPLYSNINGER_VARIG_ENDRING_BEGRUNNELSE_OPPRETTELSE_NEDLEGGELSE",
+                              "sporsmalstekst": "Opprettelse eller nedleggelse av næringsvirksomhet",
+                              "undertekst": null,
+                              "svartype": "CHECKBOX",
+                              "min": null,
+                              "max": null,
+                              "metadata": null,
+                              "kriterieForVisningAvUndersporsmal": null,
+                              "svar": [],
+                              "undersporsmal": []
+                            },
+                            {
+                              "id": "02696837-a593-342d-b58c-b538cd7e291e",
+                              "tag": "INNTEKTSOPPLYSNINGER_VARIG_ENDRING_BEGRUNNELSE_ENDRET_INNSATS",
+                              "sporsmalstekst": "Økt eller redusert innsats",
+                              "undertekst": null,
+                              "svartype": "CHECKBOX",
+                              "min": null,
+                              "max": null,
+                              "metadata": null,
+                              "kriterieForVisningAvUndersporsmal": null,
+                              "svar": [],
+                              "undersporsmal": []
+                            },
+                            {
+                              "id": "2fbeb867-8c05-3524-b324-11c0dd1beb53",
+                              "tag": "INNTEKTSOPPLYSNINGER_VARIG_ENDRING_BEGRUNNELSE_OMLEGGING_AV_VIRKSOMHETEN",
+                              "sporsmalstekst": "Omlegging av virksomheten",
+                              "undertekst": null,
+                              "svartype": "CHECKBOX",
+                              "min": null,
+                              "max": null,
+                              "metadata": null,
+                              "kriterieForVisningAvUndersporsmal": null,
+                              "svar": [],
+                              "undersporsmal": []
+                            },
+                            {
+                              "id": "6944f146-3ddb-381f-abba-34a5e64e13c9",
+                              "tag": "INNTEKTSOPPLYSNINGER_VARIG_ENDRING_BEGRUNNELSE_ENDRET_MARKEDSSITUASJON",
+                              "sporsmalstekst": "Endret markedssituasjon",
+                              "undertekst": null,
+                              "svartype": "CHECKBOX",
+                              "min": null,
+                              "max": null,
+                              "metadata": null,
+                              "kriterieForVisningAvUndersporsmal": null,
+                              "svar": [
+                                {
+                                  "verdi": "CHECKED"
+                                }
+                              ],
+                              "undersporsmal": []
+                            },
+                            {
+                              "id": "f202eb52-27a2-3bcc-97e4-ce353dc81243",
+                              "tag": "INNTEKTSOPPLYSNINGER_VARIG_ENDRING_BEGRUNNELSE_ANNET",
+                              "sporsmalstekst": "Annet",
+                              "undertekst": null,
+                              "svartype": "CHECKBOX",
+                              "min": null,
+                              "max": null,
+                              "metadata": null,
+                              "kriterieForVisningAvUndersporsmal": null,
+                              "svar": [
+                                {
+                                  "verdi": "CHECKED"
+                                }
+                              ],
+                              "undersporsmal": []
+                            }
+                          ]
+                        },
+                        {
+                          "id": "5e43d707-e102-36b5-861f-2a331d715880",
+                          "tag": "INNTEKTSOPPLYSNINGER_VARIG_ENDRING_25_PROSENT",
+                          "sporsmalstekst": "Har du hatt mer enn 25 prosent endring i årsinntekten din som følge av den varige endringen?",
+                          "undertekst": null,
+                          "svartype": "JA_NEI",
+                          "min": null,
+                          "max": null,
+                          "metadata": {
+                            "sigrunInntekt": {
+                              "inntekter": [
+                                {
+                                  "aar": "2023",
+                                  "verdi": 533504
+                                },
+                                {
+                                  "aar": "2022",
+                                  "verdi": 508385
+                                },
+                                {
+                                  "aar": "2021",
+                                  "verdi": 473769
+                                }
+                              ],
+                              "g-verdier": [
+                                {
+                                  "aar": "2023",
+                                  "verdi": 116239
+                                },
+                                {
+                                  "aar": "2022",
+                                  "verdi": 109784
+                                },
+                                {
+                                  "aar": "2021",
+                                  "verdi": 104716
+                                }
+                              ],
+                              "g-sykmelding": 124028,
+                              "beregnet": {
+                                "snitt": 505219,
+                                "p25": 631524,
+                                "m25": 378914
+                              }
+                            }
+                          },
+                          "kriterieForVisningAvUndersporsmal": "JA",
+                          "svar": [
+                            {
+                              "verdi": "JA"
+                            }
+                          ],
+                          "undersporsmal": [
+                            {
+                              "id": "f3274bfe-ae72-31a1-bec5-352355b919a9",
+                              "tag": "INNTEKTSOPPLYSNINGER_VARIG_ENDRING_DATO",
+                              "sporsmalstekst": "Når skjedde den siste varige endringen?",
+                              "undertekst": null,
+                              "svartype": "DATO",
+                              "min": "2019-09-01",
+                              "max": "2024-09-01",
+                              "metadata": null,
+                              "kriterieForVisningAvUndersporsmal": null,
+                              "svar": [
+                                {
+                                  "verdi": "2024-04-17"
+                                }
+                              ],
+                              "undersporsmal": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "13d4d3c3-76ba-34e3-b402-4281451c0893",
+      "tag": "TIL_SLUTT",
+      "sporsmalstekst": null,
+      "undertekst": null,
+      "svartype": "OPPSUMMERING",
+      "min": null,
+      "max": null,
+      "metadata": null,
+      "kriterieForVisningAvUndersporsmal": null,
+      "svar": [
+        {
+          "verdi": "true"
+        }
+      ],
+      "undersporsmal": []
+    }
+  ],
+  "egenmeldtSykmelding": false,
+  "merknaderFraSykmelding": null,
+  "opprettetAvInntektsmelding": false,
+  "utenlandskSykmelding": false,
+  "klippet": false,
+  "inntektskilderDataFraInntektskomponenten": null,
+  "inntektsopplysningerNyKvittering": true,
+  "inntektsopplysningerInnsendingId": null,
+  "inntektsopplysningerInnsendingDokumenter": null,
+  "korrigeringsfristUtlopt": false,
+  "forstegangssoknad": true,
+  "kjentOppholdstillatelse": null
+}

@@ -1,5 +1,7 @@
 package no.nav.helse.flex.domain.dto
 
+import com.fasterxml.jackson.databind.JsonNode
+
 data class Sporsmal(
     val id: String,
     val tag: String,
@@ -11,4 +13,5 @@ data class Sporsmal(
     val kriterieForVisningAvUndersporsmal: Visningskriterie? = null,
     val svar: List<Svar>? = null,
     val undersporsmal: List<Sporsmal>? = null,
+    var metadata: JsonNode? = null,
 )

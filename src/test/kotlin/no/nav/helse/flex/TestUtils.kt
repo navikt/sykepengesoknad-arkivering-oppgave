@@ -368,3 +368,63 @@ Inntektsopplysninger
 
 Er det drift?
 100 timer"""
+
+fun beskrivelseSelvstendigeMedMangeSvar(): String {
+    return """
+        Søknad om sykepenger for næringsdrivende for perioden 01.09.2024 til 28.09.2024 - med vedlegg inntektsopplysninger
+
+        Periode 1:
+        01.09.2024 - 28.09.2024
+        Grad: 100
+        Oppgitt faktisk arbeidsgrad: 32
+
+        Inntektsopplysninger
+
+        Var du tilbake i fullt arbeid som selvstendig næringsdrivende før sykmeldingsperioden utløp 28. september 2024?
+        Ja
+            Når begynte du å jobbe igjen?
+            27.09.2024
+
+        I perioden 1. - 26. september 2024 var du 100% sykmeldt som selvstendig næringsdrivende. Jobbet du noe i denne perioden?
+        Ja
+            Oppgi arbeidsmengde i timer eller prosent:
+            Oppgi totalt antall timer du jobbet i perioden 1. - 26. september 2024
+            37 timer
+
+            Jobber du vanligvis 37,5 timer i uka?
+            Nei
+                Oppgi timer per uke
+                30 timer
+
+        Har du arbeidet i utlandet i løpet av de siste 12 månedene?
+        Ja
+
+        Har du annen inntekt?
+        Ja
+            Hvilke inntektskilder har du?
+                frilanser
+                    Er du sykmeldt fra dette?
+                    Nei
+
+        Var du på reise utenfor EU/EØS mens du var sykmeldt 1. - 26. september 2024?
+        Ja
+            Når var du utenfor EU/EØS?
+            23.09.2024 - 26.09.2024
+
+        Har du avviklet virksomheten din før du ble sykmeldt?
+        Nei
+            Er du ny i arbeidslivet etter 1. januar 2019?
+            Nei
+                Har det skjedd en varig endring i arbeidssituasjonen eller virksomheten din i mellom 1. september 2019 og frem tilsykmeldingstidspunktet?
+                Ja
+                    Hvilken endring har skjedd i din arbeidssituasjon eller virksomhet?
+                        Endret markedssituasjon
+
+                        Annet
+
+                    Har du hatt mer enn 25 prosent endring i årsinntekten din som følge av den varige endringen?
+                    Ja
+                        Når skjedde den siste varige endringen?
+                        17.04.2024
+        """.trimIndent()
+}
