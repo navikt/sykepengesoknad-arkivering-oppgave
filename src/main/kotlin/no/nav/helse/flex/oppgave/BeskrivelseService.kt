@@ -4,10 +4,12 @@ import no.nav.helse.flex.domain.Soknad
 import no.nav.helse.flex.domain.dto.Arbeidssituasjon.ARBEIDSTAKER
 import no.nav.helse.flex.domain.dto.Avsendertype.SYSTEM
 import no.nav.helse.flex.domain.dto.Merknad
+import no.nav.helse.flex.domain.dto.SigrunInntekt
 import no.nav.helse.flex.domain.dto.Soknadstype.*
 import no.nav.helse.flex.domain.dto.Sporsmal
 import no.nav.helse.flex.domain.dto.Svartype.*
 import no.nav.helse.flex.domain.dto.harInntektsopplysninger
+import no.nav.helse.flex.objectMapper
 import no.nav.helse.flex.tittel.skapTittel
 import no.nav.helse.flex.util.DatoUtil.norskDato
 import no.nav.helse.flex.util.PeriodeMapper.jsonTilPeriode
@@ -269,7 +271,17 @@ private fun Sporsmal.formatterSporsmalOgSvar(): List<String> {
             listOfNotNull(sporsmalstekst)
 
         IKKE_RELEVANT -> emptyList()
-        JA_NEI -> listOfNotNull(sporsmalstekst, if ("JA" == forsteSvarverdi()) "Ja" else "Nei")
+        JA_NEI -> {
+            val sporsmalOgSvar = listOfNotNull(sporsmalstekst, if ("JA" == forsteSvarverdi()) "Ja" else "Nei")
+            when (tag) {
+                "INNTEKTSOPPLYSNINGER_VARIG_ENDRING_25_PROSENT" -> {
+                    sigrunData(sporsmalOgSvar)
+                }
+
+                else -> sporsmalOgSvar
+            }
+        }
+
         DATO -> listOfNotNull(sporsmalstekst, formatterDato(forsteSvarverdi()))
         PERIODE -> listOfNotNull(sporsmalstekst, formatterPeriode(forsteSvarverdi()))
         PERIODER -> listOfNotNull(sporsmalstekst) + svarverdier().map { formatterPeriode(it) }
@@ -327,4 +339,31 @@ private fun formatterBehandlingsdato(svarverdi: String): String {
     } catch (e: Exception) {
         "Ikke til behandling"
     }
+}
+
+private fun Sporsmal.sigrunData(sporsmalOgSvar: List<String>): List<String> {
+    val grunnlag =
+        try {
+            objectMapper.convertValue(metadata?.get("sigrunInntekt"), SigrunInntekt::class.java)
+                ?: throw Exception("Finner ikke sigrun inntekt på metadata")
+        } catch (e: Exception) {
+            log.warn(e.message)
+            return sporsmalOgSvar
+        }
+
+    val snittTekst = "Gjennomsnittlig årsinntekt på sykmeldingstidspunktet: ${grunnlag.beregnet.snitt.toString().formaterInntekt()} kroner"
+    val lignedeAarTekst = "Inntekt per kalenderår, de tre siste ferdiglignede årene: "
+    val lignedeAarVerdier = grunnlag.inntekter.map { "${it.aar}: " + it.verdi.toString().formaterInntekt() + " kroner" }
+
+    return sporsmalOgSvar.toMutableList().apply {
+        add(snittTekst)
+        add(lignedeAarTekst)
+    }.plus(lignedeAarVerdier)
+}
+
+/**
+ * @return 1500000 -> 1 500 000
+ */
+private fun String.formaterInntekt(): String {
+    return this.reversed().chunked(3).joinToString(" ").reversed()
 }

@@ -264,7 +264,8 @@ const val BESKRIVELSE_BEHANDLINGSDAGER_MED_MANGE_SVAR =
         "            Er du sykmeldt fra dette?\n" +
         "            Ja"
 
-const val BESKRIVELSE_ARBEIDSTAKER_MED_TIMER_OG_DERETTER_PROSENT = """Søknad om sykepenger for perioden 16.10.2018 til 24.10.2018
+const val BESKRIVELSE_ARBEIDSTAKER_MED_TIMER_OG_DERETTER_PROSENT =
+    """Søknad om sykepenger for perioden 16.10.2018 til 24.10.2018
 
 Arbeidsgiver: ARBEIDSGIVER A/S
 Organisasjonsnummer: 1257358
@@ -424,6 +425,11 @@ fun beskrivelseSelvstendigeMedMangeSvar(): String {
 
                     Har du hatt mer enn 25 prosent endring i årsinntekten din som følge av den varige endringen?
                     Ja
+                    Gjennomsnittlig årsinntekt på sykmeldingstidspunktet: 505 219 kroner
+                    Inntekt per kalenderår, de tre siste ferdiglignede årene: 
+                    2023: 533 504 kroner
+                    2022: 508 385 kroner
+                    2021: 473 769 kroner
                         Når skjedde den siste varige endringen?
                         17.04.2024
         """.trimIndent()
