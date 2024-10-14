@@ -35,7 +35,7 @@ class SoknadTittelTest {
                     ),
             )
         soknad.skapTittel() shouldBeEqualTo "Søknad om sykepenger for næringsdrivende for perioden " +
-            "04.03.2021 til 05.03.2021 - med vedlegg inntektsopplysninger"
+            "04.03.2021 til 05.03.2021 - med forespørsel om inntektsdokumentasjon"
     }
 
     @Test

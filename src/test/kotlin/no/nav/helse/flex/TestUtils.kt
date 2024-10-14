@@ -372,7 +372,7 @@ Er det drift?
 
 fun beskrivelseSelvstendigeMedMangeSvar(): String {
     return """
-        Søknad om sykepenger for næringsdrivende for perioden 01.09.2024 til 28.09.2024 - med vedlegg inntektsopplysninger
+        Søknad om sykepenger for næringsdrivende for perioden 01.09.2024 til 28.09.2024 - med forespørsel om inntektsdokumentasjon
 
         Periode 1:
         01.09.2024 - 28.09.2024

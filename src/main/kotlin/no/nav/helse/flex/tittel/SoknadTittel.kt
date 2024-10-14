@@ -11,7 +11,7 @@ fun Soknad.periodeTekst(): String = "for perioden ${fom!!.format(DatoUtil.norskD
 private fun Soknad.skapTittelForNaringsdrivendeFrilanser(): String {
     val vedlegg =
         if (sporsmal.harInntektsopplysninger()) {
-            " - med vedlegg inntektsopplysninger"
+            " - med forespørsel om inntektsdokumentasjon"
         } else {
             ""
         }
