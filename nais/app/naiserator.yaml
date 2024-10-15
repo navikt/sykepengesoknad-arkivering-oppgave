@@ -36,6 +36,14 @@ spec:
       tenant: {{azureTenant}}
   kafka:
     pool: {{kafkaPool}}
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: java
+    logging:
+      destinations:
+        - id: loki
+        - id: elastic
   gcp:
     sqlInstances:
       - type: {{db_type}}
