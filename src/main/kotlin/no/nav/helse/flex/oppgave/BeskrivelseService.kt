@@ -345,7 +345,7 @@ private fun Sporsmal.sigrunData(sporsmalOgSvar: List<String>): List<String> {
     val grunnlag =
         try {
             objectMapper.convertValue(metadata?.get("sigrunInntekt"), SigrunInntekt::class.java)
-                ?: throw Exception("Finner ikke sigrun inntekt på metadata")
+                ?: return sporsmalOgSvar
         } catch (e: Exception) {
             log.warn(e.message)
             return sporsmalOgSvar
