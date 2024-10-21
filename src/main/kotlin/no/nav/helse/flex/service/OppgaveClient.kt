@@ -1,6 +1,8 @@
 package no.nav.helse.flex.service
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import no.nav.helse.flex.config.EnvironmentToggles
+import no.nav.helse.flex.oppgave.log
 import no.nav.helse.flex.util.callId
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
@@ -17,6 +19,7 @@ class OppgaveClient(
     @Value("\${OPPGAVE_URL}")
     private val url: String,
     private val oppgaveRestTemplate: RestTemplate,
+    private val environmentToggles: EnvironmentToggles,
 ) {
     fun opprettOppgave(request: OppgaveRequest): OpprettOppgaveResponse {
         return try {
@@ -42,6 +45,17 @@ class OppgaveClient(
             result.body
                 ?: throw RuntimeException("Oppgave-respons mangler ved oppretting av oppgave for journalpostId ${request.journalpostId}")
         } catch (e: HttpClientErrorException) {
+            if (environmentToggles.isDevGcp() && e.message?.contains("Identen finnes ikke i PDL") == true) {
+                log.info(
+                    "Identen finnes ikke i PDL i dev. Returnerer konstruert oppgave med id -1 for journalpost " + request.journalpostId,
+                )
+                return OpprettOppgaveResponse(
+                    id = -1,
+                    tildeltEnhetsnr = "-1",
+                    tema = "SYK",
+                    oppgavetype = "-1",
+                )
+            }
             throw RuntimeException("Feil ved oppretting av oppgave for journalpostId ${request.journalpostId}", e)
         }
     }
