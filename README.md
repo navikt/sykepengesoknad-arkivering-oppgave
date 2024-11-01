@@ -64,7 +64,7 @@ disse oppgavene neste gang den kjører.
 Dersom `spedisjon` ikke svarer før `sykepengesoknad-arkivering-oppgave` har sett søknaden"
 I noen tilfeller kan det hende at `sykepengesoknad-arkivering-oppgave` kommer `spedisjon` i forkjøpet og finner en søknad
 som ikke har blitt behandlet i noen form av `spedisjon` enda. I dette tilfellet oppretter `sykepengesoknad-arkivering-oppgave`
-sin egen `Utsett`, og venter i 48 timer på svar fra `spedisjon`. Dette blir da en oppgave som
+sin egen `Utsett`, og venter i 7 dager på svar fra `spedisjon`. Dette blir da en oppgave som
 følger samme logikk som over.
 
 En del søknader har ikke spedisjon et forhold til, da setter vi timeout til 1 minutt slik at vi ikke venter for lenge på spedisjon.
