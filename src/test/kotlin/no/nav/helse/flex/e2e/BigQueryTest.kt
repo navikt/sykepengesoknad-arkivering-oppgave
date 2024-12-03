@@ -11,9 +11,9 @@ import org.amshove.kluent.`should be`
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.test.annotation.DirtiesContext
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import java.sql.ResultSet
 import java.sql.Timestamp
 import java.time.Instant
@@ -24,7 +24,7 @@ import java.time.temporal.ChronoUnit
 
 @DirtiesContext
 class BigQueryTest : FellesTestOppsett() {
-    @MockBean
+    @MockitoBean
     lateinit var saksbehandlingsService: SaksbehandlingsService
 
     private val tid = LocalDateTime.of(2022, 3, 7, 12, 37, 17).toInstant(ZoneOffset.UTC)

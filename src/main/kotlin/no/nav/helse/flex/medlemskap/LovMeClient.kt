@@ -29,7 +29,7 @@ class LovMeClient(
 
             val uri =
                 UriComponentsBuilder
-                    .fromHttpUrl(url)
+                    .fromUriString(url)
                     .pathSegment("flexvurdering")
                     .build()
                     .toUri()

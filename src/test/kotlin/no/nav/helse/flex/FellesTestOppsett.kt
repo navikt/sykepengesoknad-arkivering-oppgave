@@ -25,12 +25,12 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.kafka.support.Acknowledgment
-import org.testcontainers.containers.KafkaContainer
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.testcontainers.containers.PostgreSQLContainer
+import org.testcontainers.kafka.KafkaContainer
 import org.testcontainers.utility.DockerImageName
 import java.util.concurrent.TimeUnit
 
@@ -50,7 +50,7 @@ abstract class FellesTestOppsett {
                 System.setProperty("spring.datasource.password", password)
             }
 
-            KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.6.1")).apply {
+            KafkaContainer(DockerImageName.parse("apache/kafka-native")).apply {
                 start()
                 System.setProperty("KAFKA_BROKERS", bootstrapServers)
             }
@@ -117,7 +117,7 @@ abstract class FellesTestOppsett {
     @Autowired
     lateinit var sykmeldingSendtBekreftetConsumer: SykmeldingSendtBekreftetConsumer
 
-    @MockBean
+    @MockitoBean
     lateinit var acknowledgment: Acknowledgment
 
     @Autowired

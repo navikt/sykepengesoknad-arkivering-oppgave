@@ -23,8 +23,8 @@ import org.amshove.kluent.`should be equal to`
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.annotation.DirtiesContext
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -34,7 +34,7 @@ import java.util.*
 class E2ETest : FellesTestOppsett() {
     private val omFireTimer: LocalDateTime = LocalDateTime.now().plusHours(4)
 
-    @MockBean
+    @MockitoBean
     lateinit var saksbehandlingsService: SaksbehandlingsService
 
     @BeforeEach
