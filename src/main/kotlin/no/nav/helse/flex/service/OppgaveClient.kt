@@ -23,7 +23,7 @@ class OppgaveClient(
 ) {
     fun opprettOppgave(request: OppgaveRequest): OpprettOppgaveResponse {
         return try {
-            val uriString = UriComponentsBuilder.fromHttpUrl("$url/api/v1/oppgaver")
+            val uriString = UriComponentsBuilder.fromUriString("$url/api/v1/oppgaver")
 
             val headers = HttpHeaders()
             headers.contentType = MediaType.APPLICATION_JSON
@@ -62,7 +62,7 @@ class OppgaveClient(
 
     fun hentOppgave(oppgaveId: String): HentOppgaveResponse {
         return try {
-            val uriString = UriComponentsBuilder.fromHttpUrl("$url/api/v1/oppgaver/$oppgaveId")
+            val uriString = UriComponentsBuilder.fromUriString("$url/api/v1/oppgaver/$oppgaveId")
 
             val headers = HttpHeaders()
             headers.contentType = MediaType.APPLICATION_JSON
@@ -93,7 +93,7 @@ class OppgaveClient(
         oppdaterOppgaveReqeust: OppdaterOppgaveReqeust,
     ): HentOppgaveResponse {
         return try {
-            val uriString = UriComponentsBuilder.fromHttpUrl("$url/api/v1/oppgaver/$oppgaveId")
+            val uriString = UriComponentsBuilder.fromUriString("$url/api/v1/oppgaver/$oppgaveId")
 
             val headers = HttpHeaders()
             headers.contentType = MediaType.APPLICATION_JSON
