@@ -6,7 +6,7 @@ db_highAvailability: true
 db_pointInTimeRecovery: true
 minReplicas: 1
 maxReplicas: 1
-cpu: 400m
+cpu: 100m
 memory: 900Mi
 external-host:
   - dokarkiv.prod-fss-pub.nais.io
