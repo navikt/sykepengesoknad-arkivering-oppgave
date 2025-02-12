@@ -4,6 +4,7 @@ import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tags
 import no.nav.helse.flex.client.SykepengesoknadBackendClient
 import no.nav.helse.flex.client.SøknadIkkeFunnetException
+import no.nav.helse.flex.client.pdl.PdlClient
 import no.nav.helse.flex.config.EnvironmentToggles
 import no.nav.helse.flex.kafka.mapper.toSykepengesoknad
 import no.nav.helse.flex.logger
@@ -86,6 +87,15 @@ class OppgaveOpprettelse(
                     throw e
                 }
             } catch (e: RuntimeException) {
+                if (environmentToggles.isDevGcp() && e is PdlClient.FunctionalPdlError) {
+                    log.warn("Personen til ${it.sykepengesoknadId} finnes ikke i dev, hopper over oppgaveopprettelse og fortsetter")
+                    spreOppgaveRepository.updateOppgaveBySykepengesoknadId(
+                        sykepengesoknadId = it.sykepengesoknadId,
+                        timeout = null,
+                        status = OppgaveStatus.IkkeOpprett,
+                        tid,
+                    )
+                }
                 log.error("Runtime-feil ved opprettelse av oppgave ${it.sykepengesoknadId}", e)
             }
         }
