@@ -44,6 +44,7 @@ fun Soknad.skapTittel(): String =
         Soknadstype.OPPHOLD_UTLAND -> "Søknad om å beholde sykepenger utenfor EØS"
         Soknadstype.SELVSTENDIGE_OG_FRILANSERE -> skapTittelForNaringsdrivendeFrilanser()
         Soknadstype.ARBEIDSTAKERE -> "Søknad om sykepenger ${periodeTekst()}"
+        Soknadstype.FRISKMELDT_TIL_ARBEIDSFORMIDLING -> "Søknad om sykepenger ved friskmelding til arbeidsformidling ${periodeTekst()}"
         Soknadstype.ARBEIDSLEDIG -> "Søknad om sykepenger for arbeidsledig ${periodeTekst()}"
         Soknadstype.BEHANDLINGSDAGER -> "Søknad om enkeltstående behandlingsdager for ${presentabelArbeidssituasjon()} ${periodeTekst()}"
         Soknadstype.ANNET_ARBEIDSFORHOLD -> "Søknad om sykepenger med uavklart arbeidssituasjon fra ${periodeTekst()}"

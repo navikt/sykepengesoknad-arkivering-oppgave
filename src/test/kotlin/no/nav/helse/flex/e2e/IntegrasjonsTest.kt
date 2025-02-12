@@ -27,7 +27,11 @@ class IntegrasjonsTest : FellesTestOppsett() {
     @Test
     fun `En arbeidsledigsøknad får behandlingstema ab0426 og takler at bømlo sier opprett`() {
         val soknadId = UUID.randomUUID()
-        val søknad = søknad(soknadId).copy(type = SoknadstypeDTO.ARBEIDSLEDIG, arbeidssituasjon = ArbeidssituasjonDTO.ARBEIDSLEDIG)
+        val søknad =
+            søknad(soknadId).copy(
+                type = SoknadstypeDTO.ARBEIDSLEDIG,
+                arbeidssituasjon = ArbeidssituasjonDTO.ARBEIDSLEDIG,
+            )
 
         SykepengesoknadMockDispatcher.enque(søknad)
 
@@ -79,5 +83,34 @@ class IntegrasjonsTest : FellesTestOppsett() {
         val pdfRequest = pdfMockWebserver.takeRequest(10, TimeUnit.SECONDS)!!
         val pdfRequestBody = objectMapper.readValue<JsonNode>(pdfRequest.body.readUtf8())
         pdfRequestBody.get("arbeidssituasjonTekst").textValue() shouldBeEqualTo "fisker"
+    }
+
+    @Test
+    fun `En friskmeldt til arbeidsformidlingsøknad`() {
+        val soknadId = UUID.randomUUID()
+        val søknad =
+            søknad(soknadId).copy(
+                type = SoknadstypeDTO.FRISKMELDT_TIL_ARBEIDSFORMIDLING,
+            )
+
+        SykepengesoknadMockDispatcher.enque(søknad)
+
+        leggSøknadPåKafka(søknad)
+        oppgaveOpprettelse.behandleOppgaver(Instant.now().plus(249, ChronoUnit.HOURS))
+
+        val oppgaveRequest = oppgaveMockWebserver.takeRequest(2, TimeUnit.SECONDS)!!
+        assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
+        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
+        assertThat(oppgaveRequestBody.behandlingstema).isEqualTo("ab0352")
+        assertThat(oppgaveRequestBody.beskrivelse).isEqualTo(
+            """
+            Søknad om sykepenger ved friskmelding til arbeidsformidling for perioden 04.05.2019 til 08.05.2019
+
+            Har systemet gode integrasjonstester?
+            Ja
+            """.trimIndent(),
+        )
+
+        pdfMockWebserver.takeRequest(10, TimeUnit.SECONDS)!!
     }
 }

@@ -78,6 +78,7 @@ private fun SoknadstypeDTO.tilSoknadstype(): Soknadstype =
         SoknadstypeDTO.BEHANDLINGSDAGER -> Soknadstype.BEHANDLINGSDAGER
         SoknadstypeDTO.REISETILSKUDD -> Soknadstype.REISETILSKUDD
         SoknadstypeDTO.GRADERT_REISETILSKUDD -> Soknadstype.GRADERT_REISETILSKUDD
+        SoknadstypeDTO.FRISKMELDT_TIL_ARBEIDSFORMIDLING -> Soknadstype.FRISKMELDT_TIL_ARBEIDSFORMIDLING
     }
 
 fun SykepengesoknadDTO.toSykepengesoknad(aktorId: String): Sykepengesoknad {

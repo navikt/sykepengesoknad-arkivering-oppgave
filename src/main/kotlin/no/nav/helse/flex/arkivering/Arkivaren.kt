@@ -109,6 +109,7 @@ class Arkivaren(
             Soknadstype.ANNET_ARBEIDSFORHOLD -> PDFTemplate.ANNETARBEIDSFORHOLD
             Soknadstype.REISETILSKUDD -> PDFTemplate.REISETILSKUDD
             Soknadstype.GRADERT_REISETILSKUDD -> PDFTemplate.GRADERT_REISETILSKUDD
+            Soknadstype.FRISKMELDT_TIL_ARBEIDSFORMIDLING -> PDFTemplate.ARBEIDSLEDIG
         }
     }
 }

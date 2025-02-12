@@ -54,6 +54,7 @@ private fun getBrevkode(soknad: Soknad): String {
     return when (soknad.soknadstype) {
         Soknadstype.OPPHOLD_UTLAND -> "NAV 08-07.09"
         Soknadstype.GRADERT_REISETILSKUDD, Soknadstype.REISETILSKUDD -> "NAV 08-14.01"
+        Soknadstype.FRISKMELDT_TIL_ARBEIDSFORMIDLING,
         Soknadstype.SELVSTENDIGE_OG_FRILANSERE,
         Soknadstype.ARBEIDSTAKERE,
         Soknadstype.ARBEIDSLEDIG,
