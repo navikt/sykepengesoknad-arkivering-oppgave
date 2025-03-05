@@ -169,6 +169,7 @@ private fun Soknad.beskrivMedlemskapVurdering(): String {
             Hvis Ja: Bruker er ikke medlem. Hvis Nei: Kontakt bruker/arbeidsgiver for å avklare brukers situasjon.
 
             """.trimIndent()
+
         else -> ""
     }
 }
@@ -189,6 +190,11 @@ private fun Sporsmal.skalVises(medlemskapVurdering: String?): Boolean {
     // svar som eventuelt gjorde at vurderingen gikk fra uavklart til avklart siden det bare blir for saksbehandler.
     if (tag.startsWith("MEDLEMSKAP_") && medlemskapVurdering == "JA") {
         return false
+    }
+
+    // FTA spørsmål om inntekt er alltid relevant å se uavhengig av svar
+    if (tag == "FTA_INNTEKT_UNDERVEIS") {
+        return true
     }
 
     return when (tag) {
@@ -351,7 +357,9 @@ private fun Sporsmal.sigrunData(sporsmalOgSvar: List<String>): List<String> {
             return sporsmalOgSvar
         }
 
-    val snittTekst = "Gjennomsnittlig årsinntekt på sykmeldingstidspunktet: ${grunnlag.beregnet.snitt.toString().formaterInntekt()} kroner"
+    val snittTekst = "Gjennomsnittlig årsinntekt på sykmeldingstidspunktet: ${
+        grunnlag.beregnet.snitt.toString().formaterInntekt()
+    } kroner"
     val lignedeAarTekst = "Inntekt per kalenderår, de tre siste ferdiglignede årene: "
     val lignedeAarVerdier = grunnlag.inntekter.map { "${it.aar}: " + it.verdi.toString().formaterInntekt() + " kroner" }
 
