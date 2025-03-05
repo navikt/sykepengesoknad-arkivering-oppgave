@@ -434,3 +434,16 @@ fun beskrivelseSelvstendigeMedMangeSvar(): String {
                         17.04.2024
         """.trimIndent()
 }
+
+const val BESKRIVELSE_FRISKMELDT_MED_NEI_INNTEKT =
+    """Søknad om sykepenger ved friskmelding til arbeidsformidling for perioden 12.12.2019 til 18.12.2019
+
+Arbeidsgiver: LØNNS- OG REGNSKAPSSENTERET
+Organisasjonsnummer: 1257358
+
+Periode 1:
+12.12.2019 - 18.12.2019
+Grad: 0
+
+Hadde du inntekt i perioden 1. - 1. januar 2020?
+Nei"""

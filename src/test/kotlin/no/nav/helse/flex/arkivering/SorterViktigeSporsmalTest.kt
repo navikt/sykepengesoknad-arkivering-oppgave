@@ -2,6 +2,7 @@ package no.nav.helse.flex.arkivering
 
 import no.nav.helse.flex.domain.Soknad
 import no.nav.helse.flex.domain.dto.Soknadstype.ARBEIDSLEDIG
+import no.nav.helse.flex.domain.dto.Soknadstype.FRISKMELDT_TIL_ARBEIDSFORMIDLING
 import no.nav.helse.flex.domain.dto.Sporsmal
 import no.nav.helse.flex.domain.dto.Svar
 import org.amshove.kluent.shouldBeEqualTo
@@ -31,6 +32,24 @@ class SorterViktigeSporsmalTest {
                 "FRISKMELDT",
                 "ARBEID_UTENFOR_NORGE",
             )
+    }
+
+    @Test
+    fun testIngenSorteringFriskmeldtTilArbeidsformidling() {
+        val soknad =
+            Soknad(
+                opprettet = LocalDateTime.now(),
+                soknadstype = FRISKMELDT_TIL_ARBEIDSFORMIDLING,
+                sporsmal =
+                    listOf(
+                        sporsmal("NEI", "FERIE"),
+                        sporsmal("JA", "FRISKMELDT"),
+                        sporsmal("JA", "ANDRE_INNTEKTSKILDER"),
+                        sporsmal("NEI", "ARBEID_UTENFOR_NORGE"),
+                    ),
+            )
+        soknad.sorterViktigeSporsmalFørst().sporsmal.map { it.tag } shouldBeEqualTo
+            soknad.sporsmal.map { it.tag }
     }
 
     @Test

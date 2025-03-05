@@ -269,6 +269,32 @@ OBS! Sykmeldingen har en merknad Merknad(type=SVINDEL, beskrivelse=Farlig)
     }
 
     @Test
+    fun inntektUnderveisIFriskmeldtTilArbeidsformidlingVisesAlltid() {
+        val sykepengesoknad =
+            objectMapper.readValue(
+                BeskrivelseServiceTest::class.java.getResource("/soknadBehandlingsdagerMedMangeSvar.json"),
+                Sykepengesoknad::class.java,
+            ).copy(
+                soknadstype = Soknadstype.FRISKMELDT_TIL_ARBEIDSFORMIDLING,
+                sporsmal =
+                    listOf(
+                        Sporsmal(
+                            id = "1",
+                            tag = "FTA_INNTEKT_UNDERVEIS",
+                            svartype = Svartype.JA_NEI,
+                            sporsmalstekst = "Hadde du inntekt i perioden 1. - 1. januar 2020?",
+                            svar = listOf(Svar(verdi = "NEI")),
+                        ),
+                    ),
+            )
+
+        val soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn")
+        val beskrivelse = lagBeskrivelse(soknad)
+
+        assertThat(beskrivelse).isEqualTo(BESKRIVELSE_FRISKMELDT_MED_NEI_INNTEKT)
+    }
+
+    @Test
     fun soknadForArbeidstakereMedTimerIkkeCheckedOgProsentChecked() {
         val sykepengesoknad =
             objectMapper.readValue(
