@@ -360,9 +360,10 @@ class MedlemskapVurderingTest : FellesTestOppsett() {
         medlemskapVurderingStatus: MedlemskapVurderingStatus,
     ) {
         medlemskapMockWebserver.enqueue(
-            MockResponse().setBody(
-                lagEndeligVurderingResponse(soknad.id, medlemskapVurderingStatus),
-            ).addHeader("Content-Type", "application/json"),
+            MockResponse()
+                .setBody(
+                    lagEndeligVurderingResponse(soknad.id, medlemskapVurderingStatus),
+                ).addHeader("Content-Type", "application/json"),
         )
     }
 

@@ -60,8 +60,8 @@ class OppgaveClient(
         }
     }
 
-    fun hentOppgave(oppgaveId: String): HentOppgaveResponse {
-        return try {
+    fun hentOppgave(oppgaveId: String): HentOppgaveResponse =
+        try {
             val uriString = UriComponentsBuilder.fromUriString("$url/api/v1/oppgaver/$oppgaveId")
 
             val headers = HttpHeaders()
@@ -86,13 +86,12 @@ class OppgaveClient(
         } catch (e: HttpClientErrorException) {
             throw RuntimeException("HttpClientErrorException ved henting av oppgave for oppgaveid $oppgaveId", e)
         }
-    }
 
     fun oppdaterOppgave(
         oppgaveId: String,
         oppdaterOppgaveReqeust: OppdaterOppgaveReqeust,
-    ): HentOppgaveResponse {
-        return try {
+    ): HentOppgaveResponse =
+        try {
             val uriString = UriComponentsBuilder.fromUriString("$url/api/v1/oppgaver/$oppgaveId")
 
             val headers = HttpHeaders()
@@ -117,7 +116,6 @@ class OppgaveClient(
         } catch (e: HttpClientErrorException) {
             throw RuntimeException("HttpClientErrorException ved oppdatering av oppgave for oppgaveid $oppgaveId", e)
         }
-    }
 }
 
 data class OppgaveRequest(

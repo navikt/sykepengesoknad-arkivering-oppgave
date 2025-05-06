@@ -57,73 +57,81 @@ class SoknadTittelTest {
 
     @Test
     fun `fornuftig tittel for andre søknadstyper`() {
-        grunnsoknad.copy(
-            arbeidssituasjon = Arbeidssituasjon.FRILANSER,
-            soknadstype = Soknadstype.SELVSTENDIGE_OG_FRILANSERE,
-        ).skapTittel() shouldBeEqualTo "Søknad om sykepenger for frilanser for perioden 04.03.2021 til 05.03.2021"
+        grunnsoknad
+            .copy(
+                arbeidssituasjon = Arbeidssituasjon.FRILANSER,
+                soknadstype = Soknadstype.SELVSTENDIGE_OG_FRILANSERE,
+            ).skapTittel() shouldBeEqualTo "Søknad om sykepenger for frilanser for perioden 04.03.2021 til 05.03.2021"
     }
 
     @Test
     fun `fornuftig tittel for frilanser`() {
-        grunnsoknad.copy(
-            arbeidssituasjon = Arbeidssituasjon.FRILANSER,
-            soknadstype = Soknadstype.SELVSTENDIGE_OG_FRILANSERE,
-        )
-            .skapTittel() shouldBeEqualTo "Søknad om sykepenger for frilanser for perioden 04.03.2021 til 05.03.2021"
+        grunnsoknad
+            .copy(
+                arbeidssituasjon = Arbeidssituasjon.FRILANSER,
+                soknadstype = Soknadstype.SELVSTENDIGE_OG_FRILANSERE,
+            ).skapTittel() shouldBeEqualTo "Søknad om sykepenger for frilanser for perioden 04.03.2021 til 05.03.2021"
     }
 
     @Test
     fun `fornuftig tittel for arbeidsledig`() {
-        grunnsoknad.copy(
-            arbeidssituasjon = Arbeidssituasjon.ARBEIDSLEDIG,
-            soknadstype = Soknadstype.ARBEIDSLEDIG,
-        ).skapTittel() shouldBeEqualTo "Søknad om sykepenger for arbeidsledig for perioden 04.03.2021 til 05.03.2021"
+        grunnsoknad
+            .copy(
+                arbeidssituasjon = Arbeidssituasjon.ARBEIDSLEDIG,
+                soknadstype = Soknadstype.ARBEIDSLEDIG,
+            ).skapTittel() shouldBeEqualTo "Søknad om sykepenger for arbeidsledig for perioden 04.03.2021 til 05.03.2021"
     }
 
     @Test
     fun `fornuftig tittel for fisker`() {
-        grunnsoknad.copy(
-            arbeidssituasjon = Arbeidssituasjon.FISKER,
-            soknadstype = Soknadstype.SELVSTENDIGE_OG_FRILANSERE,
-        ).skapTittel() shouldBeEqualTo "Søknad om sykepenger for fisker for perioden 04.03.2021 til 05.03.2021"
+        grunnsoknad
+            .copy(
+                arbeidssituasjon = Arbeidssituasjon.FISKER,
+                soknadstype = Soknadstype.SELVSTENDIGE_OG_FRILANSERE,
+            ).skapTittel() shouldBeEqualTo "Søknad om sykepenger for fisker for perioden 04.03.2021 til 05.03.2021"
     }
 
     @Test
     fun `fornuftig tittel for jorbruker`() {
-        grunnsoknad.copy(
-            arbeidssituasjon = Arbeidssituasjon.JORDBRUKER,
-            soknadstype = Soknadstype.SELVSTENDIGE_OG_FRILANSERE,
-        ).skapTittel() shouldBeEqualTo "Søknad om sykepenger for jordbruker for perioden 04.03.2021 til 05.03.2021"
+        grunnsoknad
+            .copy(
+                arbeidssituasjon = Arbeidssituasjon.JORDBRUKER,
+                soknadstype = Soknadstype.SELVSTENDIGE_OG_FRILANSERE,
+            ).skapTittel() shouldBeEqualTo "Søknad om sykepenger for jordbruker for perioden 04.03.2021 til 05.03.2021"
     }
 
     @Test
     fun `fornuftig tittel for reisetilskudd`() {
-        grunnsoknad.copy(
-            arbeidssituasjon = Arbeidssituasjon.ARBEIDSLEDIG,
-            soknadstype = Soknadstype.REISETILSKUDD,
-        ).skapTittel() shouldBeEqualTo "Søknad om reisetilskudd for perioden 04.03.2021 til 05.03.2021"
+        grunnsoknad
+            .copy(
+                arbeidssituasjon = Arbeidssituasjon.ARBEIDSLEDIG,
+                soknadstype = Soknadstype.REISETILSKUDD,
+            ).skapTittel() shouldBeEqualTo "Søknad om reisetilskudd for perioden 04.03.2021 til 05.03.2021"
     }
 
     @Test
     fun `fornuftig tittel for gradert reisetilskudd`() {
-        grunnsoknad.copy(
-            arbeidssituasjon = Arbeidssituasjon.ARBEIDSLEDIG,
-            soknadstype = Soknadstype.GRADERT_REISETILSKUDD,
-        ).skapTittel() shouldBeEqualTo "Søknad om sykepenger med reisetilskudd for perioden 04.03.2021 til 05.03.2021"
+        grunnsoknad
+            .copy(
+                arbeidssituasjon = Arbeidssituasjon.ARBEIDSLEDIG,
+                soknadstype = Soknadstype.GRADERT_REISETILSKUDD,
+            ).skapTittel() shouldBeEqualTo "Søknad om sykepenger med reisetilskudd for perioden 04.03.2021 til 05.03.2021"
     }
 
     @Test
     fun `fornuftig tittel for opphold utland`() {
-        grunnsoknad.copy(
-            soknadstype = Soknadstype.OPPHOLD_UTLAND,
-        ).skapTittel() shouldBeEqualTo "Søknad om å beholde sykepenger utenfor EØS"
+        grunnsoknad
+            .copy(
+                soknadstype = Soknadstype.OPPHOLD_UTLAND,
+            ).skapTittel() shouldBeEqualTo "Søknad om å beholde sykepenger utenfor EØS"
     }
 
     @Test
     fun `fornuftig tittel for arbeidstaker`() {
-        grunnsoknad.copy(
-            arbeidssituasjon = Arbeidssituasjon.ARBEIDSTAKER,
-            soknadstype = Soknadstype.ARBEIDSTAKERE,
-        ).skapTittel() shouldBeEqualTo "Søknad om sykepenger for perioden 04.03.2021 til 05.03.2021"
+        grunnsoknad
+            .copy(
+                arbeidssituasjon = Arbeidssituasjon.ARBEIDSTAKER,
+                soknadstype = Soknadstype.ARBEIDSTAKERE,
+            ).skapTittel() shouldBeEqualTo "Søknad om sykepenger for perioden 04.03.2021 til 05.03.2021"
     }
 }

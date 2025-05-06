@@ -26,9 +26,7 @@ class Application {
     }
 }
 
-inline fun <reified T> T.logger(): Logger {
-    return LoggerFactory.getLogger(T::class.java)
-}
+inline fun <reified T> T.logger(): Logger = LoggerFactory.getLogger(T::class.java)
 
 val objectMapper: ObjectMapper =
     ObjectMapper().apply {

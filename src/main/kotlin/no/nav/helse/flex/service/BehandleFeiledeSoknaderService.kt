@@ -7,7 +7,9 @@ import no.nav.helse.flex.spreoppgave.SpreOppgaverService
 import org.springframework.stereotype.Component
 
 @Component
-class BehandleFeiledeSoknaderService(private val spreOppgaverService: SpreOppgaverService) {
+class BehandleFeiledeSoknaderService(
+    private val spreOppgaverService: SpreOppgaverService,
+) {
     private val log = logger()
 
     fun behandleFeiletSoknad(

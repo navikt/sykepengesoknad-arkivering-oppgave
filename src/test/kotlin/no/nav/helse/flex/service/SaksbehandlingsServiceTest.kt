@@ -30,10 +30,12 @@ class SaksbehandlingsServiceTest : FellesTestOppsett() {
     fun behandlerSoknaderSomEttersendesTilNavDerDetManglerOppgave() {
         val now = LocalDateTime.now()
         val sykepengesoknadUtenOppgave =
-            objectMapper.readValue(this::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
+            objectMapper
+                .readValue(this::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
                 .copy(sendtNav = null, sendtArbeidsgiver = now)
         val sykepengesoknadEttersendingTilNAV =
-            objectMapper.readValue(this::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
+            objectMapper
+                .readValue(this::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
                 .copy(sendtNav = now, sendtArbeidsgiver = now)
 
         val oppgaveRequestFør = oppgaveMockWebserver.requestCount
@@ -83,13 +85,12 @@ class SaksbehandlingsServiceTest : FellesTestOppsett() {
         assertThat(oppgaveRequestBody.behandlingstema).isEqualTo("ab0061")
     }
 
-    private fun innsending(sykepengesoknadUtenOppgave: Sykepengesoknad): InnsendingDbRecord {
-        return InnsendingDbRecord(
+    private fun innsending(sykepengesoknadUtenOppgave: Sykepengesoknad): InnsendingDbRecord =
+        InnsendingDbRecord(
             id = "innsending-guid",
             sykepengesoknadId = sykepengesoknadUtenOppgave.id,
             journalpostId = "journalpostId",
             oppgaveId = null,
             behandlet = Instant.now(),
         )
-    }
 }

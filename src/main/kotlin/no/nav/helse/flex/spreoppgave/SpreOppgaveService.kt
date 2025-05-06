@@ -64,9 +64,8 @@ class SpreOppgaverService(
         }
     }
 
-    private fun Sykepengesoknad.erSoknadSpeilKjennerTil(): Boolean {
-        return (soknadstype == ARBEIDSTAKERE || soknadstype == ARBEIDSLEDIG) && this.sendTilGosys != true
-    }
+    private fun Sykepengesoknad.erSoknadSpeilKjennerTil(): Boolean =
+        (soknadstype == ARBEIDSTAKERE || soknadstype == ARBEIDSLEDIG) && this.sendTilGosys != true
 
     private fun ettersendtTilArbeidsgiver(sykepengesoknad: Sykepengesoknad) =
         sykepengesoknad.sendtArbeidsgiver != null &&

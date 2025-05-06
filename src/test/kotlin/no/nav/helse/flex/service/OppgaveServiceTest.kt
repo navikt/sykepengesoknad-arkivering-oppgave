@@ -74,8 +74,8 @@ class OppgaveServiceTest : FellesTestOppsett() {
         assertThat(body.prioritet).isEqualTo("NORM")
     }
 
-    private fun lagSoknad(soknadstype: Soknadstype): Soknad {
-        return Soknad(
+    private fun lagSoknad(soknadstype: Soknadstype): Soknad =
+        Soknad(
             aktorId = aktorId,
             soknadsId = "",
             fnr = "fnr",
@@ -99,5 +99,4 @@ class OppgaveServiceTest : FellesTestOppsett() {
             merknaderFraSykmelding = null,
             egenmeldingsdagerFraSykmelding = null,
         )
-    }
 }

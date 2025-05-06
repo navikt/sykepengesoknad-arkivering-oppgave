@@ -62,4 +62,6 @@ class SykepengesoknadBackendClient(
     }
 }
 
-class SøknadIkkeFunnetException(msg: String) : RuntimeException(msg)
+class SøknadIkkeFunnetException(
+    msg: String,
+) : RuntimeException(msg)

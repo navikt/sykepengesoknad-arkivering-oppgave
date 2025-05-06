@@ -13,15 +13,14 @@ fun <T> any(): T = Mockito.any()
 fun <T> skapConsumerRecord(
     key: String,
     value: T,
-): ConsumerRecord<String, T> {
-    return ConsumerRecord(
+): ConsumerRecord<String, T> =
+    ConsumerRecord(
         "topic-v1",
         1,
         1L,
         key,
         value,
     )
-}
 
 val mockSykepengesoknadDTO: SykepengesoknadDTO =
     objectMapper.readValue(

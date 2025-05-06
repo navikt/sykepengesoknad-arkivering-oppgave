@@ -100,14 +100,15 @@ class SaksbehandlingIntegrationTest : FellesTestOppsett() {
     fun `kafkamelding med redusertVenteperiode setter riktig behandlingstema`() {
         val oppgaveID = 2
         oppgaveMockWebserver.enqueue(
-            MockResponse().setBody(
-                OpprettOppgaveResponse(
-                    oppgaveID,
-                    "4488",
-                    "SYK",
-                    "SOK",
-                ).serialisertTilString(),
-            ).addHeader("Content-Type", "application/json"),
+            MockResponse()
+                .setBody(
+                    OpprettOppgaveResponse(
+                        oppgaveID,
+                        "4488",
+                        "SYK",
+                        "SOK",
+                    ).serialisertTilString(),
+                ).addHeader("Content-Type", "application/json"),
         )
 
         val soknad =
@@ -191,14 +192,15 @@ class SaksbehandlingIntegrationTest : FellesTestOppsett() {
     fun `reisetilskudd søknad behandles korrekt`() {
         val oppgaveID = 3
         oppgaveMockWebserver.enqueue(
-            MockResponse().setBody(
-                OpprettOppgaveResponse(
-                    oppgaveID,
-                    "4488",
-                    "SYK",
-                    "SOK",
-                ).serialisertTilString(),
-            ).addHeader("Content-Type", "application/json"),
+            MockResponse()
+                .setBody(
+                    OpprettOppgaveResponse(
+                        oppgaveID,
+                        "4488",
+                        "SYK",
+                        "SOK",
+                    ).serialisertTilString(),
+                ).addHeader("Content-Type", "application/json"),
         )
 
         val soknad = mockReisetilskuddDTO.copy(id = UUID.randomUUID().toString())
@@ -291,14 +293,15 @@ class SaksbehandlingIntegrationTest : FellesTestOppsett() {
     fun `behandlingsdager søknad behandles korrekt`() {
         val oppgaveID = 99
         oppgaveMockWebserver.enqueue(
-            MockResponse().setBody(
-                OpprettOppgaveResponse(
-                    oppgaveID,
-                    "4488",
-                    "SYK",
-                    "SOK",
-                ).serialisertTilString(),
-            ).addHeader("Content-Type", "application/json"),
+            MockResponse()
+                .setBody(
+                    OpprettOppgaveResponse(
+                        oppgaveID,
+                        "4488",
+                        "SYK",
+                        "SOK",
+                    ).serialisertTilString(),
+                ).addHeader("Content-Type", "application/json"),
         )
 
         val soknad = mockBehandlingsdagerdDTO.copy(id = UUID.randomUUID().toString())
@@ -372,14 +375,15 @@ class SaksbehandlingIntegrationTest : FellesTestOppsett() {
     fun `gradert reisetilskudd søknad behandles korrekt`() {
         val oppgaveID = 3
         oppgaveMockWebserver.enqueue(
-            MockResponse().setBody(
-                OpprettOppgaveResponse(
-                    oppgaveID,
-                    "4488",
-                    "SYK",
-                    "SOK",
-                ).serialisertTilString(),
-            ).addHeader("Content-Type", "application/json"),
+            MockResponse()
+                .setBody(
+                    OpprettOppgaveResponse(
+                        oppgaveID,
+                        "4488",
+                        "SYK",
+                        "SOK",
+                    ).serialisertTilString(),
+                ).addHeader("Content-Type", "application/json"),
         )
 
         val soknad =

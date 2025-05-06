@@ -11,12 +11,13 @@ import java.lang.Exception
 import no.nav.helse.flex.logger as slf4jLogger
 
 @Component
-class AivenKafkaErrorHandler : DefaultErrorHandler(
-    ExponentialBackOff(1000L, 1.5).apply {
-        // 8 minutter, som er mindre enn max.poll.interval.ms på 10 minutter.
-        maxInterval = 60_000L * 8
-    },
-) {
+class AivenKafkaErrorHandler :
+    DefaultErrorHandler(
+        ExponentialBackOff(1000L, 1.5).apply {
+            // 8 minutter, som er mindre enn max.poll.interval.ms på 10 minutter.
+            maxInterval = 60_000L * 8
+        },
+    ) {
     // Bruker aliased logger for unngå kollisjon med CommonErrorHandler.logger(): LogAccessor.
     val log = slf4jLogger()
 

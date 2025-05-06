@@ -101,19 +101,19 @@ class OppgaveOpprettelse(
         }
     }
 
-    private fun tilOpprettetStatus(oppgaveStatus: OppgaveStatus): OppgaveStatus {
-        return when (oppgaveStatus) {
+    private fun tilOpprettetStatus(oppgaveStatus: OppgaveStatus): OppgaveStatus =
+        when (oppgaveStatus) {
             OppgaveStatus.Opprett -> OppgaveStatus.Opprettet
             OppgaveStatus.OpprettSpeilRelatert -> OppgaveStatus.OpprettetSpeilRelatert
             // OppgaveStatus.Utsett  + timeout < now()
             else -> OppgaveStatus.OpprettetTimeout
         }
-    }
 
     private fun tellTimeout() {
-        registry.counter(
-            "bomlo.timeout",
-            Tags.of("type", "info"),
-        ).increment()
+        registry
+            .counter(
+                "bomlo.timeout",
+                Tags.of("type", "info"),
+            ).increment()
     }
 }
