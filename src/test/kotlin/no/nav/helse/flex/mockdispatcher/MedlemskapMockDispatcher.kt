@@ -22,15 +22,16 @@ object MedlemskapMockDispatcher : QueueDispatcher() {
 
         val requestBody = objectMapper.readValue<EndeligVurderingRequest>(request.body.readUtf8())
 
-        return MockResponse().setBody(
-            EndeligVurderingResponse(
-                sykepengesoknad_id = requestBody.sykepengesoknad_id,
-                fnr = requestBody.fnr,
-                fom = requestBody.fom,
-                tom = requestBody.tom,
-                vurdering_id = UUID.randomUUID().toString(),
-                status = EndeligVurderingResponse.MedlemskapVurderingStatus.JA,
-            ).serialisertTilString(),
-        ).addHeader("Content-Type", "application/json")
+        return MockResponse()
+            .setBody(
+                EndeligVurderingResponse(
+                    sykepengesoknad_id = requestBody.sykepengesoknad_id,
+                    fnr = requestBody.fnr,
+                    fom = requestBody.fom,
+                    tom = requestBody.tom,
+                    vurdering_id = UUID.randomUUID().toString(),
+                    status = EndeligVurderingResponse.MedlemskapVurderingStatus.JA,
+                ).serialisertTilString(),
+            ).addHeader("Content-Type", "application/json")
     }
 }

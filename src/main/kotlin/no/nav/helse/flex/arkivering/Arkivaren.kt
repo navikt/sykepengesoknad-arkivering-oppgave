@@ -32,7 +32,9 @@ class Arkivaren(
         journalpostResponse: MeassureBlock<JournalpostResponse>,
     ): String {
         val dokumentInfoId =
-            journalpostResponse.result.dokumenter.firstOrNull()?.dokumentInfoId
+            journalpostResponse.result.dokumenter
+                .firstOrNull()
+                ?.dokumentInfoId
                 ?: throw RuntimeException("Request til dokarkiv failer")
 
         val behandlingsdagerUker =
@@ -99,8 +101,8 @@ class Arkivaren(
         return journalpostResponse.result.journalpostId
     }
 
-    private fun hentPDFTemplateEtterSoknadstype(soknadstype: Soknadstype): PDFTemplate {
-        return when (soknadstype) {
+    private fun hentPDFTemplateEtterSoknadstype(soknadstype: Soknadstype): PDFTemplate =
+        when (soknadstype) {
             Soknadstype.OPPHOLD_UTLAND -> PDFTemplate.SYKEPENGERUTLAND
             Soknadstype.SELVSTENDIGE_OG_FRILANSERE -> PDFTemplate.SELVSTENDIGNAERINGSDRIVENDE
             Soknadstype.ARBEIDSTAKERE -> PDFTemplate.ARBEIDSTAKERE
@@ -111,7 +113,6 @@ class Arkivaren(
             Soknadstype.GRADERT_REISETILSKUDD -> PDFTemplate.GRADERT_REISETILSKUDD
             Soknadstype.FRISKMELDT_TIL_ARBEIDSFORMIDLING -> PDFTemplate.FRISKMELDT_TIL_ARBEIDSFORMIDLING
         }
-    }
 }
 
 class MeassureBlock<T>(

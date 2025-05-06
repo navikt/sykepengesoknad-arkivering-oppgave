@@ -28,12 +28,10 @@ data class PdlIdent(
     val ident: String,
 )
 
-fun List<PdlIdent>.aktorId(): String {
-    return find { it.gruppe == AKTORID }?.ident
+fun List<PdlIdent>.aktorId(): String =
+    find { it.gruppe == AKTORID }?.ident
         ?: throw RuntimeException("Kunne ikke finne aktørid i pdl response")
-}
 
-fun List<PdlIdent>.fnr(): String {
-    return find { it.gruppe == FOLKEREGISTERIDENT }?.ident
+fun List<PdlIdent>.fnr(): String =
+    find { it.gruppe == FOLKEREGISTERIDENT }?.ident
         ?: throw RuntimeException("Kunne ikke finne fnr i pdl response")
-}

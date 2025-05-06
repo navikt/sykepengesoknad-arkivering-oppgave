@@ -27,8 +27,8 @@ private fun VisningskriteriumDTO.mapKriterie(): Visningskriterie =
         VisningskriteriumDTO.JA -> Visningskriterie.JA
     }
 
-private fun SvartypeDTO.mapSvartype(): Svartype {
-    return when (this) {
+private fun SvartypeDTO.mapSvartype(): Svartype =
+    when (this) {
         SvartypeDTO.JA_NEI -> Svartype.JA_NEI
         SvartypeDTO.CHECKBOX -> Svartype.CHECKBOX
         SvartypeDTO.CHECKBOX_GRUPPE -> Svartype.CHECKBOX_GRUPPE
@@ -57,7 +57,6 @@ private fun SvartypeDTO.mapSvartype(): Svartype {
         SvartypeDTO.BEKREFTELSESPUNKTER -> Svartype.BEKREFTELSESPUNKTER
         SvartypeDTO.OPPSUMMERING -> Svartype.OPPSUMMERING
     }
-}
 
 private fun SoknadsperiodeDTO.toSoknadPeriode(): SoknadPeriode =
     SoknadPeriode(
@@ -81,8 +80,8 @@ private fun SoknadstypeDTO.tilSoknadstype(): Soknadstype =
         SoknadstypeDTO.FRISKMELDT_TIL_ARBEIDSFORMIDLING -> Soknadstype.FRISKMELDT_TIL_ARBEIDSFORMIDLING
     }
 
-fun SykepengesoknadDTO.toSykepengesoknad(aktorId: String): Sykepengesoknad {
-    return Sykepengesoknad(
+fun SykepengesoknadDTO.toSykepengesoknad(aktorId: String): Sykepengesoknad =
+    Sykepengesoknad(
         id = id,
         sykmeldingId = sykmeldingId,
         aktorId = aktorId,
@@ -115,7 +114,6 @@ fun SykepengesoknadDTO.toSykepengesoknad(aktorId: String): Sykepengesoknad {
         medlemskapVurdering = medlemskapVurdering,
         fiskerBlad = fiskerBlad?.name,
     )
-}
 
 private fun AvsendertypeDTO.mapAvsendertype(): Avsendertype =
     when (this) {

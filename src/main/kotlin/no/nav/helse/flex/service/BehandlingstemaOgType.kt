@@ -48,21 +48,17 @@ fun finnBehandlingstemaOgType(
     )
 }
 
-fun behandlingstema(tema: String): BehandlingstemaOgType {
-    return BehandlingstemaOgType(behandlingstema = tema, behandlingstype = null)
-}
+fun behandlingstema(tema: String): BehandlingstemaOgType = BehandlingstemaOgType(behandlingstema = tema, behandlingstype = null)
 
-fun behandlingstype(type: String): BehandlingstemaOgType {
-    return BehandlingstemaOgType(behandlingstema = null, behandlingstype = type)
-}
+fun behandlingstype(type: String): BehandlingstemaOgType = BehandlingstemaOgType(behandlingstema = null, behandlingstype = type)
 
 data class BehandlingstemaOgType(
     val behandlingstema: String?,
     val behandlingstype: String?,
 )
 
-private fun Sykepengesoknad.gjelderTilbakedatering(): Boolean {
-    return this.merknaderFraSykmelding?.any {
+private fun Sykepengesoknad.gjelderTilbakedatering(): Boolean =
+    this.merknaderFraSykmelding?.any {
         listOf(
             "UGYLDIG_TILBAKEDATERING",
             "TILBAKEDATERING_KREVER_FLERE_OPPLYSNINGER",
@@ -71,4 +67,3 @@ private fun Sykepengesoknad.gjelderTilbakedatering(): Boolean {
             "DELVIS_GODKJENT",
         ).contains(it.type)
     } ?: false
-}

@@ -5,14 +5,12 @@ import no.nav.helse.flex.logger
 import org.springframework.stereotype.Component
 
 @Component
-class IdentService(private val pdlClient: PdlClient) {
+class IdentService(
+    private val pdlClient: PdlClient,
+) {
     val log = logger()
 
-    fun hentAktorIdForFnr(fnr: String): String {
-        return pdlClient.hentIdenter(fnr).aktorId()
-    }
+    fun hentAktorIdForFnr(fnr: String): String = pdlClient.hentIdenter(fnr).aktorId()
 
-    fun hentFnrForAktorId(aktorId: String): String {
-        return pdlClient.hentIdenter(aktorId).fnr()
-    }
+    fun hentFnrForAktorId(aktorId: String): String = pdlClient.hentIdenter(aktorId).fnr()
 }

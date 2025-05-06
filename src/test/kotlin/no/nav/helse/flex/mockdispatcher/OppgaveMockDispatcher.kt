@@ -57,13 +57,9 @@ object OppgaveMockDispatcher : QueueDispatcher() {
         }
     }
 
-    fun getOppdaterOppgaveRequest(): List<RecordedRequest> {
-        return patchOppgaveRequest.toList()
-    }
+    fun getOppdaterOppgaveRequest(): List<RecordedRequest> = patchOppgaveRequest.toList()
 
-    fun getLastOppdaterOppgaveReqeust(): OppdaterOppgaveReqeust {
-        return objectMapper.readValue(patchOppgaveRequest.last().body.readUtf8())
-    }
+    fun getLastOppdaterOppgaveReqeust(): OppdaterOppgaveReqeust = objectMapper.readValue(patchOppgaveRequest.last().body.readUtf8())
 
     fun reset() {
         opprettOppgaveRequest.clear()

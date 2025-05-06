@@ -57,14 +57,17 @@ class SpreOppgaveRaceConditionTest : FellesTestOppsett() {
         )
 
         await().atMost(Duration.ofSeconds(10)).until {
-            spreOppgaveRepository.findBySykepengesoknadId(
-                raceConditionUUID.toString(),
-            )?.timeout == timeoutFraBømlo.tilOsloZone().toInstant()
+            spreOppgaveRepository
+                .findBySykepengesoknadId(
+                    raceConditionUUID.toString(),
+                )?.timeout == timeoutFraBømlo.tilOsloZone().toInstant()
         }
 
-        spreOppgaveRepository.findBySykepengesoknadId(
-            raceConditionUUID.toString(),
-        )!!.timeout shouldBeEqualTo timeoutFraBømlo.tilOsloZone().toInstant()
+        spreOppgaveRepository
+            .findBySykepengesoknadId(
+                raceConditionUUID.toString(),
+            )!!
+            .timeout shouldBeEqualTo timeoutFraBømlo.tilOsloZone().toInstant()
 
         kallTilHåndterOppgaveFraBømlo shouldBeEqualTo 2
     }
@@ -82,14 +85,17 @@ class SpreOppgaveRaceConditionTest : FellesTestOppsett() {
         )
 
         await().atMost(Duration.ofSeconds(10)).until {
-            spreOppgaveRepository.findBySykepengesoknadId(
-                raceConditionUUID.toString(),
-            )?.avstemt == true
+            spreOppgaveRepository
+                .findBySykepengesoknadId(
+                    raceConditionUUID.toString(),
+                )?.avstemt == true
         }
 
-        spreOppgaveRepository.findBySykepengesoknadId(
-            raceConditionUUID.toString(),
-        )!!.timeout shouldBeEqualTo raceConditionTimeout
+        spreOppgaveRepository
+            .findBySykepengesoknadId(
+                raceConditionUUID.toString(),
+            )!!
+            .timeout shouldBeEqualTo raceConditionTimeout
 
         kallTilHåndterOppgaveFraSøknad shouldBeEqualTo 2
     }

@@ -8,8 +8,8 @@ import java.time.LocalDate
 fun skapJournalpostRequest(
     pdf: ByteArray,
     soknad: Soknad,
-): JournalpostRequest {
-    return JournalpostRequest(
+): JournalpostRequest =
+    JournalpostRequest(
         bruker =
             Bruker(
                 id = soknad.fnr!!,
@@ -48,10 +48,9 @@ fun skapJournalpostRequest(
                 idType = "FNR",
             ),
     )
-}
 
-private fun getBrevkode(soknad: Soknad): String {
-    return when (soknad.soknadstype) {
+private fun getBrevkode(soknad: Soknad): String =
+    when (soknad.soknadstype) {
         Soknadstype.OPPHOLD_UTLAND -> "NAV 08-07.09"
         Soknadstype.GRADERT_REISETILSKUDD, Soknadstype.REISETILSKUDD -> "NAV 08-14.01"
         Soknadstype.FRISKMELDT_TIL_ARBEIDSFORMIDLING,
@@ -62,4 +61,3 @@ private fun getBrevkode(soknad: Soknad): String {
         Soknadstype.ANNET_ARBEIDSFORHOLD,
         -> "NAV 08-07.04 D"
     }
-}

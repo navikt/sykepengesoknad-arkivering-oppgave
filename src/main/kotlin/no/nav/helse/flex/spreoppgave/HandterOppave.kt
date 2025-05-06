@@ -101,7 +101,8 @@ class HandterOppave(
 
 internal fun timeout(oppgave: OppgaveDTO) =
     if (oppgave.oppdateringstype == OppdateringstypeDTO.Utsett || oppgave.oppdateringstype == OppdateringstypeDTO.VenterPaBomlo) {
-        oppgave.timeout?.tilOsloZone()
+        oppgave.timeout
+            ?.tilOsloZone()
             ?.toInstant()
     } else {
         null

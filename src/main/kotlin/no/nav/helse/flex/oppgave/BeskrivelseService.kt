@@ -21,8 +21,8 @@ import java.util.Collections.nCopies
 
 val log: Logger = LoggerFactory.getLogger("no.nav.helse.oppgave.BeskrivelseService")
 
-fun lagBeskrivelse(soknad: Soknad): String {
-    return soknad.meldingDersomEgenmeldtSykmelding() +
+fun lagBeskrivelse(soknad: Soknad): String =
+    soknad.meldingDersomEgenmeldtSykmelding() +
         soknad.meldingDersomAvsendertypeErSystem() +
         soknad.skapTittel() +
         soknad.erKorrigert() + "\n" +
@@ -38,29 +38,26 @@ fun lagBeskrivelse(soknad: Soknad): String {
             .map { sporsmal -> beskrivSporsmal(sporsmal, 0) }
             .filter { it.isNotBlank() }
             .joinToString("\n")
-}
 
-private fun Soknad.beskrivMerknaderFraSykmelding(): String {
-    return if (merknaderFraSykmelding?.isNotEmpty() == true) {
+private fun Soknad.beskrivMerknaderFraSykmelding(): String =
+    if (merknaderFraSykmelding?.isNotEmpty() == true) {
         merknaderFraSykmelding
             .joinToString(separator = "\n", postfix = "\n") { it.beskrivMerknad() }
     } else {
         ""
     }
-}
 
-private fun Soknad.beskrivKvitteringer(): String {
-    return if (kvitteringer != null && kvitteringer.isNotEmpty()) {
+private fun Soknad.beskrivKvitteringer(): String =
+    if (kvitteringer != null && kvitteringer.isNotEmpty()) {
         "\nSøknaden har vedlagt ${kvitteringer.size} kvitteringer med en sum på ${
             kvitteringSum.toString().formatterBelop()
         } kr\n"
     } else {
         ""
     }
-}
 
-private fun Merknad.beskrivMerknad(): String {
-    return when (type) {
+private fun Merknad.beskrivMerknad(): String =
+    when (type) {
         "UGYLDIG_TILBAKEDATERING" -> "OBS! Sykmeldingen er avslått grunnet ugyldig tilbakedatering"
         "TILBAKEDATERING_KREVER_FLERE_OPPLYSNINGER" -> "OBS! Tilbakedatert sykmelding er til vurdering"
         "TILBAKEDATERT_PAPIRSYKMELDING" -> "OBS! Sykmeldingen sendt til NAY for manuell kontroll grunnet tilbakedatering"
@@ -74,7 +71,6 @@ private fun Merknad.beskrivMerknad(): String {
             "OBS! Sykmeldingen har en merknad $this"
         }
     }
-}
 
 private fun Soknad.meldingDersomEgenmeldtSykmelding() =
     if (egenmeldtSykmelding == true) {
@@ -101,24 +97,25 @@ private fun Soknad.beskrivArbeidsgiver() =
     }
 
 private fun Soknad.beskrivPerioder() =
-    soknadPerioder?.mapIndexed { index, periode ->
-        "\nPeriode ${index + 1}:\n" +
-            "${periode.fom!!.format(norskDato)} - ${periode.tom!!.format(norskDato)}\n" +
-            (
-                periode.grad?.let { grad ->
-                    if (soknadstype != REISETILSKUDD && soknadstype != BEHANDLINGSDAGER) {
-                        "Grad: ${grad}\n"
-                    } else {
-                        ""
-                    }
-                } ?: ""
-            ) +
-            (
-                periode.faktiskGrad?.let { faktiskGrad ->
-                    "Oppgitt faktisk arbeidsgrad: $faktiskGrad\n"
-                } ?: ""
-            )
-    }?.joinToString("") ?: ""
+    soknadPerioder
+        ?.mapIndexed { index, periode ->
+            "\nPeriode ${index + 1}:\n" +
+                "${periode.fom!!.format(norskDato)} - ${periode.tom!!.format(norskDato)}\n" +
+                (
+                    periode.grad?.let { grad ->
+                        if (soknadstype != REISETILSKUDD && soknadstype != BEHANDLINGSDAGER) {
+                            "Grad: ${grad}\n"
+                        } else {
+                            ""
+                        }
+                    } ?: ""
+                ) +
+                (
+                    periode.faktiskGrad?.let { faktiskGrad ->
+                        "Oppgitt faktisk arbeidsgrad: $faktiskGrad\n"
+                    } ?: ""
+                )
+        }?.joinToString("") ?: ""
 
 // Er egen beskrivelse for selvstendig/frilanser fordi SoknadDTO Periode ikke inneholder feltet faktiskGrad før Mars 2020, slik som arbeidstakere
 private fun Soknad.beskrivFaktiskGradFrilansere(): String {
@@ -143,8 +140,8 @@ private fun Soknad.beskrivFaktiskGradFrilansere(): String {
     return ""
 }
 
-private fun Soknad.beskrivMedlemskapVurdering(): String {
-    return when (medlemskapVurdering) {
+private fun Soknad.beskrivMedlemskapVurdering(): String =
+    when (medlemskapVurdering) {
         "UAVKLART" ->
             """
             
@@ -172,7 +169,6 @@ private fun Soknad.beskrivMedlemskapVurdering(): String {
 
         else -> ""
     }
-}
 
 private fun Soknad.beskrivInntektsopplysninger(): String {
     if (sporsmal.harInntektsopplysninger()) {
@@ -213,7 +209,8 @@ private fun beskrivSporsmal(
     val innrykk = "\n" + nCopies(dybde, "    ").joinToString("")
     val svarverdier = sporsmal.svarverdier()
 
-    if (svarverdier.isEmpty() && sporsmal.svartype !in
+    if (svarverdier.isEmpty() &&
+        sporsmal.svartype !in
         listOf(
             CHECKBOX_GRUPPE,
             RADIO_GRUPPE,
@@ -231,7 +228,8 @@ private fun beskrivSporsmal(
             innrykk + sporsmalOgSvar
         }
     val undersporsmålBeskrivelse =
-        sporsmal.undersporsmalIgnorerRadioIGruppeTimerProsent()
+        sporsmal
+            .undersporsmalIgnorerRadioIGruppeTimerProsent()
             ?.map { beskrivSporsmal(it, getNesteDybde(sporsmal, dybde)) }
             ?.filter { it.isNotBlank() }
             ?.joinToString("\n")
@@ -252,15 +250,14 @@ private fun String.fjernTommeLinjerHvisMedlemskapsgruppe(sporsmal: Sporsmal): St
 private fun getNesteDybde(
     sporsmal: Sporsmal,
     dybde: Int,
-): Int {
-    return when (sporsmal.svartype) {
+): Int =
+    when (sporsmal.svartype) {
         RADIO_GRUPPE, RADIO_GRUPPE_TIMER_PROSENT, GRUPPE_AV_UNDERSPORSMAL -> dybde
         else -> dybde + 1
     }
-}
 
-private fun Sporsmal.undersporsmalIgnorerRadioIGruppeTimerProsent(): List<Sporsmal>? {
-    return if (svartype === RADIO_GRUPPE_TIMER_PROSENT) {
+private fun Sporsmal.undersporsmalIgnorerRadioIGruppeTimerProsent(): List<Sporsmal>? =
+    if (svartype === RADIO_GRUPPE_TIMER_PROSENT) {
         undersporsmal!!
             .filter { it.kriterieForVisningAvUndersporsmal?.name == it.forsteSvarverdi() }
             .map { it.undersporsmal }
@@ -269,10 +266,9 @@ private fun Sporsmal.undersporsmalIgnorerRadioIGruppeTimerProsent(): List<Sporsm
     } else {
         undersporsmal
     }
-}
 
-private fun Sporsmal.formatterSporsmalOgSvar(): List<String> {
-    return when (svartype) {
+private fun Sporsmal.formatterSporsmalOgSvar(): List<String> =
+    when (svartype) {
         CHECKBOX, CHECKBOX_GRUPPE, RADIO, RADIO_GRUPPE, RADIO_GRUPPE_TIMER_PROSENT, INFO_BEHANDLINGSDAGER ->
             listOfNotNull(sporsmalstekst)
 
@@ -302,18 +298,14 @@ private fun Sporsmal.formatterSporsmalOgSvar(): List<String> {
         DATOER -> listOfNotNull(sporsmalstekst) + svarverdier().map { formatterDato(it) }
         else -> emptyList()
     }
-}
 
-private fun Sporsmal.svarverdier(): List<String> {
-    return svar?.mapNotNull { it.verdi } ?: emptyList()
-}
+private fun Sporsmal.svarverdier(): List<String> = svar?.mapNotNull { it.verdi } ?: emptyList()
 
-private fun Sporsmal.forsteSvarverdi(): String {
-    return svar?.firstOrNull()?.verdi ?: ""
-}
+private fun Sporsmal.forsteSvarverdi(): String = svar?.firstOrNull()?.verdi ?: ""
 
 val norskLocale =
-    Locale.Builder()
+    Locale
+        .Builder()
         .setLanguage("nb")
         .setRegion("NO")
         .build()
@@ -325,9 +317,7 @@ private fun String.formatterBelop(): String {
     return "%,d,%02d".format(locale = norskLocale, kr, øre)
 }
 
-private fun formatterDato(svarverdi: String?): String {
-    return LocalDate.parse(svarverdi!!).format(norskDato)
-}
+private fun formatterDato(svarverdi: String?): String = LocalDate.parse(svarverdi!!).format(norskDato)
 
 private fun formatterPeriode(svarverdi: String?): String {
     val (fom, tom) = jsonTilPeriode(svarverdi)
@@ -335,17 +325,14 @@ private fun formatterPeriode(svarverdi: String?): String {
         tom.format(norskDato)
 }
 
-private fun formatterLand(svarverdi: String): String {
-    return "- $svarverdi"
-}
+private fun formatterLand(svarverdi: String): String = "- $svarverdi"
 
-private fun formatterBehandlingsdato(svarverdi: String): String {
-    return try {
+private fun formatterBehandlingsdato(svarverdi: String): String =
+    try {
         formatterDato(svarverdi)
     } catch (e: Exception) {
         "Ikke til behandling"
     }
-}
 
 private fun Sporsmal.sigrunData(sporsmalOgSvar: List<String>): List<String> {
     val grunnlag =
@@ -363,15 +350,20 @@ private fun Sporsmal.sigrunData(sporsmalOgSvar: List<String>): List<String> {
     val lignedeAarTekst = "Inntekt per kalenderår, de tre siste ferdiglignede årene: "
     val lignedeAarVerdier = grunnlag.inntekter.map { "${it.aar}: " + it.verdi.toString().formaterInntekt() + " kroner" }
 
-    return sporsmalOgSvar.toMutableList().apply {
-        add(snittTekst)
-        add(lignedeAarTekst)
-    }.plus(lignedeAarVerdier)
+    return sporsmalOgSvar
+        .toMutableList()
+        .apply {
+            add(snittTekst)
+            add(lignedeAarTekst)
+        }.plus(lignedeAarVerdier)
 }
 
 /**
  * @return 1500000 -> 1 500 000
  */
-private fun String.formaterInntekt(): String {
-    return this.reversed().chunked(3).joinToString(" ").reversed()
-}
+private fun String.formaterInntekt(): String =
+    this
+        .reversed()
+        .chunked(3)
+        .joinToString(" ")
+        .reversed()

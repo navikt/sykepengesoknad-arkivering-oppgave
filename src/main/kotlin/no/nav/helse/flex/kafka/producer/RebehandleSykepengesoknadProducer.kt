@@ -29,22 +29,29 @@ class RebehandleSykepengesoknadProducer(
         sleepMillis: Long = 500,
     ) {
         try {
-            producer.send(
-                ProducerRecord(
-                    RETRY_TOPIC,
-                    null,
-                    sykepengesoknad.id,
-                    sykepengesoknad.serialisertTilString(),
-                    ArrayList<Header>().also {
-                        it.add(
-                            RecordHeader(
-                                BEHANDLINGSTIDSPUNKT,
-                                OffsetDateTime.now().plusSeconds(delaySekunder).toInstant().toEpochMilli().toString().toByteArray(),
-                            ),
-                        )
-                    },
-                ),
-            ).get()
+            producer
+                .send(
+                    ProducerRecord(
+                        RETRY_TOPIC,
+                        null,
+                        sykepengesoknad.id,
+                        sykepengesoknad.serialisertTilString(),
+                        ArrayList<Header>().also {
+                            it.add(
+                                RecordHeader(
+                                    BEHANDLINGSTIDSPUNKT,
+                                    OffsetDateTime
+                                        .now()
+                                        .plusSeconds(delaySekunder)
+                                        .toInstant()
+                                        .toEpochMilli()
+                                        .toString()
+                                        .toByteArray(),
+                                ),
+                            )
+                        },
+                    ),
+                ).get()
         } catch (e: Exception) {
             if (e.isTopicAuthException()) {
                 if (retries >= 0) {
@@ -64,9 +71,7 @@ class RebehandleSykepengesoknadProducer(
     }
 }
 
-fun Throwable.isTopicAuthException(): Boolean {
-    return this.getRootCause() is TopicAuthorizationException
-}
+fun Throwable.isTopicAuthException(): Boolean = this.getRootCause() is TopicAuthorizationException
 
 fun Throwable.getRootCause(): Throwable {
     this.cause?.let {

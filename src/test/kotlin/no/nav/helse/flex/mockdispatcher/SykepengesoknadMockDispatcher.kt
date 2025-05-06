@@ -10,7 +10,8 @@ import okhttp3.mockwebserver.RecordedRequest
 object SykepengesoknadMockDispatcher : QueueDispatcher() {
     override fun dispatch(request: RecordedRequest): MockResponse {
         if (request.requestUrl?.encodedPath?.endsWith("/kafkaformat") != true) {
-            return MockResponse().setResponseCode(404)
+            return MockResponse()
+                .setResponseCode(404)
                 .setBody("Har ikke implemetert sykepengesoknad mock api for ${request.requestUrl}")
         }
 
@@ -18,16 +19,18 @@ object SykepengesoknadMockDispatcher : QueueDispatcher() {
             return responseQueue.take()
         }
 
-        return MockResponse().setBody(
-            mockSykepengesoknadDTO.serialisertTilString(),
-        ).addHeader("Content-Type", "application/json")
+        return MockResponse()
+            .setBody(
+                mockSykepengesoknadDTO.serialisertTilString(),
+            ).addHeader("Content-Type", "application/json")
     }
 
     fun enque(soknad: SykepengesoknadDTO) {
         SykepengesoknadMockDispatcher.enqueueResponse(
-            MockResponse().setBody(
-                soknad.serialisertTilString(),
-            ).addHeader("Content-Type", "application/json"),
+            MockResponse()
+                .setBody(
+                    soknad.serialisertTilString(),
+                ).addHeader("Content-Type", "application/json"),
         )
     }
 }

@@ -29,7 +29,8 @@ object PdlMockDispatcher : QueueDispatcher() {
                                     HentIdenter(
                                         identer =
                                             listOf(ident)
-                                                .map { PdlIdent(gruppe = FOLKEREGISTERIDENT, ident = it) }.toMutableList()
+                                                .map { PdlIdent(gruppe = FOLKEREGISTERIDENT, ident = it) }
+                                                .toMutableList()
                                                 .also { it.add(PdlIdent(gruppe = AKTORID, ident = ident + "00")) },
                                     ),
                             ),
@@ -53,7 +54,8 @@ object PdlMockDispatcher : QueueDispatcher() {
             }
         }
 
-        return MockResponse().setResponseCode(404)
+        return MockResponse()
+            .setResponseCode(404)
             .setBody("Har ikke implemetert pdl mock api for ${graphReq.query}")
     }
 }

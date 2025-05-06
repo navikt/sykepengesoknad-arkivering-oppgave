@@ -17,7 +17,9 @@ import java.util.*
 
 class BeskrivelseServiceTest {
     private val objectMapper =
-        ObjectMapper().registerKotlinModule().registerModules(JavaTimeModule())
+        ObjectMapper()
+            .registerKotlinModule()
+            .registerModules(JavaTimeModule())
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
     @Test
@@ -271,22 +273,23 @@ OBS! Sykmeldingen har en merknad Merknad(type=SVINDEL, beskrivelse=Farlig)
     @Test
     fun inntektUnderveisIFriskmeldtTilArbeidsformidlingVisesAlltid() {
         val sykepengesoknad =
-            objectMapper.readValue(
-                BeskrivelseServiceTest::class.java.getResource("/soknadBehandlingsdagerMedMangeSvar.json"),
-                Sykepengesoknad::class.java,
-            ).copy(
-                soknadstype = Soknadstype.FRISKMELDT_TIL_ARBEIDSFORMIDLING,
-                sporsmal =
-                    listOf(
-                        Sporsmal(
-                            id = "1",
-                            tag = "FTA_INNTEKT_UNDERVEIS",
-                            svartype = Svartype.JA_NEI,
-                            sporsmalstekst = "Hadde du inntekt i perioden 1. - 1. januar 2020?",
-                            svar = listOf(Svar(verdi = "NEI")),
+            objectMapper
+                .readValue(
+                    BeskrivelseServiceTest::class.java.getResource("/soknadBehandlingsdagerMedMangeSvar.json"),
+                    Sykepengesoknad::class.java,
+                ).copy(
+                    soknadstype = Soknadstype.FRISKMELDT_TIL_ARBEIDSFORMIDLING,
+                    sporsmal =
+                        listOf(
+                            Sporsmal(
+                                id = "1",
+                                tag = "FTA_INNTEKT_UNDERVEIS",
+                                svartype = Svartype.JA_NEI,
+                                sporsmalstekst = "Hadde du inntekt i perioden 1. - 1. januar 2020?",
+                                svar = listOf(Svar(verdi = "NEI")),
+                            ),
                         ),
-                    ),
-            )
+                )
 
         val soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn")
         val beskrivelse = lagBeskrivelse(soknad)
@@ -310,26 +313,27 @@ OBS! Sykmeldingen har en merknad Merknad(type=SVINDEL, beskrivelse=Farlig)
     @Test
     fun soknadMedInntektsopplysninger() {
         val sykepengesoknad =
-            objectMapper.readValue(
-                BeskrivelseServiceTest::class.java.getResource("/soknadArbeidstakerMedTimerOgDeretterProsent.json"),
-                Sykepengesoknad::class.java,
-            ).copy(
-                sporsmal =
-                    listOf(
-                        Sporsmal(
-                            id = "1",
-                            tag = "INNTEKTSOPPLYSNINGER_DRIFT_I_VIRKSOMHETEN",
-                            svartype = Svartype.TIMER,
-                            sporsmalstekst = "Er det drift?",
-                            svar =
-                                listOf(
-                                    Svar(
-                                        verdi = "100",
+            objectMapper
+                .readValue(
+                    BeskrivelseServiceTest::class.java.getResource("/soknadArbeidstakerMedTimerOgDeretterProsent.json"),
+                    Sykepengesoknad::class.java,
+                ).copy(
+                    sporsmal =
+                        listOf(
+                            Sporsmal(
+                                id = "1",
+                                tag = "INNTEKTSOPPLYSNINGER_DRIFT_I_VIRKSOMHETEN",
+                                svartype = Svartype.TIMER,
+                                sporsmalstekst = "Er det drift?",
+                                svar =
+                                    listOf(
+                                        Svar(
+                                            verdi = "100",
+                                        ),
                                     ),
-                                ),
+                            ),
                         ),
-                    ),
-            )
+                )
         val soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn")
         val beskrivelse = lagBeskrivelse(soknad)
 

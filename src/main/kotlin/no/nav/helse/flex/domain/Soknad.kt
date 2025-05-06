@@ -48,9 +48,7 @@ data class Soknad(
     val fiskerBlad: String? = null,
 ) {
     @JsonSerialize
-    fun arbeidssituasjonTekst(): String? {
-        return this.arbeidssituasjon?.navn
-    }
+    fun arbeidssituasjonTekst(): String? = this.arbeidssituasjon?.navn
 
     companion object {
         fun lagSoknad(
@@ -110,8 +108,8 @@ private fun Sykepengesoknad.hentKvitteringSum(): Int? {
     return hentKvitteringer?.sumOf { it.belop }
 }
 
-private fun Sykepengesoknad.hentPdfKvitteringer(): List<PdfKvittering>? {
-    return hentKvitteringer()
+private fun Sykepengesoknad.hentPdfKvitteringer(): List<PdfKvittering>? =
+    hentKvitteringer()
         ?.map {
             PdfKvittering(
                 blobId = it.blobId,
@@ -120,7 +118,6 @@ private fun Sykepengesoknad.hentPdfKvitteringer(): List<PdfKvittering>? {
                 b64data = null,
             )
         }
-}
 
 private fun Sykepengesoknad.hentKvitteringer(): List<Kvittering>? {
     if (this.soknadstype == Soknadstype.REISETILSKUDD || this.soknadstype == Soknadstype.GRADERT_REISETILSKUDD) {
@@ -148,6 +145,4 @@ data class Kvittering(
     val opprettet: Instant,
 )
 
-private fun String.tilKvittering(): Kvittering {
-    return objectMapper.readValue(this)
-}
+private fun String.tilKvittering(): Kvittering = objectMapper.readValue(this)

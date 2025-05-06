@@ -42,11 +42,12 @@ class SaksbehandlingsService(
         val eksisterendeInnsending = finnEksisterendeInnsending(sykepengesoknad.id)
         val innsendingId =
             eksisterendeInnsending?.id
-                ?: innsendingRepository.save(
-                    InnsendingDbRecord(
-                        sykepengesoknadId = sykepengesoknad.id,
-                    ),
-                ).id
+                ?: innsendingRepository
+                    .save(
+                        InnsendingDbRecord(
+                            sykepengesoknadId = sykepengesoknad.id,
+                        ),
+                    ).id
         val fnr = identService.hentFnrForAktorId(sykepengesoknad.aktorId)
 
         val soknad = opprettSoknad(sykepengesoknad, fnr)
@@ -152,49 +153,48 @@ class SaksbehandlingsService(
         return soknad.copy(kvitteringer = soknad.kvitteringer?.map { it.hentOgSettKvittering() })
     }
 
-    private fun PdfKvittering.hentOgSettKvittering(): PdfKvittering {
-        return this.copy(
+    private fun PdfKvittering.hentOgSettKvittering(): PdfKvittering =
+        this.copy(
             b64data = Base64.getEncoder().encodeToString(sykepengesoknadKvitteringerClient.hentVedlegg(this.blobId)),
         )
-    }
 
     private fun tellInnsendingBehandlet(soknadstype: Soknadstype?) {
-        registry.counter(
-            "innsending.behandlet",
-            Tags.of(
-                "type",
-                "info",
-                "soknadstype",
-                soknadstype?.name ?: "UKJENT",
-                "help",
-                "Antall ferdigbehandlede innsendinger.",
-            ),
-        ).increment()
+        registry
+            .counter(
+                "innsending.behandlet",
+                Tags.of(
+                    "type",
+                    "info",
+                    "soknadstype",
+                    soknadstype?.name ?: "UKJENT",
+                    "help",
+                    "Antall ferdigbehandlede innsendinger.",
+                ),
+            ).increment()
     }
 
     private fun tellInnsendingFeilet(soknadstype: Soknadstype?) {
-        registry.counter(
-            "innsending.feilet",
-            Tags.of(
-                "type",
-                "info",
-                "soknadstype",
-                soknadstype?.name ?: "UKJENT",
-                "help",
-                "Antall innsendinger hvor feil mot baksystemer gjorde at behandling ikke kunne fullføres.",
-            ),
-        ).increment()
+        registry
+            .counter(
+                "innsending.feilet",
+                Tags.of(
+                    "type",
+                    "info",
+                    "soknadstype",
+                    soknadstype?.name ?: "UKJENT",
+                    "help",
+                    "Antall innsendinger hvor feil mot baksystemer gjorde at behandling ikke kunne fullføres.",
+                ),
+            ).increment()
     }
 
-    private fun Sykepengesoknad.harMedlemskapSporsmal(): Boolean {
-        return this.sporsmal.any { it.tag.startsWith("MEDLEMSKAP_") }
-    }
+    private fun Sykepengesoknad.harMedlemskapSporsmal(): Boolean = this.sporsmal.any { it.tag.startsWith("MEDLEMSKAP_") }
 
     private fun hentEndeligMedlemskapVurdering(
         sykepengesoknad: Sykepengesoknad,
         inngaendeVurdering: String?,
-    ): String? {
-        return when (inngaendeVurdering) {
+    ): String? =
+        when (inngaendeVurdering) {
             "UAVKLART" -> {
                 if (sykepengesoknad.harMedlemskapSporsmal()) {
                     // Returnerer UAVKLART hvis endeligVurdering er null er siden det kan skyldes at LovMe ikke har
@@ -209,5 +209,4 @@ class SaksbehandlingsService(
             "NEI" -> "NEI"
             else -> null
         }
-    }
 }

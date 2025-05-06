@@ -8,7 +8,8 @@ import okio.Buffer
 object KvitteringMockDispatcher : QueueDispatcher() {
     override fun dispatch(request: RecordedRequest): MockResponse {
         if (request.requestUrl?.encodedPath?.startsWith("/maskin/kvittering") != true) {
-            return MockResponse().setResponseCode(404)
+            return MockResponse()
+                .setResponseCode(404)
                 .setBody("Har ikke implemetert kvittering mock api for ${request.requestUrl}")
         }
 

@@ -66,15 +66,16 @@ class AivenSpreOppgaverListener(
     }
 
     private fun tellOppgave(oppgave: OppgaveDTO) {
-        registry.counter(
-            "spre.oppgave",
-            Tags.of(
-                "type",
-                "info",
-                "oppdateringstype",
-                oppgave.oppdateringstype.name,
-            ),
-        ).increment()
+        registry
+            .counter(
+                "spre.oppgave",
+                Tags.of(
+                    "type",
+                    "info",
+                    "oppdateringstype",
+                    oppgave.oppdateringstype.name,
+                ),
+            ).increment()
     }
 
     fun String.tilSpreOppgaveDTO(): OppgaveDTO = objectMapper.readValue(this)

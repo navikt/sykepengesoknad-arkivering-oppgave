@@ -59,8 +59,8 @@ class BehandlingstemaOgTypeTest {
         ).behandlingstype `should be equal to` "ae0247"
     }
 
-    private fun soknad(soknadstype: Soknadstype = Soknadstype.ARBEIDSTAKERE): Sykepengesoknad {
-        return Sykepengesoknad(
+    private fun soknad(soknadstype: Soknadstype = Soknadstype.ARBEIDSTAKERE): Sykepengesoknad =
+        Sykepengesoknad(
             id = UUID.randomUUID().toString(),
             aktorId = UUID.randomUUID().toString(),
             egenmeldingsdagerFraSykmelding = emptyList(),
@@ -70,5 +70,4 @@ class BehandlingstemaOgTypeTest {
             status = "SENDT",
             sporsmal = emptyList(),
         )
-    }
 }

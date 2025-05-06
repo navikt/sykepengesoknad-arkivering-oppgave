@@ -13,9 +13,7 @@ fun Soknad.sorterViktigeSporsmalFørst(): Soknad {
     return this.copy(sporsmal = sorterteSporsmal)
 }
 
-private fun Sporsmal.erViktig(): Boolean {
-    return this.svar?.any { it.verdi == viktigSvarverdi() } == true
-}
+private fun Sporsmal.erViktig(): Boolean = this.svar?.any { it.verdi == viktigSvarverdi() } == true
 
 private fun Sporsmal.viktigSvarverdi(): String {
     if (this.tag == "FRISKMELDT") return "NEI"

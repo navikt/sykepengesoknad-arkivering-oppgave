@@ -79,7 +79,10 @@ class PdlClient(
 
         val navn =
             parsedResponse?.data?.let {
-                it.hentPerson?.navn?.firstOrNull()?.format()
+                it.hentPerson
+                    ?.navn
+                    ?.firstOrNull()
+                    ?.format()
             } ?: throw FunctionalPdlError("Fant ikke navn i pdl response. ${parsedResponse?.hentErrors()}")
 
         return navn
@@ -99,13 +102,14 @@ class PdlClient(
         return headers
     }
 
-    private fun requestToJson(graphQLRequest: GraphQLRequest): String {
-        return try {
+    private fun requestToJson(graphQLRequest: GraphQLRequest): String =
+        try {
             ObjectMapper().writeValueAsString(graphQLRequest)
         } catch (e: JsonProcessingException) {
             throw RuntimeException(e)
         }
-    }
 
-    class FunctionalPdlError(message: String) : RuntimeException(message)
+    class FunctionalPdlError(
+        message: String,
+    ) : RuntimeException(message)
 }

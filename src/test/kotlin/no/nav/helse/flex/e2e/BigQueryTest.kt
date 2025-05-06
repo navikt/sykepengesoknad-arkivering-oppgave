@@ -175,21 +175,19 @@ class BigQueryTest : FellesTestOppsett() {
         tilBigQuery.first { it.status == OppgaveStatus.OpprettetTimeout }.antall `should be` 1
     }
 
-    private fun ResultSet.toBigQueryOpprettet(): BigQueryOpprettet {
-        return BigQueryOpprettet(
+    private fun ResultSet.toBigQueryOpprettet(): BigQueryOpprettet =
+        BigQueryOpprettet(
             sykepengesoknadId = getString("sykepengesoknad_id"),
             status = OppgaveStatus.valueOf(getString("status")),
             opprettet = getTimestamp("opprettet").toInstant(),
         )
-    }
 
-    private fun ResultSet.toBigQueryGruppert(): BigQueryGruppert {
-        return BigQueryGruppert(
+    private fun ResultSet.toBigQueryGruppert(): BigQueryGruppert =
+        BigQueryGruppert(
             dato = getDate("dato").toLocalDate(),
             status = OppgaveStatus.valueOf(getString("status")),
             antall = getInt("antall"),
         )
-    }
 
     private data class BigQueryOpprettet(
         val sykepengesoknadId: String,
