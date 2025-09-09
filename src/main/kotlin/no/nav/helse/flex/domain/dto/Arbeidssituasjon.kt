@@ -5,6 +5,7 @@ enum class Arbeidssituasjon(
 ) {
     NAERINGSDRIVENDE("selvstendig næringsdrivende"),
     FRILANSER("frilanser"),
+    BARNEPASSER(" barnepasser"),
     ARBEIDSTAKER("arbeidstaker"),
     ARBEIDSLEDIG("arbeidsledig"),
     FISKER("fisker"),
