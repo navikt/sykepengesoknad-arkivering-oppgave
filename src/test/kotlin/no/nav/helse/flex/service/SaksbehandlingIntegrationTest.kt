@@ -147,7 +147,7 @@ class SaksbehandlingIntegrationTest : FellesTestOppsett() {
             innsendingRepository.findBySykepengesoknadId(soknad.id)?.behandlet != null
         }
         SykepengesoknadMockDispatcher.enque(soknad)
-        oppgaveOpprettelse.behandleOppgaver(Instant.now().plus(1L, ChronoUnit.HOURS))
+        oppgaveOpprettelse.behandleOppgaver(Instant.now().plus(7L, ChronoUnit.DAYS))
 
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
