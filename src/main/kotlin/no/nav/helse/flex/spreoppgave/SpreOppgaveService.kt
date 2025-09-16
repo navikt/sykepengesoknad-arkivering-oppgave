@@ -5,12 +5,13 @@ import no.nav.helse.flex.domain.OppdateringstypeDTO
 import no.nav.helse.flex.domain.OppgaveDTO
 import no.nav.helse.flex.domain.dto.Soknadstype.ARBEIDSLEDIG
 import no.nav.helse.flex.domain.dto.Soknadstype.ARBEIDSTAKERE
+import no.nav.helse.flex.domain.dto.Soknadstype.SELVSTENDIGE_OG_FRILANSERE
 import no.nav.helse.flex.domain.dto.Sykepengesoknad
 import no.nav.helse.flex.repository.SpreOppgaveRepository
 import no.nav.helse.flex.service.SaksbehandlingsService
 import org.springframework.data.relational.core.conversion.DbActionExecutionException
 import org.springframework.stereotype.Component
-import java.util.UUID
+import java.util.*
 
 @Component
 class SpreOppgaverService(
@@ -19,6 +20,7 @@ class SpreOppgaverService(
     private val handterOppave: HandterOppgaveInterface,
 ) {
     private val timeoutTimer = (7 * 24).toLong()
+    private val soknaderSpeilKjennerTil = setOf(ARBEIDSTAKERE, ARBEIDSLEDIG, SELVSTENDIGE_OG_FRILANSERE)
 
     fun prosesserOppgave(
         oppgave: OppgaveDTO,
@@ -65,7 +67,7 @@ class SpreOppgaverService(
     }
 
     private fun Sykepengesoknad.erSoknadSpeilKjennerTil(): Boolean =
-        (soknadstype == ARBEIDSTAKERE || soknadstype == ARBEIDSLEDIG) && this.sendTilGosys != true
+        soknaderSpeilKjennerTil.contains(soknadstype) && this.sendTilGosys != true
 
     private fun ettersendtTilArbeidsgiver(sykepengesoknad: Sykepengesoknad) =
         sykepengesoknad.sendtArbeidsgiver != null &&
