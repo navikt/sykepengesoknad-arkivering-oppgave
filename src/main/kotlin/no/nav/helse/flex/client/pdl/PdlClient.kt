@@ -50,7 +50,10 @@ class PdlClient(
         val identer =
             parsedResponse?.data?.let {
                 it.hentIdenter?.identer
-            } ?: throw FunctionalPdlError("Fant ikke person, ingen body eller data. ${parsedResponse?.hentErrors()}")
+            } ?: run {
+                val responsFeil = parsedResponse?.hentErrors() ?: "Ingen oppgitte feil"
+                throw FunctionalPdlError("Fant ikke person identer, ingen body eller data. PdlFeil: $responsFeil")
+            }
 
         return identer
     }
@@ -83,7 +86,10 @@ class PdlClient(
                     ?.navn
                     ?.firstOrNull()
                     ?.format()
-            } ?: throw FunctionalPdlError("Fant ikke navn i pdl response. ${parsedResponse?.hentErrors()}")
+            } ?: run {
+                val responsFeil = parsedResponse?.hentErrors() ?: "Ingen oppgitte feil"
+                throw FunctionalPdlError("Fant ikke navn i pdl response. PdlFeil: $responsFeil")
+            }
 
         return navn
     }
