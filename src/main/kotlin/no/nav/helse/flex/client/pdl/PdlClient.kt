@@ -83,7 +83,10 @@ class PdlClient(
                     ?.navn
                     ?.firstOrNull()
                     ?.format()
-            } ?: throw FunctionalPdlError("Fant ikke navn i pdl response. ${parsedResponse?.hentErrors()}")
+            } ?: run {
+                val responsFeil = parsedResponse?.hentErrors() ?: "Ingen oppgitte feil"
+                throw FunctionalPdlError("Fant ikke navn i pdl response. PdlFeil: $responsFeil")
+            }
 
         return navn
     }
