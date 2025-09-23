@@ -50,7 +50,10 @@ class PdlClient(
         val identer =
             parsedResponse?.data?.let {
                 it.hentIdenter?.identer
-            } ?: throw FunctionalPdlError("Fant ikke person, ingen body eller data. ${parsedResponse?.hentErrors()}")
+            } ?: run {
+                val responsFeil = parsedResponse?.hentErrors() ?: "Ingen oppgitte feil"
+                throw FunctionalPdlError("Fant ikke person identer, ingen body eller data. PdlFeil: $responsFeil")
+            }
 
         return identer
     }
