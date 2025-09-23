@@ -19,7 +19,8 @@ class SpreOppgaverService(
     private val spreOppgaveRepository: SpreOppgaveRepository,
     private val handterOppave: HandterOppgaveInterface,
 ) {
-    private val timeoutTimer = (7 * 24).toLong()
+    private val enUke = (7 * 24).toLong()
+    private val ettDogn = (1 * 24).toLong()
     private val soknaderSpeilKjennerTil = setOf(ARBEIDSTAKERE, ARBEIDSLEDIG, SELVSTENDIGE_OG_FRILANSERE)
 
     fun prosesserOppgave(
@@ -37,14 +38,8 @@ class SpreOppgaverService(
         try {
             if (sykepengesoknad.status == "SENDT" && !ettersendtTilArbeidsgiver(sykepengesoknad)) {
                 val innsendingsId = saksbehandlingsService.behandleSoknad(sykepengesoknad)
+                val timeoutMinutter = beregnTimeoutMinutter(sykepengesoknad)
 
-                val timeoutMinutter =
-                    if (sykepengesoknad.erSoknadSpeilKjennerTil()) {
-                        timeoutTimer * 60
-                    } else {
-                        // Bømlo kjenner ikke disse søknadene. Lar de timeoute etter 1 minutt
-                        1
-                    }
                 if (sykepengesoknad.sendtNav != null) {
                     prosesserOppgave(
                         OppgaveDTO(
@@ -65,6 +60,21 @@ class SpreOppgaverService(
             saksbehandlingsService.innsendingFeilet(sykepengesoknad, e)
         }
     }
+
+    private fun beregnTimeoutMinutter(soknad: Sykepengesoknad): Long =
+        when {
+            !soknad.erSoknadSpeilKjennerTil() ->
+                // Bruker timeout på 1 minutt på søknader Bømlo kjenner sånn at det opprettes oppgave så fort som mulig.
+                1
+
+            soknad.soknadstype == SELVSTENDIGE_OG_FRILANSERE ->
+                // 24 timer for selvstendig næringsdrivende inntil Bømlo gjør vanlig vurdering av alle søknader.
+                ettDogn * 60
+
+            else ->
+                // 7 dager timeout på søknader Bømlo kjenner til da vi skal få Opprett, Utsett eller IkkeOpprett fra de.
+                enUke * 60
+        }
 
     private fun Sykepengesoknad.erSoknadSpeilKjennerTil(): Boolean =
         soknaderSpeilKjennerTil.contains(soknadstype) && this.sendTilGosys != true
