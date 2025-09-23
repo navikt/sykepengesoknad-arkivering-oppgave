@@ -54,7 +54,7 @@ data class Soknad(
         fun lagSoknad(
             sykepengesoknad: Sykepengesoknad,
             fnr: String,
-            navn: String,
+            navn: String?,
             endeligMedlemskapVurdering: String? = null,
         ): Soknad =
             Soknad(
