@@ -4,9 +4,7 @@ data class GraphQLResponse<T>(
     val data: T,
     val errors: List<ResponseError>?,
 ) {
-    fun hentErrors(): String? {
-        return errors?.toString()
-    }
+    fun hentErrors(): String? = errors?.toString()
 }
 
 data class ResponseError(
