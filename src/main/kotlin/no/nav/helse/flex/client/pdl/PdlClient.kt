@@ -59,7 +59,7 @@ class PdlClient(
     }
 
     @Retryable(exclude = [FunctionalPdlError::class])
-    fun hentFormattertNavn(fnr: String): String {
+    fun hentFormattertNavn(fnr: String): String? {
         val graphQLRequest =
             GraphQLRequest(
                 query = HENT_NAVN_QUERY,
@@ -78,18 +78,22 @@ class PdlClient(
             throw RuntimeException("PDL svarer med status ${responseEntity.statusCode} - ${responseEntity.body}")
         }
 
-        val parsedResponse = responseEntity.body?.let { objectMapper.readValue<GraphQLResponse<HentNavnResponseData>>(it) }
+        val parsedResponse =
+            responseEntity.body?.let { objectMapper.readValue<GraphQLResponse<HentNavnResponseData>>(it) }
+                ?: throw FunctionalPdlError("PDL respons er tom")
 
         val navn =
-            parsedResponse?.data?.let {
+            parsedResponse.data.let {
                 it.hentPerson
                     ?.navn
                     ?.firstOrNull()
                     ?.format()
-            } ?: run {
-                val responsFeil = parsedResponse?.hentErrors() ?: "Ingen oppgitte feil"
-                throw FunctionalPdlError("Fant ikke navn i pdl response. PdlFeil: $responsFeil")
             }
+
+        if (navn == null && parsedResponse.harErrors()) {
+            val responsFeil = parsedResponse.hentErrors() ?: "Ingen oppgitte feil"
+            throw FunctionalPdlError("Fant ikke navn i pdl response. PdlFeil: $responsFeil")
+        }
 
         return navn
     }

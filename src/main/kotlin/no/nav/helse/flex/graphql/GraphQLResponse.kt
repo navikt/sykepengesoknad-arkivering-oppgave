@@ -4,7 +4,14 @@ data class GraphQLResponse<T>(
     val data: T,
     val errors: List<ResponseError>?,
 ) {
-    fun hentErrors(): String? = errors?.toString()
+    fun harErrors(): Boolean = !errors.isNullOrEmpty()
+
+    fun hentErrors(): String? =
+        if (harErrors()) {
+            errors.toString()
+        } else {
+            null
+        }
 }
 
 data class ResponseError(
