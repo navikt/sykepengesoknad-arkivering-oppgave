@@ -28,4 +28,5 @@ enum class Svartype {
     COMBOBOX_MULTI,
     BEKREFTELSESPUNKTER,
     OPPSUMMERING,
+    AAR_MAANED,
 }
