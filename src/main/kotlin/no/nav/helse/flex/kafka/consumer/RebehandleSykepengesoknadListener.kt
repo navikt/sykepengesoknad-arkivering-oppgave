@@ -64,7 +64,7 @@ class RebehandleSykepengesoknadListener(
             }
         } catch (e: Exception) {
             log.error("Uventet feil ved rebehandling av søknad ${sykepengesoknad.id}, legger søknaden tilbake på rebehandling-topic", e)
-            rebebehandleSykepengesoknadProducer.send(sykepengesoknad)
+            // rebebehandleSykepengesoknadProducer.send(sykepengesoknad)
             acknowledgment.acknowledge()
         }
     }

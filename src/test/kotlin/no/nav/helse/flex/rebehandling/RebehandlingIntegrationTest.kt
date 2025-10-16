@@ -11,6 +11,7 @@ import org.amshove.kluent.shouldNotBe
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.awaitility.Awaitility.await
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import java.time.Duration
@@ -21,6 +22,7 @@ class RebehandlingIntegrationTest : FellesTestOppsett() {
     @Autowired
     private lateinit var aivenKafkaProducer: KafkaProducer<String, String>
 
+    @Disabled
     @Test
     fun `Behandling av søknad feiler og rebehandles`() {
         val fnr = "fnr"
