@@ -56,6 +56,7 @@ private fun SvartypeDTO.mapSvartype(): Svartype =
         SvartypeDTO.COMBOBOX_MULTI -> Svartype.COMBOBOX_MULTI
         SvartypeDTO.BEKREFTELSESPUNKTER -> Svartype.BEKREFTELSESPUNKTER
         SvartypeDTO.OPPSUMMERING -> Svartype.OPPSUMMERING
+        SvartypeDTO.AAR_MAANED -> Svartype.AAR_MAANED
     }
 
 private fun SoknadsperiodeDTO.toSoknadPeriode(): SoknadPeriode =
