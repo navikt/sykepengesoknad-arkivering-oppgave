@@ -339,6 +339,29 @@ OBS! Sykmeldingen har en merknad Merknad(type=SVINDEL, beskrivelse=Farlig)
 
         assertThat(beskrivelse).isEqualTo(INNTEKTSOPPLYSNINGER)
     }
+
+    @Test
+    fun aarMaanedSvarBlirFormatertMedNorskManedINedtrekk() {
+        val sykepengesoknad =
+            plainSøknad().copy(
+                sporsmal =
+                    listOf(
+                        Sporsmal(
+                            id = "1",
+                            tag = "TEST_AAR_MAANED",
+                            svartype = Svartype.AAR_MAANED,
+                            sporsmalstekst = "Hvilken måned gjelder dette?",
+                            svar = listOf(Svar(verdi = "2025-01-15")),
+                        ),
+                    ),
+            )
+
+        val soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn")
+        val beskrivelse = lagBeskrivelse(soknad)
+
+        assertThat(beskrivelse).contains("Hvilken måned gjelder dette?")
+        assertThat(beskrivelse).contains("januar 2025")
+    }
 }
 
 private fun plainSøknad() =

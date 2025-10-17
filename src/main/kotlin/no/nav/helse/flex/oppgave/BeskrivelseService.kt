@@ -11,6 +11,7 @@ import no.nav.helse.flex.domain.dto.Svartype.*
 import no.nav.helse.flex.domain.dto.harInntektsopplysninger
 import no.nav.helse.flex.objectMapper
 import no.nav.helse.flex.tittel.skapTittel
+import no.nav.helse.flex.util.DatoUtil.aarMaaned
 import no.nav.helse.flex.util.DatoUtil.norskDato
 import no.nav.helse.flex.util.PeriodeMapper.jsonTilPeriode
 import org.slf4j.Logger
@@ -284,6 +285,7 @@ private fun Sporsmal.formatterSporsmalOgSvar(): List<String> =
             }
         }
 
+        AAR_MAANED -> listOfNotNull(sporsmalstekst, formatterAarMaaned(forsteSvarverdi()))
         DATO -> listOfNotNull(sporsmalstekst, formatterDato(forsteSvarverdi()))
         PERIODE -> listOfNotNull(sporsmalstekst, formatterPeriode(forsteSvarverdi()))
         PERIODER -> listOfNotNull(sporsmalstekst) + svarverdier().map { formatterPeriode(it) }
@@ -318,6 +320,8 @@ private fun String.formatterBelop(): String {
 }
 
 private fun formatterDato(svarverdi: String?): String = LocalDate.parse(svarverdi!!).format(norskDato)
+
+private fun formatterAarMaaned(svarverdi: String?): String = LocalDate.parse(svarverdi!!).format(aarMaaned)
 
 private fun formatterPeriode(svarverdi: String?): String {
     val (fom, tom) = jsonTilPeriode(svarverdi)
