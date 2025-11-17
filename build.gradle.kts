@@ -24,7 +24,7 @@ repositories {
 val syfoKafkaVersion = "2021.07.20-09.39-6be2c52c"
 val sykepengesoknadKafkaVersion = "2025.10.29-06.20-4d9e1e3f"
 val mockitoKotlinVersion = "2.2.0"
-val logstashLogbackEncoderVersion = "8.1"
+val logstashLogbackEncoderVersion = "9.0"
 val tokenSupportVersion = "5.0.37"
 val testContainersVersion = "1.21.3"
 val kluentVersion = "1.73"
