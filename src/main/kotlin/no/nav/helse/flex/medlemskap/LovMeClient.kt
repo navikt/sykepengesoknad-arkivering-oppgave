@@ -56,8 +56,8 @@ class LovMeClient(
                 log.error("Mottok svar fra LovMe, men uten endelig medlemskapsvurdering for sykepengesoknadId: ${sykepengesoknad.id}.")
                 null
             }
-        } catch (e: Exception) {
-            log.error("Fant ikke endelig medlemskap vurdering for sykepengesoknadId ${sykepengesoknad.id}.", e)
+        } catch (_: Exception) {
+            log.error("Fant ikke endelig medlemskap vurdering for sykepengesoknadId ${sykepengesoknad.id}.")
             return null
         }
     }
