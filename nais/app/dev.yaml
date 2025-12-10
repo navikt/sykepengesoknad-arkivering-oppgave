@@ -7,7 +7,7 @@ db_pointInTimeRecovery: false
 minReplicas: 1
 maxReplicas: 1
 cpu: 100m
-memory: 600Mi
+memory: 640Mi
 external-host:
   - dokarkiv.dev-fss-pub.nais.io
   - oppgave-q1.dev-fss-pub.nais.io
