@@ -26,7 +26,7 @@ val sykepengesoknadKafkaVersion = "2025.11.18-06.24-f860ace9"
 val mockitoKotlinVersion = "2.2.0"
 val logstashLogbackEncoderVersion = "9.0"
 val tokenSupportVersion = "5.0.37"
-val testContainersVersion = "1.21.3"
+val testContainersVersion = "2.0.2"
 val kluentVersion = "1.73"
 val cloudStorageVersion = "2.60.0"
 val jaxWsApiVersion = "1.1"
@@ -60,10 +60,10 @@ dependencies {
     implementation("io.getunleash:unleash-client-java:$unleashVersion")
     implementation("javax.jws:javax.jws-api:$jaxWsApiVersion")
 
-    testImplementation(platform("org.testcontainers:testcontainers-bom:$testContainersVersion"))
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.testcontainers:postgresql")
-    testImplementation("org.testcontainers:kafka")
+    testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
+    testImplementation("org.testcontainers:testcontainers-postgresql:$testContainersVersion")
+    testImplementation("org.testcontainers:testcontainers-kafka:$testContainersVersion")
     testImplementation("org.awaitility:awaitility")
     testImplementation("org.assertj:assertj-core")
     testImplementation("no.nav.security:token-validation-spring-test:$tokenSupportVersion")
