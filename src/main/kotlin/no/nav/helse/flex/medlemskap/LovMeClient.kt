@@ -16,7 +16,7 @@ import java.time.LocalDate
 @Component
 class LovMeClient(
     private val medlemskapVurderingRestTemplate: RestTemplate,
-    @Value("\${MEDLEMSKAP_VURDERING_URL}")
+    @param:Value("\${MEDLEMSKAP_VURDERING_URL}")
     private val url: String,
 ) {
     private val log = logger()

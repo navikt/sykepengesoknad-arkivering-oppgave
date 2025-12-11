@@ -9,7 +9,7 @@ import org.springframework.web.client.RestTemplate
 
 @Component
 class SykepengesoknadKvitteringerClient(
-    @Value("\${SYKEPENGESOKNAD_KVITTERINGER_URL}")
+    @param:Value("\${SYKEPENGESOKNAD_KVITTERINGER_URL}")
     private val sykepengesoknadKvitteringerUrl: String,
     private val sykepengesoknadKvitteringerRestTemplate: RestTemplate,
 ) {

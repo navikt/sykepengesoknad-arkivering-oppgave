@@ -31,9 +31,9 @@ data class Beregnet(
 
 data class SigrunInntekt(
     val inntekter: List<AarVerdi>,
-    @JsonProperty(value = "g-verdier")
+    @param:JsonProperty(value = "g-verdier")
     val gVerdier: List<AarVerdi>,
-    @JsonProperty(value = "g-sykmelding")
+    @param:JsonProperty(value = "g-sykmelding")
     val gSykmelding: BigInteger,
     val beregnet: Beregnet,
 )
