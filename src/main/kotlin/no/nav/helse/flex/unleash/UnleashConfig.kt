@@ -12,8 +12,8 @@ import org.springframework.context.annotation.Profile
 @Configuration
 @Profile("remote")
 class UnleashConfig(
-    @Value("\${UNLEASH_SERVER_API_URL}") val apiUrl: String,
-    @Value("\${UNLEASH_SERVER_API_TOKEN}") val apiToken: String,
+    @param:Value("\${UNLEASH_SERVER_API_URL}") val apiUrl: String,
+    @param:Value("\${UNLEASH_SERVER_API_TOKEN}") val apiToken: String,
 ) : DisposableBean {
     private val config: UnleashConfig =
         UnleashConfig

@@ -21,7 +21,7 @@ private const val BEHANDLINGSNUMMER_VALUE = "B128"
 
 @Component
 class PdlClient(
-    @Value("\${PDL_URL}")
+    @param:Value("\${PDL_URL}")
     private val pdlApiUrl: String,
     private val pdlRestTemplate: RestTemplate,
 ) {

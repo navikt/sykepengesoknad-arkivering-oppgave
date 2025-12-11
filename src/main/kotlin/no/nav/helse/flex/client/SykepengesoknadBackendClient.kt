@@ -17,7 +17,7 @@ import org.springframework.web.util.UriComponentsBuilder
 
 @Component
 class SykepengesoknadBackendClient(
-    @Value("\${SYKEPENGESOKNAD_BACKEND_URL}")
+    @param:Value("\${SYKEPENGESOKNAD_BACKEND_URL}")
     private val url: String,
     private val sykepengesoknadBackendRestTemplate: RestTemplate,
 ) {

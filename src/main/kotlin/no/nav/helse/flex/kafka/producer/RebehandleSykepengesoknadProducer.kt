@@ -16,7 +16,7 @@ import java.time.OffsetDateTime
 
 @Component
 class RebehandleSykepengesoknadProducer(
-    @Value("\${rebehandling.delay.sekunder}")
+    @param:Value("\${rebehandling.delay.sekunder}")
     private val delaySekunder: Long,
     private val aivenKafkaConfig: AivenKafkaConfig,
 ) {

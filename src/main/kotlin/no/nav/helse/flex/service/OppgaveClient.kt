@@ -16,7 +16,7 @@ import org.springframework.web.util.UriComponentsBuilder
 
 @Service
 class OppgaveClient(
-    @Value("\${OPPGAVE_URL}")
+    @param:Value("\${OPPGAVE_URL}")
     private val url: String,
     private val oppgaveRestTemplate: RestTemplate,
     private val environmentToggles: EnvironmentToggles,
