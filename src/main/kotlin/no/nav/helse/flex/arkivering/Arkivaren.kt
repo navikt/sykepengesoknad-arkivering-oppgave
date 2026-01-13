@@ -90,8 +90,7 @@ class Arkivaren(
             log.warn("Journalpost ${journalpostResponse.result.journalpostId} for søknad ${soknad.soknadsId} ble ikke ferdigstilt")
         }
 
-        log.info("Arkiverte søknad ${soknad.soknadsId}. PDF tid: ${pdf.millis} . Dokarkiv tid: ${journalpostResponse.millis}")
-        registry.counter("søknad_arkivert").increment()
+        log.info("Arkiverte søknad ${soknad.soknadsId}. PDF tid: ${pdf.millis}. Dokarkiv tid: ${journalpostResponse.millis}.")
 
         val erBehandlingsDagSoknad = soknad.soknadstype == Soknadstype.BEHANDLINGSDAGER
 

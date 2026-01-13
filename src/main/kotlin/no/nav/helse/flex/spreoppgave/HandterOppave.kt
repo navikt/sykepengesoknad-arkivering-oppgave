@@ -59,7 +59,6 @@ class HandterOppave(
             }
             eksisterendeOppgave.status == OppgaveStatus.IkkeOpprett && oppgave.oppdateringstype == OppdateringstypeDTO.Opprett -> {
                 log.info("Vil opprette oppgave for søknad ${oppgave.dokumentId} som vi tidligere ble bedt om å ikke opprette")
-                gjenopplivetCounter.increment()
                 spreOppgaveRepository.updateOppgaveBySykepengesoknadId(
                     sykepengesoknadId = oppgave.dokumentId.toString(),
                     timeout = timeout(oppgave),
