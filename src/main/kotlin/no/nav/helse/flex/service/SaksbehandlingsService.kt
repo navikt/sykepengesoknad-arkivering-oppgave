@@ -1,6 +1,5 @@
 package no.nav.helse.flex.service
 
-import io.micrometer.core.instrument.MeterRegistry
 import no.nav.helse.flex.arkivering.Arkivaren
 import no.nav.helse.flex.client.SykepengesoknadKvitteringerClient
 import no.nav.helse.flex.client.pdl.PdlClient
@@ -25,7 +24,6 @@ class SaksbehandlingsService(
     private val oppgaveClient: OppgaveClient,
     private val arkivaren: Arkivaren,
     private val innsendingRepository: InnsendingRepository,
-    private val registry: MeterRegistry,
     private val rebehandleSykepengesoknadProducer: RebehandleSykepengesoknadProducer,
     private val oppgaverForTilbakedaterteRepository: OppgaverForTilbakedaterteRepository,
     private val sykepengesoknadKvitteringerClient: SykepengesoknadKvitteringerClient,
