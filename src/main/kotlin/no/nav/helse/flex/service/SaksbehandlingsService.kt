@@ -1,13 +1,11 @@
 package no.nav.helse.flex.service
 
 import io.micrometer.core.instrument.MeterRegistry
-import io.micrometer.core.instrument.Tags
 import no.nav.helse.flex.arkivering.Arkivaren
 import no.nav.helse.flex.client.SykepengesoknadKvitteringerClient
 import no.nav.helse.flex.client.pdl.PdlClient
 import no.nav.helse.flex.domain.PdfKvittering
 import no.nav.helse.flex.domain.Soknad
-import no.nav.helse.flex.domain.dto.Soknadstype
 import no.nav.helse.flex.domain.dto.Sykepengesoknad
 import no.nav.helse.flex.kafka.producer.RebehandleSykepengesoknadProducer
 import no.nav.helse.flex.logger
@@ -107,7 +105,6 @@ class SaksbehandlingsService(
                 ),
             )
         }
-        tellInnsendingBehandlet(soknad.soknadstype)
         log.info("Oppretter oppgave ${innsending.id} for ${soknad.soknadstype.name.lowercase()} søknad: ${soknad.soknadsId}")
     }
 
@@ -131,7 +128,6 @@ class SaksbehandlingsService(
         e: Exception,
     ) {
         val eksisterendeInnsending = finnEksisterendeInnsending(sykepengesoknad.id)
-        tellInnsendingFeilet(sykepengesoknad.soknadstype)
         log.error(
             "Kunne ikke fullføre innsending av søknad med innsending id: {} og sykepengesøknad id: {}, legger på intern rebehandling-topic",
             eksisterendeInnsending?.id,
@@ -157,36 +153,6 @@ class SaksbehandlingsService(
         this.copy(
             b64data = Base64.getEncoder().encodeToString(sykepengesoknadKvitteringerClient.hentVedlegg(this.blobId)),
         )
-
-    private fun tellInnsendingBehandlet(soknadstype: Soknadstype?) {
-        registry
-            .counter(
-                "innsending.behandlet",
-                Tags.of(
-                    "type",
-                    "info",
-                    "soknadstype",
-                    soknadstype?.name ?: "UKJENT",
-                    "help",
-                    "Antall ferdigbehandlede innsendinger.",
-                ),
-            ).increment()
-    }
-
-    private fun tellInnsendingFeilet(soknadstype: Soknadstype?) {
-        registry
-            .counter(
-                "innsending.feilet",
-                Tags.of(
-                    "type",
-                    "info",
-                    "soknadstype",
-                    soknadstype?.name ?: "UKJENT",
-                    "help",
-                    "Antall innsendinger hvor feil mot baksystemer gjorde at behandling ikke kunne fullføres.",
-                ),
-            ).increment()
-    }
 
     private fun Sykepengesoknad.harMedlemskapSporsmal(): Boolean = this.sporsmal.any { it.tag.startsWith("MEDLEMSKAP_") }
 

@@ -1,7 +1,5 @@
 package no.nav.helse.flex.service
 
-import io.micrometer.core.instrument.MeterRegistry
-import io.micrometer.core.instrument.Tags
 import no.nav.helse.flex.client.SykepengesoknadBackendClient
 import no.nav.helse.flex.client.SøknadIkkeFunnetException
 import no.nav.helse.flex.client.pdl.PdlClient
@@ -24,7 +22,6 @@ class OppgaveOpprettelse(
     private val saksbehandlingsService: SaksbehandlingsService,
     private val sykepengesoknadBackendClient: SykepengesoknadBackendClient,
     private val environmentToggles: EnvironmentToggles,
-    private val registry: MeterRegistry,
     private val identService: IdentService,
 ) {
     private val log = logger()
@@ -71,7 +68,6 @@ class OppgaveOpprettelse(
                 if (it.status == OppgaveStatus.Utsett) {
                     val tidBrukt = Duration.between(it.opprettet, it.timeout ?: LocalDateTime.now())
                     log.info("Soknad ${it.sykepengesoknadId} timet ut. Total ventetid: ${tidBrukt.toHours()} timer")
-                    tellTimeout()
                 }
             } catch (e: SøknadIkkeFunnetException) {
                 if (environmentToggles.isDevGcp()) {
@@ -108,12 +104,4 @@ class OppgaveOpprettelse(
             // OppgaveStatus.Utsett  + timeout < now()
             else -> OppgaveStatus.OpprettetTimeout
         }
-
-    private fun tellTimeout() {
-        registry
-            .counter(
-                "bomlo.timeout",
-                Tags.of("type", "info"),
-            ).increment()
-    }
 }

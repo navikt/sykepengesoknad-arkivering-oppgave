@@ -1,13 +1,23 @@
 package no.nav.helse.flex.service
 
-import com.nhaarman.mockitokotlin2.*
-import io.micrometer.core.instrument.MeterRegistry
-import io.micrometer.core.instrument.Tag
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.never
+import com.nhaarman.mockitokotlin2.times
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.whenever
 import no.nav.helse.flex.client.SykepengesoknadBackendClient
 import no.nav.helse.flex.client.SøknadIkkeFunnetException
 import no.nav.helse.flex.config.EnvironmentToggles
-import no.nav.helse.flex.repository.*
-import no.nav.helse.flex.sykepengesoknad.kafka.*
+import no.nav.helse.flex.repository.InnsendingDbRecord
+import no.nav.helse.flex.repository.OppgaveStatus
+import no.nav.helse.flex.repository.SpreOppgaveDbRecord
+import no.nav.helse.flex.repository.SpreOppgaveRepository
+import no.nav.helse.flex.sykepengesoknad.kafka.SoknadsstatusDTO
+import no.nav.helse.flex.sykepengesoknad.kafka.SoknadstypeDTO
+import no.nav.helse.flex.sykepengesoknad.kafka.SporsmalDTO
+import no.nav.helse.flex.sykepengesoknad.kafka.SvarDTO
+import no.nav.helse.flex.sykepengesoknad.kafka.SvartypeDTO
+import no.nav.helse.flex.sykepengesoknad.kafka.SykepengesoknadDTO
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -35,17 +45,10 @@ class OppgaveOpprettelseTest {
     lateinit var environmentToggles: EnvironmentToggles
 
     @Mock
-    lateinit var registry: MeterRegistry
-
-    @Mock
     lateinit var identService: IdentService
 
     @InjectMocks
     lateinit var oppgaveOpprettelse: OppgaveOpprettelse
-
-    private fun mockRegistry() {
-        whenever(registry.counter(any(), any<Iterable<Tag>>())).thenReturn(mock())
-    }
 
     private fun mockHenting() {
         whenever(sykepengesoknadBackendClient.hentSoknad(any())).thenReturn(
@@ -83,7 +86,6 @@ class OppgaveOpprettelseTest {
 
     @Test
     fun `har noe å behandle men mangler innsending`() {
-        mockRegistry()
         whenever(spreOppgaveRepository.findOppgaverTilOpprettelse(any())).thenReturn(
             listOf(
                 SpreOppgaveDbRecord(
@@ -102,7 +104,6 @@ class OppgaveOpprettelseTest {
 
     @Test
     fun `sletter ikke oppgave(i test) om vi mangler innsending og den er fersk`() {
-        mockRegistry()
         whenever(spreOppgaveRepository.findOppgaverTilOpprettelse(any())).thenReturn(
             listOf(
                 SpreOppgaveDbRecord(
@@ -122,7 +123,6 @@ class OppgaveOpprettelseTest {
 
     @Test
     fun `sletter oppgave(i test) om vi mangler innsending og den er gammel`() {
-        mockRegistry()
         whenever(environmentToggles.isDevGcp()).thenReturn(true)
         whenever(spreOppgaveRepository.findOppgaverTilOpprettelse(any())).thenReturn(
             listOf(
@@ -144,7 +144,6 @@ class OppgaveOpprettelseTest {
     @Test
     fun `har noe å behandle og har innsending`() {
         mockHenting()
-        mockRegistry()
         val soknadId = UUID.randomUUID().toString()
         whenever(spreOppgaveRepository.findOppgaverTilOpprettelse(any())).thenReturn(
             listOf(
@@ -181,7 +180,6 @@ class OppgaveOpprettelseTest {
 
     @Test
     fun `flere oppgaver hvor en tryner`() {
-        mockRegistry()
         mockHenting()
         val soknadId1 = UUID.randomUUID()
         val soknadId2 = UUID.randomUUID()

@@ -2,7 +2,6 @@ package no.nav.helse.flex.kafka.consumer
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.micrometer.core.instrument.MeterRegistry
-import io.micrometer.core.instrument.Tags
 import no.nav.helse.flex.domain.DokumentTypeDTO
 import no.nav.helse.flex.domain.OppgaveDTO
 import no.nav.helse.flex.logger
@@ -46,9 +45,8 @@ class AivenSpreOppgaverListener(
 
             if (oppgaveDTO.dokumentType == DokumentTypeDTO.Søknad) {
                 spreOppgaverService.prosesserOppgave(oppgaveDTO, OppgaveKilde.Saksbehandling)
-                tellOppgave(oppgaveDTO)
             } else {
-                log.info("Ignorerer oppgave med dokumentId ${oppgaveDTO.dokumentId}")
+                log.info("Ignorerer oppgave med dokumentId: ${oppgaveDTO.dokumentId} da dokumentetType er: ${oppgaveDTO.dokumentType}")
             }
 
             acknowledgment.acknowledge()
@@ -63,19 +61,6 @@ class AivenSpreOppgaverListener(
         } finally {
             MDC.remove(NAV_CALLID)
         }
-    }
-
-    private fun tellOppgave(oppgave: OppgaveDTO) {
-        registry
-            .counter(
-                "spre.oppgave",
-                Tags.of(
-                    "type",
-                    "info",
-                    "oppdateringstype",
-                    oppgave.oppdateringstype.name,
-                ),
-            ).increment()
     }
 
     fun String.tilSpreOppgaveDTO(): OppgaveDTO = objectMapper.readValue(this)
