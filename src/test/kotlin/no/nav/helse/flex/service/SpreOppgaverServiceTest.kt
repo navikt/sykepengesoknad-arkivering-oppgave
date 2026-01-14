@@ -4,19 +4,18 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.whenever
-import io.micrometer.core.instrument.Counter
-import io.micrometer.core.instrument.MeterRegistry
 import no.nav.helse.flex.domain.dto.Sykepengesoknad
 import no.nav.helse.flex.repository.InnsendingDbRecord
 import no.nav.helse.flex.repository.SpreOppgaveRepository
-import no.nav.helse.flex.spreoppgave.HandterOppave
+import no.nav.helse.flex.spreoppgave.HandterOppgave
 import no.nav.helse.flex.spreoppgave.SpreOppgaverService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.never
+import org.mockito.Mockito.times
+import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
 import java.time.LocalDateTime
 
@@ -26,16 +25,10 @@ class SpreOppgaverServiceTest {
     lateinit var saksbehandlingsService: SaksbehandlingsService
 
     lateinit var spreOppgaverService: SpreOppgaverService
-    lateinit var handterOppave: HandterOppave
+    lateinit var handterOppgave: HandterOppgave
 
     @Mock
     lateinit var spreOppgaveRepository: SpreOppgaveRepository
-
-    @Mock
-    lateinit var registry: MeterRegistry
-
-    @Mock
-    lateinit var counter: Counter
 
     private val objectMapper = ObjectMapper().registerKotlinModule().registerModules(JavaTimeModule())
     private val sok =
@@ -56,9 +49,8 @@ class SpreOppgaverServiceTest {
 
     @BeforeEach
     fun setup() {
-        whenever(registry.counter(any())).thenReturn(counter)
-        handterOppave = HandterOppave(spreOppgaveRepository, registry)
-        spreOppgaverService = SpreOppgaverService(saksbehandlingsService, spreOppgaveRepository, handterOppave)
+        handterOppgave = HandterOppgave(spreOppgaveRepository)
+        spreOppgaverService = SpreOppgaverService(saksbehandlingsService, spreOppgaveRepository, handterOppgave)
     }
 
     @Test
