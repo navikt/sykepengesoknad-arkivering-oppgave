@@ -24,6 +24,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -50,7 +51,7 @@ class OppgaveOpprettelseTest {
     @InjectMocks
     lateinit var oppgaveOpprettelse: OppgaveOpprettelse
 
-    private fun mockHenting() {
+    private fun mockHentSoknad() {
         whenever(sykepengesoknadBackendClient.hentSoknad(any())).thenReturn(
             SykepengesoknadDTO(
                 id = UUID.randomUUID().toString(),
@@ -79,13 +80,13 @@ class OppgaveOpprettelseTest {
     }
 
     @Test
-    fun `har ingenting å behandle`() {
+    fun `Det er ingen oppgaver å behandle`() {
         oppgaveOpprettelse.behandleOppgaver()
         verify(saksbehandlingsService, never()).opprettOppgave(any(), any(), any())
     }
 
     @Test
-    fun `har noe å behandle men mangler innsending`() {
+    fun `Oppgaver som kan behandles mangler innsending`() {
         whenever(spreOppgaveRepository.findOppgaverTilOpprettelse(any())).thenReturn(
             listOf(
                 SpreOppgaveDbRecord(
@@ -103,7 +104,7 @@ class OppgaveOpprettelseTest {
     }
 
     @Test
-    fun `sletter ikke oppgave(i test) om vi mangler innsending og den er fersk`() {
+    fun `Sletter ikke oppgave i Dev om vi mangler innsending og den er ny`() {
         whenever(spreOppgaveRepository.findOppgaverTilOpprettelse(any())).thenReturn(
             listOf(
                 SpreOppgaveDbRecord(
@@ -122,7 +123,7 @@ class OppgaveOpprettelseTest {
     }
 
     @Test
-    fun `sletter oppgave(i test) om vi mangler innsending og den er gammel`() {
+    fun `Sletter oppgave i Dev om vi mangler innsending og den er gammel`() {
         whenever(environmentToggles.isDevGcp()).thenReturn(true)
         whenever(spreOppgaveRepository.findOppgaverTilOpprettelse(any())).thenReturn(
             listOf(
@@ -142,8 +143,8 @@ class OppgaveOpprettelseTest {
     }
 
     @Test
-    fun `har noe å behandle og har innsending`() {
-        mockHenting()
+    fun `Behandler oppgaver med innsending`() {
+        mockHentSoknad()
         val soknadId = UUID.randomUUID().toString()
         whenever(spreOppgaveRepository.findOppgaverTilOpprettelse(any())).thenReturn(
             listOf(
@@ -179,8 +180,8 @@ class OppgaveOpprettelseTest {
     }
 
     @Test
-    fun `flere oppgaver hvor en tryner`() {
-        mockHenting()
+    fun `Behandler resterende oppgaver selv om én feiler`() {
+        mockHentSoknad()
         val soknadId1 = UUID.randomUUID()
         val soknadId2 = UUID.randomUUID()
         val soknadId3 = UUID.randomUUID()
@@ -219,7 +220,7 @@ class OppgaveOpprettelseTest {
                 journalpostId = "journalpost",
             )
         }
-        whenever(sykepengesoknadBackendClient.hentSoknad(soknadId2.toString())).thenThrow(RuntimeException("I AM ERROR"))
+        whenever(sykepengesoknadBackendClient.hentSoknad(soknadId2.toString())).thenThrow(RuntimeException("Error"))
 
         val tidspunkt = Instant.now()
         oppgaveOpprettelse.behandleOppgaver(tidspunkt)
@@ -242,7 +243,7 @@ class OppgaveOpprettelseTest {
     }
 
     @Test
-    fun `Finner ikke søknad, skippes i Q`() {
+    fun `Feiler ikke når mangler i Dev`() {
         val soknadId = UUID.randomUUID()
         whenever(spreOppgaveRepository.findOppgaverTilOpprettelse(any())).thenReturn(
             listOf(
@@ -278,7 +279,7 @@ class OppgaveOpprettelseTest {
     }
 
     @Test
-    fun `Finner ikke søknad, skippes ikke i P`() {
+    fun `Feiler når søknad ikke finnes i Prod`() {
         val soknadId = UUID.randomUUID()
         whenever(spreOppgaveRepository.findOppgaverTilOpprettelse(any())).thenReturn(
             listOf(
@@ -306,4 +307,91 @@ class OppgaveOpprettelseTest {
         }
         verify(spreOppgaveRepository, never()).updateOppgaveBySykepengesoknadId(any(), any(), any(), any())
     }
+
+    @Test
+    fun `Utsetter Gosys-oppgave hvis søknad har medlemskapsspørsmål og det er mindre enn 10 minutter siden oppgaven ble opprettet`() {
+        val soknadId = UUID.randomUUID().toString()
+        val opprettetTid = Instant.now()
+        whenever(sykepengesoknadBackendClient.hentSoknad(soknadId)).thenReturn(lagSoknad(soknadId))
+        whenever(identService.hentAktorIdForFnr(any())).thenReturn("aktor")
+        whenever(spreOppgaveRepository.findOppgaverTilOpprettelse(any())).thenReturn(
+            listOf(
+                SpreOppgaveDbRecord(
+                    sykepengesoknadId = soknadId,
+                    status = OppgaveStatus.Opprett,
+                    opprettet = opprettetTid,
+                    avstemt = true,
+                ),
+            ),
+        )
+        whenever(saksbehandlingsService.finnEksisterendeInnsending(soknadId)).thenReturn(
+            InnsendingDbRecord(
+                id = "id",
+                sykepengesoknadId = soknadId,
+                journalpostId = "journalpost",
+            ),
+        )
+
+        oppgaveOpprettelse.behandleOppgaver(Instant.now())
+
+        verify(saksbehandlingsService, never()).opprettOppgave(any(), any(), any())
+    }
+
+    @Test
+    fun `Oppretter Gosys-oppgave hvis søknad har medlemskapsspørsmål og det mer enn 10 minutter siden oppgaven ble opprettet`() {
+        val soknadId = UUID.randomUUID().toString()
+        val opprettetTid = Instant.now().minus(Duration.ofMinutes(11))
+        whenever(sykepengesoknadBackendClient.hentSoknad(soknadId)).thenReturn(lagSoknad(soknadId))
+        whenever(identService.hentAktorIdForFnr(any())).thenReturn("aktor")
+        whenever(spreOppgaveRepository.findOppgaverTilOpprettelse(any())).thenReturn(
+            listOf(
+                SpreOppgaveDbRecord(
+                    sykepengesoknadId = soknadId,
+                    status = OppgaveStatus.Opprett,
+                    opprettet = opprettetTid,
+                    avstemt = true,
+                ),
+            ),
+        )
+        whenever(saksbehandlingsService.finnEksisterendeInnsending(soknadId)).thenReturn(
+            InnsendingDbRecord(
+                id = "id",
+                sykepengesoknadId = soknadId,
+                journalpostId = "journalpost",
+            ),
+        )
+
+        val tid = Instant.now()
+        oppgaveOpprettelse.behandleOppgaver(tid)
+
+        verify(saksbehandlingsService, times(1)).opprettOppgave(any(), any(), any())
+        verify(spreOppgaveRepository, times(1))
+            .updateOppgaveBySykepengesoknadId(
+                sykepengesoknadId = soknadId,
+                timeout = null,
+                status = OppgaveStatus.Opprettet,
+                modifisert = tid,
+            )
+    }
+
+    private fun lagSoknad(soknadId: String) =
+        SykepengesoknadDTO(
+            id = soknadId,
+            opprettet = LocalDateTime.now().minusMinutes(20),
+            fom = LocalDate.of(2025, 1, 1),
+            tom = LocalDate.of(2025, 1, 20),
+            type = SoknadstypeDTO.ARBEIDSTAKERE,
+            sporsmal =
+                listOf(
+                    SporsmalDTO(
+                        id = UUID.randomUUID().toString(),
+                        tag = "MEDLEMSKAP_OPPHOLDSTILLATELSE",
+                        svartype = SvartypeDTO.JA_NEI,
+                        svar = emptyList(),
+                    ),
+                ),
+            status = SoknadsstatusDTO.SENDT,
+            sendtNav = LocalDateTime.now().minusMinutes(11),
+            fnr = "fnr",
+        )
 }

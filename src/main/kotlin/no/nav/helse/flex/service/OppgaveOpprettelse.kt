@@ -4,6 +4,7 @@ import no.nav.helse.flex.client.SykepengesoknadBackendClient
 import no.nav.helse.flex.client.SøknadIkkeFunnetException
 import no.nav.helse.flex.client.pdl.PdlClient
 import no.nav.helse.flex.config.EnvironmentToggles
+import no.nav.helse.flex.domain.dto.harMedlemskapSporsmal
 import no.nav.helse.flex.kafka.mapper.toSykepengesoknad
 import no.nav.helse.flex.logger
 import no.nav.helse.flex.repository.OppgaveStatus
@@ -46,6 +47,23 @@ class OppgaveOpprettelse(
                     val soknadDTO = sykepengesoknadBackendClient.hentSoknad(it.sykepengesoknadId)
                     val aktorId = identService.hentAktorIdForFnr(soknadDTO.fnr)
                     val soknad = soknadDTO.toSykepengesoknad(aktorId)
+
+                    if (soknad.harMedlemskapSporsmal()) {
+                        val ventetidEtterInnsending = it.opprettet.plus(Duration.ofMinutes(10))
+                        if (ventetidEtterInnsending.isAfter(tid)) {
+                            log.info(
+                                "Søknad ${it.sykepengesoknadId} har medlemskapsspørsmål. Utsetter oppgaveopprettelse til $ventetidEtterInnsending",
+                            )
+                            spreOppgaveRepository.updateOppgaveBySykepengesoknadId(
+                                sykepengesoknadId = it.sykepengesoknadId,
+                                timeout = ventetidEtterInnsending,
+                                status = OppgaveStatus.Utsett,
+                                modifisert = tid,
+                            )
+                            return@forEach
+                        }
+                    }
+
                     saksbehandlingsService.opprettOppgave(
                         sykepengesoknad = soknad,
                         innsending = innsending,
