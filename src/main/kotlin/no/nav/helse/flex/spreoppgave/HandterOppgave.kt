@@ -1,6 +1,5 @@
 package no.nav.helse.flex.spreoppgave
 
-import io.micrometer.core.instrument.MeterRegistry
 import no.nav.helse.flex.domain.OppdateringstypeDTO
 import no.nav.helse.flex.domain.OppgaveDTO
 import no.nav.helse.flex.logger
@@ -24,12 +23,10 @@ interface HandterOppgaveInterface {
 }
 
 @Component
-class HandterOppave(
+class HandterOppgave(
     private val spreOppgaveRepository: SpreOppgaveRepository,
-    registry: MeterRegistry,
 ) : HandterOppgaveInterface {
     private val log = logger()
-    private val gjenopplivetCounter = registry.counter("gjenopplivet_oppgave")
 
     override fun håndterOppgaveFraBømlo(
         eksisterendeOppgave: SpreOppgaveDbRecord?,
@@ -48,6 +45,7 @@ class HandterOppave(
                     ),
                 )
             }
+
             (eksisterendeOppgave.status == OppgaveStatus.Utsett || eksisterendeOppgave.status == OppgaveStatus.VenterPaBomlo) -> {
                 log.info("Mottok ${oppgave.oppdateringstype.name} oppgave for søknad ${oppgave.dokumentId} fra bømlo")
                 spreOppgaveRepository.updateOppgaveBySykepengesoknadId(
@@ -57,6 +55,7 @@ class HandterOppave(
                     tidspunkt,
                 )
             }
+
             eksisterendeOppgave.status == OppgaveStatus.IkkeOpprett && oppgave.oppdateringstype == OppdateringstypeDTO.Opprett -> {
                 log.info("Vil opprette oppgave for søknad ${oppgave.dokumentId} som vi tidligere ble bedt om å ikke opprette")
                 spreOppgaveRepository.updateOppgaveBySykepengesoknadId(
@@ -66,6 +65,7 @@ class HandterOppave(
                     tidspunkt,
                 )
             }
+
             else -> {
                 log.info(
                     "Gjør ikke ${oppgave.oppdateringstype.name} for søknad ${oppgave.dokumentId} fordi status " +
