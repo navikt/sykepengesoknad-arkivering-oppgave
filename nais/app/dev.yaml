@@ -9,8 +9,8 @@ maxReplicas: 1
 cpu: 100m
 memory: 640Mi
 external-host:
-  - dokarkiv.dev-fss-pub.nais.io
-  - oppgave-q1.dev-fss-pub.nais.io
+  - dokarkiv-q2.dev-fss-pub.nais.io
+  - oppgave-q2.dev-fss-pub.nais.io
   - pdl-api.dev-fss-pub.nais.io
   - flex-unleash-api.nav.cloud.nais.io
 env:
@@ -18,10 +18,10 @@ env:
   SYKEPENGESOKNAD_BACKEND_AAD_CLIENT_ID: dev-gcp.flex.sykepengesoknad-backend
   PDL_URL: https://pdl-api.dev-fss-pub.nais.io
   PDL_API_AAD_CLIENT_ID: dev-fss.pdl.pdl-api
-  DOKARKIV_URL: https://dokarkiv.dev-fss-pub.nais.io
-  DOKARKIV_AAD_CLIENT_ID: dev-fss.teamdokumenthandtering.dokarkiv-q1
-  OPPGAVE_URL: https://oppgave-q1.dev-fss-pub.nais.io
-  OPPGAVE_AAD_CLIENT_ID: dev-fss.oppgavehandtering.oppgave-q1
+  DOKARKIV_URL: https://dokarkiv-q2.dev-fss-pub.nais.io
+  DOKARKIV_AAD_CLIENT_ID: dev-fss.teamdokumenthandtering.dokarkiv
+  OPPGAVE_URL: https://oppgave-q2.dev-fss-pub.nais.io
+  OPPGAVE_AAD_CLIENT_ID: dev-fss.oppgavehandtering.oppgave-q2
   SYKEPENGESOKNAD_KVITTERINGER_URL: http://sykepengesoknad-kvitteringer
   SYKEPENGESOKNAD_KVITTERINGER_AAD_CLIENT_ID: dev-gcp.flex.sykepengesoknad-kvitteringer
   MEDLEMSKAP_VURDERING_URL: http://medlemskap-sykepenger-listener.medlemskap
