@@ -52,7 +52,11 @@ class SaksbehandlingsServiceTest : FellesTestOppsett() {
 
     @Test
     fun `oppretter oppgave med korrekte felter`() {
-        val søknad = objectMapper.readValue(this::class.java.getResourceAsStream("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
+        val søknad =
+            objectMapper.readValue(
+                this::class.java.getResourceAsStream("/soknadArbeidstakerMedNeisvar.json"),
+                Sykepengesoknad::class.java,
+            )
 
         saksbehandlingsService.opprettOppgave(søknad, innsending(søknad))
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
