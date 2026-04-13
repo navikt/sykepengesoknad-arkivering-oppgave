@@ -26,7 +26,7 @@ class BeskrivelseServiceTest {
     fun soknadForUtlandsopphold() {
         val sykepengesoknad =
             objectMapper.readValue(
-                BeskrivelseServiceTest::class.java.getResource("/soknadUtland.json"),
+                BeskrivelseServiceTest::class.java.getResourceAsStream("/soknadUtland.json"),
                 Sykepengesoknad::class.java,
             )
         val soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn")
@@ -39,7 +39,7 @@ class BeskrivelseServiceTest {
     fun medlemskapssporsmal() {
         val sykepengesoknad =
             objectMapper.readValue(
-                BeskrivelseServiceTest::class.java.getResource("/soknadMedlemskap.json"),
+                BeskrivelseServiceTest::class.java.getResourceAsStream("/soknadMedlemskap.json"),
                 Sykepengesoknad::class.java,
             )
         val soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn")
@@ -52,7 +52,7 @@ class BeskrivelseServiceTest {
     fun soknadForUtlandsoppholdMedSvartypeLand() {
         val sykepengesoknad =
             objectMapper.readValue(
-                BeskrivelseServiceTest::class.java.getResource("/soknadUtlandMedSvartypeLand.json"),
+                BeskrivelseServiceTest::class.java.getResourceAsStream("/soknadUtlandMedSvartypeLand.json"),
                 Sykepengesoknad::class.java,
             )
         val soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn")
@@ -65,7 +65,7 @@ class BeskrivelseServiceTest {
     fun soknadForSelvstendigeMedNeisvar() {
         val sykepengesoknad =
             objectMapper.readValue(
-                BeskrivelseServiceTest::class.java.getResource("/soknadSelvstendigMedNeisvar.json"),
+                BeskrivelseServiceTest::class.java.getResourceAsStream("/soknadSelvstendigMedNeisvar.json"),
                 Sykepengesoknad::class.java,
             )
         val soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn")
@@ -78,7 +78,7 @@ class BeskrivelseServiceTest {
     fun soknadForSelvstendigeMedMangeSvar() {
         val sykepengesoknad =
             objectMapper.readValue(
-                BeskrivelseServiceTest::class.java.getResource("/soknadSelvstendigMangeSvar.json"),
+                BeskrivelseServiceTest::class.java.getResourceAsStream("/soknadSelvstendigMangeSvar.json"),
                 Sykepengesoknad::class.java,
             )
         val soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn")
@@ -91,7 +91,7 @@ class BeskrivelseServiceTest {
     fun soknadForSelvstendigeMedMangeSvarNy() {
         val sykepengesoknad =
             objectMapper.readValue(
-                BeskrivelseServiceTest::class.java.getResource("/soknadSelvstendigMangeSvarNy.json"),
+                BeskrivelseServiceTest::class.java.getResourceAsStream("/soknadSelvstendigMangeSvarNy.json"),
                 Sykepengesoknad::class.java,
             )
         val soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn")
@@ -104,7 +104,7 @@ class BeskrivelseServiceTest {
     fun soknadForArbeidstakereMedNeisvar() {
         val sykepengesoknad =
             objectMapper.readValue(
-                BeskrivelseServiceTest::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"),
+                BeskrivelseServiceTest::class.java.getResourceAsStream("/soknadArbeidstakerMedNeisvar.json"),
                 Sykepengesoknad::class.java,
             )
         val soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn")
@@ -189,7 +189,7 @@ OBS! Sykmeldingen har en merknad Merknad(type=SVINDEL, beskrivelse=Farlig)
     fun soknadForArbeidstakereMangeSvar() {
         val sykepengesoknad =
             objectMapper.readValue(
-                BeskrivelseServiceTest::class.java.getResource("/soknadArbeidstakerMangeSvar.json"),
+                BeskrivelseServiceTest::class.java.getResourceAsStream("/soknadArbeidstakerMangeSvar.json"),
                 Sykepengesoknad::class.java,
             )
         val soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn")
@@ -202,7 +202,7 @@ OBS! Sykmeldingen har en merknad Merknad(type=SVINDEL, beskrivelse=Farlig)
     fun korrigertSoknadFremgarAvBeskrivelse() {
         val sykepengesoknad =
             objectMapper.readValue(
-                BeskrivelseServiceTest::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"),
+                BeskrivelseServiceTest::class.java.getResourceAsStream("/soknadArbeidstakerMedNeisvar.json"),
                 Sykepengesoknad::class.java,
             )
         val soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn")
@@ -216,7 +216,7 @@ OBS! Sykmeldingen har en merknad Merknad(type=SVINDEL, beskrivelse=Farlig)
     fun leggerTilMeldingForAvsendertypeSystem() {
         val sykepengesoknad =
             objectMapper.readValue(
-                BeskrivelseServiceTest::class.java.getResource("/soknadArbeidstakerMangeSvar.json"),
+                BeskrivelseServiceTest::class.java.getResourceAsStream("/soknadArbeidstakerMangeSvar.json"),
                 Sykepengesoknad::class.java,
             )
         val soknad = Soknad.lagSoknad(sykepengesoknad.copy(avsendertype = null), "fnr", "navn")
@@ -234,7 +234,7 @@ OBS! Sykmeldingen har en merknad Merknad(type=SVINDEL, beskrivelse=Farlig)
     fun leggerTilMeldingForEgenmeldtSykmelding() {
         val sykepengesoknad =
             objectMapper.readValue(
-                BeskrivelseServiceTest::class.java.getResource("/soknadArbeidstakerMangeSvar.json"),
+                BeskrivelseServiceTest::class.java.getResourceAsStream("/soknadArbeidstakerMangeSvar.json"),
                 Sykepengesoknad::class.java,
             )
         val soknad = Soknad.lagSoknad(sykepengesoknad.copy(egenmeldtSykmelding = true), "fnr", "navn")
@@ -248,7 +248,7 @@ OBS! Sykmeldingen har en merknad Merknad(type=SVINDEL, beskrivelse=Farlig)
     fun soknadForBehandlingsdagerMedNeiSvar() {
         val sykepengesoknad =
             objectMapper.readValue(
-                BeskrivelseServiceTest::class.java.getResource("/soknadBehandlingsdagerMedNeisvar.json"),
+                BeskrivelseServiceTest::class.java.getResourceAsStream("/soknadBehandlingsdagerMedNeisvar.json"),
                 Sykepengesoknad::class.java,
             )
         val soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn")
@@ -261,7 +261,7 @@ OBS! Sykmeldingen har en merknad Merknad(type=SVINDEL, beskrivelse=Farlig)
     fun soknadForBehandlingsdagerMedMangeSvar() {
         val sykepengesoknad =
             objectMapper.readValue(
-                BeskrivelseServiceTest::class.java.getResource("/soknadBehandlingsdagerMedMangeSvar.json"),
+                BeskrivelseServiceTest::class.java.getResourceAsStream("/soknadBehandlingsdagerMedMangeSvar.json"),
                 Sykepengesoknad::class.java,
             )
         val soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn")
@@ -275,7 +275,7 @@ OBS! Sykmeldingen har en merknad Merknad(type=SVINDEL, beskrivelse=Farlig)
         val sykepengesoknad =
             objectMapper
                 .readValue(
-                    BeskrivelseServiceTest::class.java.getResource("/soknadBehandlingsdagerMedMangeSvar.json"),
+                    BeskrivelseServiceTest::class.java.getResourceAsStream("/soknadBehandlingsdagerMedMangeSvar.json"),
                     Sykepengesoknad::class.java,
                 ).copy(
                     soknadstype = Soknadstype.FRISKMELDT_TIL_ARBEIDSFORMIDLING,
@@ -301,7 +301,7 @@ OBS! Sykmeldingen har en merknad Merknad(type=SVINDEL, beskrivelse=Farlig)
     fun soknadForArbeidstakereMedTimerIkkeCheckedOgProsentChecked() {
         val sykepengesoknad =
             objectMapper.readValue(
-                BeskrivelseServiceTest::class.java.getResource("/soknadArbeidstakerMedTimerOgDeretterProsent.json"),
+                BeskrivelseServiceTest::class.java.getResourceAsStream("/soknadArbeidstakerMedTimerOgDeretterProsent.json"),
                 Sykepengesoknad::class.java,
             )
         val soknad = Soknad.lagSoknad(sykepengesoknad, "fnr", "navn")
@@ -315,7 +315,7 @@ OBS! Sykmeldingen har en merknad Merknad(type=SVINDEL, beskrivelse=Farlig)
         val sykepengesoknad =
             objectMapper
                 .readValue(
-                    BeskrivelseServiceTest::class.java.getResource("/soknadArbeidstakerMedTimerOgDeretterProsent.json"),
+                    BeskrivelseServiceTest::class.java.getResourceAsStream("/soknadArbeidstakerMedTimerOgDeretterProsent.json"),
                     Sykepengesoknad::class.java,
                 ).copy(
                     sporsmal =

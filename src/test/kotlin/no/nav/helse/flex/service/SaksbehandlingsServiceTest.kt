@@ -31,11 +31,11 @@ class SaksbehandlingsServiceTest : FellesTestOppsett() {
         val now = LocalDateTime.now()
         val sykepengesoknadUtenOppgave =
             objectMapper
-                .readValue(this::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
+                .readValue(this::class.java.getResourceAsStream("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
                 .copy(sendtNav = null, sendtArbeidsgiver = now)
         val sykepengesoknadEttersendingTilNAV =
             objectMapper
-                .readValue(this::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
+                .readValue(this::class.java.getResourceAsStream("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
                 .copy(sendtNav = now, sendtArbeidsgiver = now)
 
         val oppgaveRequestFør = oppgaveMockWebserver.requestCount
@@ -52,7 +52,11 @@ class SaksbehandlingsServiceTest : FellesTestOppsett() {
 
     @Test
     fun `oppretter oppgave med korrekte felter`() {
-        val søknad = objectMapper.readValue(this::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"), Sykepengesoknad::class.java)
+        val søknad =
+            objectMapper.readValue(
+                this::class.java.getResourceAsStream("/soknadArbeidstakerMedNeisvar.json"),
+                Sykepengesoknad::class.java,
+            )
 
         saksbehandlingsService.opprettOppgave(søknad, innsending(søknad))
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!

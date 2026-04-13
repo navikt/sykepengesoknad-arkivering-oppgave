@@ -33,7 +33,7 @@ class SpreOppgaverServiceTest {
     private val objectMapper = ObjectMapper().registerKotlinModule().registerModules(JavaTimeModule())
     private val sok =
         objectMapper.readValue(
-            SpreOppgaverServiceTest::class.java.getResource("/soknadArbeidstakerMedNeisvar.json"),
+            SpreOppgaverServiceTest::class.java.getResourceAsStream("/soknadArbeidstakerMedNeisvar.json"),
             Sykepengesoknad::class.java,
         )
     private val now = LocalDateTime.now()
