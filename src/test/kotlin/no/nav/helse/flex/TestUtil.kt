@@ -24,18 +24,18 @@ fun <T> skapConsumerRecord(
 
 val mockSykepengesoknadDTO: SykepengesoknadDTO =
     objectMapper.readValue(
-        Application::class.java.getResource("/arbeidstakersoknad.json"),
+        Application::class.java.getResourceAsStream("/arbeidstakersoknad.json"),
         SykepengesoknadDTO::class.java,
     )
 
 val mockReisetilskuddDTO: SykepengesoknadDTO =
     objectMapper.readValue(
-        Application::class.java.getResource("/reisetilskuddAlleSvar.json"),
+        Application::class.java.getResourceAsStream("/reisetilskuddAlleSvar.json"),
         SykepengesoknadDTO::class.java,
     )
 
 val mockBehandlingsdagerdDTO: SykepengesoknadDTO =
     objectMapper.readValue(
-        Application::class.java.getResource("/soknadBehandlingsdagerTodagerDTO.json"),
+        Application::class.java.getResourceAsStream("/soknadBehandlingsdagerTodagerDTO.json"),
         SykepengesoknadDTO::class.java,
     )
