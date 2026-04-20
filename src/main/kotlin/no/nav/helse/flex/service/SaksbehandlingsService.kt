@@ -144,13 +144,7 @@ class SaksbehandlingsService(
 
         val soknad = Soknad.lagSoknad(sykepengesoknad, fnr, navn, endeligMedlemskapVurdering)
 
-        return soknad.copy(
-            kvitteringer =
-                soknad.kvitteringer
-                    ?.filterNot {
-                        it.blobId == "6c7ba78d-8e28-42a3-bf80-dcbdf525c557"
-                    }?.map { it.hentOgSettKvittering() },
-        )
+        return soknad.copy(kvitteringer = soknad.kvitteringer?.map { it.hentOgSettKvittering() })
     }
 
     private fun PdfKvittering.hentOgSettKvittering(): PdfKvittering =
