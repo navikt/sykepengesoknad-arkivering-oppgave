@@ -13,6 +13,10 @@ external-host:
   - oppgave.prod-fss-pub.nais.io
   - pdl-api.prod-fss-pub.nais.io
   - flex-unleash-api.nav.cloud.nais.io
+db_flags:
+  cloudsql.enable_pgaudit: "true"
+  pgaudit.log: 'write,ddl,role'
+  pgaudit.log_parameter: "on"
 env:
   SYKEPENGESOKNAD_BACKEND_URL: http://sykepengesoknad-backend
   SYKEPENGESOKNAD_BACKEND_AAD_CLIENT_ID: prod-gcp.flex.sykepengesoknad-backend
