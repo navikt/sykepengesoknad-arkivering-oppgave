@@ -364,7 +364,7 @@ class SaksbehandlingIntegrationTest : FellesTestOppsett() {
             "Søknad om enkeltstående behandlingsdager for arbeidsledig for perioden 02.10.2023 til 15.10.2023"
 
         val dokArkivLogiskVedleggRequest = dokArkivMockWebserver.takeRequest(1, TimeUnit.SECONDS)!!
-        dokArkivLogiskVedleggRequest.requestLine shouldBeEqualTo "POST /rest/journalpostapi/v1/dokumentInfo/123456/logiskVedlegg/ HTTP/1.1"
+        dokArkivLogiskVedleggRequest.requestLine shouldBeEqualTo "POST /rest/journalpostapi/v1/dokumentInfo/123456/logiskVedlegg HTTP/1.1"
 
         val dokArkivLogiskVedleggRequestBody =
             objectMapper.readValue<LogiskVedleggRequest>(dokArkivLogiskVedleggRequest.body.readUtf8())
