@@ -425,11 +425,6 @@ fun beskrivelseSelvstendigeMedMangeSvar(): String =
 
                 Har du hatt mer enn 25 prosent endring i årsinntekten din som følge av den varige endringen?
                 Ja
-                Gjennomsnittlig årsinntekt på sykmeldingstidspunktet: 505 219 kroner
-                Inntekt per kalenderår, de tre siste ferdiglignede årene: 
-                2023: 533 504 kroner
-                2022: 508 385 kroner
-                2021: 473 769 kroner
                     Når skjedde den siste varige endringen?
                     17.04.2024
     """.trimIndent()
