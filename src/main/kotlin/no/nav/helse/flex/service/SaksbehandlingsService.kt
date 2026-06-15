@@ -76,7 +76,6 @@ class SaksbehandlingsService(
         val behandlingstemaOgType =
             finnBehandlingstemaOgType(
                 soknad = sykepengesoknad,
-                harRedusertVenteperiode = sykepengesoknad.harRedusertVenteperiode,
                 speilRelatert = speilRelatert,
                 medlemskapVurdering = endeligVurdering,
             )

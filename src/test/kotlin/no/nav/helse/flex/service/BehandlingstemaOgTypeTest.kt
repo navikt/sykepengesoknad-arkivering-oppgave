@@ -13,7 +13,6 @@ class BehandlingstemaOgTypeTest {
     fun arbeidsledig() {
         finnBehandlingstemaOgType(
             soknad = soknad(soknadstype = Soknadstype.ARBEIDSLEDIG),
-            harRedusertVenteperiode = false,
             speilRelatert = false,
             medlemskapVurdering = null,
         ).behandlingstema `should be equal to` "ab0426"
@@ -23,7 +22,6 @@ class BehandlingstemaOgTypeTest {
     fun oppholdUtland() {
         finnBehandlingstemaOgType(
             soknad = soknad(soknadstype = Soknadstype.OPPHOLD_UTLAND),
-            harRedusertVenteperiode = false,
             speilRelatert = false,
             medlemskapVurdering = null,
         ).behandlingstema `should be equal to` "ab0314"
@@ -33,7 +31,6 @@ class BehandlingstemaOgTypeTest {
     fun arbeidstaker() {
         finnBehandlingstemaOgType(
             soknad = soknad(),
-            harRedusertVenteperiode = false,
             speilRelatert = false,
             medlemskapVurdering = null,
         ).behandlingstema `should be equal to` "ab0061"
@@ -43,20 +40,9 @@ class BehandlingstemaOgTypeTest {
     fun behandlingsdager() {
         finnBehandlingstemaOgType(
             soknad = soknad(Soknadstype.BEHANDLINGSDAGER),
-            harRedusertVenteperiode = false,
             speilRelatert = false,
             medlemskapVurdering = null,
         ).behandlingstema `should be equal to` "ab0351"
-    }
-
-    @Test
-    fun redusertVenteperiode() {
-        finnBehandlingstemaOgType(
-            soknad = soknad(Soknadstype.SELVSTENDIGE_OG_FRILANSERE),
-            harRedusertVenteperiode = true,
-            speilRelatert = false,
-            medlemskapVurdering = null,
-        ).behandlingstype `should be equal to` "ae0247"
     }
 
     private fun soknad(soknadstype: Soknadstype = Soknadstype.ARBEIDSTAKERE): Sykepengesoknad =

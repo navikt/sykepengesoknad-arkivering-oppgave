@@ -51,7 +51,6 @@ class BehandleSykmelding(
                 val behandlingstemaOgType =
                     finnBehandlingstemaOgType(
                         soknad = sykepengesoknad,
-                        harRedusertVenteperiode = sykepengesoknad.harRedusertVenteperiode,
                         speilRelatert = false,
                         medlemskapVurdering = medlemskapVurdering,
                     )
