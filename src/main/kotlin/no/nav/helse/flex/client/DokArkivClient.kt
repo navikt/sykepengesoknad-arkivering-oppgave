@@ -56,7 +56,7 @@ class DokArkivClient(
         dokumentId: String,
     ): LogiskVedleggResponse {
         try {
-            val url = "$dokarkivUrl/rest/journalpostapi/v1/dokumentInfo/$dokumentId/logiskVedlegg/"
+            val url = "$dokarkivUrl/rest/journalpostapi/v1/dokumentInfo/$dokumentId/logiskVedlegg"
 
             val headers = HttpHeaders()
             headers.contentType = MediaType.APPLICATION_JSON
