@@ -106,7 +106,6 @@ fun SykepengesoknadDTO.toSykepengesoknad(aktorId: String): Sykepengesoknad =
         ettersending = ettersending,
         egenmeldtSykmelding = egenmeldtSykmelding,
         orgNummer = arbeidsgiver?.orgnummer,
-        harRedusertVenteperiode = harRedusertVenteperiode ?: false,
         merknaderFraSykmelding = merknaderFraSykmelding?.map { Merknad(type = it.type, beskrivelse = it.beskrivelse) },
         merknader = merknader,
         sendTilGosys = sendTilGosys,

@@ -3,7 +3,6 @@ package no.nav.helse.flex.service
 import no.nav.helse.flex.domain.dto.Soknadstype
 import no.nav.helse.flex.domain.dto.Sykepengesoknad
 
-const val BEHANDLINGSTEMA_FORKORTET_VENTETID = "ae0247"
 const val BEHANDLINGSTEMA_TILBAKEDATERING = "ae0239"
 const val BEHANDLINGSTEMA_OVERGANGSSAK_FRA_SPEIL = "ab0455"
 const val BEHANDLINGSTEMA_UTLAND = "ae0106"
@@ -17,13 +16,9 @@ const val BEHANDLINGSTEMA_FRISKMELDING_TIL_ARBEIDSFORMIDLING = "ab0352"
 
 fun finnBehandlingstemaOgType(
     soknad: Sykepengesoknad,
-    harRedusertVenteperiode: Boolean,
     speilRelatert: Boolean,
     medlemskapVurdering: String?,
 ): BehandlingstemaOgType {
-    if (harRedusertVenteperiode) {
-        return behandlingstype(BEHANDLINGSTEMA_FORKORTET_VENTETID)
-    }
     if (soknad.gjelderTilbakedatering()) {
         return behandlingstype(BEHANDLINGSTEMA_TILBAKEDATERING)
     }
