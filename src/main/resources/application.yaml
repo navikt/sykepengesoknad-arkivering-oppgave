@@ -77,7 +77,7 @@ management:
     exposure.include: health,prometheus
 
 aiven-kafka:
-  auto-offset-reset: none
+  auto-offset-reset: latest
   security-protocol: SSL
 
 KAFKA_TRUSTSTORE_PATH: ""
