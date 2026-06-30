@@ -187,7 +187,7 @@ class SaksbehandlingIntegrationTest : FellesTestOppsett() {
         val pdfRequestBody = objectMapper.readValue<Soknad>(pdfRequest.body.readUtf8())
         pdfRequestBody.kvitteringSum shouldBeEqualTo 133800
         pdfRequestBody.kvitteringer!!.size shouldBeEqualTo 2
-        pdfRequestBody.kvitteringer!!.first().b64data shouldBeEqualTo "MTIz"
+        pdfRequestBody.kvitteringer.first().b64data shouldBeEqualTo "MTIz"
         pdfRequestBody.sporsmal.none { it.svartype == Svartype.KVITTERING } shouldBeEqualTo true
         pdfRequestBody.soknadPerioder!!.first().sykmeldingstype shouldBeEqualTo "REISETILSKUDD"
 
@@ -376,7 +376,7 @@ class SaksbehandlingIntegrationTest : FellesTestOppsett() {
         val pdfRequestBody = objectMapper.readValue<Soknad>(pdfRequest.body.readUtf8())
         pdfRequestBody.kvitteringSum shouldBeEqualTo 133800
         pdfRequestBody.kvitteringer!!.size shouldBeEqualTo 2
-        pdfRequestBody.kvitteringer!!.first().b64data shouldBeEqualTo "MTIz"
+        pdfRequestBody.kvitteringer.first().b64data shouldBeEqualTo "MTIz"
         pdfRequestBody.sporsmal.none { it.svartype == Svartype.KVITTERING } shouldBeEqualTo true
         pdfRequestBody.soknadPerioder!!.first().sykmeldingstype shouldBeEqualTo "REISETILSKUDD"
 
