@@ -55,5 +55,6 @@ class BehandlingstemaOgTypeTest {
             opprettet = LocalDateTime.now(),
             status = "SENDT",
             sporsmal = emptyList(),
+            meldingTilNavDagerFraSykmelding = emptyList(),
         )
 }

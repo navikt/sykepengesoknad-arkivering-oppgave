@@ -353,4 +353,5 @@ private fun plainSøknad() =
         fom = LocalDate.ofEpochDay(1),
         tom = LocalDate.ofEpochDay(1337),
         egenmeldingsdagerFraSykmelding = null,
+        meldingTilNavDagerFraSykmelding = null,
     )
