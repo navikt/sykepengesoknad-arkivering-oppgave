@@ -1,5 +1,6 @@
 package no.nav.helse.flex.domain.dto
 
+import no.nav.helse.flex.domain.Periode
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -34,6 +35,7 @@ data class Sykepengesoknad(
     val egenmeldingsdagerFraSykmelding: List<LocalDate>?,
     val medlemskapVurdering: String? = null,
     val fiskerBlad: String? = null,
+    val meldingTilNavDagerFraSykmelding: List<Periode>?,
 )
 
 fun Sykepengesoknad.harMedlemskapSporsmal(): Boolean = this.sporsmal.any { it.tag.startsWith("MEDLEMSKAP_") }

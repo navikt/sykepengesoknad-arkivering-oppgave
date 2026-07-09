@@ -350,6 +350,7 @@ class MedlemskapVurderingTest : FellesTestOppsett() {
         status = "SENDT",
         sendtNav = LocalDateTime.now(),
         medlemskapVurdering = medlemskapVurdering,
+        meldingTilNavDagerFraSykmelding = null,
     )
 
     private fun hentLagretInngaendeVurdering(soknad: Sykepengesoknad) =

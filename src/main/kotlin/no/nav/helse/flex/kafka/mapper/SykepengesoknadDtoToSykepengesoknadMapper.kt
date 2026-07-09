@@ -1,5 +1,6 @@
 package no.nav.helse.flex.kafka.mapper
 
+import no.nav.helse.flex.domain.Periode
 import no.nav.helse.flex.domain.dto.*
 import no.nav.helse.flex.sykepengesoknad.kafka.*
 
@@ -113,6 +114,10 @@ fun SykepengesoknadDTO.toSykepengesoknad(aktorId: String): Sykepengesoknad =
         egenmeldingsdagerFraSykmelding = egenmeldingsdagerFraSykmelding,
         medlemskapVurdering = medlemskapVurdering,
         fiskerBlad = fiskerBlad?.name,
+        meldingTilNavDagerFraSykmelding =
+            meldingTilNavDagerFraSykmelding?.map {
+                Periode(fom = it.fom!!, tom = it.tom!!)
+            },
     )
 
 private fun AvsendertypeDTO.mapAvsendertype(): Avsendertype =
