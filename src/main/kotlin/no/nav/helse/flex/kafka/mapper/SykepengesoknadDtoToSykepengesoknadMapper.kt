@@ -18,7 +18,6 @@ private fun SporsmalDTO.toSporsmal(): Sporsmal =
         kriterieForVisningAvUndersporsmal = kriterieForVisningAvUndersporsmal?.mapKriterie(),
         svar = svar!!.map { it.toSvar() },
         undersporsmal = undersporsmal?.map { it.toSporsmal() },
-        metadata = metadata,
     )
 
 private fun VisningskriteriumDTO.mapKriterie(): Visningskriterie =
