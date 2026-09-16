@@ -1,6 +1,5 @@
 package no.nav.helse.flex.kafka.consumer
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.flex.kafka.mapper.toSykepengesoknad
 import no.nav.helse.flex.logger
 import no.nav.helse.flex.objectMapper
@@ -16,6 +15,7 @@ import org.springframework.data.relational.core.conversion.DbActionExecutionExce
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
+import tools.jackson.module.kotlin.readValue
 import java.time.Duration
 
 const val SYKEPENGESOKNAD_TOPIC = "flex." + "sykepengesoknad"

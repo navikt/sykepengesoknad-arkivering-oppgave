@@ -3,7 +3,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
-fun søknad(
+fun lagSoknad(
     soknadId: UUID = UUID.randomUUID(),
     sendtNav: LocalDateTime? = LocalDateTime.now(),
     sendtArbeidsgiver: LocalDateTime? = null,

@@ -1,10 +1,8 @@
 package no.nav.helse.flex.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.nhaarman.mockitokotlin2.any
 import no.nav.helse.flex.domain.dto.Sykepengesoknad
+import no.nav.helse.flex.objectMapper
 import no.nav.helse.flex.repository.InnsendingDbRecord
 import no.nav.helse.flex.repository.SpreOppgaveRepository
 import no.nav.helse.flex.spreoppgave.HandterOppgave
@@ -30,7 +28,6 @@ class SpreOppgaverServiceTest {
     @Mock
     lateinit var spreOppgaveRepository: SpreOppgaveRepository
 
-    private val objectMapper = ObjectMapper().registerKotlinModule().registerModules(JavaTimeModule())
     private val sok =
         objectMapper.readValue(
             SpreOppgaverServiceTest::class.java.getResourceAsStream("/soknadArbeidstakerMedNeisvar.json"),

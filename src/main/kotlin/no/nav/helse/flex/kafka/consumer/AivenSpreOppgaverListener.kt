@@ -1,6 +1,5 @@
 package no.nav.helse.flex.kafka.consumer
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.helse.flex.domain.DokumentTypeDTO
 import no.nav.helse.flex.domain.OppgaveDTO
@@ -17,6 +16,7 @@ import org.springframework.data.relational.core.conversion.DbActionExecutionExce
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
+import tools.jackson.module.kotlin.readValue
 import java.time.Duration
 
 const val SPREOPPGAVER_TOPIC = "tbd." + "spre-oppgaver"

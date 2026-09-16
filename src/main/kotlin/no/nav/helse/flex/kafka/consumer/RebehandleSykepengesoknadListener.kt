@@ -1,6 +1,5 @@
 package no.nav.helse.flex.kafka.consumer
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.flex.BEHANDLINGSTIDSPUNKT
 import no.nav.helse.flex.domain.dto.Sykepengesoknad
 import no.nav.helse.flex.kafka.producer.RebehandleSykepengesoknadProducer
@@ -12,6 +11,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
+import tools.jackson.module.kotlin.readValue
 import java.nio.charset.StandardCharsets
 import java.time.Duration
 import java.time.Instant

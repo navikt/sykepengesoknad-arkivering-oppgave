@@ -2,15 +2,16 @@ package no.nav.helse.flex.client.pdl
 
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.flex.graphql.GraphQLRequest
 import no.nav.helse.flex.graphql.GraphQLResponse
 import no.nav.helse.flex.objectMapper
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.*
-import org.springframework.retry.annotation.Retryable
+import org.springframework.resilience.annotation.Retryable
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
+import org.springframework.web.client.exchange
+import tools.jackson.module.kotlin.readValue
 import java.util.*
 
 private const val TEMA = "Tema"
@@ -21,11 +22,11 @@ private const val BEHANDLINGSNUMMER_VALUE = "B139"
 
 @Component
 class PdlClient(
-    @param:Value("\${PDL_URL}")
+    @param:Value($$"${PDL_URL}")
     private val pdlApiUrl: String,
     private val pdlRestTemplate: RestTemplate,
 ) {
-    @Retryable(exclude = [FunctionalPdlError::class])
+    @Retryable(excludes = [FunctionalPdlError::class])
     fun hentIdenter(ident: String): List<PdlIdent> {
         val graphQLRequest =
             GraphQLRequest(
@@ -45,7 +46,8 @@ class PdlClient(
             throw RuntimeException("PDL svarer med status ${responseEntity.statusCode} - ${responseEntity.body}")
         }
 
-        val parsedResponse = responseEntity.body?.let { objectMapper.readValue<GraphQLResponse<HentIdenterResponseData>>(it) }
+        val parsedResponse =
+            responseEntity.body?.let { objectMapper.readValue<GraphQLResponse<HentIdenterResponseData>>(it) }
 
         val identer =
             parsedResponse?.data?.let {
@@ -58,7 +60,7 @@ class PdlClient(
         return identer
     }
 
-    @Retryable(exclude = [FunctionalPdlError::class])
+    @Retryable(excludes = [FunctionalPdlError::class])
     fun hentFormattertNavn(fnr: String): String? {
         val graphQLRequest =
             GraphQLRequest(
@@ -67,11 +69,10 @@ class PdlClient(
             )
 
         val responseEntity =
-            pdlRestTemplate.exchange(
+            pdlRestTemplate.exchange<String>(
                 "$pdlApiUrl/graphql",
                 HttpMethod.POST,
                 HttpEntity(requestToJson(graphQLRequest), createHeaders()),
-                String::class.java,
             )
 
         if (responseEntity.statusCode != HttpStatus.OK) {

@@ -165,7 +165,7 @@ abstract class FellesTestOppsett {
         }
     }
 
-    fun leggSøknadPåKafka(søknad: SykepengesoknadDTO) =
+    fun leggSoknadPaaKafka(søknad: SykepengesoknadDTO) =
         aivenSoknadSendtListener.listen(skapConsumerRecord("key", søknad.serialisertTilString()), acknowledgment)
 
     fun leggOppgavePåAivenKafka(oppgave: OppgaveDTO) =

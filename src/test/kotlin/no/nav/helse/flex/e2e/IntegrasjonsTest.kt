@@ -1,7 +1,7 @@
 package no.nav.helse.flex.e2e
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.readValue
+import lagSoknad
 import no.nav.helse.flex.*
 import no.nav.helse.flex.domain.DokumentTypeDTO
 import no.nav.helse.flex.domain.OppdateringstypeDTO
@@ -16,7 +16,7 @@ import org.amshove.kluent.shouldBeEqualTo
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.test.annotation.DirtiesContext
-import søknad
+import tools.jackson.module.kotlin.readValue
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.UUID
@@ -28,14 +28,14 @@ class IntegrasjonsTest : FellesTestOppsett() {
     fun `En arbeidsledigsøknad får behandlingstema ab0426 og takler at bømlo sier opprett`() {
         val soknadId = UUID.randomUUID()
         val søknad =
-            søknad(soknadId).copy(
+            lagSoknad(soknadId).copy(
                 type = SoknadstypeDTO.ARBEIDSLEDIG,
                 arbeidssituasjon = ArbeidssituasjonDTO.ARBEIDSLEDIG,
             )
 
         SykepengesoknadMockDispatcher.enque(søknad)
 
-        leggSøknadPåKafka(søknad)
+        leggSoknadPaaKafka(søknad)
         oppgaveOpprettelse.behandleOppgaver(Instant.now().plus(249, ChronoUnit.HOURS))
 
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(2, TimeUnit.SECONDS)!!
@@ -55,16 +55,16 @@ class IntegrasjonsTest : FellesTestOppsett() {
     @Test
     fun `En fiskersøknad med fiskerblad i oppgavebeskrivelsen`() {
         val soknadId = UUID.randomUUID()
-        val søknad =
-            søknad(soknadId).copy(
+        val soknad =
+            lagSoknad(soknadId).copy(
                 type = SoknadstypeDTO.SELVSTENDIGE_OG_FRILANSERE,
                 arbeidssituasjon = ArbeidssituasjonDTO.FISKER,
                 fiskerBlad = FiskerBladDTO.A,
             )
 
-        SykepengesoknadMockDispatcher.enque(søknad)
+        SykepengesoknadMockDispatcher.enque(soknad)
 
-        leggSøknadPåKafka(søknad)
+        leggSoknadPaaKafka(soknad)
         oppgaveOpprettelse.behandleOppgaver(Instant.now().plus(249, ChronoUnit.HOURS))
 
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(2, TimeUnit.SECONDS)!!
@@ -89,13 +89,13 @@ class IntegrasjonsTest : FellesTestOppsett() {
     fun `En friskmeldt til arbeidsformidlingsøknad`() {
         val soknadId = UUID.randomUUID()
         val søknad =
-            søknad(soknadId).copy(
+            lagSoknad(soknadId).copy(
                 type = SoknadstypeDTO.FRISKMELDT_TIL_ARBEIDSFORMIDLING,
             )
 
         SykepengesoknadMockDispatcher.enque(søknad)
 
-        leggSøknadPåKafka(søknad)
+        leggSoknadPaaKafka(søknad)
         oppgaveOpprettelse.behandleOppgaver(Instant.now().plus(249, ChronoUnit.HOURS))
 
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(2, TimeUnit.SECONDS)!!

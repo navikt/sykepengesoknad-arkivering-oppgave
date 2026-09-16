@@ -1,6 +1,5 @@
 package no.nav.helse.flex.client
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.flex.domain.JournalpostRequest
 import no.nav.helse.flex.domain.JournalpostResponse
 import no.nav.helse.flex.domain.LogiskVedleggRequest
@@ -11,11 +10,11 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
-import org.springframework.retry.annotation.Backoff
-import org.springframework.retry.annotation.Retryable
+import org.springframework.resilience.annotation.Retryable
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
+import tools.jackson.module.kotlin.readValue
 
 @Component
 class DokArkivClient(
@@ -23,7 +22,7 @@ class DokArkivClient(
     private val dokarkivUrl: String,
     private val dokArkivRestTemplate: RestTemplate,
 ) {
-    @Retryable(backoff = Backoff(delay = 5000))
+    @Retryable(delay = 5000L)
     fun opprettJournalpost(
         pdfRequest: JournalpostRequest,
         id: String,
@@ -50,7 +49,7 @@ class DokArkivClient(
         }
     }
 
-    @Retryable(backoff = Backoff(delay = 5000))
+    @Retryable(delay = 5000L)
     fun opprettLogiskVedlegg(
         logiskVedleggRequest: LogiskVedleggRequest,
         dokumentId: String,

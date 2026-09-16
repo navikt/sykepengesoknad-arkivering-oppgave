@@ -1,6 +1,6 @@
 package no.nav.helse.flex.e2e
 
-import com.fasterxml.jackson.module.kotlin.readValue
+import lagSoknad
 import no.nav.helse.flex.*
 import no.nav.helse.flex.domain.DokumentTypeDTO
 import no.nav.helse.flex.domain.OppdateringstypeDTO
@@ -10,7 +10,6 @@ import okhttp3.mockwebserver.MockResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.test.annotation.DirtiesContext
-import søknad
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.UUID
@@ -23,12 +22,12 @@ class SpesialBehandlingstemaTest : FellesTestOppsett() {
     @Test
     fun `En speil relatert søknad får behandlingstema ab0455`() {
         val soknadId = UUID.randomUUID()
-        val søknad = søknad(soknadId)
+        val søknad = lagSoknad(soknadId)
 
         sykepengesoknadMockWebserver.enqueue(
             MockResponse().setBody(søknad.serialisertTilString()).addHeader("Content-Type", "application/json"),
         )
-        leggSøknadPåKafka(søknad)
+        leggSoknadPaaKafka(søknad)
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.OpprettSpeilRelatert, soknadId))
 
         oppgaveOpprettelse.behandleOppgaver(Instant.now().plus(1L, ChronoUnit.HOURS))
@@ -45,12 +44,12 @@ class SpesialBehandlingstemaTest : FellesTestOppsett() {
     @Test
     fun `En ikke speil relatert søknad får behandlingstema ab0061`() {
         val soknadId = UUID.randomUUID()
-        val søknad = søknad(soknadId)
+        val søknad = lagSoknad(soknadId)
 
         sykepengesoknadMockWebserver.enqueue(
             MockResponse().setBody(søknad.serialisertTilString()).addHeader("Content-Type", "application/json"),
         )
-        leggSøknadPåKafka(søknad)
+        leggSoknadPaaKafka(søknad)
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, soknadId))
 
         oppgaveOpprettelse.behandleOppgaver(Instant.now().plus(1L, ChronoUnit.HOURS))
@@ -67,12 +66,12 @@ class SpesialBehandlingstemaTest : FellesTestOppsett() {
     @Test
     fun `En søknad tilhørende utenlandsk sykmelding får behandlingstype ae0106`() {
         val soknadId = UUID.randomUUID()
-        val søknad = søknad(soknadId, utenlandskSykmelding = true)
+        val søknad = lagSoknad(soknadId, utenlandskSykmelding = true)
 
         sykepengesoknadMockWebserver.enqueue(
             MockResponse().setBody(søknad.serialisertTilString()).addHeader("Content-Type", "application/json"),
         )
-        leggSøknadPåKafka(søknad)
+        leggSoknadPaaKafka(søknad)
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, soknadId))
 
         oppgaveOpprettelse.behandleOppgaver(Instant.now().plus(1L, ChronoUnit.HOURS))

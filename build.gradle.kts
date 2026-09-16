@@ -2,7 +2,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id("org.springframework.boot") version "3.5.15"
+    id("org.springframework.boot") version "4.1.1"
     id("io.spring.dependency-management") version "1.1.7"
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
     kotlin("jvm") version "2.4.10"
@@ -25,29 +25,29 @@ val syfoKafkaVersion = "2021.07.20-09.39-6be2c52c"
 val sykepengesoknadKafkaVersion = "2026.07.28-13.22-138bf702"
 val mockitoKotlinVersion = "2.2.0"
 val logstashLogbackEncoderVersion = "9.0"
-val tokenSupportVersion = "5.0.37"
+val tokenSupportVersion = "6.0.12"
 val testContainersVersion = "2.0.5"
 val kluentVersion = "1.73"
 val cloudStorageVersion = "2.73.0"
 val jaxWsApiVersion = "1.1"
 val commonsTextVersion = "1.15.0"
 val unleashVersion = "12.2.3"
+val mockWebServerVersion = "5.5.0"
 
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
-    implementation(kotlin("stdlib"))
-    implementation(kotlin("reflect"))
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springframework.boot:spring-boot-starter-kafka")
+    implementation("org.springframework.boot:spring-boot-starter-flyway")
+    implementation("org.flywaydb:flyway-database-postgresql")
+    implementation("org.postgresql:postgresql")
     implementation("io.micrometer:micrometer-registry-prometheus")
     implementation("org.hibernate.validator:hibernate-validator")
-    implementation("org.springframework.kafka:spring-kafka")
-    implementation("org.postgresql:postgresql")
-    implementation("org.flywaydb:flyway-database-postgresql")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("tools.jackson.module:jackson-module-kotlin")
+    implementation("org.springframework.boot:spring-boot-restclient")
     implementation("org.apache.httpcomponents.client5:httpclient5")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("org.aspectj:aspectjrt")
     implementation("org.aspectj:aspectjweaver")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashLogbackEncoderVersion")
@@ -60,19 +60,18 @@ dependencies {
     implementation("io.getunleash:unleash-client-java:$unleashVersion")
     implementation("javax.jws:javax.jws-api:$jaxWsApiVersion")
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+    testImplementation("org.springframework.boot:spring-boot-micrometer-metrics-test")
+    testImplementation("org.springframework.boot:spring-boot-micrometer-tracing-test")
     testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
     testImplementation("org.testcontainers:testcontainers-postgresql:$testContainersVersion")
     testImplementation("org.testcontainers:testcontainers-kafka:$testContainersVersion")
-    testImplementation("org.awaitility:awaitility")
-    testImplementation("org.assertj:assertj-core")
     testImplementation("no.nav.security:token-validation-spring-test:$tokenSupportVersion")
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlinVersion")
     testImplementation("org.amshove.kluent:kluent:$kluentVersion")
-}
-
-ktlint {
-    version.set("1.5.0")
+    testImplementation("com.squareup.okhttp3:mockwebserver3:$mockWebServerVersion")
+    testImplementation("org.awaitility:awaitility")
+    testImplementation("org.assertj:assertj-core")
 }
 
 kotlin {
