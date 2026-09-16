@@ -1,10 +1,9 @@
 package no.nav.helse.flex.client.pdl
 
-import com.fasterxml.jackson.core.JsonProcessingException
-import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.helse.flex.graphql.GraphQLRequest
 import no.nav.helse.flex.graphql.GraphQLResponse
 import no.nav.helse.flex.objectMapper
+import no.nav.helse.flex.serialisertTilString
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.*
 import org.springframework.resilience.annotation.Retryable
@@ -113,12 +112,7 @@ class PdlClient(
         return headers
     }
 
-    private fun requestToJson(graphQLRequest: GraphQLRequest): String =
-        try {
-            ObjectMapper().writeValueAsString(graphQLRequest)
-        } catch (e: JsonProcessingException) {
-            throw RuntimeException(e)
-        }
+    private fun requestToJson(graphQLRequest: GraphQLRequest): String = graphQLRequest.serialisertTilString()
 
     class FunctionalPdlError(
         message: String,
