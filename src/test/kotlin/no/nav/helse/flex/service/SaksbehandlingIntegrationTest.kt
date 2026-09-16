@@ -1,6 +1,5 @@
 package no.nav.helse.flex.service
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.flex.*
 import no.nav.helse.flex.domain.*
 import no.nav.helse.flex.domain.dto.Svartype
@@ -16,6 +15,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.Awaitility.await
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import tools.jackson.module.kotlin.readValue
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate

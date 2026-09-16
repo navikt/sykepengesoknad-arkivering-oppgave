@@ -1,14 +1,15 @@
 package no.nav.helse.flex.oppgave
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import no.nav.helse.flex.*
 import no.nav.helse.flex.domain.Soknad
-import no.nav.helse.flex.domain.dto.*
 import no.nav.helse.flex.domain.dto.Avsendertype.BRUKER
 import no.nav.helse.flex.domain.dto.Avsendertype.SYSTEM
+import no.nav.helse.flex.domain.dto.Merknad
+import no.nav.helse.flex.domain.dto.Soknadstype
+import no.nav.helse.flex.domain.dto.Sporsmal
+import no.nav.helse.flex.domain.dto.Svar
+import no.nav.helse.flex.domain.dto.Svartype
+import no.nav.helse.flex.domain.dto.Sykepengesoknad
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
@@ -16,12 +17,6 @@ import java.time.LocalDateTime
 import java.util.*
 
 class BeskrivelseServiceTest {
-    private val objectMapper =
-        ObjectMapper()
-            .registerKotlinModule()
-            .registerModules(JavaTimeModule())
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-
     @Test
     fun soknadForUtlandsopphold() {
         val sykepengesoknad =

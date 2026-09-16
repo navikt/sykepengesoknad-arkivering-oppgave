@@ -9,6 +9,7 @@ import no.nav.helse.flex.serialisertTilString
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.QueueDispatcher
 import okhttp3.mockwebserver.RecordedRequest
+import tools.jackson.module.kotlin.readValue
 
 object PdlMockDispatcher : QueueDispatcher() {
     override fun dispatch(request: RecordedRequest): MockResponse {

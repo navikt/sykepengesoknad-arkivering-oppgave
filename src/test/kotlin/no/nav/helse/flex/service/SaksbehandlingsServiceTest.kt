@@ -1,6 +1,5 @@
 package no.nav.helse.flex.service
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.flex.FellesTestOppsett
 import no.nav.helse.flex.any
 import no.nav.helse.flex.arkivering.Arkivaren
@@ -14,6 +13,7 @@ import org.mockito.Mockito.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
+import tools.jackson.module.kotlin.readValue
 import java.time.Instant
 import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
