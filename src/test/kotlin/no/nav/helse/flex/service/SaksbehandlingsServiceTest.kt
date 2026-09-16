@@ -3,6 +3,7 @@ package no.nav.helse.flex.service
 import no.nav.helse.flex.FellesTestOppsett
 import no.nav.helse.flex.any
 import no.nav.helse.flex.arkivering.Arkivaren
+import no.nav.helse.flex.bodyAsString
 import no.nav.helse.flex.domain.dto.Sykepengesoknad
 import no.nav.helse.flex.objectMapper
 import no.nav.helse.flex.repository.InnsendingDbRecord
@@ -62,7 +63,7 @@ class SaksbehandlingsServiceTest : FellesTestOppsett() {
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
 
-        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
+        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.bodyAsString())
         assertThat(oppgaveRequestBody.journalpostId).isEqualTo("journalpostId")
         assertThat(oppgaveRequestBody.beskrivelse).isEqualTo(
             """

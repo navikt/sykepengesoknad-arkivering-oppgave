@@ -2,9 +2,11 @@ package no.nav.helse.flex.tilbakedatering
 
 import lagSoknad
 import no.nav.helse.flex.FellesTestOppsett
+import no.nav.helse.flex.bodyAsString
 import no.nav.helse.flex.domain.DokumentTypeDTO
 import no.nav.helse.flex.domain.OppdateringstypeDTO
 import no.nav.helse.flex.domain.OppgaveDTO
+import no.nav.helse.flex.jsonResponse
 import no.nav.helse.flex.mockdispatcher.OppgaveMockDispatcher
 import no.nav.helse.flex.objectMapper
 import no.nav.helse.flex.serialisertTilString
@@ -13,7 +15,6 @@ import no.nav.helse.flex.service.OppgaveRequest
 import no.nav.helse.flex.sykepengesoknad.kafka.MerknadDTO
 import no.nav.helse.flex.tilbakedaterte.OppgaverForTilbakedaterteStatus
 import no.nav.syfo.model.Merknad
-import okhttp3.mockwebserver.MockResponse
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.shouldBeEmpty
 import org.amshove.kluent.shouldBeNull
@@ -48,7 +49,7 @@ class TilbakedateringTest : FellesTestOppsett() {
         val søknad = lagSoknad(soknadId).copy(merknaderFraSykmelding = listOf(MerknadDTO("UNDER_BEHANDLING", "bla bla")))
 
         sykepengesoknadMockWebserver.enqueue(
-            MockResponse().setBody(søknad.serialisertTilString()).addHeader("Content-Type", "application/json"),
+            jsonResponse(søknad.serialisertTilString()),
         )
         leggSoknadPaaKafka(søknad)
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, soknadId))
@@ -57,7 +58,7 @@ class TilbakedateringTest : FellesTestOppsett() {
 
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
-        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
+        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.bodyAsString())
         assertThat(oppgaveRequestBody.behandlingstype).isEqualTo("ae0239")
 
         val sykepengesoknadRequest = sykepengesoknadMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
@@ -95,7 +96,7 @@ class TilbakedateringTest : FellesTestOppsett() {
         val søknad = lagSoknad(soknadId).copy(merknaderFraSykmelding = listOf(MerknadDTO("UNDER_BEHANDLING", "bla bla")))
 
         sykepengesoknadMockWebserver.enqueue(
-            MockResponse().setBody(søknad.serialisertTilString()).addHeader("Content-Type", "application/json"),
+            jsonResponse(søknad.serialisertTilString()),
         )
         leggSoknadPaaKafka(søknad)
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, soknadId))
@@ -104,7 +105,7 @@ class TilbakedateringTest : FellesTestOppsett() {
 
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
-        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
+        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.bodyAsString())
         assertThat(oppgaveRequestBody.behandlingstype).isEqualTo("ae0239")
 
         val sykepengesoknadRequest = sykepengesoknadMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
@@ -118,8 +119,8 @@ class TilbakedateringTest : FellesTestOppsett() {
 
         // Sykmeldinga blir godkjent og vi endrer ikke behandlignstema fordi oppgaven er ferdigstilt
 
-        OppgaveMockDispatcher.enqueueResponse(
-            MockResponse().setBody(
+        OppgaveMockDispatcher.enqueue(
+            jsonResponse(
                 HentOppgaveResponse("FERDIGSTILT").serialisertTilString(),
             ),
         )
@@ -143,7 +144,7 @@ class TilbakedateringTest : FellesTestOppsett() {
         val soknad = lagSoknad(soknadId).copy(merknaderFraSykmelding = listOf(MerknadDTO("UNDER_BEHANDLING", "bla bla")))
 
         sykepengesoknadMockWebserver.enqueue(
-            MockResponse().setBody(soknad.serialisertTilString()).addHeader("Content-Type", "application/json"),
+            jsonResponse(soknad.serialisertTilString()),
         )
         leggSoknadPaaKafka(soknad)
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, soknadId))
@@ -152,7 +153,7 @@ class TilbakedateringTest : FellesTestOppsett() {
 
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
-        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
+        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.bodyAsString())
         assertThat(oppgaveRequestBody.behandlingstype).isEqualTo("ae0239")
 
         val sykepengesoknadRequest = sykepengesoknadMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!

@@ -1,6 +1,5 @@
 package no.nav.helse.flex.e2e
 
-import com.fasterxml.jackson.databind.JsonNode
 import lagSoknad
 import no.nav.helse.flex.*
 import no.nav.helse.flex.domain.DokumentTypeDTO
@@ -16,6 +15,7 @@ import org.amshove.kluent.shouldBeEqualTo
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.test.annotation.DirtiesContext
+import tools.jackson.databind.JsonNode
 import tools.jackson.module.kotlin.readValue
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -40,7 +40,7 @@ class IntegrasjonsTest : FellesTestOppsett() {
 
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(2, TimeUnit.SECONDS)!!
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
-        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
+        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.bodyAsString())
         assertThat(oppgaveRequestBody.behandlingstema).isEqualTo("ab0426")
 
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, soknadId))
@@ -48,8 +48,8 @@ class IntegrasjonsTest : FellesTestOppsett() {
         oppgaveMockWebserver.takeRequest(1, TimeUnit.SECONDS).`should be null`()
 
         val pdfRequest = pdfMockWebserver.takeRequest(10, TimeUnit.SECONDS)!!
-        val pdfRequestBody = objectMapper.readValue<JsonNode>(pdfRequest.body.readUtf8())
-        pdfRequestBody.get("arbeidssituasjonTekst").textValue() shouldBeEqualTo "arbeidsledig"
+        val pdfRequestBody = objectMapper.readValue<JsonNode>(pdfRequest.bodyAsString())
+        pdfRequestBody.get("arbeidssituasjonTekst").stringValue() shouldBeEqualTo "arbeidsledig"
     }
 
     @Test
@@ -69,7 +69,7 @@ class IntegrasjonsTest : FellesTestOppsett() {
 
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(2, TimeUnit.SECONDS)!!
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
-        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
+        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.bodyAsString())
         assertThat(oppgaveRequestBody.behandlingstema).isEqualTo("ab0061")
         assertThat(oppgaveRequestBody.beskrivelse).isEqualTo(
             """
@@ -81,8 +81,8 @@ class IntegrasjonsTest : FellesTestOppsett() {
         )
 
         val pdfRequest = pdfMockWebserver.takeRequest(10, TimeUnit.SECONDS)!!
-        val pdfRequestBody = objectMapper.readValue<JsonNode>(pdfRequest.body.readUtf8())
-        pdfRequestBody.get("arbeidssituasjonTekst").textValue() shouldBeEqualTo "fisker"
+        val pdfRequestBody = objectMapper.readValue<JsonNode>(pdfRequest.bodyAsString())
+        pdfRequestBody.get("arbeidssituasjonTekst").stringValue() shouldBeEqualTo "fisker"
     }
 
     @Test
@@ -100,7 +100,7 @@ class IntegrasjonsTest : FellesTestOppsett() {
 
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(2, TimeUnit.SECONDS)!!
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
-        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
+        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.bodyAsString())
         assertThat(oppgaveRequestBody.behandlingstema).isEqualTo("ab0352")
         assertThat(oppgaveRequestBody.beskrivelse).isEqualTo(
             """

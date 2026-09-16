@@ -1,6 +1,7 @@
 package no.nav.helse.flex
 
 import io.getunleash.FakeUnleash
+import mockwebserver3.MockWebServer
 import no.nav.helse.flex.domain.OppgaveDTO
 import no.nav.helse.flex.kafka.consumer.AivenSoknadSendtListener
 import no.nav.helse.flex.kafka.consumer.AivenSpreOppgaverListener
@@ -20,7 +21,6 @@ import no.nav.helse.flex.tilbakedaterte.OppgaverForTilbakedaterteRepository
 import no.nav.helse.flex.tilbakedaterte.SykmeldingSendtBekreftetConsumer
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import no.nav.syfo.sykmelding.kafka.model.SykmeldingKafkaMessage
-import okhttp3.mockwebserver.MockWebServer
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
@@ -58,42 +58,49 @@ abstract class FellesTestOppsett {
 
         val pdlMockWebserver =
             MockWebServer().apply {
+                start()
                 System.setProperty("PDL_URL", "http://localhost:$port")
                 dispatcher = PdlMockDispatcher
             }
 
         val pdfMockWebserver =
             MockWebServer().apply {
+                start()
                 System.setProperty("PDFGEN_URL", "http://localhost:$port")
                 dispatcher = PdfMockDispatcher
             }
 
         val dokArkivMockWebserver =
             MockWebServer().apply {
+                start()
                 System.setProperty("DOKARKIV_URL", "http://localhost:$port")
                 dispatcher = DokArkivMockDispatcher
             }
 
         val oppgaveMockWebserver =
             MockWebServer().apply {
+                start()
                 System.setProperty("OPPGAVE_URL", "http://localhost:$port")
                 dispatcher = OppgaveMockDispatcher
             }
 
         val sykepengesoknadMockWebserver =
             MockWebServer().apply {
+                start()
                 System.setProperty("SYKEPENGESOKNAD_BACKEND_URL", "http://localhost:$port")
                 dispatcher = SykepengesoknadMockDispatcher
             }
 
         val kvitteringMockWebserver =
             MockWebServer().apply {
+                start()
                 System.setProperty("SYKEPENGESOKNAD_KVITTERINGER_URL", "http://localhost:$port")
                 dispatcher = KvitteringMockDispatcher
             }
 
         val medlemskapMockWebserver =
             MockWebServer().apply {
+                start()
                 System.setProperty("MEDLEMSKAP_VURDERING_URL", "http://localhost:$port")
                 dispatcher = MedlemskapMockDispatcher
             }

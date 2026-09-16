@@ -6,7 +6,6 @@ import no.nav.helse.flex.domain.dto.Svartype
 import no.nav.helse.flex.kafka.consumer.SYKEPENGESOKNAD_TOPIC
 import no.nav.helse.flex.mockdispatcher.SykepengesoknadMockDispatcher
 import no.nav.helse.flex.sykepengesoknad.kafka.*
-import okhttp3.mockwebserver.MockResponse
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.shouldBeEqualTo
 import org.apache.kafka.clients.producer.KafkaProducer
@@ -66,7 +65,7 @@ class SaksbehandlingIntegrationTest : FellesTestOppsett() {
 
         val pdfRequest = pdfMockWebserver.takeRequest(10, TimeUnit.SECONDS)!!
         pdfRequest.requestLine shouldBeEqualTo "POST /api/v1/genpdf/syfosoknader/arbeidstakere HTTP/1.1"
-        val pdfRequestBody = objectMapper.readValue<Soknad>(pdfRequest.body.readUtf8())
+        val pdfRequestBody = objectMapper.readValue<Soknad>(pdfRequest.bodyAsString())
         pdfRequestBody.soknadPerioder!!.first().sykmeldingstype shouldBeEqualTo "AKTIVITET_IKKE_MULIG"
 
         val innsendingIDatabase = innsendingRepository.findBySykepengesoknadId(soknad.id)!!
@@ -76,7 +75,7 @@ class SaksbehandlingIntegrationTest : FellesTestOppsett() {
 
         val dokArkivRequest = dokArkivMockWebserver.takeRequest(1, TimeUnit.SECONDS)!!
         dokArkivRequest.requestLine shouldBeEqualTo "POST /rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true HTTP/1.1"
-        val dokArkivRequestBody = objectMapper.readValue<JournalpostRequest>(dokArkivRequest.body.readUtf8())
+        val dokArkivRequestBody = objectMapper.readValue<JournalpostRequest>(dokArkivRequest.bodyAsString())
         dokArkivRequestBody.dokumenter[0].tittel `should be equal to` "Søknad om sykepenger for perioden 04.05.2019 til 08.05.2019"
 
         // Lar den time ut
@@ -85,7 +84,7 @@ class SaksbehandlingIntegrationTest : FellesTestOppsett() {
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
 
-        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
+        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.bodyAsString())
         assertThat(oppgaveRequestBody.journalpostId).isEqualTo("journalpostId")
 
         assertThat(oppgaveRequestBody.tema).isEqualTo("SYK")
@@ -100,15 +99,14 @@ class SaksbehandlingIntegrationTest : FellesTestOppsett() {
     fun `reisetilskudd søknad behandles korrekt`() {
         val oppgaveID = 3
         oppgaveMockWebserver.enqueue(
-            MockResponse()
-                .setBody(
-                    OpprettOppgaveResponse(
-                        oppgaveID,
-                        "4488",
-                        "SYK",
-                        "SOK",
-                    ).serialisertTilString(),
-                ).addHeader("Content-Type", "application/json"),
+            jsonResponse(
+                OpprettOppgaveResponse(
+                    oppgaveID,
+                    "4488",
+                    "SYK",
+                    "SOK",
+                ).serialisertTilString(),
+            ),
         )
 
         val soknad = mockReisetilskuddDTO.copy(id = UUID.randomUUID().toString())
@@ -130,7 +128,7 @@ class SaksbehandlingIntegrationTest : FellesTestOppsett() {
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
 
-        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
+        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.bodyAsString())
         assertThat(oppgaveRequestBody.journalpostId).isEqualTo("journalpostId")
         assertThat(oppgaveRequestBody.beskrivelse).isEqualTo(
             """
@@ -184,7 +182,7 @@ class SaksbehandlingIntegrationTest : FellesTestOppsett() {
 
         val pdfRequest = pdfMockWebserver.takeRequest(10, TimeUnit.SECONDS)!!
         pdfRequest.requestLine shouldBeEqualTo "POST /api/v1/genpdf/syfosoknader/reisetilskudd HTTP/1.1"
-        val pdfRequestBody = objectMapper.readValue<Soknad>(pdfRequest.body.readUtf8())
+        val pdfRequestBody = objectMapper.readValue<Soknad>(pdfRequest.bodyAsString())
         pdfRequestBody.kvitteringSum shouldBeEqualTo 133800
         pdfRequestBody.kvitteringer!!.size shouldBeEqualTo 2
         pdfRequestBody.kvitteringer.first().b64data shouldBeEqualTo "MTIz"
@@ -193,7 +191,7 @@ class SaksbehandlingIntegrationTest : FellesTestOppsett() {
 
         val dokArkivRequest = dokArkivMockWebserver.takeRequest(1, TimeUnit.SECONDS)!!
         dokArkivRequest.requestLine shouldBeEqualTo "POST /rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true HTTP/1.1"
-        val dokArkivRequestBody = objectMapper.readValue<JournalpostRequest>(dokArkivRequest.body.readUtf8())
+        val dokArkivRequestBody = objectMapper.readValue<JournalpostRequest>(dokArkivRequest.bodyAsString())
         dokArkivRequestBody.dokumenter[0].tittel `should be equal to` "Søknad om reisetilskudd for perioden 18.03.2021 til 22.03.2021"
     }
 
@@ -201,15 +199,14 @@ class SaksbehandlingIntegrationTest : FellesTestOppsett() {
     fun `behandlingsdager søknad behandles korrekt`() {
         val oppgaveID = 99
         oppgaveMockWebserver.enqueue(
-            MockResponse()
-                .setBody(
-                    OpprettOppgaveResponse(
-                        oppgaveID,
-                        "4488",
-                        "SYK",
-                        "SOK",
-                    ).serialisertTilString(),
-                ).addHeader("Content-Type", "application/json"),
+            jsonResponse(
+                OpprettOppgaveResponse(
+                    oppgaveID,
+                    "4488",
+                    "SYK",
+                    "SOK",
+                ).serialisertTilString(),
+            ),
         )
 
         val soknad = mockBehandlingsdagerdDTO.copy(id = UUID.randomUUID().toString())
@@ -232,7 +229,7 @@ class SaksbehandlingIntegrationTest : FellesTestOppsett() {
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
 
-        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
+        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.bodyAsString())
         assertThat(oppgaveRequestBody.journalpostId).isEqualTo("journalpostId")
         assertThat(oppgaveRequestBody.beskrivelse).isEqualTo(
             """
@@ -267,7 +264,7 @@ class SaksbehandlingIntegrationTest : FellesTestOppsett() {
             "POST /rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true HTTP/1.1"
 
         val dokArkivRequestJournalpostBody =
-            objectMapper.readValue<JournalpostRequest>(dokArkivRequestJournalpostRequest.body.readUtf8())
+            objectMapper.readValue<JournalpostRequest>(dokArkivRequestJournalpostRequest.bodyAsString())
         dokArkivRequestJournalpostBody.dokumenter[0].tittel `should be equal to`
             "Søknad om enkeltstående behandlingsdager for arbeidsledig for perioden 02.10.2023 til 15.10.2023"
 
@@ -275,7 +272,7 @@ class SaksbehandlingIntegrationTest : FellesTestOppsett() {
         dokArkivLogiskVedleggRequest.requestLine shouldBeEqualTo "POST /rest/journalpostapi/v1/dokumentInfo/123456/logiskVedlegg HTTP/1.1"
 
         val dokArkivLogiskVedleggRequestBody =
-            objectMapper.readValue<LogiskVedleggRequest>(dokArkivLogiskVedleggRequest.body.readUtf8())
+            objectMapper.readValue<LogiskVedleggRequest>(dokArkivLogiskVedleggRequest.bodyAsString())
         dokArkivLogiskVedleggRequestBody.tittel `should be equal to` "2 behandlingsdager, 041023, 111023 / 1 egenmeldingsdager, 031023"
     }
 
@@ -283,15 +280,14 @@ class SaksbehandlingIntegrationTest : FellesTestOppsett() {
     fun `gradert reisetilskudd søknad behandles korrekt`() {
         val oppgaveID = 3
         oppgaveMockWebserver.enqueue(
-            MockResponse()
-                .setBody(
-                    OpprettOppgaveResponse(
-                        oppgaveID,
-                        "4488",
-                        "SYK",
-                        "SOK",
-                    ).serialisertTilString(),
-                ).addHeader("Content-Type", "application/json"),
+            jsonResponse(
+                OpprettOppgaveResponse(
+                    oppgaveID,
+                    "4488",
+                    "SYK",
+                    "SOK",
+                ).serialisertTilString(),
+            ),
         )
 
         val soknad =
@@ -318,7 +314,7 @@ class SaksbehandlingIntegrationTest : FellesTestOppsett() {
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
 
-        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
+        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.bodyAsString())
         assertThat(oppgaveRequestBody.journalpostId).isEqualTo("journalpostId")
         assertThat(oppgaveRequestBody.beskrivelse).isEqualTo(
             """
@@ -373,7 +369,7 @@ class SaksbehandlingIntegrationTest : FellesTestOppsett() {
 
         val pdfRequest = pdfMockWebserver.takeRequest(10, TimeUnit.SECONDS)!!
         pdfRequest.requestLine shouldBeEqualTo "POST /api/v1/genpdf/syfosoknader/gradertreisetilskudd HTTP/1.1"
-        val pdfRequestBody = objectMapper.readValue<Soknad>(pdfRequest.body.readUtf8())
+        val pdfRequestBody = objectMapper.readValue<Soknad>(pdfRequest.bodyAsString())
         pdfRequestBody.kvitteringSum shouldBeEqualTo 133800
         pdfRequestBody.kvitteringer!!.size shouldBeEqualTo 2
         pdfRequestBody.kvitteringer.first().b64data shouldBeEqualTo "MTIz"
@@ -382,7 +378,7 @@ class SaksbehandlingIntegrationTest : FellesTestOppsett() {
 
         val dokArkivRequest = dokArkivMockWebserver.takeRequest(1, TimeUnit.SECONDS)!!
         dokArkivRequest.requestLine shouldBeEqualTo "POST /rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true HTTP/1.1"
-        val dokArkivRequestBody = objectMapper.readValue<JournalpostRequest>(dokArkivRequest.body.readUtf8())
+        val dokArkivRequestBody = objectMapper.readValue<JournalpostRequest>(dokArkivRequest.bodyAsString())
         dokArkivRequestBody.dokumenter[0].tittel `should be equal to` "Søknad om sykepenger med reisetilskudd for " +
             "perioden 18.03.2021 til 22.03.2021"
     }

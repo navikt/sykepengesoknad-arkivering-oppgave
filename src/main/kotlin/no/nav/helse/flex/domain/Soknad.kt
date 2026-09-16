@@ -1,6 +1,5 @@
 package no.nav.helse.flex.domain
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import no.nav.helse.flex.domain.dto.Arbeidssituasjon
 import no.nav.helse.flex.domain.dto.Avsendertype
 import no.nav.helse.flex.domain.dto.Merknad
@@ -10,6 +9,7 @@ import no.nav.helse.flex.domain.dto.Sporsmal
 import no.nav.helse.flex.domain.dto.Svartype
 import no.nav.helse.flex.domain.dto.Sykepengesoknad
 import no.nav.helse.flex.objectMapper
+import tools.jackson.databind.annotation.JsonSerialize
 import tools.jackson.module.kotlin.readValue
 import java.time.Instant
 import java.time.LocalDate
