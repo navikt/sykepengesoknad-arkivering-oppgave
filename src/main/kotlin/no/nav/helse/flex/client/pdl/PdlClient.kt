@@ -17,7 +17,7 @@ private const val TEMA = "Tema"
 private const val TEMA_SYK = "SYK"
 private const val IDENT = "ident"
 private const val BEHANDLINGSNUMMER_KEY = "Behandlingsnummer"
-private const val BEHANDLINGSNUMMER_VALUE = "B128"
+private const val BEHANDLINGSNUMMER_VALUE = "B139"
 
 @Component
 class PdlClient(
