@@ -117,7 +117,22 @@ fun SykepengesoknadDTO.toSykepengesoknad(aktorId: String): Sykepengesoknad =
             meldingTilNavDagerFraSykmelding?.map {
                 Periode(fom = it.fom!!, tom = it.tom!!)
             },
+        flereInntektskilderGhost = flereInntektskilderGhost?.map { it.toKjentInntektskilde() }?.toSet(),
     )
+
+private fun KjenteInntektskilderDTO.toKjentInntektskilde(): KjentInntektskilde =
+    KjentInntektskilde(
+        navn = navn,
+        kilde = kilde.mapKilde(),
+        orgnummer = orgnummer,
+    )
+
+private fun KildeDTO.mapKilde(): Kilde =
+    when (this) {
+        KildeDTO.INNTEKTSKOMPONENTEN -> Kilde.INNTEKTSKOMPONENTEN
+        KildeDTO.AAAREG -> Kilde.AAAREG
+        KildeDTO.SYKMELDING -> Kilde.SYKMELDING
+    }
 
 private fun AvsendertypeDTO.mapAvsendertype(): Avsendertype =
     when (this) {
