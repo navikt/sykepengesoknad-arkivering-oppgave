@@ -1,11 +1,11 @@
 package no.nav.helse.flex.rebehandling
 
+import mockwebserver3.MockResponse
 import no.nav.helse.flex.FellesTestOppsett
 import no.nav.helse.flex.kafka.consumer.SYKEPENGESOKNAD_TOPIC
 import no.nav.helse.flex.mockSykepengesoknadDTO
 import no.nav.helse.flex.repository.OppgaveStatus
 import no.nav.helse.flex.serialisertTilString
-import okhttp3.mockwebserver.MockResponse
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldNotBe
 import org.apache.kafka.clients.producer.KafkaProducer
@@ -25,9 +25,9 @@ class RebehandlingIntegrationTest : FellesTestOppsett() {
     fun `Behandling av søknad feiler og rebehandles`() {
         val fnr = "fnr"
 
-        pdfMockWebserver.enqueue(MockResponse().setResponseCode(500))
-        pdfMockWebserver.enqueue(MockResponse().setResponseCode(500))
-        pdfMockWebserver.enqueue(MockResponse().setResponseCode(500))
+        pdfMockWebserver.enqueue(MockResponse(code = 500))
+        pdfMockWebserver.enqueue(MockResponse(code = 500))
+        pdfMockWebserver.enqueue(MockResponse(code = 500))
 
         val id = UUID.randomUUID().toString()
         val soknad = mockSykepengesoknadDTO.copy(id = id, fnr = fnr)

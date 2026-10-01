@@ -1,10 +1,10 @@
 package no.nav.helse.flex.service
 
+import mockwebserver3.MockResponse
 import no.nav.helse.flex.FellesTestOppsett
 import no.nav.helse.flex.domain.Soknad
 import no.nav.helse.flex.domain.dto.Arbeidssituasjon
 import no.nav.helse.flex.domain.dto.Soknadstype
-import okhttp3.mockwebserver.MockResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
@@ -49,7 +49,7 @@ class OppgaveServiceTest : FellesTestOppsett() {
 
     @Test
     fun opprettOppgaveGirFeilmeldingHvisOppgaveErNede() {
-        oppgaveMockWebserver.enqueue(MockResponse().setResponseCode(500))
+        oppgaveMockWebserver.enqueue(MockResponse(code = 500))
 
         assertThrows(RuntimeException::class.java) {
             val oppgaveRequest = lagOppgaveRequest(aktorId, journalpostId, lagSoknad(Soknadstype.ARBEIDSTAKERE), behandlingstema("1337"))

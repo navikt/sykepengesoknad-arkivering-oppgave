@@ -1,11 +1,9 @@
 package no.nav.helse.flex.util
 
-import com.fasterxml.jackson.core.JsonParseException
-import com.fasterxml.jackson.databind.JsonMappingException
 import no.nav.helse.flex.domain.Periode
 import no.nav.helse.flex.logger
 import no.nav.helse.flex.objectMapper
-import java.io.IOException
+import tools.jackson.core.JacksonException
 
 object PeriodeMapper {
     private val log = logger()
@@ -19,15 +17,9 @@ object PeriodeMapper {
                 throw IllegalArgumentException(message)
             }
             return periode
-        } catch (exception: JsonParseException) {
+        } catch (exception: JacksonException) {
             log.error(message)
             throw IllegalArgumentException(message, exception)
-        } catch (exception: JsonMappingException) {
-            log.error(message)
-            throw IllegalArgumentException(message, exception)
-        } catch (iOException: IOException) {
-            log.error(message)
-            throw RuntimeException(message, iOException)
         }
     }
 }
