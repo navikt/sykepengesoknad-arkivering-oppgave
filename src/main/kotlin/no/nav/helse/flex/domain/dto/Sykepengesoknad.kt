@@ -36,6 +36,7 @@ data class Sykepengesoknad(
     val medlemskapVurdering: String? = null,
     val fiskerBlad: String? = null,
     val meldingTilNavDagerFraSykmelding: List<Periode>?,
+    val flereInntektskilderGhost: Set<KjentInntektskilde>? = null,
 )
 
 fun Sykepengesoknad.harMedlemskapSporsmal(): Boolean = this.sporsmal.any { it.tag.startsWith("MEDLEMSKAP_") }
