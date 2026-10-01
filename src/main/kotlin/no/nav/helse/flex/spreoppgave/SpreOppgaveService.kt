@@ -9,7 +9,7 @@ import no.nav.helse.flex.domain.dto.Soknadstype.SELVSTENDIGE_OG_FRILANSERE
 import no.nav.helse.flex.domain.dto.Sykepengesoknad
 import no.nav.helse.flex.repository.SpreOppgaveRepository
 import no.nav.helse.flex.service.SaksbehandlingsService
-import org.springframework.data.relational.core.conversion.DbActionExecutionException
+import org.springframework.dao.DuplicateKeyException
 import org.springframework.stereotype.Component
 import java.util.*
 
@@ -53,7 +53,7 @@ class SpreOppgaverService(
                 }
                 saksbehandlingsService.settFerdigbehandlet(innsendingsId)
             }
-        } catch (e: DbActionExecutionException) {
+        } catch (e: DuplicateKeyException) {
             // Kastes videre for å gjøre acknowledgment.nack()
             throw e
         } catch (e: Exception) {

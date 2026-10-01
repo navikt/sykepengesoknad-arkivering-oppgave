@@ -2,8 +2,7 @@ package no.nav.helse.flex.client
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
-import org.springframework.retry.annotation.Backoff
-import org.springframework.retry.annotation.Retryable
+import org.springframework.resilience.annotation.Retryable
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
 
@@ -13,7 +12,7 @@ class SykepengesoknadKvitteringerClient(
     private val sykepengesoknadKvitteringerUrl: String,
     private val sykepengesoknadKvitteringerRestTemplate: RestTemplate,
 ) {
-    @Retryable(backoff = Backoff(delay = 5000))
+    @Retryable(delay = 5000L)
     fun hentVedlegg(vedleggId: String): ByteArray {
         val url = "$sykepengesoknadKvitteringerUrl/maskin/kvittering/$vedleggId"
 

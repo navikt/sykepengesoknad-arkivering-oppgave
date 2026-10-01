@@ -1,7 +1,6 @@
 package no.nav.helse.flex.e2e
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.readValue
+import lagSoknad
 import no.nav.helse.flex.*
 import no.nav.helse.flex.domain.DokumentTypeDTO
 import no.nav.helse.flex.domain.OppdateringstypeDTO
@@ -16,7 +15,8 @@ import org.amshove.kluent.shouldBeEqualTo
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.test.annotation.DirtiesContext
-import søknad
+import tools.jackson.databind.JsonNode
+import tools.jackson.module.kotlin.readValue
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.UUID
@@ -28,19 +28,19 @@ class IntegrasjonsTest : FellesTestOppsett() {
     fun `En arbeidsledigsøknad får behandlingstema ab0426 og takler at bømlo sier opprett`() {
         val soknadId = UUID.randomUUID()
         val søknad =
-            søknad(soknadId).copy(
+            lagSoknad(soknadId).copy(
                 type = SoknadstypeDTO.ARBEIDSLEDIG,
                 arbeidssituasjon = ArbeidssituasjonDTO.ARBEIDSLEDIG,
             )
 
         SykepengesoknadMockDispatcher.enque(søknad)
 
-        leggSøknadPåKafka(søknad)
+        leggSoknadPaaKafka(søknad)
         oppgaveOpprettelse.behandleOppgaver(Instant.now().plus(249, ChronoUnit.HOURS))
 
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(2, TimeUnit.SECONDS)!!
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
-        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
+        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.bodyAsString())
         assertThat(oppgaveRequestBody.behandlingstema).isEqualTo("ab0426")
 
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, soknadId))
@@ -48,28 +48,28 @@ class IntegrasjonsTest : FellesTestOppsett() {
         oppgaveMockWebserver.takeRequest(1, TimeUnit.SECONDS).`should be null`()
 
         val pdfRequest = pdfMockWebserver.takeRequest(10, TimeUnit.SECONDS)!!
-        val pdfRequestBody = objectMapper.readValue<JsonNode>(pdfRequest.body.readUtf8())
-        pdfRequestBody.get("arbeidssituasjonTekst").textValue() shouldBeEqualTo "arbeidsledig"
+        val pdfRequestBody = objectMapper.readValue<JsonNode>(pdfRequest.bodyAsString())
+        pdfRequestBody.get("arbeidssituasjonTekst").stringValue() shouldBeEqualTo "arbeidsledig"
     }
 
     @Test
     fun `En fiskersøknad med fiskerblad i oppgavebeskrivelsen`() {
         val soknadId = UUID.randomUUID()
-        val søknad =
-            søknad(soknadId).copy(
+        val soknad =
+            lagSoknad(soknadId).copy(
                 type = SoknadstypeDTO.SELVSTENDIGE_OG_FRILANSERE,
                 arbeidssituasjon = ArbeidssituasjonDTO.FISKER,
                 fiskerBlad = FiskerBladDTO.A,
             )
 
-        SykepengesoknadMockDispatcher.enque(søknad)
+        SykepengesoknadMockDispatcher.enque(soknad)
 
-        leggSøknadPåKafka(søknad)
+        leggSoknadPaaKafka(soknad)
         oppgaveOpprettelse.behandleOppgaver(Instant.now().plus(249, ChronoUnit.HOURS))
 
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(2, TimeUnit.SECONDS)!!
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
-        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
+        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.bodyAsString())
         assertThat(oppgaveRequestBody.behandlingstema).isEqualTo("ab0061")
         assertThat(oppgaveRequestBody.beskrivelse).isEqualTo(
             """
@@ -81,26 +81,26 @@ class IntegrasjonsTest : FellesTestOppsett() {
         )
 
         val pdfRequest = pdfMockWebserver.takeRequest(10, TimeUnit.SECONDS)!!
-        val pdfRequestBody = objectMapper.readValue<JsonNode>(pdfRequest.body.readUtf8())
-        pdfRequestBody.get("arbeidssituasjonTekst").textValue() shouldBeEqualTo "fisker"
+        val pdfRequestBody = objectMapper.readValue<JsonNode>(pdfRequest.bodyAsString())
+        pdfRequestBody.get("arbeidssituasjonTekst").stringValue() shouldBeEqualTo "fisker"
     }
 
     @Test
     fun `En friskmeldt til arbeidsformidlingsøknad`() {
         val soknadId = UUID.randomUUID()
         val søknad =
-            søknad(soknadId).copy(
+            lagSoknad(soknadId).copy(
                 type = SoknadstypeDTO.FRISKMELDT_TIL_ARBEIDSFORMIDLING,
             )
 
         SykepengesoknadMockDispatcher.enque(søknad)
 
-        leggSøknadPåKafka(søknad)
+        leggSoknadPaaKafka(søknad)
         oppgaveOpprettelse.behandleOppgaver(Instant.now().plus(249, ChronoUnit.HOURS))
 
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(2, TimeUnit.SECONDS)!!
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
-        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
+        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.bodyAsString())
         assertThat(oppgaveRequestBody.behandlingstema).isEqualTo("ab0352")
         assertThat(oppgaveRequestBody.beskrivelse).isEqualTo(
             """
