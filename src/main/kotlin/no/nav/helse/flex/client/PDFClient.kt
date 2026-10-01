@@ -9,10 +9,10 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus.OK
 import org.springframework.http.MediaType
-import org.springframework.retry.annotation.Backoff
-import org.springframework.retry.annotation.Retryable
+import org.springframework.resilience.annotation.Retryable
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
+import org.springframework.web.client.exchange
 
 @Component
 class PDFClient(
@@ -22,7 +22,7 @@ class PDFClient(
 ) {
     val log = logger()
 
-    @Retryable(backoff = Backoff(delay = 5000))
+    @Retryable(delay = 5000L)
     fun getPDF(
         soknad: Soknad,
         template: PDFTemplate,
@@ -34,7 +34,7 @@ class PDFClient(
 
         val entity = HttpEntity(soknad, headers)
 
-        val result = pdfGenRestTemplate.exchange(url, HttpMethod.POST, entity, ByteArray::class.java)
+        val result = pdfGenRestTemplate.exchange<ByteArray>(url, HttpMethod.POST, entity)
 
         if (result.statusCode != OK) {
             throw RuntimeException(
