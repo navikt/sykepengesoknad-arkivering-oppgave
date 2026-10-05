@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.flex.domain.dto.Arbeidssituasjon
 import no.nav.helse.flex.domain.dto.Avsendertype
+import no.nav.helse.flex.domain.dto.KjentInntektskilde
 import no.nav.helse.flex.domain.dto.Merknad
 import no.nav.helse.flex.domain.dto.SoknadPeriode
 import no.nav.helse.flex.domain.dto.Soknadstype
@@ -47,6 +48,7 @@ data class Soknad(
     val medlemskapVurdering: String? = null,
     val fiskerBlad: String? = null,
     val meldingTilNavDagerFraSykmelding: List<Periode>? = null,
+    val flereInntektskilderGhost: Set<KjentInntektskilde>? = null,
 ) {
     @JsonSerialize
     fun arbeidssituasjonTekst(): String? = this.arbeidssituasjon?.navn
@@ -90,6 +92,7 @@ data class Soknad(
                 medlemskapVurdering = endeligMedlemskapVurdering,
                 fiskerBlad = sykepengesoknad.fiskerBlad,
                 meldingTilNavDagerFraSykmelding = sykepengesoknad.meldingTilNavDagerFraSykmelding,
+                flereInntektskilderGhost = sykepengesoknad.flereInntektskilderGhost,
             )
 
         private fun endreRekkefolgePaSporsmalForPDF(sporsmal: List<Sporsmal>) = sporsmal.sortedBy { plasseringSporsmalPDF(it) }
