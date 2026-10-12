@@ -19,15 +19,15 @@ private fun Soknad.skapTittelForNaringsdrivendeFrilanser(): String {
     return "Søknad om sykepenger for ${presentabelArbeidssituasjon()} ${periodeTekst()}$vedlegg"
 }
 
-private fun Soknad.presentabelArbeidssituasjon(): String? {
-    return when (this.arbeidssituasjon) {
+private fun Soknad.presentabelArbeidssituasjon(): String? =
+    when (this.arbeidssituasjon) {
         Arbeidssituasjon.NAERINGSDRIVENDE -> "næringsdrivende"
         Arbeidssituasjon.FISKER -> {
             var fiskeTekst = "fisker"
             if (fiskerBlad != null) {
                 fiskeTekst += " på blad $fiskerBlad"
             }
-            return fiskeTekst
+            fiskeTekst
         }
 
         null -> throw RuntimeException(
@@ -37,7 +37,6 @@ private fun Soknad.presentabelArbeidssituasjon(): String? {
 
         else -> this.arbeidssituasjon.toString().lowercase()
     }
-}
 
 fun Soknad.skapTittel(): String =
     when (soknadstype) {
@@ -50,4 +49,5 @@ fun Soknad.skapTittel(): String =
         Soknadstype.ANNET_ARBEIDSFORHOLD -> "Søknad om sykepenger med uavklart arbeidssituasjon fra ${periodeTekst()}"
         Soknadstype.REISETILSKUDD -> "Søknad om reisetilskudd ${periodeTekst()}"
         Soknadstype.GRADERT_REISETILSKUDD -> "Søknad om sykepenger med reisetilskudd ${periodeTekst()}"
+        Soknadstype.FISKERE -> "Søknad om sykepenger for ${presentabelArbeidssituasjon()} ${periodeTekst()}"
     }

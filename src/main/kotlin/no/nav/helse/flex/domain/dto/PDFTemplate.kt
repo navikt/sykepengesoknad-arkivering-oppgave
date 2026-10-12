@@ -12,4 +12,5 @@ enum class PDFTemplate(
     ANNETARBEIDSFORHOLD("annetarbeidsforhold"),
     REISETILSKUDD("reisetilskudd"),
     GRADERT_REISETILSKUDD("gradertreisetilskudd"),
+    FISKERE("fiskere"),
 }
