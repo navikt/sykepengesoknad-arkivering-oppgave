@@ -111,6 +111,7 @@ class Arkivaren(
             Soknadstype.REISETILSKUDD -> PDFTemplate.REISETILSKUDD
             Soknadstype.GRADERT_REISETILSKUDD -> PDFTemplate.GRADERT_REISETILSKUDD
             Soknadstype.FRISKMELDT_TIL_ARBEIDSFORMIDLING -> PDFTemplate.FRISKMELDT_TIL_ARBEIDSFORMIDLING
+            Soknadstype.FISKERE -> PDFTemplate.FISKERE
         }
 }
 

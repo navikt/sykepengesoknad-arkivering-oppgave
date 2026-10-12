@@ -59,5 +59,6 @@ private fun getBrevkode(soknad: Soknad): String =
         Soknadstype.ARBEIDSLEDIG,
         Soknadstype.BEHANDLINGSDAGER,
         Soknadstype.ANNET_ARBEIDSFORHOLD,
+        Soknadstype.FISKERE,
         -> "NAV 08-07.04 D"
     }
