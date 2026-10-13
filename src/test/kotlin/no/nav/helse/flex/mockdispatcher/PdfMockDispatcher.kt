@@ -1,22 +1,27 @@
 package no.nav.helse.flex.mockdispatcher
 
+import mockwebserver3.MockResponse
+import mockwebserver3.QueueDispatcher
+import mockwebserver3.RecordedRequest
 import no.nav.helse.flex.serialisertTilString
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.QueueDispatcher
-import okhttp3.mockwebserver.RecordedRequest
 
 object PdfMockDispatcher : QueueDispatcher() {
     override fun dispatch(request: RecordedRequest): MockResponse {
-        if (request.requestUrl?.encodedPath?.startsWith("/api/v1/genpdf/syfosoknader/") != true) {
-            return MockResponse()
-                .setResponseCode(404)
-                .setBody("Har ikke implemetert pdf mock api for ${request.requestUrl}")
+        if (!request.url.encodedPath.startsWith("/api/v1/genpdf/syfosoknader/")) {
+            return MockResponse
+                .Builder()
+                .code(404)
+                .body("Har ikke implemetert pdf mock api for ${request.url}")
+                .build()
         }
 
         if (responseQueue.peek() != null) {
             return responseQueue.take()
         }
 
-        return MockResponse().setBody(ByteArray(0).serialisertTilString())
+        return MockResponse
+            .Builder()
+            .body(ByteArray(0).serialisertTilString())
+            .build()
     }
 }

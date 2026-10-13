@@ -1,7 +1,9 @@
 package no.nav.helse.flex.medlemskap
 
-import com.fasterxml.jackson.module.kotlin.readValue
+import mockwebserver3.MockResponse
+import mockwebserver3.RecordedRequest
 import no.nav.helse.flex.FellesTestOppsett
+import no.nav.helse.flex.bodyAsString
 import no.nav.helse.flex.domain.dto.Arbeidssituasjon
 import no.nav.helse.flex.domain.dto.SoknadPeriode
 import no.nav.helse.flex.domain.dto.Soknadstype
@@ -10,6 +12,7 @@ import no.nav.helse.flex.domain.dto.Svar
 import no.nav.helse.flex.domain.dto.Svartype
 import no.nav.helse.flex.domain.dto.Sykepengesoknad
 import no.nav.helse.flex.domain.dto.Visningskriterie
+import no.nav.helse.flex.jsonResponse
 import no.nav.helse.flex.medlemskap.EndeligVurderingResponse.MedlemskapVurderingStatus
 import no.nav.helse.flex.objectMapper
 import no.nav.helse.flex.serialisertTilString
@@ -17,8 +20,6 @@ import no.nav.helse.flex.service.BEHANDLINGSTEMA_MEDLEMSKAP
 import no.nav.helse.flex.service.BEHANDLINGSTEMA_SYKEPENGER
 import no.nav.helse.flex.service.OppgaveRequest
 import no.nav.helse.flex.service.SaksbehandlingsService
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.RecordedRequest
 import org.amshove.kluent.shouldBe
 import org.amshove.kluent.shouldBeEqualTo
 import org.junit.jupiter.api.AfterEach
@@ -26,6 +27,7 @@ import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
 import org.springframework.beans.factory.annotation.Autowired
+import tools.jackson.module.kotlin.readValue
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
@@ -105,7 +107,7 @@ class MedlemskapVurderingTest : FellesTestOppsett() {
         saksbehandlingsService.behandleSoknad(soknad)
 
         hentLagretInngaendeVurdering(soknad) shouldBeEqualTo "UAVKLART"
-        medlemskapMockWebserver.enqueue(MockResponse().setResponseCode(500))
+        medlemskapMockWebserver.enqueue(MockResponse(code = 500))
 
         opprettOppgaveOgValiderLovMeRequest(soknad)
 
@@ -130,7 +132,7 @@ class MedlemskapVurderingTest : FellesTestOppsett() {
 
         hentLagretInngaendeVurdering(soknad) shouldBeEqualTo "UAVKLART"
         medlemskapMockWebserver.enqueue(
-            MockResponse().addHeader("Content-Type", "application/json"),
+            jsonResponse(""),
         )
 
         opprettOppgaveOgValiderLovMeRequest(soknad)
@@ -361,10 +363,9 @@ class MedlemskapVurderingTest : FellesTestOppsett() {
         medlemskapVurderingStatus: MedlemskapVurderingStatus,
     ) {
         medlemskapMockWebserver.enqueue(
-            MockResponse()
-                .setBody(
-                    lagEndeligVurderingResponse(soknad.id, medlemskapVurderingStatus),
-                ).addHeader("Content-Type", "application/json"),
+            jsonResponse(
+                lagEndeligVurderingResponse(soknad.id, medlemskapVurderingStatus),
+            ),
         )
     }
 
@@ -428,7 +429,7 @@ class MedlemskapVurderingTest : FellesTestOppsett() {
         )
 
     private fun behandlingsteamOgBeskrivelseFraOppgaveRequest(oppgaveRequest: RecordedRequest): Pair<String, String> {
-        val oppgaveRequestData = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
+        val oppgaveRequestData = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.bodyAsString())
         return Pair(oppgaveRequestData.behandlingstema!!, oppgaveRequestData.beskrivelse)
     }
 

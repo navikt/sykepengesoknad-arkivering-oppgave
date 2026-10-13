@@ -1,9 +1,9 @@
 package no.nav.helse.flex.service
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.flex.FellesTestOppsett
 import no.nav.helse.flex.any
 import no.nav.helse.flex.arkivering.Arkivaren
+import no.nav.helse.flex.bodyAsString
 import no.nav.helse.flex.domain.dto.Sykepengesoknad
 import no.nav.helse.flex.objectMapper
 import no.nav.helse.flex.repository.InnsendingDbRecord
@@ -14,6 +14,7 @@ import org.mockito.Mockito.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
+import tools.jackson.module.kotlin.readValue
 import java.time.Instant
 import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
@@ -62,7 +63,7 @@ class SaksbehandlingsServiceTest : FellesTestOppsett() {
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS)!!
         assertThat(oppgaveRequest.requestLine).isEqualTo("POST /api/v1/oppgaver HTTP/1.1")
 
-        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.body.readUtf8())
+        val oppgaveRequestBody = objectMapper.readValue<OppgaveRequest>(oppgaveRequest.bodyAsString())
         assertThat(oppgaveRequestBody.journalpostId).isEqualTo("journalpostId")
         assertThat(oppgaveRequestBody.beskrivelse).isEqualTo(
             """
