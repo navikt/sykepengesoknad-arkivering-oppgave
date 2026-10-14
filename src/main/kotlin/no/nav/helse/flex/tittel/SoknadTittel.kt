@@ -2,6 +2,7 @@ package no.nav.helse.flex.tittel
 
 import no.nav.helse.flex.domain.Soknad
 import no.nav.helse.flex.domain.dto.Arbeidssituasjon
+import no.nav.helse.flex.domain.dto.FiskerLottOgHyre
 import no.nav.helse.flex.domain.dto.Soknadstype
 import no.nav.helse.flex.domain.dto.harInntektsopplysninger
 import no.nav.helse.flex.util.DatoUtil
@@ -27,6 +28,9 @@ private fun Soknad.presentabelArbeidssituasjon(): String? =
             if (fiskerBlad != null) {
                 fiskeTekst += " på blad $fiskerBlad"
             }
+            if (fiskerLottOgHyre != null) {
+                fiskeTekst += " med ${lottOgHyreTekst(fiskerLottOgHyre)}"
+            }
             fiskeTekst
         }
 
@@ -36,6 +40,13 @@ private fun Soknad.presentabelArbeidssituasjon(): String? =
         )
 
         else -> this.arbeidssituasjon.toString().lowercase()
+    }
+
+fun lottOgHyreTekst(fiskerLottOgHyre: FiskerLottOgHyre): String =
+    when (fiskerLottOgHyre) {
+        FiskerLottOgHyre.LOTT -> "lott"
+        FiskerLottOgHyre.HYRE -> "hyre"
+        FiskerLottOgHyre.BEGGE -> "lott og hyre"
     }
 
 fun Soknad.skapTittel(): String =

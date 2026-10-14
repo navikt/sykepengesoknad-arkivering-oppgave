@@ -2,6 +2,7 @@ package no.nav.helse.flex.domain
 
 import no.nav.helse.flex.domain.dto.Arbeidssituasjon
 import no.nav.helse.flex.domain.dto.Avsendertype
+import no.nav.helse.flex.domain.dto.FiskerLottOgHyre
 import no.nav.helse.flex.domain.dto.KjentInntektskilde
 import no.nav.helse.flex.domain.dto.Merknad
 import no.nav.helse.flex.domain.dto.SoknadPeriode
@@ -47,6 +48,7 @@ data class Soknad(
     val egenmeldingsdagerFraSykmelding: List<LocalDate>? = null,
     val medlemskapVurdering: String? = null,
     val fiskerBlad: String? = null,
+    val fiskerLottOgHyre: FiskerLottOgHyre? = null,
     val meldingTilNavDagerFraSykmelding: List<Periode>? = null,
     val flereInntektskilderGhost: Set<KjentInntektskilde>? = null,
 ) {
@@ -91,6 +93,7 @@ data class Soknad(
                 egenmeldingsdagerFraSykmelding = sykepengesoknad.egenmeldingsdagerFraSykmelding?.sorted(),
                 medlemskapVurdering = endeligMedlemskapVurdering,
                 fiskerBlad = sykepengesoknad.fiskerBlad,
+                fiskerLottOgHyre = sykepengesoknad.fiskerLottOgHyre,
                 meldingTilNavDagerFraSykmelding = sykepengesoknad.meldingTilNavDagerFraSykmelding,
                 flereInntektskilderGhost = sykepengesoknad.flereInntektskilderGhost,
             )

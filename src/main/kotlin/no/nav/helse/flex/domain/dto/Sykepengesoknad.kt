@@ -35,6 +35,7 @@ data class Sykepengesoknad(
     val egenmeldingsdagerFraSykmelding: List<LocalDate>?,
     val medlemskapVurdering: String? = null,
     val fiskerBlad: String? = null,
+    val fiskerLottOgHyre: FiskerLottOgHyre? = null,
     val meldingTilNavDagerFraSykmelding: List<Periode>?,
     val flereInntektskilderGhost: Set<KjentInntektskilde>? = null,
 )

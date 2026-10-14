@@ -114,6 +114,7 @@ fun SykepengesoknadDTO.toSykepengesoknad(aktorId: String): Sykepengesoknad =
         egenmeldingsdagerFraSykmelding = egenmeldingsdagerFraSykmelding,
         medlemskapVurdering = medlemskapVurdering,
         fiskerBlad = fiskerBlad?.name,
+        fiskerLottOgHyre = fiskerLottOgHyre?.let { FiskerLottOgHyre.valueOf(it.name) },
         meldingTilNavDagerFraSykmelding =
             meldingTilNavDagerFraSykmelding?.map {
                 Periode(fom = it.fom!!, tom = it.tom!!)
