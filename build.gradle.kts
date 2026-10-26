@@ -32,7 +32,7 @@ val cloudStorageVersion = "2.75.0"
 val jaxWsApiVersion = "1.1"
 val commonsTextVersion = "1.15.0"
 val unleashVersion = "12.3.0"
-val mockWebServerVersion = "5.5.0"
+val mockWebServerVersion = "5.5.1"
 
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
