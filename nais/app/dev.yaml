@@ -4,8 +4,8 @@ db_tier: db-f1-micro
 db_type: POSTGRES_18
 db_highAvailability: false
 db_pointInTimeRecovery: false
-minReplicas: 0
-maxReplicas: 0
+minReplicas: 1
+maxReplicas: 1
 cpu: 100m
 memory: 640Mi
 external-host:
