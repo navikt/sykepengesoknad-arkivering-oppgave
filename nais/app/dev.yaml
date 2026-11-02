@@ -1,7 +1,7 @@
 azureTenant: trygdeetaten.no
 kafkaPool: nav-dev
 db_tier: db-f1-micro
-db_type: POSTGRES_14
+db_type: POSTGRES_18
 db_highAvailability: false
 db_pointInTimeRecovery: false
 minReplicas: 0
