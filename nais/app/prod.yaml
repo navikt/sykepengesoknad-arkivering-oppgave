@@ -1,7 +1,7 @@
 azureTenant: nav.no
 kafkaPool: nav-prod
 db_tier: db-custom-1-3840
-db_type: POSTGRES_14
+db_type: POSTGRES_18
 db_highAvailability: true
 db_pointInTimeRecovery: true
 minReplicas: 0
