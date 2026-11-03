@@ -1,5 +1,6 @@
 package no.nav.helse.flex.spreoppgave
 
+import io.kotest.matchers.shouldBe
 import no.nav.helse.flex.FellesTestOppsett
 import no.nav.helse.flex.domain.DokumentTypeDTO
 import no.nav.helse.flex.domain.OppdateringstypeDTO
@@ -13,7 +14,6 @@ import no.nav.helse.flex.spreoppgave.HandterOppgaveInterceptor.Companion.kallTil
 import no.nav.helse.flex.spreoppgave.HandterOppgaveInterceptor.Companion.raceConditionTimeout
 import no.nav.helse.flex.spreoppgave.HandterOppgaveInterceptor.Companion.raceConditionUUID
 import no.nav.helse.flex.util.tilOsloZone
-import org.amshove.kluent.shouldBeEqualTo
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.awaitility.Awaitility.await
@@ -67,9 +67,9 @@ class SpreOppgaveRaceConditionTest : FellesTestOppsett() {
             .findBySykepengesoknadId(
                 raceConditionUUID.toString(),
             )!!
-            .timeout shouldBeEqualTo timeoutFraBømlo.tilOsloZone().toInstant()
+            .timeout shouldBe timeoutFraBømlo.tilOsloZone().toInstant()
 
-        kallTilHåndterOppgaveFraBømlo shouldBeEqualTo 2
+        kallTilHåndterOppgaveFraBømlo shouldBe 2
     }
 
     @Test
@@ -95,8 +95,8 @@ class SpreOppgaveRaceConditionTest : FellesTestOppsett() {
             .findBySykepengesoknadId(
                 raceConditionUUID.toString(),
             )!!
-            .timeout shouldBeEqualTo raceConditionTimeout
+            .timeout shouldBe raceConditionTimeout
 
-        kallTilHåndterOppgaveFraSøknad shouldBeEqualTo 2
+        kallTilHåndterOppgaveFraSøknad shouldBe 2
     }
 }

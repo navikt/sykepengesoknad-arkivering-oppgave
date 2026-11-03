@@ -1,8 +1,8 @@
 package no.nav.helse.flex.service
 
+import io.kotest.matchers.shouldBe
 import no.nav.helse.flex.domain.dto.Soknadstype
 import no.nav.helse.flex.domain.dto.Sykepengesoknad
-import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
@@ -15,7 +15,7 @@ class BehandlingstemaOgTypeTest {
             soknad = soknad(soknadstype = Soknadstype.ARBEIDSLEDIG),
             speilRelatert = false,
             medlemskapVurdering = null,
-        ).behandlingstema `should be equal to` "ab0426"
+        ).behandlingstema shouldBe "ab0426"
     }
 
     @Test
@@ -24,7 +24,7 @@ class BehandlingstemaOgTypeTest {
             soknad = soknad(soknadstype = Soknadstype.OPPHOLD_UTLAND),
             speilRelatert = false,
             medlemskapVurdering = null,
-        ).behandlingstema `should be equal to` "ab0314"
+        ).behandlingstema shouldBe "ab0314"
     }
 
     @Test
@@ -33,7 +33,7 @@ class BehandlingstemaOgTypeTest {
             soknad = soknad(),
             speilRelatert = false,
             medlemskapVurdering = null,
-        ).behandlingstema `should be equal to` "ab0061"
+        ).behandlingstema shouldBe "ab0061"
     }
 
     @Test
@@ -42,7 +42,7 @@ class BehandlingstemaOgTypeTest {
             soknad = soknad(Soknadstype.BEHANDLINGSDAGER),
             speilRelatert = false,
             medlemskapVurdering = null,
-        ).behandlingstema `should be equal to` "ab0351"
+        ).behandlingstema shouldBe "ab0351"
     }
 
     private fun soknad(soknadstype: Soknadstype = Soknadstype.ARBEIDSTAKERE): Sykepengesoknad =

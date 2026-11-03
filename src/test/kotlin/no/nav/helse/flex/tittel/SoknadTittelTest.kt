@@ -1,10 +1,10 @@
 package no.nav.helse.flex.tittel
 
+import io.kotest.matchers.shouldBe
 import no.nav.helse.flex.domain.Soknad
 import no.nav.helse.flex.domain.dto.Arbeidssituasjon
 import no.nav.helse.flex.domain.dto.Soknadstype
 import no.nav.helse.flex.domain.dto.Sporsmal
-import org.amshove.kluent.shouldBeEqualTo
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -34,7 +34,7 @@ class SoknadTittelTest {
                         ),
                     ),
             )
-        soknad.skapTittel() shouldBeEqualTo "Søknad om sykepenger for næringsdrivende for perioden " +
+        soknad.skapTittel() shouldBe "Søknad om sykepenger for næringsdrivende for perioden " +
             "04.03.2021 til 05.03.2021 - med forespørsel om inntektsdokumentasjon"
     }
 
@@ -52,7 +52,7 @@ class SoknadTittelTest {
                         ),
                     ),
             )
-        soknad.skapTittel() shouldBeEqualTo "Søknad om sykepenger for næringsdrivende for perioden 04.03.2021 til 05.03.2021"
+        soknad.skapTittel() shouldBe "Søknad om sykepenger for næringsdrivende for perioden 04.03.2021 til 05.03.2021"
     }
 
     @Test
@@ -61,7 +61,7 @@ class SoknadTittelTest {
             .copy(
                 arbeidssituasjon = Arbeidssituasjon.FRILANSER,
                 soknadstype = Soknadstype.SELVSTENDIGE_OG_FRILANSERE,
-            ).skapTittel() shouldBeEqualTo "Søknad om sykepenger for frilanser for perioden 04.03.2021 til 05.03.2021"
+            ).skapTittel() shouldBe "Søknad om sykepenger for frilanser for perioden 04.03.2021 til 05.03.2021"
     }
 
     @Test
@@ -70,7 +70,7 @@ class SoknadTittelTest {
             .copy(
                 arbeidssituasjon = Arbeidssituasjon.FRILANSER,
                 soknadstype = Soknadstype.SELVSTENDIGE_OG_FRILANSERE,
-            ).skapTittel() shouldBeEqualTo "Søknad om sykepenger for frilanser for perioden 04.03.2021 til 05.03.2021"
+            ).skapTittel() shouldBe "Søknad om sykepenger for frilanser for perioden 04.03.2021 til 05.03.2021"
     }
 
     @Test
@@ -79,7 +79,7 @@ class SoknadTittelTest {
             .copy(
                 arbeidssituasjon = Arbeidssituasjon.ARBEIDSLEDIG,
                 soknadstype = Soknadstype.ARBEIDSLEDIG,
-            ).skapTittel() shouldBeEqualTo "Søknad om sykepenger for arbeidsledig for perioden 04.03.2021 til 05.03.2021"
+            ).skapTittel() shouldBe "Søknad om sykepenger for arbeidsledig for perioden 04.03.2021 til 05.03.2021"
     }
 
     @Test
@@ -88,7 +88,7 @@ class SoknadTittelTest {
             .copy(
                 arbeidssituasjon = Arbeidssituasjon.FISKER,
                 soknadstype = Soknadstype.SELVSTENDIGE_OG_FRILANSERE,
-            ).skapTittel() shouldBeEqualTo "Søknad om sykepenger for fisker for perioden 04.03.2021 til 05.03.2021"
+            ).skapTittel() shouldBe "Søknad om sykepenger for fisker for perioden 04.03.2021 til 05.03.2021"
     }
 
     @Test
@@ -97,7 +97,7 @@ class SoknadTittelTest {
             .copy(
                 arbeidssituasjon = Arbeidssituasjon.JORDBRUKER,
                 soknadstype = Soknadstype.SELVSTENDIGE_OG_FRILANSERE,
-            ).skapTittel() shouldBeEqualTo "Søknad om sykepenger for jordbruker for perioden 04.03.2021 til 05.03.2021"
+            ).skapTittel() shouldBe "Søknad om sykepenger for jordbruker for perioden 04.03.2021 til 05.03.2021"
     }
 
     @Test
@@ -106,7 +106,7 @@ class SoknadTittelTest {
             .copy(
                 arbeidssituasjon = Arbeidssituasjon.ARBEIDSLEDIG,
                 soknadstype = Soknadstype.REISETILSKUDD,
-            ).skapTittel() shouldBeEqualTo "Søknad om reisetilskudd for perioden 04.03.2021 til 05.03.2021"
+            ).skapTittel() shouldBe "Søknad om reisetilskudd for perioden 04.03.2021 til 05.03.2021"
     }
 
     @Test
@@ -115,7 +115,7 @@ class SoknadTittelTest {
             .copy(
                 arbeidssituasjon = Arbeidssituasjon.ARBEIDSLEDIG,
                 soknadstype = Soknadstype.GRADERT_REISETILSKUDD,
-            ).skapTittel() shouldBeEqualTo "Søknad om sykepenger med reisetilskudd for perioden 04.03.2021 til 05.03.2021"
+            ).skapTittel() shouldBe "Søknad om sykepenger med reisetilskudd for perioden 04.03.2021 til 05.03.2021"
     }
 
     @Test
@@ -123,7 +123,7 @@ class SoknadTittelTest {
         grunnsoknad
             .copy(
                 soknadstype = Soknadstype.OPPHOLD_UTLAND,
-            ).skapTittel() shouldBeEqualTo "Søknad om å beholde sykepenger utenfor EØS"
+            ).skapTittel() shouldBe "Søknad om å beholde sykepenger utenfor EØS"
     }
 
     @Test
@@ -132,6 +132,6 @@ class SoknadTittelTest {
             .copy(
                 arbeidssituasjon = Arbeidssituasjon.ARBEIDSTAKER,
                 soknadstype = Soknadstype.ARBEIDSTAKERE,
-            ).skapTittel() shouldBeEqualTo "Søknad om sykepenger for perioden 04.03.2021 til 05.03.2021"
+            ).skapTittel() shouldBe "Søknad om sykepenger for perioden 04.03.2021 til 05.03.2021"
     }
 }

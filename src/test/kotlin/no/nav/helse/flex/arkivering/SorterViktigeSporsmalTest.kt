@@ -1,11 +1,11 @@
 package no.nav.helse.flex.arkivering
 
+import io.kotest.matchers.shouldBe
 import no.nav.helse.flex.domain.Soknad
 import no.nav.helse.flex.domain.dto.Soknadstype.ARBEIDSLEDIG
 import no.nav.helse.flex.domain.dto.Soknadstype.FRISKMELDT_TIL_ARBEIDSFORMIDLING
 import no.nav.helse.flex.domain.dto.Sporsmal
 import no.nav.helse.flex.domain.dto.Svar
-import org.amshove.kluent.shouldBeEqualTo
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
@@ -25,7 +25,7 @@ class SorterViktigeSporsmalTest {
                         sporsmal("NEI", "ARBEID_UTENFOR_NORGE"),
                     ),
             )
-        soknad.sorterViktigeSporsmalFørst().sporsmal.map { it.tag } shouldBeEqualTo
+        soknad.sorterViktigeSporsmalFørst().sporsmal.map { it.tag } shouldBe
             listOf(
                 "ANDRE_INNTEKTSKILDER",
                 "FERIE",
@@ -48,7 +48,7 @@ class SorterViktigeSporsmalTest {
                         sporsmal("NEI", "ARBEID_UTENFOR_NORGE"),
                     ),
             )
-        soknad.sorterViktigeSporsmalFørst().sporsmal.map { it.tag } shouldBeEqualTo
+        soknad.sorterViktigeSporsmalFørst().sporsmal.map { it.tag } shouldBe
             soknad.sporsmal.map { it.tag }
     }
 
@@ -66,7 +66,7 @@ class SorterViktigeSporsmalTest {
                         sporsmal("NEI", "ARBEID_UTENFOR_NORGE"),
                     ),
             )
-        soknad.sorterViktigeSporsmalFørst().sporsmal.map { it.tag } shouldBeEqualTo
+        soknad.sorterViktigeSporsmalFørst().sporsmal.map { it.tag } shouldBe
             listOf(
                 "FRISKMELDT",
                 "ANDRE_INNTEKTSKILDER",

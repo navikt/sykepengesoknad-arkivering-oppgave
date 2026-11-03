@@ -1,13 +1,13 @@
 package no.nav.helse.flex.e2e
 
 import com.nhaarman.mockitokotlin2.whenever
+import io.kotest.matchers.shouldBe
 import no.nav.helse.flex.FellesTestOppsett
 import no.nav.helse.flex.any
 import no.nav.helse.flex.repository.InnsendingDbRecord
 import no.nav.helse.flex.repository.OppgaveStatus
 import no.nav.helse.flex.repository.SpreOppgaveDbRecord
 import no.nav.helse.flex.service.SaksbehandlingsService
-import org.amshove.kluent.`should be`
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -143,11 +143,11 @@ class BigQueryTest : FellesTestOppsett() {
 
         val tilBigQuery = namedParameterJdbcTemplate.query(sql, params) { rs: ResultSet, _ -> rs.toBigQueryOpprettet() }
 
-        tilBigQuery.size `should be` 3
+        tilBigQuery.size shouldBe 3
 
         val uuids = tilBigQuery.map { it.sykepengesoknadId }.toSet()
 
-        uuids.containsAll(listOf("uuid-1", "uuid-2", "uuid-3")) `should be` true
+        uuids.containsAll(listOf("uuid-1", "uuid-2", "uuid-3")) shouldBe true
     }
 
     @Test
@@ -168,11 +168,11 @@ class BigQueryTest : FellesTestOppsett() {
 
         val tilBigQuery = namedParameterJdbcTemplate.query(sql, params) { rs: ResultSet, _ -> rs.toBigQueryGruppert() }
 
-        tilBigQuery.size `should be` 3
+        tilBigQuery.size shouldBe 3
 
-        tilBigQuery.first { it.status == OppgaveStatus.Opprettet }.antall `should be` 1
-        tilBigQuery.first { it.status == OppgaveStatus.OpprettetSpeilRelatert }.antall `should be` 1
-        tilBigQuery.first { it.status == OppgaveStatus.OpprettetTimeout }.antall `should be` 1
+        tilBigQuery.first { it.status == OppgaveStatus.Opprettet }.antall shouldBe 1
+        tilBigQuery.first { it.status == OppgaveStatus.OpprettetSpeilRelatert }.antall shouldBe 1
+        tilBigQuery.first { it.status == OppgaveStatus.OpprettetTimeout }.antall shouldBe 1
     }
 
     private fun ResultSet.toBigQueryOpprettet(): BigQueryOpprettet =

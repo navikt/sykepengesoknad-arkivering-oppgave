@@ -1,5 +1,7 @@
 package no.nav.helse.flex.e2e
 
+import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.shouldBe
 import lagSoknad
 import no.nav.helse.flex.*
 import no.nav.helse.flex.domain.DokumentTypeDTO
@@ -10,8 +12,6 @@ import no.nav.helse.flex.service.*
 import no.nav.helse.flex.sykepengesoknad.kafka.ArbeidssituasjonDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.FiskerBladDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SoknadstypeDTO
-import org.amshove.kluent.`should be null`
-import org.amshove.kluent.shouldBeEqualTo
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.test.annotation.DirtiesContext
@@ -45,11 +45,11 @@ class IntegrasjonsTest : FellesTestOppsett() {
 
         leggOppgavePåAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, soknadId))
         oppgaveOpprettelse.behandleOppgaver()
-        oppgaveMockWebserver.takeRequest(1, TimeUnit.SECONDS).`should be null`()
+        oppgaveMockWebserver.takeRequest(1, TimeUnit.SECONDS).shouldBeNull()
 
         val pdfRequest = pdfMockWebserver.takeRequest(10, TimeUnit.SECONDS)!!
         val pdfRequestBody = objectMapper.readValue<JsonNode>(pdfRequest.bodyAsString())
-        pdfRequestBody.get("arbeidssituasjonTekst").stringValue() shouldBeEqualTo "arbeidsledig"
+        pdfRequestBody.get("arbeidssituasjonTekst").stringValue() shouldBe "arbeidsledig"
     }
 
     @Test
@@ -82,7 +82,7 @@ class IntegrasjonsTest : FellesTestOppsett() {
 
         val pdfRequest = pdfMockWebserver.takeRequest(10, TimeUnit.SECONDS)!!
         val pdfRequestBody = objectMapper.readValue<JsonNode>(pdfRequest.bodyAsString())
-        pdfRequestBody.get("arbeidssituasjonTekst").stringValue() shouldBeEqualTo "fisker"
+        pdfRequestBody.get("arbeidssituasjonTekst").stringValue() shouldBe "fisker"
     }
 
     @Test

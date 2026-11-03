@@ -1,5 +1,6 @@
 package no.nav.helse.flex.e2e
 
+import io.kotest.matchers.shouldBe
 import no.nav.helse.flex.FellesTestOppsett
 import no.nav.helse.flex.domain.DokumentTypeDTO
 import no.nav.helse.flex.domain.OppdateringstypeDTO
@@ -7,7 +8,6 @@ import no.nav.helse.flex.domain.OppgaveDTO
 import no.nav.helse.flex.repository.OppgaveStatus
 import no.nav.helse.flex.serialisertTilString
 import no.nav.helse.flex.skapConsumerRecord
-import org.amshove.kluent.shouldBeEqualTo
 import org.junit.jupiter.api.Test
 import org.springframework.test.annotation.DirtiesContext
 import java.time.Instant
@@ -19,11 +19,11 @@ class JulegateTest : FellesTestOppsett() {
     fun `Utsett til Ferdig til Opprett`() {
         val soknadId = UUID.randomUUID()
         leggOppgavePaAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, soknadId))
-        spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString())!!.status shouldBeEqualTo OppgaveStatus.Utsett
+        spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString())!!.status shouldBe OppgaveStatus.Utsett
         leggOppgavePaAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Ferdigbehandlet, soknadId))
-        spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString())!!.status shouldBeEqualTo OppgaveStatus.IkkeOpprett
+        spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString())!!.status shouldBe OppgaveStatus.IkkeOpprett
         leggOppgavePaAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, soknadId))
-        spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString())!!.status shouldBeEqualTo OppgaveStatus.Opprett
+        spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString())!!.status shouldBe OppgaveStatus.Opprett
     }
 
     @Test
@@ -31,19 +31,19 @@ class JulegateTest : FellesTestOppsett() {
         val soknadId = UUID.randomUUID()
         val tidspunkt = Instant.now()
         leggOppgavePaAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Utsett, soknadId))
-        spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString())!!.status shouldBeEqualTo OppgaveStatus.Utsett
+        spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString())!!.status shouldBe OppgaveStatus.Utsett
         spreOppgaveRepository.updateOppgaveBySykepengesoknadId(
             sykepengesoknadId = soknadId.toString(),
             timeout = Instant.now(),
             status = OppgaveStatus.Opprettet,
             tidspunkt,
         )
-        spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString())!!.status shouldBeEqualTo OppgaveStatus.Opprettet
+        spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString())!!.status shouldBe OppgaveStatus.Opprettet
 
         leggOppgavePaAivenKafka(OppgaveDTO(DokumentTypeDTO.Søknad, OppdateringstypeDTO.Opprett, soknadId))
 
         // Fortsatt opprettet
-        spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString())!!.status shouldBeEqualTo OppgaveStatus.Opprettet
+        spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString())!!.status shouldBe OppgaveStatus.Opprettet
     }
 
     private fun leggOppgavePaAivenKafka(oppgave: OppgaveDTO) =

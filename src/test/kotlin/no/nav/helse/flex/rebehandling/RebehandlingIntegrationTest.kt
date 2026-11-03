@@ -1,13 +1,13 @@
 package no.nav.helse.flex.rebehandling
 
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import mockwebserver3.MockResponse
 import no.nav.helse.flex.FellesTestOppsett
 import no.nav.helse.flex.kafka.consumer.SYKEPENGESOKNAD_TOPIC
 import no.nav.helse.flex.mockSykepengesoknadDTO
 import no.nav.helse.flex.repository.OppgaveStatus
 import no.nav.helse.flex.serialisertTilString
-import org.amshove.kluent.shouldBeEqualTo
-import org.amshove.kluent.shouldNotBe
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.awaitility.Awaitility.await
@@ -41,11 +41,11 @@ class RebehandlingIntegrationTest : FellesTestOppsett() {
 
         // Er satt opp med retry mot pdf, etter 3 feil legges søknaden til rebehandling
         pdfMockWebserver.takeRequest(30, TimeUnit.SECONDS)!!
-        innsendingRepository.findBySykepengesoknadId(soknad.id)?.behandlet shouldBeEqualTo null
+        innsendingRepository.findBySykepengesoknadId(soknad.id)?.behandlet shouldBe null
         pdfMockWebserver.takeRequest(30, TimeUnit.SECONDS)!!
-        innsendingRepository.findBySykepengesoknadId(soknad.id)?.behandlet shouldBeEqualTo null
+        innsendingRepository.findBySykepengesoknadId(soknad.id)?.behandlet shouldBe null
         pdfMockWebserver.takeRequest(30, TimeUnit.SECONDS)!!
-        innsendingRepository.findBySykepengesoknadId(soknad.id)?.behandlet shouldBeEqualTo null
+        innsendingRepository.findBySykepengesoknadId(soknad.id)?.behandlet shouldBe null
 
         // Venter til søknaden er rebehandlet
         pdfMockWebserver.takeRequest(30, TimeUnit.SECONDS)!!
@@ -54,11 +54,11 @@ class RebehandlingIntegrationTest : FellesTestOppsett() {
         }
         val innsending = innsendingRepository.findBySykepengesoknadId(soknad.id)!!
         innsending.behandlet shouldNotBe null
-        innsending.sykepengesoknadId shouldBeEqualTo soknad.id
-        innsending.oppgaveId shouldBeEqualTo null
+        innsending.sykepengesoknadId shouldBe soknad.id
+        innsending.oppgaveId shouldBe null
 
         val spreOppgave = spreOppgaveRepository.findBySykepengesoknadId(soknad.id)
-        spreOppgave!!.sykepengesoknadId shouldBeEqualTo soknad.id
-        spreOppgave.status shouldBeEqualTo OppgaveStatus.VenterPaBomlo
+        spreOppgave!!.sykepengesoknadId shouldBe soknad.id
+        spreOppgave.status shouldBe OppgaveStatus.VenterPaBomlo
     }
 }

@@ -1,5 +1,6 @@
 package no.nav.helse.flex.medlemskap
 
+import io.kotest.matchers.shouldBe
 import mockwebserver3.MockResponse
 import mockwebserver3.RecordedRequest
 import no.nav.helse.flex.FellesTestOppsett
@@ -20,8 +21,6 @@ import no.nav.helse.flex.service.BEHANDLINGSTEMA_MEDLEMSKAP
 import no.nav.helse.flex.service.BEHANDLINGSTEMA_SYKEPENGER
 import no.nav.helse.flex.service.OppgaveRequest
 import no.nav.helse.flex.service.SaksbehandlingsService
-import org.amshove.kluent.shouldBe
-import org.amshove.kluent.shouldBeEqualTo
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Test
@@ -53,17 +52,17 @@ class MedlemskapVurderingTest : FellesTestOppsett() {
         val soknad = lagSoknad(medlemskapVurdering = "UAVKLART").copy(sporsmal = lagSporsmalOmOppholdstillatelse())
         saksbehandlingsService.behandleSoknad(soknad)
 
-        hentLagretInngaendeVurdering(soknad) shouldBeEqualTo "UAVKLART"
+        hentLagretInngaendeVurdering(soknad) shouldBe "UAVKLART"
         mockEndeligVurderingResponse(soknad, MedlemskapVurderingStatus.UAVKLART)
 
         opprettOppgaveOgValiderLovMeRequest(soknad)
 
-        hentLagretEndeligVurdering(soknad) shouldBeEqualTo "UAVKLART"
+        hentLagretEndeligVurdering(soknad) shouldBe "UAVKLART"
 
         val oppgaveRequest = hentOgValiderOppgaveRequest()
         behandlingsteamOgBeskrivelseFraOppgaveRequest(oppgaveRequest).let { (behandlingstema, beskrivelse) ->
-            behandlingstema shouldBeEqualTo BEHANDLINGSTEMA_MEDLEMSKAP
-            beskrivelse shouldBeEqualTo
+            behandlingstema shouldBe BEHANDLINGSTEMA_MEDLEMSKAP
+            beskrivelse shouldBe
                 """
                 |$oppgaveOverskrift
                 |$oppgaveMedlemskapUavklartTekst
@@ -82,17 +81,17 @@ class MedlemskapVurderingTest : FellesTestOppsett() {
 
         saksbehandlingsService.behandleSoknad(soknad)
 
-        hentLagretInngaendeVurdering(soknad) shouldBeEqualTo "UAVKLART"
+        hentLagretInngaendeVurdering(soknad) shouldBe "UAVKLART"
         mockEndeligVurderingResponse(soknad, MedlemskapVurderingStatus.UAVKLART)
 
         opprettOppgaveOgValiderLovMeRequest(soknad)
 
-        hentLagretEndeligVurdering(soknad) shouldBeEqualTo "UAVKLART"
+        hentLagretEndeligVurdering(soknad) shouldBe "UAVKLART"
 
         val oppgaveRequest = hentOgValiderOppgaveRequest()
         behandlingsteamOgBeskrivelseFraOppgaveRequest(oppgaveRequest).let { (behandlingstema, beskrivelse) ->
-            behandlingstema shouldBeEqualTo BEHANDLINGSTEMA_MEDLEMSKAP
-            beskrivelse shouldBeEqualTo
+            behandlingstema shouldBe BEHANDLINGSTEMA_MEDLEMSKAP
+            beskrivelse shouldBe
                 """
                 |$oppgaveOverskriftMedReisetilskudd
                 |$oppgaveMedlemskapUavklartTekst
@@ -106,7 +105,7 @@ class MedlemskapVurderingTest : FellesTestOppsett() {
         val soknad = lagSoknad(medlemskapVurdering = "UAVKLART").copy(sporsmal = lagSporsmalOmOppholdstillatelse())
         saksbehandlingsService.behandleSoknad(soknad)
 
-        hentLagretInngaendeVurdering(soknad) shouldBeEqualTo "UAVKLART"
+        hentLagretInngaendeVurdering(soknad) shouldBe "UAVKLART"
         medlemskapMockWebserver.enqueue(MockResponse(code = 500))
 
         opprettOppgaveOgValiderLovMeRequest(soknad)
@@ -115,8 +114,8 @@ class MedlemskapVurderingTest : FellesTestOppsett() {
 
         val oppgaveRequest = hentOgValiderOppgaveRequest()
         behandlingsteamOgBeskrivelseFraOppgaveRequest(oppgaveRequest).let { (behandlingstema, beskrivelse) ->
-            behandlingstema shouldBeEqualTo BEHANDLINGSTEMA_MEDLEMSKAP
-            beskrivelse shouldBeEqualTo
+            behandlingstema shouldBe BEHANDLINGSTEMA_MEDLEMSKAP
+            beskrivelse shouldBe
                 """
                 |$oppgaveOverskrift
                 |$oppgaveMedlemskapUavklartTekst
@@ -130,7 +129,7 @@ class MedlemskapVurderingTest : FellesTestOppsett() {
         val soknad = lagSoknad(medlemskapVurdering = "UAVKLART").copy(sporsmal = lagSporsmalOmOppholdstillatelse())
         saksbehandlingsService.behandleSoknad(soknad)
 
-        hentLagretInngaendeVurdering(soknad) shouldBeEqualTo "UAVKLART"
+        hentLagretInngaendeVurdering(soknad) shouldBe "UAVKLART"
         medlemskapMockWebserver.enqueue(
             jsonResponse(""),
         )
@@ -141,8 +140,8 @@ class MedlemskapVurderingTest : FellesTestOppsett() {
 
         val oppgaveRequest = hentOgValiderOppgaveRequest()
         behandlingsteamOgBeskrivelseFraOppgaveRequest(oppgaveRequest).let { (behandlingstema, beskrivelse) ->
-            behandlingstema shouldBeEqualTo BEHANDLINGSTEMA_MEDLEMSKAP
-            beskrivelse shouldBeEqualTo
+            behandlingstema shouldBe BEHANDLINGSTEMA_MEDLEMSKAP
+            beskrivelse shouldBe
                 """
                 |$oppgaveOverskrift
                 |$oppgaveMedlemskapUavklartTekst
@@ -156,17 +155,17 @@ class MedlemskapVurderingTest : FellesTestOppsett() {
         val soknad = lagSoknad(medlemskapVurdering = "UAVKLART").copy(sporsmal = lagSporsmalOmOppholdstillatelse())
         saksbehandlingsService.behandleSoknad(soknad)
 
-        hentLagretInngaendeVurdering(soknad) shouldBeEqualTo "UAVKLART"
+        hentLagretInngaendeVurdering(soknad) shouldBe "UAVKLART"
         mockEndeligVurderingResponse(soknad, MedlemskapVurderingStatus.NEI)
 
         opprettOppgaveOgValiderLovMeRequest(soknad)
 
-        hentLagretEndeligVurdering(soknad) shouldBeEqualTo "NEI"
+        hentLagretEndeligVurdering(soknad) shouldBe "NEI"
 
         val oppgaveRequest = hentOgValiderOppgaveRequest()
         behandlingsteamOgBeskrivelseFraOppgaveRequest(oppgaveRequest).let { (behandlingstema, beskrivelse) ->
-            behandlingstema shouldBeEqualTo BEHANDLINGSTEMA_MEDLEMSKAP
-            beskrivelse shouldBeEqualTo
+            behandlingstema shouldBe BEHANDLINGSTEMA_MEDLEMSKAP
+            beskrivelse shouldBe
                 """
                 |$oppgaveOverskrift
                 |$oppgaveMedlemskapNeiTekst
@@ -180,7 +179,7 @@ class MedlemskapVurderingTest : FellesTestOppsett() {
         val soknad = lagSoknad(medlemskapVurdering = "NEI")
         saksbehandlingsService.behandleSoknad(soknad)
 
-        hentLagretInngaendeVurdering(soknad) shouldBeEqualTo "NEI"
+        hentLagretInngaendeVurdering(soknad) shouldBe "NEI"
 
         saksbehandlingsService.opprettOppgave(soknad, innsendingRepository.findBySykepengesoknadId(soknad.id)!!)
         medlemskapMockWebserver.takeRequest(100, TimeUnit.MILLISECONDS) shouldBe null
@@ -189,8 +188,8 @@ class MedlemskapVurderingTest : FellesTestOppsett() {
 
         val oppgaveRequest = hentOgValiderOppgaveRequest()
         behandlingsteamOgBeskrivelseFraOppgaveRequest(oppgaveRequest).let { (behandlingstema, beskrivelse) ->
-            behandlingstema shouldBeEqualTo BEHANDLINGSTEMA_MEDLEMSKAP
-            beskrivelse shouldBeEqualTo
+            behandlingstema shouldBe BEHANDLINGSTEMA_MEDLEMSKAP
+            beskrivelse shouldBe
                 """
                 |$oppgaveOverskrift
                 |$oppgaveMedlemskapNeiTekst
@@ -203,17 +202,17 @@ class MedlemskapVurderingTest : FellesTestOppsett() {
         val soknad = lagSoknad(medlemskapVurdering = "UAVKLART").copy(sporsmal = lagSporsmalOmOppholdstillatelse())
         saksbehandlingsService.behandleSoknad(soknad)
 
-        hentLagretInngaendeVurdering(soknad) shouldBeEqualTo "UAVKLART"
+        hentLagretInngaendeVurdering(soknad) shouldBe "UAVKLART"
         mockEndeligVurderingResponse(soknad, MedlemskapVurderingStatus.JA)
 
         opprettOppgaveOgValiderLovMeRequest(soknad)
 
-        hentLagretEndeligVurdering(soknad) shouldBeEqualTo "JA"
+        hentLagretEndeligVurdering(soknad) shouldBe "JA"
 
         val oppgaveRequest = hentOgValiderOppgaveRequest()
         behandlingsteamOgBeskrivelseFraOppgaveRequest(oppgaveRequest).let { (behandlingstema, beskrivelse) ->
-            behandlingstema shouldBeEqualTo BEHANDLINGSTEMA_SYKEPENGER
-            beskrivelse shouldBeEqualTo
+            behandlingstema shouldBe BEHANDLINGSTEMA_SYKEPENGER
+            beskrivelse shouldBe
                 """
                 |$oppgaveOverskrift
                 """.trimMargin()
@@ -225,7 +224,7 @@ class MedlemskapVurderingTest : FellesTestOppsett() {
         val soknad = lagSoknad(medlemskapVurdering = "UAVKLART")
         saksbehandlingsService.behandleSoknad(soknad)
 
-        hentLagretInngaendeVurdering(soknad) shouldBeEqualTo "UAVKLART"
+        hentLagretInngaendeVurdering(soknad) shouldBe "UAVKLART"
 
         saksbehandlingsService.opprettOppgave(soknad, innsendingRepository.findBySykepengesoknadId(soknad.id)!!)
         medlemskapMockWebserver.takeRequest(100, TimeUnit.MILLISECONDS) shouldBe null
@@ -234,8 +233,8 @@ class MedlemskapVurderingTest : FellesTestOppsett() {
 
         val oppgaveRequest = hentOgValiderOppgaveRequest()
         behandlingsteamOgBeskrivelseFraOppgaveRequest(oppgaveRequest).let { (behandlingstema, beskrivelse) ->
-            behandlingstema shouldBeEqualTo BEHANDLINGSTEMA_SYKEPENGER
-            beskrivelse shouldBeEqualTo
+            behandlingstema shouldBe BEHANDLINGSTEMA_SYKEPENGER
+            beskrivelse shouldBe
                 """
                 |$oppgaveOverskrift
                 """.trimMargin()
@@ -247,7 +246,7 @@ class MedlemskapVurderingTest : FellesTestOppsett() {
         val soknad = lagSoknad(medlemskapVurdering = "JA")
         saksbehandlingsService.behandleSoknad(soknad)
 
-        hentLagretInngaendeVurdering(soknad) shouldBeEqualTo "JA"
+        hentLagretInngaendeVurdering(soknad) shouldBe "JA"
 
         saksbehandlingsService.opprettOppgave(soknad, innsendingRepository.findBySykepengesoknadId(soknad.id)!!)
         medlemskapMockWebserver.takeRequest(100, TimeUnit.MILLISECONDS) shouldBe null
@@ -256,8 +255,8 @@ class MedlemskapVurderingTest : FellesTestOppsett() {
 
         val oppgaveRequest = hentOgValiderOppgaveRequest()
         behandlingsteamOgBeskrivelseFraOppgaveRequest(oppgaveRequest).let { (behandlingstema, beskrivelse) ->
-            behandlingstema shouldBeEqualTo BEHANDLINGSTEMA_SYKEPENGER
-            beskrivelse shouldBeEqualTo
+            behandlingstema shouldBe BEHANDLINGSTEMA_SYKEPENGER
+            beskrivelse shouldBe
                 """
                 |$oppgaveOverskrift
                 """.trimMargin()
@@ -270,15 +269,15 @@ class MedlemskapVurderingTest : FellesTestOppsett() {
 
         saksbehandlingsService.behandleSoknad(soknad)
 
-        medlemskapVurderingRepository.findBySykepengesoknadId(soknad.id) shouldBeEqualTo null
+        medlemskapVurderingRepository.findBySykepengesoknadId(soknad.id) shouldBe null
 
         saksbehandlingsService.opprettOppgave(soknad, innsendingRepository.findBySykepengesoknadId(soknad.id)!!)
         medlemskapMockWebserver.takeRequest(100, TimeUnit.MILLISECONDS) shouldBe null
 
         val oppgaveRequest = hentOgValiderOppgaveRequest()
         behandlingsteamOgBeskrivelseFraOppgaveRequest(oppgaveRequest).let { (behandlingstema, beskrivelse) ->
-            behandlingstema shouldBeEqualTo BEHANDLINGSTEMA_SYKEPENGER
-            beskrivelse shouldBeEqualTo
+            behandlingstema shouldBe BEHANDLINGSTEMA_SYKEPENGER
+            beskrivelse shouldBe
                 """
                 |$oppgaveOverskrift
                 """.trimMargin()
@@ -295,15 +294,15 @@ class MedlemskapVurderingTest : FellesTestOppsett() {
 
         saksbehandlingsService.behandleSoknad(soknad)
 
-        medlemskapVurderingRepository.findBySykepengesoknadId(soknad.id) shouldBeEqualTo null
+        medlemskapVurderingRepository.findBySykepengesoknadId(soknad.id) shouldBe null
 
         saksbehandlingsService.opprettOppgave(soknad, innsendingRepository.findBySykepengesoknadId(soknad.id)!!)
         medlemskapMockWebserver.takeRequest(100, TimeUnit.MILLISECONDS) shouldBe null
 
         val oppgaveRequest = hentOgValiderOppgaveRequest()
         behandlingsteamOgBeskrivelseFraOppgaveRequest(oppgaveRequest).let { (behandlingstema, beskrivelse) ->
-            behandlingstema shouldBeEqualTo BEHANDLINGSTEMA_SYKEPENGER
-            beskrivelse shouldBeEqualTo
+            behandlingstema shouldBe BEHANDLINGSTEMA_SYKEPENGER
+            beskrivelse shouldBe
                 """
                 |$oppgaveOverskriftForFrilanser
                 """.trimMargin()
@@ -316,13 +315,13 @@ class MedlemskapVurderingTest : FellesTestOppsett() {
         saksbehandlingsService.behandleSoknad(soknad)
 
         val inngaendeVurdering = medlemskapVurderingRepository.findBySykepengesoknadId(soknad.id)!!
-        inngaendeVurdering.sykepengesoknadId shouldBeEqualTo soknad.id
-        inngaendeVurdering.fnr shouldBeEqualTo soknad.fnr
-        inngaendeVurdering.fom shouldBeEqualTo soknad.fom
-        inngaendeVurdering.tom shouldBeEqualTo soknad.tom
-        inngaendeVurdering.inngaendeVurdering shouldBeEqualTo "UAVKLART"
-        inngaendeVurdering.vurderingId shouldBeEqualTo null
-        inngaendeVurdering.endeligVurdering shouldBeEqualTo null
+        inngaendeVurdering.sykepengesoknadId shouldBe soknad.id
+        inngaendeVurdering.fnr shouldBe soknad.fnr
+        inngaendeVurdering.fom shouldBe soknad.fom
+        inngaendeVurdering.tom shouldBe soknad.tom
+        inngaendeVurdering.inngaendeVurdering shouldBe "UAVKLART"
+        inngaendeVurdering.vurderingId shouldBe null
+        inngaendeVurdering.endeligVurdering shouldBe null
 
         mockEndeligVurderingResponse(soknad, MedlemskapVurderingStatus.UAVKLART)
         opprettOppgaveOgValiderLovMeRequest(soknad)
@@ -330,9 +329,9 @@ class MedlemskapVurderingTest : FellesTestOppsett() {
         oppgaveMockWebserver.takeRequest(100, TimeUnit.MILLISECONDS)!!
 
         val endeligVurdering = medlemskapVurderingRepository.findBySykepengesoknadId(soknad.id)!!
-        endeligVurdering.inngaendeVurdering shouldBeEqualTo "UAVKLART"
-        endeligVurdering.vurderingId shouldBeEqualTo "vurderingId"
-        endeligVurdering.endeligVurdering shouldBeEqualTo "UAVKLART"
+        endeligVurdering.inngaendeVurdering shouldBe "UAVKLART"
+        endeligVurdering.vurderingId shouldBe "vurderingId"
+        endeligVurdering.endeligVurdering shouldBe "UAVKLART"
     }
 
     private fun lagSoknad(
@@ -371,12 +370,12 @@ class MedlemskapVurderingTest : FellesTestOppsett() {
 
     private fun opprettOppgaveOgValiderLovMeRequest(soknad: Sykepengesoknad) {
         saksbehandlingsService.opprettOppgave(soknad, innsendingRepository.findBySykepengesoknadId(soknad.id)!!)
-        medlemskapMockWebserver.takeRequest().toString() shouldBeEqualTo "POST /flexvurdering HTTP/1.1"
+        medlemskapMockWebserver.takeRequest().toString() shouldBe "POST /flexvurdering HTTP/1.1"
     }
 
     private fun hentOgValiderOppgaveRequest(): RecordedRequest {
         val oppgaveRequest = oppgaveMockWebserver.takeRequest(100, TimeUnit.MILLISECONDS)!!
-        oppgaveRequest.requestLine shouldBeEqualTo "POST /api/v1/oppgaver HTTP/1.1"
+        oppgaveRequest.requestLine shouldBe "POST /api/v1/oppgaver HTTP/1.1"
         return oppgaveRequest
     }
 

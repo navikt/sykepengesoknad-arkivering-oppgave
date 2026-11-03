@@ -27,7 +27,7 @@ val mockitoKotlinVersion = "2.2.0"
 val logstashLogbackEncoderVersion = "9.0"
 val tokenSupportVersion = "6.0.12"
 val testContainersVersion = "2.0.5"
-val kluentVersion = "1.73"
+val kotestVersion = "6.2.6"
 val cloudStorageVersion = "2.75.0"
 val jaxWsApiVersion = "1.1"
 val commonsTextVersion = "1.15.0"
@@ -68,7 +68,7 @@ dependencies {
     testImplementation("org.testcontainers:testcontainers-kafka:$testContainersVersion")
     testImplementation("no.nav.security:token-validation-spring-test:$tokenSupportVersion")
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlinVersion")
-    testImplementation("org.amshove.kluent:kluent:$kluentVersion")
+    testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
     testImplementation("com.squareup.okhttp3:mockwebserver3:$mockWebServerVersion")
     testImplementation("org.awaitility:awaitility")
     testImplementation("org.assertj:assertj-core")

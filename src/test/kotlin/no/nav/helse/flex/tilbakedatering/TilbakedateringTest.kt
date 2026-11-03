@@ -1,5 +1,10 @@
 package no.nav.helse.flex.tilbakedatering
 
+import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.shouldBe
 import lagSoknad
 import no.nav.helse.flex.FellesTestOppsett
 import no.nav.helse.flex.bodyAsString
@@ -15,11 +20,6 @@ import no.nav.helse.flex.service.OppgaveRequest
 import no.nav.helse.flex.sykepengesoknad.kafka.MerknadDTO
 import no.nav.helse.flex.tilbakedaterte.OppgaverForTilbakedaterteStatus
 import no.nav.syfo.model.Merknad
-import org.amshove.kluent.`should be equal to`
-import org.amshove.kluent.shouldBeEmpty
-import org.amshove.kluent.shouldBeNull
-import org.amshove.kluent.shouldHaveSize
-import org.amshove.kluent.shouldNotBeNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -66,22 +66,22 @@ class TilbakedateringTest : FellesTestOppsett() {
 
         val tilbakedaterte = oppgaverForTilbakedaterteRepository.findAll().toList()
         tilbakedaterte.shouldHaveSize(1)
-        tilbakedaterte.first().sykepengesoknadUuid `should be equal to` soknadId.toString()
-        tilbakedaterte.first().sykmeldingUuid `should be equal to` søknad.sykmeldingId
-        tilbakedaterte.first().status `should be equal to` OppgaverForTilbakedaterteStatus.OPPRETTET
+        tilbakedaterte.first().sykepengesoknadUuid shouldBe soknadId.toString()
+        tilbakedaterte.first().sykmeldingUuid shouldBe søknad.sykmeldingId
+        tilbakedaterte.first().status shouldBe OppgaverForTilbakedaterteStatus.OPPRETTET
 
         // Sykmeldinga blir godkjent og vi endrer behandlingstema
         leggSykmeldingPåKafka(sykmeldingKafkaMessage(fnr = fnr, sykmeldingId = søknad.sykmeldingId!!))
 
         val lastOppdaterOppgaveReqeust = OppgaveMockDispatcher.getLastOppdaterOppgaveReqeust()
         lastOppdaterOppgaveReqeust.behandlingstype.shouldBeNull()
-        lastOppdaterOppgaveReqeust.behandlingstema `should be equal to` "ab0061"
+        lastOppdaterOppgaveReqeust.behandlingstema shouldBe "ab0061"
         oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS) // Hent
         oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS) // Patch
 
         val oppgave = oppgaverForTilbakedaterteRepository.findBySykmeldingUuid(søknad.sykmeldingId!!)
         oppgave.shouldHaveSize(1)
-        oppgave.first().status `should be equal to` OppgaverForTilbakedaterteStatus.OPPDATERT
+        oppgave.first().status shouldBe OppgaverForTilbakedaterteStatus.OPPDATERT
         oppgave.first().oppdatert.shouldNotBeNull()
 
         sykepengesoknadMockWebserver.takeRequest(5, TimeUnit.SECONDS) // søknaden hentes for å beregne tema
@@ -113,9 +113,9 @@ class TilbakedateringTest : FellesTestOppsett() {
 
         val tilbakedaterte = oppgaverForTilbakedaterteRepository.findAll().toList()
         tilbakedaterte.shouldHaveSize(1)
-        tilbakedaterte.first().sykepengesoknadUuid `should be equal to` soknadId.toString()
-        tilbakedaterte.first().sykmeldingUuid `should be equal to` søknad.sykmeldingId
-        tilbakedaterte.first().status `should be equal to` OppgaverForTilbakedaterteStatus.OPPRETTET
+        tilbakedaterte.first().sykepengesoknadUuid shouldBe soknadId.toString()
+        tilbakedaterte.first().sykmeldingUuid shouldBe søknad.sykmeldingId
+        tilbakedaterte.first().status shouldBe OppgaverForTilbakedaterteStatus.OPPRETTET
 
         // Sykmeldinga blir godkjent og vi endrer ikke behandlignstema fordi oppgaven er ferdigstilt
 
@@ -129,7 +129,7 @@ class TilbakedateringTest : FellesTestOppsett() {
 
         val oppgave = oppgaverForTilbakedaterteRepository.findBySykmeldingUuid(søknad.sykmeldingId!!)
         oppgave.shouldHaveSize(1)
-        oppgave.first().status `should be equal to` OppgaverForTilbakedaterteStatus.OPPGAVE_ALLEREDE_FERDIGSTILT
+        oppgave.first().status shouldBe OppgaverForTilbakedaterteStatus.OPPGAVE_ALLEREDE_FERDIGSTILT
         oppgave.first().oppdatert.shouldNotBeNull()
         oppgaveMockWebserver.takeRequest(5, TimeUnit.SECONDS) // Hent
         OppgaveMockDispatcher.getOppdaterOppgaveRequest().shouldBeEmpty()
@@ -161,9 +161,9 @@ class TilbakedateringTest : FellesTestOppsett() {
 
         val tilbakedaterte = oppgaverForTilbakedaterteRepository.findAll().toList()
         tilbakedaterte.shouldHaveSize(1)
-        tilbakedaterte.first().sykepengesoknadUuid `should be equal to` soknadId.toString()
-        tilbakedaterte.first().sykmeldingUuid `should be equal to` soknad.sykmeldingId
-        tilbakedaterte.first().status `should be equal to` OppgaverForTilbakedaterteStatus.OPPRETTET
+        tilbakedaterte.first().sykepengesoknadUuid shouldBe soknadId.toString()
+        tilbakedaterte.first().sykmeldingUuid shouldBe soknad.sykmeldingId
+        tilbakedaterte.first().status shouldBe OppgaverForTilbakedaterteStatus.OPPRETTET
 
         // Sykmeldinga blir godkjent og vi endrer behandlingstema
         leggSykmeldingPåKafka(
@@ -179,7 +179,7 @@ class TilbakedateringTest : FellesTestOppsett() {
 
         val oppgave = oppgaverForTilbakedaterteRepository.findBySykmeldingUuid(soknad.sykmeldingId!!)
         oppgave.shouldHaveSize(1)
-        oppgave.first().status `should be equal to` OppgaverForTilbakedaterteStatus.IKKE_GODKJENT
+        oppgave.first().status shouldBe OppgaverForTilbakedaterteStatus.IKKE_GODKJENT
         oppgave.first().oppdatert.shouldNotBeNull()
     }
 }
