@@ -1,6 +1,7 @@
 package no.nav.helse.flex.e2e
 
 import com.nhaarman.mockitokotlin2.whenever
+import io.kotest.matchers.shouldBe
 import no.nav.helse.flex.FellesTestOppsett
 import no.nav.helse.flex.any
 import no.nav.helse.flex.domain.DokumentTypeDTO
@@ -19,7 +20,6 @@ import no.nav.helse.flex.sykepengesoknad.kafka.SvarDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SvartypeDTO
 import no.nav.helse.flex.sykepengesoknad.kafka.SykepengesoknadDTO
 import no.nav.helse.flex.util.tilOsloZone
-import org.amshove.kluent.`should be equal to`
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -291,7 +291,7 @@ class E2ETest : FellesTestOppsett() {
 
         val opprettetOppgave = spreOppgaveRepository.findBySykepengesoknadId(soknadId.toString())
 
-        opprettetOppgave?.opprettet `should be equal to` opprettetOppgave?.modifisert
+        opprettetOppgave?.opprettet shouldBe opprettetOppgave?.modifisert
     }
 
     @Test

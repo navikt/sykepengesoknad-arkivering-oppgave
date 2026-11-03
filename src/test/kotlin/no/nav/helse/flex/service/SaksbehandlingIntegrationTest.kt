@@ -1,13 +1,12 @@
 package no.nav.helse.flex.service
 
+import io.kotest.matchers.shouldBe
 import no.nav.helse.flex.*
 import no.nav.helse.flex.domain.*
 import no.nav.helse.flex.domain.dto.Svartype
 import no.nav.helse.flex.kafka.consumer.SYKEPENGESOKNAD_TOPIC
 import no.nav.helse.flex.mockdispatcher.SykepengesoknadMockDispatcher
 import no.nav.helse.flex.sykepengesoknad.kafka.*
-import org.amshove.kluent.`should be equal to`
-import org.amshove.kluent.shouldBeEqualTo
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.assertj.core.api.Assertions.assertThat
@@ -64,9 +63,9 @@ class SaksbehandlingIntegrationTest : FellesTestOppsett() {
         }
 
         val pdfRequest = pdfMockWebserver.takeRequest(10, TimeUnit.SECONDS)!!
-        pdfRequest.requestLine shouldBeEqualTo "POST /api/v1/genpdf/syfosoknader/arbeidstakere HTTP/1.1"
+        pdfRequest.requestLine shouldBe "POST /api/v1/genpdf/syfosoknader/arbeidstakere HTTP/1.1"
         val pdfRequestBody = objectMapper.readValue<Soknad>(pdfRequest.bodyAsString())
-        pdfRequestBody.soknadPerioder!!.first().sykmeldingstype shouldBeEqualTo "AKTIVITET_IKKE_MULIG"
+        pdfRequestBody.soknadPerioder!!.first().sykmeldingstype shouldBe "AKTIVITET_IKKE_MULIG"
 
         val innsendingIDatabase = innsendingRepository.findBySykepengesoknadId(soknad.id)!!
         assertThat(innsendingIDatabase.sykepengesoknadId).isEqualTo(soknad.id)
@@ -74,9 +73,9 @@ class SaksbehandlingIntegrationTest : FellesTestOppsett() {
         assertThat(innsendingIDatabase.behandlet).isNotNull
 
         val dokArkivRequest = dokArkivMockWebserver.takeRequest(1, TimeUnit.SECONDS)!!
-        dokArkivRequest.requestLine shouldBeEqualTo "POST /rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true HTTP/1.1"
+        dokArkivRequest.requestLine shouldBe "POST /rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true HTTP/1.1"
         val dokArkivRequestBody = objectMapper.readValue<JournalpostRequest>(dokArkivRequest.bodyAsString())
-        dokArkivRequestBody.dokumenter[0].tittel `should be equal to` "Søknad om sykepenger for perioden 04.05.2019 til 08.05.2019"
+        dokArkivRequestBody.dokumenter[0].tittel shouldBe "Søknad om sykepenger for perioden 04.05.2019 til 08.05.2019"
 
         // Lar den time ut
         oppgaveOpprettelse.behandleOppgaver(Instant.now().plus(10L, ChronoUnit.DAYS))
@@ -181,18 +180,18 @@ class SaksbehandlingIntegrationTest : FellesTestOppsett() {
         assertThat(innsendingIDatabase.behandlet).isNotNull
 
         val pdfRequest = pdfMockWebserver.takeRequest(10, TimeUnit.SECONDS)!!
-        pdfRequest.requestLine shouldBeEqualTo "POST /api/v1/genpdf/syfosoknader/reisetilskudd HTTP/1.1"
+        pdfRequest.requestLine shouldBe "POST /api/v1/genpdf/syfosoknader/reisetilskudd HTTP/1.1"
         val pdfRequestBody = objectMapper.readValue<Soknad>(pdfRequest.bodyAsString())
-        pdfRequestBody.kvitteringSum shouldBeEqualTo 133800
-        pdfRequestBody.kvitteringer!!.size shouldBeEqualTo 2
-        pdfRequestBody.kvitteringer.first().b64data shouldBeEqualTo "MTIz"
-        pdfRequestBody.sporsmal.none { it.svartype == Svartype.KVITTERING } shouldBeEqualTo true
-        pdfRequestBody.soknadPerioder!!.first().sykmeldingstype shouldBeEqualTo "REISETILSKUDD"
+        pdfRequestBody.kvitteringSum shouldBe 133800
+        pdfRequestBody.kvitteringer!!.size shouldBe 2
+        pdfRequestBody.kvitteringer.first().b64data shouldBe "MTIz"
+        pdfRequestBody.sporsmal.none { it.svartype == Svartype.KVITTERING } shouldBe true
+        pdfRequestBody.soknadPerioder!!.first().sykmeldingstype shouldBe "REISETILSKUDD"
 
         val dokArkivRequest = dokArkivMockWebserver.takeRequest(1, TimeUnit.SECONDS)!!
-        dokArkivRequest.requestLine shouldBeEqualTo "POST /rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true HTTP/1.1"
+        dokArkivRequest.requestLine shouldBe "POST /rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true HTTP/1.1"
         val dokArkivRequestBody = objectMapper.readValue<JournalpostRequest>(dokArkivRequest.bodyAsString())
-        dokArkivRequestBody.dokumenter[0].tittel `should be equal to` "Søknad om reisetilskudd for perioden 18.03.2021 til 22.03.2021"
+        dokArkivRequestBody.dokumenter[0].tittel shouldBe "Søknad om reisetilskudd for perioden 18.03.2021 til 22.03.2021"
     }
 
     @Test
@@ -257,23 +256,23 @@ class SaksbehandlingIntegrationTest : FellesTestOppsett() {
         assertThat(innsendingIDatabase.behandlet).isNotNull
 
         val pdfRequest = pdfMockWebserver.takeRequest(10, TimeUnit.SECONDS)!!
-        pdfRequest.requestLine shouldBeEqualTo "POST /api/v1/genpdf/syfosoknader/behandlingsdager HTTP/1.1"
+        pdfRequest.requestLine shouldBe "POST /api/v1/genpdf/syfosoknader/behandlingsdager HTTP/1.1"
 
         val dokArkivRequestJournalpostRequest = dokArkivMockWebserver.takeRequest(1, TimeUnit.SECONDS)!!
-        dokArkivRequestJournalpostRequest.requestLine shouldBeEqualTo
+        dokArkivRequestJournalpostRequest.requestLine shouldBe
             "POST /rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true HTTP/1.1"
 
         val dokArkivRequestJournalpostBody =
             objectMapper.readValue<JournalpostRequest>(dokArkivRequestJournalpostRequest.bodyAsString())
-        dokArkivRequestJournalpostBody.dokumenter[0].tittel `should be equal to`
+        dokArkivRequestJournalpostBody.dokumenter[0].tittel shouldBe
             "Søknad om enkeltstående behandlingsdager for arbeidsledig for perioden 02.10.2023 til 15.10.2023"
 
         val dokArkivLogiskVedleggRequest = dokArkivMockWebserver.takeRequest(1, TimeUnit.SECONDS)!!
-        dokArkivLogiskVedleggRequest.requestLine shouldBeEqualTo "POST /rest/journalpostapi/v1/dokumentInfo/123456/logiskVedlegg HTTP/1.1"
+        dokArkivLogiskVedleggRequest.requestLine shouldBe "POST /rest/journalpostapi/v1/dokumentInfo/123456/logiskVedlegg HTTP/1.1"
 
         val dokArkivLogiskVedleggRequestBody =
             objectMapper.readValue<LogiskVedleggRequest>(dokArkivLogiskVedleggRequest.bodyAsString())
-        dokArkivLogiskVedleggRequestBody.tittel `should be equal to` "2 behandlingsdager, 041023, 111023 / 1 egenmeldingsdager, 031023"
+        dokArkivLogiskVedleggRequestBody.tittel shouldBe "2 behandlingsdager, 041023, 111023 / 1 egenmeldingsdager, 031023"
     }
 
     @Test
@@ -368,18 +367,18 @@ class SaksbehandlingIntegrationTest : FellesTestOppsett() {
         assertThat(innsendingIDatabase.behandlet).isNotNull
 
         val pdfRequest = pdfMockWebserver.takeRequest(10, TimeUnit.SECONDS)!!
-        pdfRequest.requestLine shouldBeEqualTo "POST /api/v1/genpdf/syfosoknader/gradertreisetilskudd HTTP/1.1"
+        pdfRequest.requestLine shouldBe "POST /api/v1/genpdf/syfosoknader/gradertreisetilskudd HTTP/1.1"
         val pdfRequestBody = objectMapper.readValue<Soknad>(pdfRequest.bodyAsString())
-        pdfRequestBody.kvitteringSum shouldBeEqualTo 133800
-        pdfRequestBody.kvitteringer!!.size shouldBeEqualTo 2
-        pdfRequestBody.kvitteringer.first().b64data shouldBeEqualTo "MTIz"
-        pdfRequestBody.sporsmal.none { it.svartype == Svartype.KVITTERING } shouldBeEqualTo true
-        pdfRequestBody.soknadPerioder!!.first().sykmeldingstype shouldBeEqualTo "REISETILSKUDD"
+        pdfRequestBody.kvitteringSum shouldBe 133800
+        pdfRequestBody.kvitteringer!!.size shouldBe 2
+        pdfRequestBody.kvitteringer.first().b64data shouldBe "MTIz"
+        pdfRequestBody.sporsmal.none { it.svartype == Svartype.KVITTERING } shouldBe true
+        pdfRequestBody.soknadPerioder!!.first().sykmeldingstype shouldBe "REISETILSKUDD"
 
         val dokArkivRequest = dokArkivMockWebserver.takeRequest(1, TimeUnit.SECONDS)!!
-        dokArkivRequest.requestLine shouldBeEqualTo "POST /rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true HTTP/1.1"
+        dokArkivRequest.requestLine shouldBe "POST /rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true HTTP/1.1"
         val dokArkivRequestBody = objectMapper.readValue<JournalpostRequest>(dokArkivRequest.bodyAsString())
-        dokArkivRequestBody.dokumenter[0].tittel `should be equal to` "Søknad om sykepenger med reisetilskudd for " +
+        dokArkivRequestBody.dokumenter[0].tittel shouldBe "Søknad om sykepenger med reisetilskudd for " +
             "perioden 18.03.2021 til 22.03.2021"
     }
 }
