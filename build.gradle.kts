@@ -31,7 +31,7 @@ val kotestVersion = "6.2.6"
 val cloudStorageVersion = "2.75.0"
 val jaxWsApiVersion = "1.1"
 val commonsTextVersion = "1.15.0"
-val unleashVersion = "12.3.1"
+val unleashVersion = "12.3.2"
 val mockWebServerVersion = "5.5.1"
 
 dependencies {
